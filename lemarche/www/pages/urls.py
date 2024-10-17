@@ -4,10 +4,10 @@ from django.views.generic import TemplateView
 from lemarche.www.pages.views import (
     CompanyReferenceCalculatorView,
     ContactView,
-    HomeView,
     ImpactCalculatorView,
     PageView,
     SiaeGroupListView,
+    SitemapView,
     SocialImpactBuyersCalculatorView,
     StatsView,
     TrackView,
@@ -19,7 +19,6 @@ from lemarche.www.pages.views import (
 app_name = "pages"
 
 urlpatterns = [
-    path("ancien_accueil", HomeView.as_view(), name="home"),
     path("contact/", ContactView.as_view(), name="contact"),
     # Calculator endpoints
     path("calibrer-achat-socialement-responsable/", ImpactCalculatorView.as_view(), name="impact_calculator"),
@@ -83,6 +82,7 @@ urlpatterns = [
     path("cgu/", PageView.as_view(), {"url": "/cgu/"}, name="cgu"),
     path("cgu-api/", PageView.as_view(), {"url": "/cgu-api/"}, name="cgu-api"),
     path("confidentialite/", PageView.as_view(), {"url": "/confidentialite/"}, name="confidentialite"),
+    path("plan-du-site/", SitemapView.as_view(), name="plan-du-site"),
     # Error pages
     path("403/", TemplateView.as_view(template_name="403.html"), name="403"),
     path("404/", TemplateView.as_view(template_name="404.html"), name="404"),

@@ -30,6 +30,10 @@ from lemarche.www.tenders.tasks import notify_admin_tender_created
 from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user_from_anonymous_content
 from lemarche.www.tenders.views import TenderCreateMultiStepView
 
+from xml.etree import ElementTree
+
+import requests
+
 
 class HomeView(TemplateView):
     template_name = "pages/home.html"
@@ -393,3 +397,29 @@ def trigger_error(request):
     if request.POST:
         raise Exception("%s error: %s" % (request.POST.get("status_code"), request.POST.get("error_message")))
     print(1 / 0)  # Should raise a ZeroDivisionError.
+
+
+class SitemapView(View):
+    def get(self, request):
+        # Get sitemap.xml content
+        sitemap_url = request.build_absolute_uri("/sitemap.xml")
+        response = requests.get(sitemap_url)
+
+        urls = []
+
+        if response.status_code == 200:
+            try:
+                # Read XML and extract URLs
+                root = ElementTree.fromstring(response.content)
+
+                # Define namespace to find URLs
+                namespace = {"ns": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+
+                for url in root.findall("ns:url", namespaces=namespace):
+                    loc = url.find("ns:loc", namespaces=namespace)
+                    if loc is not None:
+                        urls.append(loc.text.strip())
+            except ElementTree.ParseError as e:
+                print("Erreur d'analyse XML:", e)
+
+        return render(request, "pages/plan_du_site.html", {"sitemap_urls": urls})
