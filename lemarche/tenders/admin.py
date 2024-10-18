@@ -789,21 +789,20 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         if request.POST.get("_validate_send_to_siaes"):
             obj.set_validated()
             if obj.amount_int > settings.BREVO_TENDERS_MIN_AMOUNT_TO_SEND:
-                api_brevo.create_deal(tender=obj, owner_email=request.user.email)
-                # we link deal(tender) with author contact
-                api_brevo.link_deal_with_contact_list(tender=obj)
-                self.message_user(request, "Ce dépôt de besoin a été synchronisé avec Brevo")
+                try:
+                    api_brevo.create_deal(tender=obj, owner_email=request.user.email)
+                    # we link deal(tender) with author contact
+                    api_brevo.link_deal_with_contact_list(tender=obj)
+                    self.message_user(request, "Ce dépôt de besoin a été synchronisé avec Brevo")
+                except Exception as e:
+                    self.message_user(request, f"Erreur dans la synchronisation du DDB avec Brevo {str(e)}")
             self.message_user(request, "Ce dépôt de besoin a été validé. Il sera envoyé en temps voulu :)")
             return HttpResponseRedirect(".")
         if request.POST.get("_validate_send_to_commercial_partners"):
             obj.send_to_commercial_partners_only = True
             obj.set_validated()
-            if obj.amount_int > settings.BREVO_TENDERS_MIN_AMOUNT_TO_SEND:
-                api_brevo.create_deal(tender=obj, owner_email=request.user.email)
-                # we link deal(tender) with author contact
-                api_brevo.link_deal_with_contact_list(tender=obj)
-                self.message_user(request, "Ce dépôt de besoin a été synchronisé avec Brevo")
-            self.message_user(request, "Ce dépôt de besoin a été validé. Il sera envoyé en temps voulu :)")
+            # we don't need to send it in the crm, parteners manage them
+            self.message_user(request, "Ce dépôt de besoin a été validé. Il sera envoyé aux partenaires :)")
             return HttpResponseRedirect(".")
         elif request.POST.get("_restart_tender"):
             restart_send_tender_task(tender=obj)

@@ -7,7 +7,6 @@ from django.conf import settings
 from huey.contrib.djhuey import task
 from sib_api_v3_sdk.rest import ApiException
 
-from lemarche.tenders.constants import AMOUNT_RANGE_CHOICE_EXACT
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 from lemarche.utils.data import sanitize_to_send_by_email
 from lemarche.utils.urls import get_object_admin_url, get_object_share_url
@@ -170,7 +169,7 @@ def create_deal(tender, owner_email: str):
             "deal_owner": owner_email,
             "close_date": tender.deadline_date.strftime("%Y-%m-%d"),
             # custom attributes
-            "amount": AMOUNT_RANGE_CHOICE_EXACT.get(tender.amount, 0),
+            "amount": tender.amount_int,
             "tender_admin_url": tender.get_admin_url(),
         },
     )
@@ -184,6 +183,7 @@ def create_deal(tender, owner_email: str):
         tender.save()
     except ApiException as e:
         logger.error("Exception when calling Brevo->DealApi->create_deal: %s\n" % e)
+        raise ApiException(e)
 
 
 def link_deal_with_contact_list(tender, contact_list: list = None):
