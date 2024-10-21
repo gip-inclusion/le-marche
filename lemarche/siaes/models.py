@@ -1583,7 +1583,6 @@ class SiaeActivityQuerySet(models.QuerySet):
                 qs = qs.geo_range_in_perimeter_list(tender.perimeters.all(), include_country_area=True)
             elif tender.perimeters.count():  # only perimeters
                 qs = qs.geo_range_in_perimeter_list(tender.perimeters.all()).exclude_country_geo_range()
-                pass
             elif tender.include_country_area:
                 qs = qs.filter(Q(geo_range=siae_constants.GEO_RANGE_COUNTRY))
 
