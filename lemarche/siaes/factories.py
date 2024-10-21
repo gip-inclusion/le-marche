@@ -3,6 +3,7 @@ import string
 import factory.fuzzy
 from factory.django import DjangoModelFactory
 
+from lemarche.sectors.factories import SectorGroupFactory
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import (
     Siae,
@@ -69,12 +70,27 @@ class SiaeActivityFactory(DjangoModelFactory):
     class Meta:
         model = SiaeActivity
 
-    presta_type = factory.List([factory.fuzzy.FuzzyChoice([key for (key, value) in siae_constants.PRESTA_CHOICES])])
+    class Params:
+        with_country_perimeter = factory.Trait(geo_range=siae_constants.GEO_RANGE_COUNTRY)
+        with_custom_distance_perimeter = factory.Trait(
+            geo_range=siae_constants.GEO_RANGE_CUSTOM,
+            geo_range_custom_distance=factory.fuzzy.FuzzyInteger(1, 100),
+        )
+        with_zones_perimeter = factory.Trait(geo_range=siae_constants.GEO_RANGE_ZONES)
+
+    sector_group = factory.SubFactory(SectorGroupFactory)
+
+    presta_type = factory.List([factory.fuzzy.FuzzyChoice([key for (key, _) in siae_constants.PRESTA_CHOICES])])
 
     @factory.post_generation
     def sectors(self, create, extracted, **kwargs):
         if extracted:
             self.sectors.add(*extracted)
+
+    @factory.post_generation
+    def locations(self, create, extracted, **kwargs):
+        if extracted:
+            self.locations.add(*extracted)
 
 
 class SiaeOfferFactory(DjangoModelFactory):

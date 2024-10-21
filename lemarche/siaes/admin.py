@@ -740,7 +740,7 @@ class SiaeActivityAdmin(admin.ModelAdmin):
     search_fields = ["id", "siae__id", "siae__name"]
     search_help_text = "Cherche sur les champs : ID, Structure (ID, Nom)"
 
-    autocomplete_fields = ["siae", "sectors", "location"]
+    autocomplete_fields = ["siae", "sectors", "locations"]
     readonly_fields = ["created_at", "updated_at"]
 
     fieldsets = (
@@ -759,7 +759,7 @@ class SiaeActivityAdmin(admin.ModelAdmin):
         (
             "Localisation et périmètre d'intervention",
             {
-                "fields": ("location", "geo_range", "geo_range_custom_distance"),
+                "fields": ("locations", "geo_range", "geo_range_custom_distance"),
             },
         ),
         ("Dates", {"fields": ("created_at", "updated_at")}),
