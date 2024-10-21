@@ -62,7 +62,6 @@ class Command(BaseCommand):
             ]
             self.stdout_messages_success(msg_success)
 
-        self.stdout_warning(f"No location found for {siae} (post_code empty)")
         return None
 
     def create_siae_activities(self, siae: Siae):
