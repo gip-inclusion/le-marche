@@ -1428,25 +1428,19 @@ class SiaeActivity(models.Model):
         null=True,
         db_index=True,
     )
-    location: Perimeter = models.ForeignKey(
-        to="perimeters.Perimeter",
-        verbose_name="Localisation",
-        related_name="siae_activities",
-        on_delete=models.DO_NOTHING,
-        blank=True,
-        null=True,
+    locations = models.ManyToManyField(
+        "perimeters.Perimeter", verbose_name="Localisations", related_name="siae_activities", blank=True
     )
     geo_range = models.CharField(
         verbose_name="Périmètre d'intervention",
         max_length=20,
-        choices=siae_constants.GEO_RANGE_CHOICES,
+        choices=siae_constants.ACTIVITIES_GEO_RANGE_CHOICES,
         blank=True,
         db_index=True,
     )
     geo_range_custom_distance = models.IntegerField(
         verbose_name="Distance en kilomètres (périmètre d'intervention)", blank=True, null=True
     )
-
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
@@ -1463,27 +1457,12 @@ class SiaeActivity(models.Model):
     def geo_range_pretty_display(self):
         if self.geo_range == siae_constants.GEO_RANGE_COUNTRY:
             return self.get_geo_range_display()
-        elif self.geo_range == siae_constants.GEO_RANGE_REGION:
-            return f"{self.get_geo_range_display().lower()} ({self.siae.region})"
-        elif self.geo_range == siae_constants.GEO_RANGE_DEPARTMENT:
-            return f"{self.get_geo_range_display().lower()} ({self.siae.department})"
+        elif self.geo_range == siae_constants.GEO_RANGE_ZONES:
+            return f"{self.get_geo_range_display()} : {', '.join(self.locations.values_list('name', flat=True))}"
         elif self.geo_range == siae_constants.GEO_RANGE_CUSTOM:
             if self.geo_range_custom_distance:
-                return f"{self.geo_range_custom_distance} km"
+                return f"{self.geo_range_custom_distance} km de {self.siae.city}"
         return "non disponible"
-
-    @property
-    def geo_range_pretty_title(self):
-        if self.geo_range == siae_constants.GEO_RANGE_COUNTRY:
-            return self.geo_range_pretty_display
-        elif self.geo_range == siae_constants.GEO_RANGE_REGION:
-            return self.siae.region
-        elif self.geo_range == siae_constants.GEO_RANGE_DEPARTMENT:
-            return self.siae.get_department_display()
-        elif self.geo_range == siae_constants.GEO_RANGE_CUSTOM:
-            if self.geo_range_custom_distance:
-                return f"{self.geo_range_pretty_display} de {self.siae.city}"
-        return self.geo_range_pretty_display
 
 
 class SiaeOffer(models.Model):
