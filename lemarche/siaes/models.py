@@ -7,7 +7,20 @@ from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django.contrib.postgres.search import TrigramSimilarity  # SearchVector
 from django.db import IntegrityError, models, transaction
-from django.db.models import BooleanField, Case, CharField, Count, F, IntegerField, PositiveIntegerField, Q, Sum, When
+from django.db.models import (
+    BooleanField,
+    Case,
+    CharField,
+    Count,
+    F,
+    IntegerField,
+    OuterRef,
+    PositiveIntegerField,
+    Q,
+    Subquery,
+    Sum,
+    When,
+)
 from django.db.models.functions import Greatest, Round
 from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
@@ -384,6 +397,54 @@ class SiaeQuerySet(models.QuerySet):
         # filter by presta_type
         if len(tender.presta_type):
             qs = qs.filter(presta_type__overlap=tender.presta_type)
+        # filter by siae_kind
+        if len(tender.siae_kind):
+            qs = qs.filter(kind__in=tender.siae_kind)
+
+        # tender status
+        if tendersiae_status == "INTERESTED":
+            qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_contact_click_date__isnull=False)
+            qs = qs.order_by("-tendersiae__detail_contact_click_date")
+        elif tendersiae_status == "VIEWED":
+            qs = qs.filter(
+                Q(tendersiae__tender=tender)
+                & (
+                    Q(tendersiae__email_link_click_date__isnull=False)
+                    | Q(tendersiae__detail_display_date__isnull=False)
+                )
+            )
+            qs = qs.order_by("-tendersiae__email_link_click_date")
+        elif tendersiae_status == "COCONTRACTED":
+            qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_cocontracting_click_date__isnull=False)
+            qs = qs.order_by("-tendersiae__detail_cocontracting_click_date")
+        elif tendersiae_status == "ALL":
+            # why need to filter more ?
+            qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
+            qs = qs.order_by("-tendersiae__email_send_date")
+
+        return qs.distinct()
+
+    def filter_with_tender_through_activities(self, tender, tendersiae_status=None):
+        """
+        Filter Siaes with tenders:
+        - first we filter the Siae that are live + can be contacted
+        - then we filter through the SiaeActivity on the presta_type, sectors and perimeters
+        - then we filter on kind
+        - finally we filter with the tendersiae_status passed as a parameter
+
+        Nota Bene: create a other filter_with_tender method to manage temporary cohabitation
+
+        Args:
+            tender (Tender): Tender used to make the matching
+        """
+        qs = self.tender_matching_query_set()
+
+        # Subquery to filter SiaeActivity by presta_type, sector and perimeter
+        siae_activity_subquery = (
+            SiaeActivity.objects.filter_with_tender(tender).filter(siae=OuterRef("pk")).values("pk")
+        )
+        qs = qs.filter(Q(activities__in=Subquery(siae_activity_subquery)))
+
         # filter by siae_kind
         if len(tender.siae_kind):
             qs = qs.filter(kind__in=tender.siae_kind)
@@ -1405,6 +1466,129 @@ class SiaeUserRequest(models.Model):
         ordering = ["-created_at"]
 
 
+class SiaeActivityQuerySet(models.QuerySet):
+    def filter_sectors(self, sectors):
+        return self.filter(sectors__in=sectors)
+
+    def geo_range_in_perimeter_list(self, perimeters: models.QuerySet, include_country_area=False):
+        """
+        Method to filter the Siaes Activities depending on the perimeter filter.
+        Depending on the type of Perimeter that were chosen, different cases arise:
+
+        - If the Perimeter is a city, we filter the Siae Activities with the following conditions:
+            - The Siae Activity has a geo_range equal to GEO_RANGE_ZONES and the city is in the locations
+            - The Siae Activity has a geo_range equal to GEO_RANGE_CUSTOM and the distance between the Siae
+              address and the city is less than the geo_range_custom_distance
+            - The Siae Activity has a geo_range equal to GEO_RANGE_ZONES and the department of the city is
+              in the locations
+            - The Siae Activity has a geo_range equal to GEO_RANGE_ZONES and the region of the city is in
+              the locations
+        - If the Perimeter is a department, we filter the Siae Activities with the following conditions:
+            - The Siae Activity has a geo_range equal to GEO_RANGE_ZONES and the department is in the locations
+            - The Siae Activity has a geo_range equal to GEO_RANGE_ZONES and the region of the department is in
+              the locations
+        - If the Perimeter is a region, we filter the Siae Activities with the following conditions:
+            - The Siae Activity has a geo_range equal to GEO_RANGE_ZONES and the region is in the locations
+
+        If include_country_area is True, we also filter the Siae Activities
+        with the geo_range equal to GEO_RANGE_COUNTRY
+        """
+
+        # Initialize an empty Q object to accumulate conditions
+        conditions = Q()
+        for perimeter in perimeters:
+            # Match siae activity with geo range zone and same perimeter
+            conditions |= Q(Q(geo_range=siae_constants.GEO_RANGE_ZONES) & Q(locations=perimeter))
+
+            if perimeter.kind == Perimeter.KIND_CITY:
+                # Match siae activity with geo range custom and siae city is in area
+                conditions |= Q(
+                    Q(geo_range=siae_constants.GEO_RANGE_CUSTOM)
+                    & Q(geo_range_custom_distance__gte=Distance("siae__coords", perimeter.coords) / 1000)
+                )
+
+                # Match the department that includes this city
+                conditions |= Q(
+                    Q(geo_range=siae_constants.GEO_RANGE_ZONES)
+                    & Q(locations__kind=Perimeter.KIND_DEPARTMENT)
+                    & Q(locations__insee_code=perimeter.department_code)
+                )
+
+                # Match the region that includes this city
+                conditions |= Q(
+                    Q(geo_range=siae_constants.GEO_RANGE_ZONES)
+                    & Q(locations__kind=Perimeter.KIND_REGION)
+                    & Q(locations__insee_code=f"R{perimeter.region_code}")
+                )
+            if perimeter.kind == Perimeter.KIND_DEPARTMENT:
+                # Match the region that includes this department
+                conditions |= Q(
+                    Q(geo_range=siae_constants.GEO_RANGE_ZONES)
+                    & Q(locations__kind=Perimeter.KIND_REGION)
+                    & Q(locations__insee_code=f"R{perimeter.region_code}")
+                )
+
+        if include_country_area:
+            conditions = Q(geo_range=siae_constants.GEO_RANGE_COUNTRY) | conditions
+        return self.filter(conditions)
+
+    def with_country_geo_range(self):
+        return self.filter(Q(geo_range=siae_constants.GEO_RANGE_COUNTRY))
+
+    def exclude_country_geo_range(self):
+        return self.exclude(Q(geo_range=siae_constants.GEO_RANGE_COUNTRY))
+
+    def siae_within(self, point, distance_km=0, include_country_area=False):
+        return (
+            self.filter(
+                Q(siae__coords__dwithin=(point, D(km=distance_km))) | Q(geo_range=siae_constants.GEO_RANGE_COUNTRY)
+            )
+            if include_country_area
+            else self.filter(siae__coords__dwithin=(point, D(km=distance_km)))
+        )
+
+    def filter_with_tender(self, tender):
+        """
+        Filter SiaeActivity with tenders:
+        - first we filter on presta_type
+        - then we filter on the sectors through the SiaeActivity
+        - then we filter on the perimeters through the SiaeActivity:
+            - if tender is made for country area, we filter with siae_geo_range=country
+            - else we filter on the perimeters
+
+        If tender specify a city and a distance, we filter on the Siae adress that are within the distance of the city.
+        """
+        qs = self.prefetch_related("sectors").prefetch_related("locations")
+
+        # filter by presta_type
+        if len(tender.presta_type):
+            qs = qs.filter(presta_type__overlap=tender.presta_type)
+
+        if tender.sectors.count():
+            qs = qs.filter_sectors(tender.sectors.all())
+
+        # filter by perimeters
+        if tender.is_country_area:  # for all country
+            qs = qs.with_country_geo_range()
+        else:
+            if (
+                tender.location
+                and tender.location.kind == Perimeter.KIND_CITY
+                and tender.distance_location
+                and tender.distance_location > 0
+            ):
+                # keep this filter on siae activity to handle include_country_area on activity level
+                qs = qs.siae_within(tender.location.coords, tender.distance_location, tender.include_country_area)
+            elif tender.perimeters.count() and tender.include_country_area:  # perimeters and all country
+                qs = qs.geo_range_in_perimeter_list(tender.perimeters.all(), include_country_area=True)
+            elif tender.perimeters.count():  # only perimeters
+                qs = qs.geo_range_in_perimeter_list(tender.perimeters.all()).exclude_country_geo_range()
+            elif tender.include_country_area:
+                qs = qs.filter(Q(geo_range=siae_constants.GEO_RANGE_COUNTRY))
+
+        return qs
+
+
 class SiaeActivity(models.Model):
     siae = models.ForeignKey(
         "siaes.Siae", verbose_name="Structure", related_name="activities", on_delete=models.CASCADE
@@ -1443,6 +1627,8 @@ class SiaeActivity(models.Model):
     )
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(SiaeActivityQuerySet)()
 
     class Meta:
         verbose_name = "Activité"
