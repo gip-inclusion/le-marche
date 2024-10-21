@@ -111,6 +111,9 @@ class Command(BaseCommand):
                     )
                     department = Perimeter.objects.get(kind=Perimeter.KIND_DEPARTMENT, insee_code=siae.department)
                     siae_activity.locations.add(department)
+                case _:
+                    self.stdout_warning(f"Unknown geo_range: {siae.geo_range}")
+                    continue
             siae_activity.sectors.set(siae.sectors.filter(group_id=sector_group_id))
 
         self.stdout_info(f"Created {len(siae_sector_group_ids)} activities for {siae}")
