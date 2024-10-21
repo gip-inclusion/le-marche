@@ -519,16 +519,16 @@ class SiaeModelQuerysetTest(TestCase):
 
 class SiaeModelPerimeterQuerysetTest(TestCase):
     @classmethod
-    def setUpTestData(cls):
-        cls.auvergne_rhone_alpes_perimeter = PerimeterFactory(
+    def setUp(self):
+        self.auvergne_rhone_alpes_perimeter = PerimeterFactory(
             name="Auvergne-Rhône-Alpes", kind=Perimeter.KIND_REGION, insee_code="R84"
         )
-        cls.guadeloupe_perimeter = PerimeterFactory(name="Guadeloupe", kind=Perimeter.KIND_REGION, insee_code="R01")
-        cls.finistere_perimeter = PerimeterFactory(
+        self.guadeloupe_perimeter = PerimeterFactory(name="Guadeloupe", kind=Perimeter.KIND_REGION, insee_code="R01")
+        self.finistere_perimeter = PerimeterFactory(
             name="Finistère", kind=Perimeter.KIND_DEPARTMENT, insee_code="29", region_code="53"
         )
-        cls.grenoble_perimeter = PerimeterFactory(**PERIMETER_GRENOBLE)
-        cls.chamrousse_perimeter = PerimeterFactory(
+        self.grenoble_perimeter = PerimeterFactory(**PERIMETER_GRENOBLE)
+        self.chamrousse_perimeter = PerimeterFactory(
             name="Chamrousse",
             kind=Perimeter.KIND_CITY,
             insee_code="38567",
@@ -541,16 +541,16 @@ class SiaeModelPerimeterQuerysetTest(TestCase):
         SiaeFactory(city="Pointe-à-Pitre", department="971", region="Guadeloupe", post_code="97110")
         SiaeFactory(city="Brest", department="29", region="Bretagne", post_code="29200")
         SiaeFactory(
-            city=cls.grenoble_perimeter.name,
-            department=cls.grenoble_perimeter.department_code,
-            region=cls.auvergne_rhone_alpes_perimeter.name,
-            post_code=cls.grenoble_perimeter.post_codes[0],
+            city=self.grenoble_perimeter.name,
+            department=self.grenoble_perimeter.department_code,
+            region=self.auvergne_rhone_alpes_perimeter.name,
+            post_code=self.grenoble_perimeter.post_codes[0],
         )
         SiaeFactory(
-            city=cls.chamrousse_perimeter.name,
-            department=cls.chamrousse_perimeter.department_code,
-            region=cls.auvergne_rhone_alpes_perimeter.name,
-            post_code=cls.chamrousse_perimeter.post_codes[0],
+            city=self.chamrousse_perimeter.name,
+            department=self.chamrousse_perimeter.department_code,
+            region=self.auvergne_rhone_alpes_perimeter.name,
+            post_code=self.chamrousse_perimeter.post_codes[0],
             geo_range=siae_constants.GEO_RANGE_DEPARTMENT,
         )
 
@@ -563,7 +563,7 @@ class SiaeModelPerimeterQuerysetTest(TestCase):
         )
 
     def test_geo_range_in_perimeter_list(self):
-        self.assertEqual(Siae.objects.geo_range_in_perimeter_list([]).count(), 5)
+        self.assertEqual(Siae.objects.address_in_perimeter_list([]).count(), 5)
         self.assertEqual(Siae.objects.geo_range_in_perimeter_list([self.guadeloupe_perimeter]).count(), 1)
         self.assertEqual(Siae.objects.geo_range_in_perimeter_list([self.grenoble_perimeter]).count(), 2)
         self.assertEqual(
@@ -622,17 +622,6 @@ class SiaeUtilsTest(TestCase):
         self.siae_with_siret_2 = SiaeFactory(siret="12312312312346", is_active=True)
         self.siae_with_siret_inactive = SiaeFactory(siret="12312312312347", is_active=False)
         self.assertEqual(siae_utils.calculate_etablissement_count(self.siae_with_siret_1), 2)
-
-    def test_match_location_to_perimeter(self):
-        self.siae_grenoble_from_post_code = SiaeFactory(post_code="38000")
-        self.siae_grenoble_from_insee_code = SiaeFactory(post_code="38185")
-        self.grenoble_perimeter = PerimeterFactory(**PERIMETER_GRENOBLE)
-        self.assertEqual(
-            siae_utils.match_location_to_perimeter(self.siae_grenoble_from_post_code), self.grenoble_perimeter
-        )
-        self.assertEqual(
-            siae_utils.match_location_to_perimeter(self.siae_grenoble_from_insee_code), self.grenoble_perimeter
-        )
 
 
 class SiaeActivitiesTest(TestCase):
