@@ -1,5 +1,5 @@
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TransactionTestCase
 
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
@@ -9,7 +9,7 @@ from lemarche.siaes.factories import SiaeFactory
 from lemarche.siaes.models import SiaeActivity
 
 
-class SiaeActivitiesCreateCommandTest(TestCase):
+class SiaeActivitiesCreateCommandTest(TransactionTestCase):
     def setUp(self):
         self.sector1 = SectorFactory()
         self.sector2 = SectorFactory()
