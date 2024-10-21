@@ -59,7 +59,7 @@ unidecode = "^1.3.8"
 wagtail-transfer = "^0.9.4"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.12.1"
+black = "^24.10.0"
 coverage = "^7.5.1"
 django-debug-toolbar = "^3.8.1"
 factory-boy = "^3.3.0"
