@@ -1,6 +1,6 @@
+import lemarche.siaes.constants as siae_constants
 from lemarche.perimeters.models import Perimeter
 from lemarche.siaes.models import Siae, SiaeActivity
-from lemarche.siaes.utils import match_location_to_perimeter
 from lemarche.utils.commands import BaseCommand
 from lemarche.utils.data import reset_app_sql_sequences
 
@@ -48,8 +48,7 @@ class Command(BaseCommand):
             self.stdout_info("-" * 80)
             self.stdout_info("Creating SiaeActivities")
             for index, siae in enumerate(siae_qs):
-                siae_location: Perimeter | None = match_location_to_perimeter(siae)
-                self.create_siae_activities(siae, siae_location=siae_location)
+                self.create_siae_activities(siae)
                 if (index % 500) == 0:
                     self.stdout_info(f"{index}...")
 
@@ -63,10 +62,9 @@ class Command(BaseCommand):
             ]
             self.stdout_messages_success(msg_success)
 
-        self.stdout_warning(f"No location found for {siae} (post_code empty)")
         return None
 
-    def create_siae_activities(self, siae: Siae, siae_location: Perimeter = None):
+    def create_siae_activities(self, siae: Siae):
         """
         - sector_group / sectors: we look at the existing siae sectors, and create an activity per sector group
         - presta_type: we look at the existing siae presta_types
@@ -79,14 +77,43 @@ class Command(BaseCommand):
         siae_sector_group_ids = list(set(siae.sectors.values_list("group", flat=True)))
         # For each SectorGroup, create a SiaeActivity
         for sector_group_id in siae_sector_group_ids:
-            siae_activity = SiaeActivity.objects.create(
-                siae=siae,
-                sector_group_id=sector_group_id,
-                presta_type=siae.presta_type,
-                location=siae_location,
-                geo_range=siae.geo_range,
-                geo_range_custom_distance=siae.geo_range_custom_distance,
-            )
+            match siae.geo_range:
+                case siae_constants.GEO_RANGE_COUNTRY:
+                    siae_activity = SiaeActivity.objects.create(
+                        siae=siae,
+                        sector_group_id=sector_group_id,
+                        presta_type=siae.presta_type,
+                        geo_range=siae_constants.GEO_RANGE_COUNTRY,
+                    )
+                case siae_constants.GEO_RANGE_CUSTOM:
+                    siae_activity = SiaeActivity.objects.create(
+                        siae=siae,
+                        sector_group_id=sector_group_id,
+                        presta_type=siae.presta_type,
+                        geo_range=siae_constants.GEO_RANGE_CUSTOM,
+                        geo_range_custom_distance=siae.geo_range_custom_distance,
+                    )
+                case siae_constants.GEO_RANGE_REGION:
+                    siae_activity = SiaeActivity.objects.create(
+                        siae=siae,
+                        sector_group_id=sector_group_id,
+                        presta_type=siae.presta_type,
+                        geo_range=siae_constants.GEO_RANGE_ZONES,
+                    )
+                    region = Perimeter.objects.get(kind=Perimeter.KIND_REGION, name=siae.region)
+                    siae_activity.locations.add(region)
+                case siae_constants.GEO_RANGE_DEPARTMENT:
+                    siae_activity = SiaeActivity.objects.create(
+                        siae=siae,
+                        sector_group_id=sector_group_id,
+                        presta_type=siae.presta_type,
+                        geo_range=siae_constants.GEO_RANGE_ZONES,
+                    )
+                    department = Perimeter.objects.get(kind=Perimeter.KIND_DEPARTMENT, insee_code=siae.department)
+                    siae_activity.locations.add(department)
+                case _:
+                    self.stdout_warning(f"Unknown geo_range: {siae.geo_range}")
+                    continue
             siae_activity.sectors.set(siae.sectors.filter(group_id=sector_group_id))
 
-        # self.stdout_info(f"Created {len(siae_sector_group_ids)} activities for {siae}")
+        self.stdout_info(f"Created {len(siae_sector_group_ids)} activities for {siae}")

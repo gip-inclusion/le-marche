@@ -623,17 +623,6 @@ class SiaeUtilsTest(TestCase):
         self.siae_with_siret_inactive = SiaeFactory(siret="12312312312347", is_active=False)
         self.assertEqual(siae_utils.calculate_etablissement_count(self.siae_with_siret_1), 2)
 
-    def test_match_location_to_perimeter(self):
-        self.siae_grenoble_from_post_code = SiaeFactory(post_code="38000")
-        self.siae_grenoble_from_insee_code = SiaeFactory(post_code="38185")
-        self.grenoble_perimeter = PerimeterFactory(**PERIMETER_GRENOBLE)
-        self.assertEqual(
-            siae_utils.match_location_to_perimeter(self.siae_grenoble_from_post_code), self.grenoble_perimeter
-        )
-        self.assertEqual(
-            siae_utils.match_location_to_perimeter(self.siae_grenoble_from_insee_code), self.grenoble_perimeter
-        )
-
 
 class SiaeActivitiesTest(TestCase):
     @classmethod
