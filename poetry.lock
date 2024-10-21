@@ -824,18 +824,18 @@ files = [
 
 [[package]]
 name = "django-bootstrap4"
-version = "23.4"
-description = "Django extensions by Zostera"
+version = "24.4"
+description = "Bootstrap 4 for Django"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "django-bootstrap4-23.4.tar.gz", hash = "sha256:f7f40ad719c1b20399c804336e56a810abc1dec7ba56257756964c10005916f9"},
-    {file = "django_bootstrap4-23.4-py3-none-any.whl", hash = "sha256:577df4009adc21c8c65b7bfc3cd074c26072e245c43e6183ee0c6ae01181c263"},
+    {file = "django_bootstrap4-24.4-py3-none-any.whl", hash = "sha256:90f642d8c9a6622694544a4fdbf8e6734a037b33b5d6b2884cfd79c87c5d610f"},
+    {file = "django_bootstrap4-24.4.tar.gz", hash = "sha256:b6147eeaa534057f866962d50bcf506b3d378720340d7a8243494a6e33f4e23e"},
 ]
 
 [package.dependencies]
-beautifulsoup4 = ">=4.8.0"
-Django = ">=3.2"
+beautifulsoup4 = ">=4.10.0"
+Django = ">=4.2"
 
 [[package]]
 name = "django-ckeditor"
@@ -4593,4 +4593,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10.4"
-content-hash = "02ac41e5978cefc28923a85af8c5d9dd3f6ed929be4ea87fb2e2cc840863f8e4"
+content-hash = "b897bf14572baee43e0fa92f7921a301f5fb6f15de0e7a9419fa54a5b0754e0d"
