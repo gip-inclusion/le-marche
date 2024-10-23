@@ -30,6 +30,8 @@ from lemarche.www.tenders.tasks import notify_admin_tender_created
 from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user_from_anonymous_content
 from lemarche.www.tenders.views import TenderCreateMultiStepView
 
+from wagtail.models import Page as WagtailPage
+
 
 class HomeView(TemplateView):
     template_name = "pages/home.html"
@@ -393,3 +395,32 @@ def trigger_error(request):
     if request.POST:
         raise Exception("%s error: %s" % (request.POST.get("status_code"), request.POST.get("error_message")))
     print(1 / 0)  # Should raise a ZeroDivisionError.
+
+
+class SitemapView(TemplateView):
+    template_name = "pages/plan_du_site.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        root_page = WagtailPage.objects.get(depth=1)
+        sitemap_urls = []
+
+        for page in root_page.get_descendants().live().public().order_by("path"):
+            try:
+                full_url = page.full_url
+                if full_url is None:
+                    raise ValueError("L'URL est None")
+
+                sitemap_urls.append(
+                    {
+                        "title": page.title,
+                        "url": page.full_url,  # Utilise la méthode native get_url() pour obtenir l'URL
+                        "depth": page.depth,
+                    }
+                )
+            except ValueError as e:
+                print(f"Erreur lors de la récupération de l'URL pour la page: {page.title}. Détails: {e}")
+
+        context["sitemap_urls"] = sitemap_urls
+        return context
