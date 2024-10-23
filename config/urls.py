@@ -1,8 +1,10 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
+
 from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
+from wagtail.contrib.sitemaps.views import sitemap
 from wagtail.documents import urls as wagtaildocs_urls
 from wagtail_transfer import urls as wagtailtransfer_urls
 
@@ -26,6 +28,8 @@ urlpatterns = [
     # url docuemnts of glog
     path("documents/", include(wagtaildocs_urls)),
     path("wagtail-transfer/", include(wagtailtransfer_urls)),
+    # sitemap : this line must be above the Wagtail serving route
+    path("sitemap.xml", sitemap, name="sitemap"),
     # urls pages blog
     path("", include("lemarche.www.pages.urls")),
     path("", include(wagtail_urls)),
