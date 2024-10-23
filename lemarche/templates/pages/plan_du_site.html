@@ -1,0 +1,22 @@
+{% extends "layouts/base.html" %}
+
+{% block page_title %}Plan du site{{ block.super }}{% endblock page_title %}
+
+{% block content %}
+<div class="fr-container fr-my-6w">
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12 fr-col-offset-md-2 fr-col-md-8">
+            <h1>Plan du site</h1>
+            <section class="fr-6v">
+                <ul>
+                    {% for page in sitemap_urls %}
+                        <li style="margin-left: {{ page.depth|add:'-2' }}em;">
+                            <a href="{{ page.url }}">{{ page.title }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock content %}
