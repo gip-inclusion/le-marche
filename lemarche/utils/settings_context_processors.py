@@ -27,6 +27,13 @@ def expose_settings(request):
         # template & wording
         "BASE_TEMPLATE": base_template,
         "HOME_PAGE_PATH": home_page,
+        "ABOUT": settings.ABOUT,
+        "ACCESSIBILITY": settings.ACCESSIBILITY,
+        "CGU": settings.CGU,
+        "CGU_API": settings.CGU_API,
+        "LEGAL_INFO": settings.LEGAL_INFO,
+        "PRIVACY_POLICY": settings.PRIVACY_POLICY,
+        "RESSOURCES": settings.RESSOURCES,
         "DASHBOARD_TITLE": settings.DASHBOARD_TITLE,
         "DASHBOARD_NETWORK_DETAIL_TITLE": settings.DASHBOARD_NETWORK_DETAIL_TITLE,
         "DASHBOARD_NETWORK_SIAE_LIST_TITLE": settings.DASHBOARD_NETWORK_SIAE_LIST_TITLE,
