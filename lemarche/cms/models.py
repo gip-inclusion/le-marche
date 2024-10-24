@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from modelcluster.fields import ParentalManyToManyField
 from wagtail import blocks as wagtail_blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
+from wagtail.blocks import RichTextBlock
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Page
@@ -14,7 +15,6 @@ from content_manager.models import ContentPage, Tag
 from lemarche.cms import blocks
 from lemarche.cms.forms import ArticlePageForm
 from lemarche.cms.snippets import ArticleCategory
-from lemarche.pages.models import PageFragment
 
 
 class ArticleBase(Page):
@@ -214,7 +214,18 @@ class HomePage(Page):
         use_json_field=True,
     )
 
+    sub_header_custom_message = StreamField(
+        [
+            ("message", RichTextBlock(label="Message personnalisé du bandeau")),
+        ],
+        blank=True,
+        null=True,
+        verbose_name="Message personnalisé du bandeau",
+        help_text="Contenu affiché dans le bandeau sous l'en-tête.",
+    )
+
     content_panels = Page.content_panels + [
+        FieldPanel("sub_header_custom_message"),
         FieldPanel("banner_title"),
         FieldPanel("banner_subtitle"),
         FieldPanel("banner_arguments_list"),
@@ -227,10 +238,7 @@ class HomePage(Page):
 
     def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
-        try:
-            context["sub_header_custom_message"] = PageFragment.objects.get(title="Bandeau", is_live=True).content
-        except PageFragment.DoesNotExist:
-            pass
+        context["sub_header_custom_message"] = self.sub_header_custom_message
         return context
 
 
