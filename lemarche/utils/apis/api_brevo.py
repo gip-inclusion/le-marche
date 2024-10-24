@@ -29,7 +29,9 @@ def get_api_client():
     return sib_api_v3_sdk.ApiClient(config)
 
 
-def create_contact(user, list_id: int):
+def create_contact(user, list_id: int, tender_id: int = None):
+    from lemarche.tenders.models import Tender
+
     """
     Brevo docs
     - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CreateContact.md
@@ -37,18 +39,34 @@ def create_contact(user, list_id: int):
     """
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
+
+    attributes = {
+        "NOM": sanitize_to_send_by_email(user.last_name.capitalize()),
+        "PRENOM": sanitize_to_send_by_email(user.first_name.capitalize()),
+        "DATE_INSCRIPTION": user.created_at,
+        "TYPE_ORGANISATION": user.buyer_kind_detail,
+        "NOM_ENTREPRISE": sanitize_to_send_by_email(user.company_name.capitalize()),
+        "SMS": sanitize_to_send_by_email(user.phone_display),
+        "MONTANT_BESOIN_ACHETEUR": None,
+        "TYPE_BESOIN_ACHETEUR": None,
+        "TYPE_VERTICALE_ACHETEUR": [],
+        # WHATSAPP, TYPE_ORGANISATION, LIEN_FICHE_COMMERCIALE, TAUX_DE_COMPLETION
+    }
+
+    if tender_id:
+        try:
+            tender = user.tenders.get(id=tender_id)
+            sectors = tender.sectors.all()
+            attributes["MONTANT_BESOIN_ACHETEUR"] = tender.amount
+            attributes["TYPE_BESOIN_ACHETEUR"] = tender.kind
+            attributes["TYPE_VERTICALE_ACHETEUR"] = [sector.name for sector in sectors]
+        except Tender.DoesNotExist:
+            logger.warning(f"Tender with id {tender_id} does not exist for user {user.id}")
+
     new_contact = sib_api_v3_sdk.CreateContact(
         email=user.email,
         list_ids=[list_id],
-        attributes={
-            "NOM": sanitize_to_send_by_email(user.last_name.capitalize()),
-            "PRENOM": sanitize_to_send_by_email(user.first_name.capitalize()),
-            "DATE_INSCRIPTION": user.created_at,
-            "TYPE_ORGANISATION": user.buyer_kind_detail,
-            "NOM_ENTREPRISE": sanitize_to_send_by_email(user.company_name.capitalize()),
-            "SMS": sanitize_to_send_by_email(user.phone_display),
-            # WHATSAPP, TYPE_ORGANISATION, LIEN_FICHE_COMMERCIALE, TAUX_DE_COMPLETION
-        },
+        attributes=attributes,
         ext_id=str(user.id),
         update_enabled=True,
     )
