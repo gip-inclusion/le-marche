@@ -3,11 +3,11 @@ import json
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import Http404, HttpResponsePermanentRedirect, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import DetailView, FormView, ListView, TemplateView, View
+from django.views.generic import FormView, ListView, TemplateView, View
 from django.views.generic.edit import FormMixin
 
 from lemarche.perimeters.models import Perimeter
@@ -16,7 +16,6 @@ from lemarche.siaes.models import Siae, SiaeGroup
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderStepsData
 from lemarche.users import constants as user_constants
-from lemarche.users.models import User
 from lemarche.utils.tracker import track
 from lemarche.www.pages.forms import (
     CompanyReferenceCalculatorForm,
