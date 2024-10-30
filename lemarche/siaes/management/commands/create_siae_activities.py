@@ -94,23 +94,37 @@ class Command(BaseCommand):
                         geo_range_custom_distance=siae.geo_range_custom_distance,
                     )
                 case siae_constants.GEO_RANGE_REGION:
-                    siae_activity = SiaeActivity.objects.create(
-                        siae=siae,
-                        sector_group_id=sector_group_id,
-                        presta_type=siae.presta_type,
-                        geo_range=siae_constants.GEO_RANGE_ZONES,
-                    )
-                    region = Perimeter.objects.get(kind=Perimeter.KIND_REGION, name=siae.region)
-                    siae_activity.locations.add(region)
+                    try:
+                        region = Perimeter.objects.get(kind=Perimeter.KIND_REGION, name=siae.region)
+                        siae_activity = SiaeActivity.objects.create(
+                            siae=siae,
+                            sector_group_id=sector_group_id,
+                            presta_type=siae.presta_type,
+                            geo_range=siae_constants.GEO_RANGE_ZONES,
+                        )
+                        siae_activity.locations.add(region)
+                    except Perimeter.DoesNotExist:
+                        if siae.is_live:
+                            raise Perimeter.DoesNotExist(f"Region not found: {siae.region} for siae {siae}")
+                        self.stdout_warning(f"Region not found: {siae.region}")
+                        continue
+
                 case siae_constants.GEO_RANGE_DEPARTMENT:
-                    siae_activity = SiaeActivity.objects.create(
-                        siae=siae,
-                        sector_group_id=sector_group_id,
-                        presta_type=siae.presta_type,
-                        geo_range=siae_constants.GEO_RANGE_ZONES,
-                    )
-                    department = Perimeter.objects.get(kind=Perimeter.KIND_DEPARTMENT, insee_code=siae.department)
-                    siae_activity.locations.add(department)
+                    try:
+                        department = Perimeter.objects.get(kind=Perimeter.KIND_DEPARTMENT, insee_code=siae.department)
+                        siae_activity = SiaeActivity.objects.create(
+                            siae=siae,
+                            sector_group_id=sector_group_id,
+                            presta_type=siae.presta_type,
+                            geo_range=siae_constants.GEO_RANGE_ZONES,
+                        )
+                        siae_activity.locations.add(department)
+                    except Perimeter.DoesNotExist:
+                        if siae.is_live:
+                            raise Perimeter.DoesNotExist(f"Department not found: {siae.department} for siae {siae}")
+                        self.stdout_warning(f"Department not found: {siae.department}")
+                        continue
+
                 case _:
                     self.stdout_warning(f"Unknown geo_range: {siae.geo_range}")
                     continue
