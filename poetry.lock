@@ -1717,12 +1717,12 @@ zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
 name = "huey"
-version = "2.5.1"
+version = "2.5.2"
 description = "huey, a little task queue"
 optional = false
 python-versions = "*"
 files = [
-    {file = "huey-2.5.1.tar.gz", hash = "sha256:8a323783ab434a095a4e72b8c48c5b8f957f9031fa860474a390a0927e957112"},
+    {file = "huey-2.5.2.tar.gz", hash = "sha256:df33db474c05414ed40ee2110e9df692369871734da22d74ffb035a4bd74047f"},
 ]
 
 [package.extras]
@@ -4593,4 +4593,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10.4"
-content-hash = "02ac41e5978cefc28923a85af8c5d9dd3f6ed929be4ea87fb2e2cc840863f8e4"
+content-hash = "734c4399da34aa530ea362667a313ef59b4e8ac76e6085e9a5be8b6a6145264f"
