@@ -1500,33 +1500,45 @@ class SiaeActivityQuerySet(models.QuerySet):
             # Match siae activity with geo range zone and same perimeter
             conditions |= Q(Q(geo_range=siae_constants.GEO_RANGE_ZONES) & Q(locations=perimeter))
 
-            if perimeter.kind == Perimeter.KIND_CITY:
-                # Match siae activity with geo range custom and siae city is in area
-                conditions |= Q(
-                    Q(geo_range=siae_constants.GEO_RANGE_CUSTOM)
-                    & Q(geo_range_custom_distance__gte=Distance("siae__coords", perimeter.coords) / 1000)
-                )
+            match perimeter.kind:
+                case Perimeter.KIND_CITY:
+                    # Match siae activity with geo range custom and siae city is in area
+                    conditions |= Q(
+                        Q(geo_range=siae_constants.GEO_RANGE_CUSTOM)
+                        & Q(geo_range_custom_distance__gte=Distance("siae__coords", perimeter.coords) / 1000)
+                    )
 
-                # Match the department that includes this city
-                conditions |= Q(
-                    Q(geo_range=siae_constants.GEO_RANGE_ZONES)
-                    & Q(locations__kind=Perimeter.KIND_DEPARTMENT)
-                    & Q(locations__insee_code=perimeter.department_code)
-                )
+                    # Match the department that includes this city
+                    conditions |= Q(
+                        Q(geo_range=siae_constants.GEO_RANGE_ZONES)
+                        & Q(locations__kind=Perimeter.KIND_DEPARTMENT)
+                        & Q(locations__insee_code=perimeter.department_code)
+                    )
 
-                # Match the region that includes this city
-                conditions |= Q(
-                    Q(geo_range=siae_constants.GEO_RANGE_ZONES)
-                    & Q(locations__kind=Perimeter.KIND_REGION)
-                    & Q(locations__insee_code=f"R{perimeter.region_code}")
-                )
-            if perimeter.kind == Perimeter.KIND_DEPARTMENT:
-                # Match the region that includes this department
-                conditions |= Q(
-                    Q(geo_range=siae_constants.GEO_RANGE_ZONES)
-                    & Q(locations__kind=Perimeter.KIND_REGION)
-                    & Q(locations__insee_code=f"R{perimeter.region_code}")
-                )
+                    # Match the region that includes this city
+                    conditions |= Q(
+                        Q(geo_range=siae_constants.GEO_RANGE_ZONES)
+                        & Q(locations__kind=Perimeter.KIND_REGION)
+                        & Q(locations__insee_code=f"R{perimeter.region_code}")
+                    )
+
+                    # Try to match directly the siae city
+                    conditions |= Q(siae__post_code__in=perimeter.post_codes)
+
+                case Perimeter.KIND_DEPARTMENT:
+                    # Match the region that includes this department
+                    conditions |= Q(
+                        Q(geo_range=siae_constants.GEO_RANGE_ZONES)
+                        & Q(locations__kind=Perimeter.KIND_REGION)
+                        & Q(locations__insee_code=f"R{perimeter.region_code}")
+                    )
+
+                    # Try to match directly the siae department
+                    conditions |= Q(siae__department=perimeter.insee_code)
+
+                case Perimeter.KIND_REGION:
+                    # Try to match directly the siae region
+                    conditions |= Q(siae__region=perimeter.name)
 
         if include_country_area:
             conditions = Q(geo_range=siae_constants.GEO_RANGE_COUNTRY) | conditions
