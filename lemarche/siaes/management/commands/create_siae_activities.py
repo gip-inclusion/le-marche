@@ -126,8 +126,13 @@ class Command(BaseCommand):
                         continue
 
                 case _:
-                    self.stdout_warning(f"Unknown geo_range: {siae.geo_range}")
-                    continue
+                    # Create a SiaeActivity with no location to continue to match the sectors
+                    siae_activity = SiaeActivity.objects.create(
+                        siae=siae,
+                        sector_group_id=sector_group_id,
+                        presta_type=siae.presta_type,
+                        geo_range=siae_constants.GEO_RANGE_ZONES,
+                    )
             siae_activity.sectors.set(siae.sectors.filter(group_id=sector_group_id))
 
         self.stdout_info(f"Created {len(siae_sector_group_ids)} activities for {siae}")
