@@ -6,6 +6,33 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2024.6.0](https://github.com/gip-inclusion/le-marche/compare/v2024.5.0...v2024.6.0) (2024-10-31)
+
+
+### Features
+
+* **Activités des structures:** Ajout du choix du périmètre d'intervention aux niveaux des activités ([#1457](https://github.com/gip-inclusion/le-marche/issues/1457)) ([8dc6f66](https://github.com/gip-inclusion/le-marche/commit/8dc6f662abac378d3ee11ce1e886eb17ad383708))
+* **Activités des structures:** Déplacement du matching sur les activités ([#1464](https://github.com/gip-inclusion/le-marche/issues/1464)) ([b197675](https://github.com/gip-inclusion/le-marche/commit/b197675a0cf8e639fb7a69193e6c97a1e292c20e))
+* Ajout d'un attribut pour filtrer l'envoi des besoins d'achat ([#1446](https://github.com/gip-inclusion/le-marche/issues/1446)) ([d074709](https://github.com/gip-inclusion/le-marche/commit/d07470904981fc4fdfaddcd811130a9faf1ece94))
+
+
+### Bug Fixes
+
+* **Activités des structures:** Adaptation de la commande de reprise de stock pour créer les activités ([#1476](https://github.com/gip-inclusion/le-marche/issues/1476)) ([9f497e6](https://github.com/gip-inclusion/le-marche/commit/9f497e6ad52282b16512adc295810ce5058a70e1))
+* **Activités des structures:** Ajustement des exceptions de la commande de reprise de stock pour créer les activités ([#1480](https://github.com/gip-inclusion/le-marche/issues/1480)) ([b823940](https://github.com/gip-inclusion/le-marche/commit/b8239402ddf64555d0d671b4e02a2f3214220b5a))
+* **Admin:** autoriser la suppression des SiaeUserRequest & TemplateTransactionalSendLog ([#1424](https://github.com/gip-inclusion/le-marche/issues/1424)) ([c64e984](https://github.com/gip-inclusion/le-marche/commit/c64e9848f2f4b47199178589dfc6b5ef181345bb))
+* **Admin:** Correction de la mise en page des cases à cochées ([#1466](https://github.com/gip-inclusion/le-marche/issues/1466)) ([02fdbd5](https://github.com/gip-inclusion/le-marche/commit/02fdbd5e7704de5bb2ab7e244be2a85d8d149122))
+* ajout des marges manquante en bas de page ([#1439](https://github.com/gip-inclusion/le-marche/issues/1439)) ([e2c4783](https://github.com/gip-inclusion/le-marche/commit/e2c478377315001d70a1f124023cc9a57780228f))
+* Correction de l'affichage des cases à cocher des secteurs d'activités ([#1467](https://github.com/gip-inclusion/le-marche/issues/1467)) ([a06e89a](https://github.com/gip-inclusion/le-marche/commit/a06e89a73f308cdeaaeb6c549707ef65a94f6157))
+* **Dashboard Acheteurs:** correction d'un onglet et des multiselects ([#1465](https://github.com/gip-inclusion/le-marche/issues/1465)) ([71cb6cd](https://github.com/gip-inclusion/le-marche/commit/71cb6cd311e88a49423058b34c6fb67be6008227))
+* **Emails:** Template Transactional: remove result() call ([#1379](https://github.com/gip-inclusion/le-marche/issues/1379)) ([1809f5c](https://github.com/gip-inclusion/le-marche/commit/1809f5cb102042d13eb8284aa0493f6e3a29b6ee))
+* **Entreprises:** ajuste le script de rattachement des utilisateurs en fonction de leur email (ajoute un @) ([#1406](https://github.com/gip-inclusion/le-marche/issues/1406)) ([daebacf](https://github.com/gip-inclusion/le-marche/commit/daebacf126a644b99cd2247677002f388fc78a17))
+* fix dsfr des champs géré via AutoCompleteAccessible ([#1481](https://github.com/gip-inclusion/le-marche/issues/1481)) ([6107675](https://github.com/gip-inclusion/le-marche/commit/6107675f79154d0bf412b90d099313f4b81529ee))
+* mini fixs SEO de la page faq  ([#1351](https://github.com/gip-inclusion/le-marche/issues/1351)) ([f527985](https://github.com/gip-inclusion/le-marche/commit/f52798508fa2a15c1eddedc09afc0374090b9c3c))
+* **Recherche:** Les champs multiselect ne doivent pas s'activer lorsqu'ils sont désactivés ([#1440](https://github.com/gip-inclusion/le-marche/issues/1440)) ([ba0b379](https://github.com/gip-inclusion/le-marche/commit/ba0b379dcdf87a981db9dc7ef466bdfa5c656538))
+* Réparation du montant lors de la synchro avec Brevo ([#1470](https://github.com/gip-inclusion/le-marche/issues/1470)) ([94e0680](https://github.com/gip-inclusion/le-marche/commit/94e068013416cdda176ca8c3dc05c0df17bacfb9))
+* s3 storage fix in prod ([5a258a3](https://github.com/gip-inclusion/le-marche/commit/5a258a30f013fd1ebd96799a57525139558661fe))
+
 ## [2024.5.0](https://github.com/gip-inclusion/le-marche/compare/v2024.4.0...v2024.5.0) (2024-07-18)
 
 
