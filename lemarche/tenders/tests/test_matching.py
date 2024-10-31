@@ -72,25 +72,41 @@ class TenderMatchingActivitiesTest(TestCase):
         )
         cls.siae_three_activity.sectors.add(cls.other_sector)
 
+        # siae with activity without locations to check if match directly city/department/region
+        cls.siae_four = SiaeFactory(
+            is_active=True,
+            kind=siae_constants.KIND_ESAT,
+            department="75",
+            region="Île-de-France",
+            post_code="75018",
+        )
+        cls.siae_four_activity = SiaeActivityFactory(
+            siae=cls.siae_four,
+            sector_group=cls.sectors[0].group,
+            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
+            geo_range=siae_constants.GEO_RANGE_ZONES,
+        )
+        cls.siae_four_activity.sectors.add(cls.sectors[i])
+
     def test_matching_siae_presta_type(self):
         tender = TenderFactory(presta_type=[], sectors=self.sectors, perimeters=self.perimeters)
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender)
-        self.assertEqual(len(siae_found_list), 2)
+        self.assertEqual(len(siae_found_list), 3)
         tender = TenderFactory(
             presta_type=[siae_constants.PRESTA_BUILD], sectors=self.sectors, perimeters=self.perimeters
         )
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender)
-        self.assertEqual(len(siae_found_list), 2)
+        self.assertEqual(len(siae_found_list), 3)
         tender = TenderFactory(
             presta_type=[siae_constants.PRESTA_PREST], sectors=self.sectors, perimeters=self.perimeters
         )
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender)
-        self.assertEqual(len(siae_found_list), 1)
+        self.assertEqual(len(siae_found_list), 2)
 
     def test_matching_siae_kind(self):
         tender = TenderFactory(siae_kind=[], sectors=self.sectors, perimeters=self.perimeters)
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender)
-        self.assertEqual(len(siae_found_list), 2)
+        self.assertEqual(len(siae_found_list), 3)
         tender = TenderFactory(siae_kind=[siae_constants.KIND_AI], sectors=self.sectors, perimeters=self.perimeters)
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender)
         self.assertEqual(len(siae_found_list), 1)
@@ -100,7 +116,7 @@ class TenderMatchingActivitiesTest(TestCase):
             perimeters=self.perimeters,
         )
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender)
-        self.assertEqual(len(siae_found_list), 2)
+        self.assertEqual(len(siae_found_list), 3)
         tender = TenderFactory(siae_kind=[siae_constants.KIND_SEP], sectors=self.sectors, perimeters=self.perimeters)
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender)
         self.assertEqual(len(siae_found_list), 0)
@@ -108,7 +124,7 @@ class TenderMatchingActivitiesTest(TestCase):
     def test_matching_siae_sectors(self):
         tender = TenderFactory(sectors=self.sectors)
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender)
-        self.assertEqual(len(siae_found_list), 2)
+        self.assertEqual(len(siae_found_list), 3)
 
     def test_matching_siae_distance_location(self):
         # create SIAE in Tours
@@ -170,7 +186,7 @@ class TenderMatchingActivitiesTest(TestCase):
         tender.distance_location = None
         tender.save()
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender)
-        self.assertEqual(len(siae_found_list), 2)
+        self.assertEqual(len(siae_found_list), 3)
         self.assertIn(self.siae_one, siae_found_list)
         self.assertIn(self.siae_two, siae_found_list)
 
@@ -199,7 +215,7 @@ class TenderMatchingActivitiesTest(TestCase):
             perimeters=[self.perimeter_paris],  # without effect too
         )
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender)
-        self.assertEqual(len(siae_found_list), 3)
+        self.assertEqual(len(siae_found_list), 4)
         self.assertIn(self.siae_one, siae_found_list)
         self.assertIn(self.siae_two, siae_found_list)
         self.assertIn(siae_marseille, siae_found_list)
@@ -217,11 +233,11 @@ class TenderMatchingActivitiesTest(TestCase):
         # tender perimeter custom with include_country_area = False
         tender_1 = TenderFactory(sectors=self.sectors, perimeters=self.perimeters)
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender_1)
-        self.assertEqual(len(siae_found_list), 2 + 0)
+        self.assertEqual(len(siae_found_list), 3 + 0)
         # tender perimeter custom with include_country_area = True
         tender_2 = TenderFactory(sectors=self.sectors, perimeters=self.perimeters, include_country_area=True)
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender_2)
-        self.assertEqual(len(siae_found_list), 2 + 1)
+        self.assertEqual(len(siae_found_list), 3 + 1)
 
     def test_matching_siae_country(self):
         # add Siae with geo_range_country
@@ -253,7 +269,7 @@ class TenderMatchingActivitiesTest(TestCase):
         # add perimeters
         tender_2.perimeters.set(self.perimeters)
         siae_found_list_2 = Siae.objects.filter_with_tender_through_activities(tender_2)
-        self.assertEqual(len(siae_found_list_2), 2 + 2)
+        self.assertEqual(len(siae_found_list_2), 2 + 3)
         tender_2.is_country_area = True
         tender_2.save()
         siae_found_list_2 = Siae.objects.filter_with_tender_through_activities(tender_2)
@@ -285,7 +301,7 @@ class TenderMatchingActivitiesTest(TestCase):
         # tender perimeter custom
         tender = TenderFactory(sectors=self.sectors, perimeters=self.perimeters)
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender)
-        self.assertEqual(len(siae_found_list), 2 + 1)
+        self.assertEqual(len(siae_found_list), 3 + 1)
 
     def test_matching_siae_perimeters_france(self):
         # tender france
@@ -357,5 +373,5 @@ class TenderMatchingActivitiesTest(TestCase):
         siae_activity.sectors.add(self.sectors[0])
 
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender)
-        self.assertEqual(len(siae_found_list), 2 + 0)
+        self.assertEqual(len(siae_found_list), 3 + 0)
         self.assertNotIn(siae, siae_found_list)
