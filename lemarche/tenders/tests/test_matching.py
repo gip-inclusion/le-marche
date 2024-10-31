@@ -1,3 +1,5 @@
+from timeit import default_timer as timer
+
 from django.contrib.gis.geos import Point
 from django.test import TestCase
 
@@ -375,3 +377,28 @@ class TenderMatchingActivitiesTest(TestCase):
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender)
         self.assertEqual(len(siae_found_list), 3 + 0)
         self.assertNotIn(siae, siae_found_list)
+
+    def test_performance(self):
+        # create 100 siaes with 10 activities each
+        for i in range(100):
+            siae = SiaeFactory(is_active=True, coords=Point(48.86385199985207, 2.337071483848432))
+            for j in range(10):
+                siae_activity = SiaeActivityFactory(
+                    siae=siae,
+                    sector_group=self.sectors[j % 10].group,
+                    presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
+                    with_zones_perimeter=True,
+                )
+                siae_activity.locations.set([self.perimeter_paris])
+                siae_activity.sectors.add(self.sectors[j % 10])
+
+        tender = TenderFactory(sectors=self.sectors, perimeters=self.perimeters)
+
+        start_time = timer()
+        with self.assertNumQueries(6):
+            siae_found_list = Siae.objects.filter_with_tender_through_activities(tender)
+            self.assertEqual(len(siae_found_list), 100 + 3)
+
+        end_time = timer()
+        duration = end_time - start_time
+        self.assertLess(duration, 0.5, f"Performance issue: took {duration:.4f} seconds")
