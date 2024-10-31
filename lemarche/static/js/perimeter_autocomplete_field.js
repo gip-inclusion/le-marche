@@ -36,12 +36,12 @@ async function fetchSource(query, kind = undefined) {
 }
 
 class PerimeterAutocomplete {
-  constructor(perimeter_container_name, perimeter_input_id, perimeter_placeholder='Région, ville…', perimeter_kind = undefined) {
-    this.perimeter_container_name= perimeter_container_name;
-    this.perimeter_input_id= perimeter_input_id;
-    this.perimeter_kind= perimeter_kind;
-    this.perimeter_placeholder= perimeter_placeholder;
-    this.perimeter_name_input_id= `${this.perimeter_input_id}_name`;
+  constructor(perimeter_container_name, perimeter_input_id, perimeter_placeholder = 'Région, ville…', perimeter_kind = undefined) {
+    this.perimeter_container_name = perimeter_container_name;
+    this.perimeter_input_id = perimeter_input_id;
+    this.perimeter_kind = perimeter_kind;
+    this.perimeter_placeholder = perimeter_placeholder;
+    this.perimeter_name_input_id = `${this.perimeter_input_id}_name`;
     this.perimeterAutocompleteContainer = document.getElementById(perimeter_container_name);
     this.perimeterInput = document.getElementById(perimeter_input_id);  // hidden
     this.initial_value_name = this.perimeterAutocompleteContainer.dataset.inputValue;
@@ -49,7 +49,7 @@ class PerimeterAutocomplete {
   }
 
   init() {
-    if(!this.isInit) {
+    if (!this.isInit) {
       this.isInit = true;
       accessibleAutocomplete({
         element: this.perimeterAutocompleteContainer,
@@ -98,7 +98,7 @@ class PerimeterAutocomplete {
 
   inputValue(result) {
     // strip html from suggestion
-    if(!result) {
+    if (!result) {
       return result;
     }
     let resultName, resultKind = '';
@@ -137,12 +137,12 @@ class PerimeterAutocomplete {
   }
 
   cleanPerimeter() {
-    this.perimeterInputName.value ='';
-    this.perimeterInput.value ='';
+    this.perimeterInputName.value = '';
+    this.perimeterInput.value = '';
   }
 
-  disablePerimeter(disable_it=true) {
-    if(disable_it){
+  disablePerimeter(disable_it = true) {
+    if (disable_it) {
       this.cleanPerimeter();
       this.perimeterInput.setAttribute('disabled', true);
       this.perimeterInputName.setAttribute('disabled', true);
@@ -155,11 +155,11 @@ class PerimeterAutocomplete {
 
 class PerimetersMultiAutocomplete {
   constructor(
-    perimeter_autocomplete_id='id_perimeters',
-    perimeter_autocomplete_container_selector='#dir_form_perimeters',
-    perimeter_selected_container_selector='#perimeters-selected',
-    perimeter_hidden_input_selector_prefix='hiddenPerimeter',
-    perimeter_current_id='current-perimeters') {
+    perimeter_autocomplete_id = 'id_perimeters',
+    perimeter_autocomplete_container_selector = '#dir_form_perimeters',
+    perimeter_selected_container_selector = '#perimeters-selected',
+    perimeter_hidden_input_selector_prefix = 'hiddenPerimeter',
+    perimeter_current_id = 'current-perimeters') {
     this.perimeter_autocomplete_id = perimeter_autocomplete_id;
     this.perimeter_autocomplete_container_selector = perimeter_autocomplete_container_selector;
     this.perimeter_autocomplete_container = document.querySelector(this.perimeter_autocomplete_container_selector);
@@ -173,9 +173,8 @@ class PerimetersMultiAutocomplete {
   }
 
   init() {
-    if(!this.isInit) {
+    if (!this.isInit) {
       this.isInit = true;
-
       accessibleAutocomplete({
         element: this.perimeter_autocomplete_container,
         id: this.perimeter_autocomplete_id,
@@ -185,6 +184,8 @@ class PerimetersMultiAutocomplete {
         defaultValue: "",
         source: debounce(this.getSource, 300),
         displayMenu: 'overlay',
+        inputClasses: 'fr-input',
+        menuClasses: 'fr-menu',
         templates: {
           inputValue: this.inputValue,  // returns the string value to be inserted into the input
           suggestion: this.suggestion,  // used when rendering suggestions, and should return a string, which can contain HTML
@@ -278,18 +279,18 @@ class PerimetersMultiAutocomplete {
     let removeIcon = $('<span>', { class: "fr-icon-close-line", "aria-hidden": true });
     let resultIdString = `${this.perimeter_hidden_input_selector_prefix}-${resultId}`;
     $('<input>', {
-        type: 'hidden',
-        id: resultIdString,
-        name: this.perimeter_autocomplete_container_input_name,
-        value: resultId
+      type: 'hidden',
+      id: resultIdString,
+      name: this.perimeter_autocomplete_container_input_name,
+      value: resultId
     }).appendTo(this.perimeter_selected_container);
     let button = $('<button>', {
-        type: 'button',
-        class: "fr-badge fr-mr-1v fr-mb-1v",
-        title: `Retirer ${resultName}`,
-        text: `${resultName}`,
-        'data-refInput': resultIdString,
-        click: this.removeInputOnClick
+      type: 'button',
+      class: "fr-badge fr-mr-1v fr-mb-1v",
+      title: `Retirer ${resultName}`,
+      text: `${resultName}`,
+      'data-refInput': resultIdString,
+      click: this.removeInputOnClick
     });
     removeIcon.appendTo(button);
     button.appendTo(this.perimeter_selected_container);
