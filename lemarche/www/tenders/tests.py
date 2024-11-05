@@ -1,6 +1,7 @@
 import json
 from datetime import timedelta
 from unittest import mock
+from unittest.mock import patch
 
 from django.conf import settings
 from django.contrib.gis.geos import Point
@@ -21,6 +22,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
 from lemarche.tenders.factories import TenderFactory, TenderQuestionFactory
 from lemarche.tenders.models import Tender, TenderSiae, TenderStepsData
+from lemarche.users import constants as user_constants
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 from lemarche.utils import constants
@@ -30,6 +32,7 @@ from lemarche.www.tenders.views import TenderCreateMultiStepView
 class TenderCreateViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
+        cls.user = UserFactory()
         cls.user_siae = UserFactory(kind=User.KIND_SIAE)
         cls.user_buyer = UserFactory(kind=User.KIND_BUYER, company_name="Entreprise Buyer")
         cls.sectors = [SectorFactory().slug for _ in range(3)]
@@ -100,6 +103,18 @@ class TenderCreateViewTest(TestCase):
                     data_step["tender_create_multi_step_view-current_step"],
                     tender_step_data.steps_data[-1]["tender_create_multi_step_view-current_step"],
                 )
+
+    @patch("lemarche.www.tenders.views.get_or_create_user")
+    def setup_mock_user_and_tender_creation(self, mock_get_user, user=None, title="Test Tender Form"):
+        """Helper method to setup mock user"""
+        user = user if user else self.user
+        mock_get_user.return_value = user
+
+        tenders_step_data = self._generate_fake_data_form({"general-title": title})
+        self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+        tender = Tender.objects.get(title=title)
+
+        return tender, user
 
     def test_anyone_can_access_create_tender(self):
         # anonymous user
@@ -248,6 +263,41 @@ class TenderCreateViewTest(TestCase):
         self.assertIsInstance(tender, Tender)
         self.assertEqual(tender.questions.count(), len(initial_data_questions_list))  # count is 2
         self.assertEqual(tender.questions_list()[0].get("text"), initial_data_questions_list[0].get("text"))
+
+    @patch("lemarche.www.tenders.views.add_to_contact_list")
+    def test_args_in_add_to_contact_list_call(self, mock_add_to_contact_list):
+        """Test arguments in `add_to_contact_list` call"""
+        tender, user = self.setup_mock_user_and_tender_creation()
+
+        mock_add_to_contact_list.assert_called_once()
+        args, kwargs = mock_add_to_contact_list.call_args
+
+        # Check arguments like user, type, and source
+        self.assertEqual(kwargs["user"], user)
+        self.assertEqual(kwargs["type"], "signup")
+        self.assertEqual(kwargs["source"], user_constants.SOURCE_TENDER_FORM)
+        # Verify that `tender` is an instance of Tender
+        self.assertIsInstance(
+            kwargs.get("tender"), Tender, "Expected an instance of Tender for the 'tender' argument."
+        )
+
+    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.CreateContact")
+    def test_create_contact_call_has_user_buyer_attributes(self, mock_create_contact):
+        """Test CreateContact call contains user buyer attributes"""
+        tender, user = self.setup_mock_user_and_tender_creation(user=self.user_buyer)
+        tender.save()
+
+        mock_create_contact.assert_called_once()
+        args, kwargs = mock_create_contact.call_args
+        attributes = kwargs["attributes"]
+
+        self.assertEqual(kwargs["email"], user.email)
+        self.assertIn(settings.BREVO_CL_SIGNUP_BUYER_ID, kwargs["list_ids"])
+        self.assertEqual(attributes["MONTANT_BESOIN_ACHETEUR"], tender.amount)
+        self.assertEqual(attributes["TYPE_BESOIN_ACHETEUR"], tender.kind)
+        self.assertIsNone(
+            attributes["TYPE_VERTICALE_ACHETEUR"], "Expected TYPE_VERTICALE_ACHETEUR to be None for non-TALLY sources"
+        )
 
 
 class TenderMatchingTest(TestCase):
