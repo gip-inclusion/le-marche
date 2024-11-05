@@ -1,0 +1,19 @@
+{% extends "layouts/base.html" %}
+{% load dsfr_tags process_dict static %}
+
+{% block page_title %}Plan du site{{ block.super }}{% endblock page_title %}
+
+{% block content %}
+<section class="fr-my-6v">
+    <div class="fr-container">
+        <h1>Plan du site</h1>
+        <ul>
+            {% for item in sitemap_urls %}
+                <li style="margin-left: {{ item.depth|add:1 }}em;">
+                    <a href="{{ item.url }}">{{ item.title }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+{% endblock content %}
