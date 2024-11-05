@@ -8,6 +8,7 @@ from lemarche.api.utils import BasicChoiceSerializer, check_user_token
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender
 from lemarche.users import constants as user_constants
+from lemarche.utils.emails import add_to_contact_list
 from lemarche.www.tenders.utils import get_or_create_user_from_anonymous_content
 
 
@@ -73,13 +74,14 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         serializer.validated_data.pop("contact_kind", None)
         serializer.validated_data.pop("contact_buyer_kind_detail", None)
         # create Tender
-        serializer.save(
+        tender = serializer.save(
             author=user,
             status=tender_constants.STATUS_PUBLISHED,
             published_at=timezone.now(),
             source=tender_source,
             import_raw_object=self.request.data,
         )
+        add_to_contact_list(user=user, type="signup", source=user_source, tender=tender)
 
 
 class TenderKindViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
