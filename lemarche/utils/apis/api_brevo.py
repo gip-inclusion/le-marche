@@ -7,6 +7,7 @@ from django.conf import settings
 from huey.contrib.djhuey import task
 from sib_api_v3_sdk.rest import ApiException
 
+from lemarche.tenders import constants as tender_constants
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 from lemarche.utils.data import sanitize_to_send_by_email
 from lemarche.utils.urls import get_object_admin_url, get_object_share_url
@@ -28,7 +29,7 @@ def get_api_client():
     return sib_api_v3_sdk.ApiClient(config)
 
 
-def create_contact(user, list_id: int):
+def create_contact(user, list_id: int, tender=None):
     """
     Brevo docs
     - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CreateContact.md
@@ -36,18 +37,35 @@ def create_contact(user, list_id: int):
     """
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
+
+    attributes = {
+        "NOM": sanitize_to_send_by_email(user.last_name.capitalize()),
+        "PRENOM": sanitize_to_send_by_email(user.first_name.capitalize()),
+        "DATE_INSCRIPTION": user.created_at,
+        "TYPE_ORGANISATION": user.buyer_kind_detail,
+        "NOM_ENTREPRISE": sanitize_to_send_by_email(user.company_name.capitalize()),
+        "SMS": sanitize_to_send_by_email(user.phone_display),
+        "MONTANT_BESOIN_ACHETEUR": None,
+        "TYPE_BESOIN_ACHETEUR": None,
+        "TYPE_VERTICALE_ACHETEUR": None,
+        # WHATSAPP, TYPE_ORGANISATION, LIEN_FICHE_COMMERCIALE, TAUX_DE_COMPLETION
+    }
+
+    if tender:
+        sectors = tender.sectors.all()
+        attributes["MONTANT_BESOIN_ACHETEUR"] = tender.amount
+        attributes["TYPE_BESOIN_ACHETEUR"] = tender.kind
+
+        # Check if there is at least one sector whose tender source is TALLY
+        if tender.source == tender_constants.SOURCE_TALLY and sectors.exists():
+            attributes["TYPE_VERTICALE_ACHETEUR"] = sectors.first().name
+        else:
+            attributes["TYPE_VERTICALE_ACHETEUR"] = None
+
     new_contact = sib_api_v3_sdk.CreateContact(
         email=user.email,
         list_ids=[list_id],
-        attributes={
-            "NOM": sanitize_to_send_by_email(user.last_name.capitalize()),
-            "PRENOM": sanitize_to_send_by_email(user.first_name.capitalize()),
-            "DATE_INSCRIPTION": user.created_at,
-            "TYPE_ORGANISATION": user.buyer_kind_detail,
-            "NOM_ENTREPRISE": sanitize_to_send_by_email(user.company_name.capitalize()),
-            "SMS": sanitize_to_send_by_email(user.phone_display),
-            # WHATSAPP, TYPE_ORGANISATION, LIEN_FICHE_COMMERCIALE, TAUX_DE_COMPLETION
-        },
+        attributes=attributes,
         ext_id=str(user.id),
         update_enabled=True,
     )
