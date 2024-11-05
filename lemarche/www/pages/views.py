@@ -30,6 +30,8 @@ from lemarche.www.tenders.tasks import notify_admin_tender_created
 from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user_from_anonymous_content
 from lemarche.www.tenders.views import TenderCreateMultiStepView
 
+from wagtail.models import Site as WagtailSite
+
 
 class HomeView(TemplateView):
     template_name = "pages/home.html"
@@ -393,3 +395,21 @@ def trigger_error(request):
     if request.POST:
         raise Exception("%s error: %s" % (request.POST.get("status_code"), request.POST.get("error_message")))
     print(1 / 0)  # Should raise a ZeroDivisionError.
+
+
+class SitemapView(View):
+    def get(self, request):
+        # Récupérer la page d'accueil
+        site = WagtailSite.find_for_request(request)
+        homepage = site.root_page  # Page d'accueil de Wagtail
+
+        # Récupérer toutes les pages descendantes publiées
+        all_pages = homepage.get_descendants(inclusive=True).live()
+
+        # Construire une liste des URLs et titres
+        urls_with_titles = [
+            {"url": page.get_full_url(request=request), "title": page.title, "depth": page.depth - homepage.depth}
+            for page in all_pages
+        ]
+
+        return render(request, "pages/plan_du_site.html", {"sitemap_urls": urls_with_titles})
