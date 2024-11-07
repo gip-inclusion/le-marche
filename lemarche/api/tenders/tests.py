@@ -1,3 +1,6 @@
+from unittest.mock import patch
+
+from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 
@@ -44,10 +47,28 @@ class TenderCreateApiTest(TestCase):
     def setUpTestData(cls):
         cls.url = reverse("api:tenders-list") + "?token=admin"
         cls.user = UserFactory()
+        cls.user_buyer = UserFactory(kind=User.KIND_BUYER, company_name="Entreprise Buyer")
         cls.user_with_token = UserFactory(email="admin@example.com", api_key="admin")
         cls.perimeter = PerimeterFactory()
         cls.sector_1 = SectorFactory()
         cls.sector_2 = SectorFactory()
+
+    @patch("lemarche.api.tenders.views.get_or_create_user_from_anonymous_content")
+    def setup_mock_user_and_tender_creation(self, mock_get_user, user=None, title="Test Tally", extra_data=None):
+        """Helper method to setup mock user and create a tender."""
+        user = user if user else self.user
+        mock_get_user.return_value = user
+
+        # Tender data
+        tender_data = TENDER_JSON.copy()
+        tender_data["title"] = title
+        tender_data["extra_data"] = extra_data or {}
+
+        # Tender creation
+        response = self.client.post(self.url, data=tender_data, content_type="application/json")
+        tender = Tender.objects.get(title=title)
+
+        return response, tender, user
 
     def test_anonymous_user_cannot_create_tender(self):
         url = reverse("api:tenders-list")
@@ -67,7 +88,7 @@ class TenderCreateApiTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertIn("slug", response.data.keys())
         tender = Tender.objects.get(title="Test author 1")
-        self.assertEqual(User.objects.count(), 2 + 1)  # created a new user
+        self.assertEqual(User.objects.count(), 3 + 1)  # created a new user
         self.assertEqual(tender.author.email, USER_CONTACT_EMAIL)
         self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
         self.assertEqual(tender.source, tender_constants.SOURCE_API)
@@ -81,7 +102,7 @@ class TenderCreateApiTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertIn("slug", response.data.keys())
         tender = Tender.objects.get(title="Test author 2")
-        self.assertEqual(User.objects.count(), 3)  # did not create a new user
+        self.assertEqual(User.objects.count(), 4)  # did not create a new user
         self.assertEqual(tender.author, self.user_with_token)
         self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
         self.assertEqual(tender.source, tender_constants.SOURCE_API)
@@ -135,14 +156,45 @@ class TenderCreateApiTest(TestCase):
         response = self.client.post(self.url, data=tender_data)
         self.assertEqual(response.status_code, 400)
 
-    def test_create_tender_with_tally_source(self):
-        tender_data = TENDER_JSON.copy()
-        tender_data["title"] = "Test tally"
-        tender_data["extra_data"] = {"source": "TALLY"}
-        response = self.client.post(self.url, data=tender_data, content_type="application/json")
+    @patch("lemarche.api.tenders.views.add_to_contact_list")
+    def test_create_tender_with_tally_source(self, mock_add_to_contact_list):
+        extra_data = {"source": "TALLY"}
+        response, tender, user = self.setup_mock_user_and_tender_creation(title="Test tally", extra_data=extra_data)
+
+        mock_add_to_contact_list.assert_called_once()
+        args, kwargs = mock_add_to_contact_list.call_args
+
         self.assertEqual(response.status_code, 201)
-        tender = Tender.objects.get(title="Test tally")
         self.assertEqual(tender.source, tender_constants.SOURCE_TALLY)
+        # Check other arguments like user, type, and source
+        self.assertEqual(kwargs["user"], user)
+        self.assertEqual(kwargs["type"], "signup")
+        self.assertEqual(kwargs["source"], user_constants.SOURCE_TALLY_FORM)
+        # Verify that `tender` is an instance of Tender
+        self.assertIsInstance(
+            kwargs.get("tender"), Tender, "Expected an instance of Tender for the 'tender' argument."
+        )
+
+    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.CreateContact")
+    def test_create_contact_call_has_user_buyer_attributes(self, mock_create_contact):
+        """Test CreateContact call contains user buyer attributes"""
+        extra_data = {"source": "TALLY"}
+        _, tender, user = self.setup_mock_user_and_tender_creation(
+            title="Test tally", user=self.user_buyer, extra_data=extra_data
+        )
+        sectors = tender.sectors.all()
+
+        mock_create_contact.assert_called_once()
+        args, kwargs = mock_create_contact.call_args
+        attributes = kwargs["attributes"]
+
+        self.assertEqual(kwargs["email"], user.email)
+        self.assertIn(settings.BREVO_CL_SIGNUP_BUYER_ID, kwargs["list_ids"])
+        self.assertEqual(attributes["MONTANT_BESOIN_ACHETEUR"], tender.amount_int)
+        self.assertEqual(attributes["TYPE_BESOIN_ACHETEUR"], tender.kind)
+
+        if sectors.exists():
+            attributes["TYPE_VERTICALE_ACHETEUR"] = sectors.first().name
 
     def test_create_tender_with_different_contact_data(self):
         tender_data = TENDER_JSON.copy()
