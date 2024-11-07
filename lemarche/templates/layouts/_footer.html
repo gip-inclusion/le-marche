@@ -35,7 +35,6 @@
                         <li><a class="fr-footer__top-link" href="https://github.com/gip-inclusion/le-marche" target="_blank" title="Github (lien externe)">Code source</a></li>
                         <li><a class="fr-footer__top-link" href="{% url 'api:home' %}">API</a></li>
                         <li><a class="fr-footer__top-link" href="{% url 'pages:stats' %}">Statistiques</a></li>
-                        <li><a class="fr-footer__top-link" href="{% url 'pages:plan-du-site' %}">Plan du site</a></li>
                     </ul>
                 </div>
             </div>
@@ -68,6 +67,9 @@
         </div>
         <div class="fr-footer__bottom">
             <ul class="fr-footer__bottom-list">
+                <li class="fr-footer__bottom-item">
+                    <a class="fr-footer__bottom-link" href="{% url 'pages:plan-du-site' %}">Plan du site</a>
+                </li>
                 <li class="fr-footer__bottom-item">
                     <a class="fr-footer__bottom-link" href="{% url 'pages:accessibilite' %}">Accessibilité : non conforme</a>
                 </li>
