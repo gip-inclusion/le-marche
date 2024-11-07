@@ -18,6 +18,7 @@ from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.utils import constants, settings_context_processors
 from lemarche.utils.data import get_choice
+from lemarche.utils.emails import add_to_contact_list
 from lemarche.utils.mixins import (
     SesameSiaeMemberRequiredMixin,
     SesameTenderAuthorRequiredMixin,
@@ -229,7 +230,6 @@ class TenderCreateMultiStepView(SessionWizardView):
         tender_dict = cleaned_data | {"author": user, "source": tender_constants.SOURCE_FORM}
         is_draft: bool = self.request.POST.get("is_draft", False)
         self.save_instance_tender(tender_dict=tender_dict, form_dict=form_dict, is_draft=is_draft)
-
         # remove steps data
         uuid = self.request.session.get("tender_steps_data_uuid", None)
         if uuid:
@@ -254,6 +254,8 @@ class TenderCreateMultiStepView(SessionWizardView):
                 message=self.get_success_message(cleaned_data, self.instance, is_draft=is_draft),
                 extra_tags="modal_message_bizdev",
             )
+        tender = self.instance
+        add_to_contact_list(user=user, type="signup", source=user_constants.SOURCE_TENDER_FORM, tender=tender)
         return redirect(self.get_success_url())
 
     def get_success_url(self):

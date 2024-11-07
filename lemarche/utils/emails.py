@@ -54,7 +54,7 @@ def whitelist_recipient_list(recipient_list):
     return [email for email in recipient_list if (email and email.endswith("beta.gouv.fr"))]
 
 
-def add_to_contact_list(user, type: str, source: str = user_constants.SOURCE_SIGNUP_FORM):
+def add_to_contact_list(user, type: str, tender=None, source: str = user_constants.SOURCE_SIGNUP_FORM):
     """Add user to contactlist
 
     Args:
@@ -65,7 +65,7 @@ def add_to_contact_list(user, type: str, source: str = user_constants.SOURCE_SIG
     if type == "signup":
         contact_list_id = api_mailjet.get_mailjet_cl_on_signup(user, source)
         if user.kind == user.KIND_BUYER:
-            api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_BUYER_ID)
+            api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_BUYER_ID, tender=tender)
         elif user.kind == user.KIND_SIAE:
             api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_SIAE_ID)
     elif type == "buyer_search":

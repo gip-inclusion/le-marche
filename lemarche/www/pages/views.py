@@ -18,6 +18,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderStepsData
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
+from lemarche.utils.emails import add_to_contact_list
 from lemarche.utils.tracker import track
 from lemarche.www.pages.forms import (
     CompanyReferenceCalculatorForm,
@@ -342,6 +343,7 @@ def csrf_failure(request, reason=""):  # noqa C901
         # create tender
         if is_adding:
             tender: Tender = create_tender_from_dict(tender_dict)
+            add_to_contact_list(user=user, type="signup", source=user_constants.SOURCE_TENDER_FORM, tender=tender)
         elif is_update:
             slug = request.path.split("/")[-1]
             tender: Tender = Tender.objects.get(slug=slug)
