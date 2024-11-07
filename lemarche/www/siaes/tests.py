@@ -58,6 +58,10 @@ class SiaeSearchNumQueriesTest(TestCase):
 
     def test_search_num_queries(self):
         url = reverse("siae:search_results")
+
+        # fix cache issue in parallel testing context, "SELECT 'django_site'" query appears additionally otherwise
+        self.client.get(url)
+
         with self.assertNumQueries(12):
             response = self.client.get(url)
             siaes = list(response.context["siaes"])
@@ -1032,11 +1036,14 @@ class SiaeSemanticSearchTest(TestCase):
         mock_siaes_similarity_search.assert_called_once()
 
     def test_search_query_with_results(self):
-        with mock.patch(
-            "lemarche.utils.apis.api_elasticsearch.siaes_similarity_search"
-        ) as mock_siaes_similarity_search, mock.patch(
-            "lemarche.utils.apis.api_elasticsearch.siaes_similarity_search_with_city"
-        ) as mock_siaes_similarity_search_with_city:
+        with (
+            mock.patch(
+                "lemarche.utils.apis.api_elasticsearch.siaes_similarity_search"
+            ) as mock_siaes_similarity_search,
+            mock.patch(
+                "lemarche.utils.apis.api_elasticsearch.siaes_similarity_search_with_city"
+            ) as mock_siaes_similarity_search_with_city,
+        ):
             mock_siaes_similarity_search.return_value = [self.siae_two.pk, self.siae_three.pk, self.siae_four.pk]
             url = self.url + "?semantic_q=entretien espace vert&id_semantic_city_name=&semantic_city="
             response = self.client.get(url)
