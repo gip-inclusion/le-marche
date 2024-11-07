@@ -293,7 +293,7 @@ class TenderCreateViewTest(TestCase):
 
         self.assertEqual(kwargs["email"], user.email)
         self.assertIn(settings.BREVO_CL_SIGNUP_BUYER_ID, kwargs["list_ids"])
-        self.assertEqual(attributes["MONTANT_BESOIN_ACHETEUR"], tender.amount)
+        self.assertEqual(attributes["MONTANT_BESOIN_ACHETEUR"], tender.amount_int)
         self.assertEqual(attributes["TYPE_BESOIN_ACHETEUR"], tender.kind)
         self.assertIsNone(
             attributes["TYPE_VERTICALE_ACHETEUR"], "Expected TYPE_VERTICALE_ACHETEUR to be None for non-TALLY sources"

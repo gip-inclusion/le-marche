@@ -1,8 +1,8 @@
+from unittest.mock import patch
+
 from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
-
-from unittest.mock import patch
 
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.sectors.factories import SectorFactory
@@ -190,7 +190,7 @@ class TenderCreateApiTest(TestCase):
 
         self.assertEqual(kwargs["email"], user.email)
         self.assertIn(settings.BREVO_CL_SIGNUP_BUYER_ID, kwargs["list_ids"])
-        self.assertEqual(attributes["MONTANT_BESOIN_ACHETEUR"], tender.amount)
+        self.assertEqual(attributes["MONTANT_BESOIN_ACHETEUR"], tender.amount_int)
         self.assertEqual(attributes["TYPE_BESOIN_ACHETEUR"], tender.kind)
 
         if sectors.exists():
