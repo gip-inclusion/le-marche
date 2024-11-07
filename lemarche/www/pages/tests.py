@@ -1,16 +1,13 @@
+import xml.etree.ElementTree as ET
+
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+from wagtail.models import Page as WagtailPage, Site
 
-from lemarche.pages.models import Page as FlatPage
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
-
-from wagtail.models import Page as WagtailPage
-from wagtail.models import Site
-
-import xml.etree.ElementTree as ET
 
 
 class PagesHeaderLinkTest(TestCase):
