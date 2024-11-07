@@ -346,7 +346,7 @@ class SiaeFilterForm(forms.Form):
         tender = self.cleaned_data.get("tender", None)
         if tender:
             tendersiae_status = self.cleaned_data.get("tendersiae_status", "ALL")
-            qs = qs.filter_with_tender(tender=tender, tendersiae_status=tendersiae_status)
+            qs = qs.filter_with_tender_through_activities(tender=tender, tendersiae_status=tendersiae_status)
 
         locations = self.cleaned_data.get("locations", None)
         if locations:

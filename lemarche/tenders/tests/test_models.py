@@ -15,7 +15,7 @@ from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory, SectorGroupFactory
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.factories import SiaeFactory
+from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.admin import TenderAdmin
@@ -194,19 +194,25 @@ class TenderModelMatchingTest(TestCase):
         cls.siae_one = SiaeFactory(
             is_active=True,
             kind=siae_constants.KIND_AI,
-            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
-            geo_range=siae_constants.GEO_RANGE_COUNTRY,
         )
-        cls.siae_one.sectors.add(cls.sector)
+        siae_one_activity = SiaeActivityFactory(
+            siae=cls.siae_one,
+            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
+            with_country_perimeter=True,
+        )
+        siae_one_activity.sectors.add(cls.sector)
 
         # siae found by presta_type and semantic search
         cls.siae_two = SiaeFactory(
             is_active=True,
             kind=siae_constants.KIND_ESAT,
-            presta_type=[siae_constants.PRESTA_BUILD],
-            geo_range=siae_constants.GEO_RANGE_COUNTRY,
         )
-        cls.siae_two.sectors.add(cls.sector)
+        siae_two_activity = SiaeActivityFactory(
+            siae=cls.siae_two,
+            presta_type=[siae_constants.PRESTA_BUILD],
+            with_country_perimeter=True,
+        )
+        siae_two_activity.sectors.add(cls.sector)
 
         # siaes found by mocked semantic search
         cls.siae_three = SiaeFactory()
@@ -226,7 +232,7 @@ class TenderModelMatchingTest(TestCase):
                 validated_at=None,
             )
 
-            siaes_found = Siae.objects.filter_with_tender(tender)
+            siaes_found = Siae.objects.filter_with_tender_through_activities(tender)
             tender.set_siae_found_list()
             tender.refresh_from_db()
             self.assertEqual(list(siaes_found), list(tender.siaes.all()))
@@ -246,7 +252,7 @@ class TenderModelMatchingTest(TestCase):
                 validated_at=None,
             )
 
-            siaes_found = Siae.objects.filter_with_tender(tender)
+            siaes_found = Siae.objects.filter_with_tender_through_activities(tender)
             tender.set_siae_found_list()
             tender.refresh_from_db()
 
@@ -925,22 +931,30 @@ class TenderAdminTest(TestCase):
         siae_one = SiaeFactory(
             is_active=True,
             kind=siae_constants.KIND_AI,
+            coords=coords_paris,
+        )
+        siae_one_activity = SiaeActivityFactory(
+            siae=siae_one,
             presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
             geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            coords=coords_paris,
             geo_range_custom_distance=100,
         )
+
         siae_two = SiaeFactory(
             is_active=True,
             kind=siae_constants.KIND_ESAT,
+            coords=coords_paris,
+        )
+        siae_two_activity = SiaeActivityFactory(
+            siae=siae_two,
             presta_type=[siae_constants.PRESTA_BUILD],
             geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            coords=coords_paris,
             geo_range_custom_distance=10,
         )
+
         for i in range(5):
-            siae_one.sectors.add(cls.sectors[i])
-            siae_two.sectors.add(cls.sectors[i + 5])
+            siae_one_activity.sectors.add(cls.sectors[i])
+            siae_two_activity.sectors.add(cls.sectors[i + 5])
 
         cls.tender = TenderFactory(
             sectors=cls.sectors[6:8],
