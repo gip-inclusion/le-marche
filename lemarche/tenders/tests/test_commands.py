@@ -7,7 +7,7 @@ from django.utils import timezone
 
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.factories import SiaeFactory
+from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
 from lemarche.tenders.factories import TenderFactory
 from lemarche.tenders.models import TenderSiae
 from lemarche.users.factories import UserFactory
@@ -22,26 +22,35 @@ class TestSendAuthorListOfSuperSiaesEmails(TestCase):
         cls.siae1 = SiaeFactory(
             is_active=True,
             kind=siae_constants.KIND_AI,
-            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
-            geo_range=siae_constants.GEO_RANGE_COUNTRY,
         )
-        cls.siae1.sectors.add(cls.sector)
+        siae1_activity = SiaeActivityFactory(
+            siae=cls.siae1,
+            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
+            with_country_perimeter=True,
+        )
+        siae1_activity.sectors.add(cls.sector)
 
         cls.siae2 = SiaeFactory(
             is_active=True,
             kind=siae_constants.KIND_AI,
-            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
-            geo_range=siae_constants.GEO_RANGE_COUNTRY,
         )
-        cls.siae2.sectors.add(cls.sector)
+        siae2_activity = SiaeActivityFactory(
+            siae=cls.siae2,
+            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
+            with_country_perimeter=True,
+        )
+        siae2_activity.sectors.add(cls.sector)
 
         cls.siae3 = SiaeFactory(
             is_active=True,
             kind=siae_constants.KIND_AI,
-            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
-            geo_range=siae_constants.GEO_RANGE_COUNTRY,
         )
-        cls.siae3.sectors.add(cls.sector)
+        siae3_activity = SiaeActivityFactory(
+            siae=cls.siae3,
+            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
+            with_country_perimeter=True,
+        )
+        siae3_activity.sectors.add(cls.sector)
 
         cls.author = UserFactory(kind=User.KIND_BUYER)
         cls.tender_before = TenderFactory(

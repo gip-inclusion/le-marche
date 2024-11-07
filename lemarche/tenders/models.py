@@ -745,7 +745,7 @@ class Tender(models.Model):
         """
         Where the Tender-Siae matching magic happens!
         """
-        siae_found_list = Siae.objects.filter_with_tender(self)
+        siae_found_list = Siae.objects.filter_with_tender_through_activities(self)
         self.siaes.set(siae_found_list, clear=False)
 
         if self.with_ai_matching and self.validated_at is None:
