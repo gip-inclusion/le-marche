@@ -82,25 +82,14 @@
                                 </a>
                             </li>
                             <li role="presentation">
-                                <a href="{% url 'dashboard_siaes:siae_edit_search' siae.slug %}"
-                                   id="siae-edit-search-tab"
+                                <a href="{% url 'dashboard_siaes:siae_edit_activities' siae.slug %}"
+                                   id="siae-edit-search-2-tab"
                                    class="fr-tabs__tab"
-                                   aria-controls="siae_edit_search_panel"
-                                   aria-selected="{% if 'siae_edit_search' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
+                                   aria-controls="siae_edit_activities_panel"
+                                   aria-selected="{% if 'siae_edit_activities' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
                                     Votre référencement
                                 </a>
                             </li>
-                            {% if user.is_authenticated and user.is_admin %}
-                                <li role="presentation">
-                                    <a href="{% url 'dashboard_siaes:siae_edit_activities' siae.slug %}"
-                                       id="siae-edit-search-2-tab"
-                                       class="fr-tabs__tab"
-                                       aria-controls="siae_edit_activities_panel"
-                                       aria-selected="{% if 'siae_edit_activities' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
-                                        Votre référencement (2)
-                                    </a>
-                                </li>
-                            {% endif %}
                             <li role="presentation">
                                 <a href="{% url 'dashboard_siaes:siae_edit_info' siae.slug %}"
                                    id="siae-edit-info-tab"
