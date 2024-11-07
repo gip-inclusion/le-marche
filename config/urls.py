@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
-
 from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.contrib.sitemaps.views import sitemap
@@ -23,7 +22,7 @@ urlpatterns = [
     path("profil/listes-dachats/", include("lemarche.www.dashboard_favorites.urls")),
     path("select2/", include("django_select2.urls")),
     # sitemap
-    path("sitemap.xml", sitemap, name="sitemap"), # appears above the default Wagtail page serving route
+    path("sitemap.xml", sitemap, name="sitemap"),  # appears above the default Wagtail page serving route
     # admin blog
     path("cms/", include(wagtailadmin_urls)),
     path("blog/", include("blog.urls")),
