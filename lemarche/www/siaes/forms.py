@@ -230,6 +230,8 @@ class SiaeFilterForm(forms.Form):
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
 
+        qs = qs.prefetch_related("activities__sector_group")
+
         sectors = self.cleaned_data.get("sectors", None)
         if sectors:
             qs = qs.filter_sectors(sectors)
