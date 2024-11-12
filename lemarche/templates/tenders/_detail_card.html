@@ -46,8 +46,10 @@
         <!-- tender description -->
         {% if tender.start_working_date %}
             <p class="fr-text--sm">
-                Disponible <strong>jusqu'au {{ tender.deadline_date|default:"" }}</strong>
-                <br>
+                {% if tender.deadline_date_is_outdated_annotated or not tender.deadline_date_outdated %}
+                    Disponible <strong>jusqu'au {{ tender.deadline_date|default:"" }}</strong>
+                    <br>
+                {% endif %}
                 Début d'intervention : {{ tender.start_working_date }}
             </p>
         {% endif %}

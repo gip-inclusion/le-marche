@@ -994,10 +994,6 @@ class Tender(models.Model):
         return self.status == tender_constants.STATUS_DRAFT
 
     @property
-    def deadline_date_is_outdated(self, limit_date=datetime.today().date()):
-        return self.deadline_date < limit_date
-
-    @property
     def is_pending_validation(self) -> bool:
         return self.status == tender_constants.STATUS_PUBLISHED
 
