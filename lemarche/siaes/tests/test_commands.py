@@ -95,11 +95,21 @@ class SiaeActivitiesCreateCommandTest(TransactionTestCase):
         )
         siae4.sectors.set([self.sector2, self.sector3])
 
+        # without geo_range
+        siae5 = SiaeFactory(
+            is_active=True,
+            kind=siae_constants.KIND_EA,
+            presta_type=[siae_constants.PRESTA_DISP],
+            department="978",
+            region=self.region_name,
+        )
+        siae5.sectors.set([self.sector3])
+
         call_command("create_siae_activities", dry_run=True)
         self.assertEqual(SiaeActivity.objects.count(), 0)
 
         call_command("create_siae_activities")
-        self.assertEqual(SiaeActivity.objects.count(), 2 + 1 + 1 + 2)
+        self.assertEqual(SiaeActivity.objects.count(), 2 + 1 + 1 + 2 + 1)
         siae1_activities = SiaeActivity.objects.filter(siae=siae1)
         self.assertEqual(siae1_activities.count(), 2)
         self.assertEqual(siae1_activities.filter(sectors__in=[self.sector1]).count(), 1)
@@ -136,3 +146,10 @@ class SiaeActivitiesCreateCommandTest(TransactionTestCase):
                 self.assertEqual(siae_activity.geo_range, siae_constants.GEO_RANGE_ZONES)
                 self.assertEqual(siae_activity.locations.count(), 1)
                 self.assertEqual(siae_activity.locations.first(), self.perimeter_department)
+
+        siae5_activities = SiaeActivity.objects.filter(siae=siae5)
+        self.assertEqual(siae5_activities.count(), 1)
+        self.assertEqual(siae5_activities.filter(sectors__in=[self.sector3]).count(), 1)
+        self.assertEqual(siae5_activities.first().presta_type, [siae_constants.PRESTA_DISP])
+        self.assertEqual(siae5_activities.first().geo_range, siae_constants.GEO_RANGE_ZONES)
+        self.assertEqual(siae5_activities.first().locations.count(), 0)
