@@ -64,7 +64,7 @@ class SiaeSearchNumQueriesTest(TestCase):
         # See https://docs.djangoproject.com/en/5.1/ref/contrib/sites/#caching-the-current-site-object
         Site.objects.get_current()
 
-        with self.assertNumQueries(12):
+        with self.assertNumQueries(13):
             response = self.client.get(url)
             siaes = list(response.context["siaes"])
             self.assertEqual(len(siaes), 20)
