@@ -34,5 +34,8 @@ class DashboardFavoriteListViewTest(TestCase):
         # favorite list user
         self.client.force_login(self.user_favorite_list)
         url = reverse("dashboard_favorites:list_detail", args=[self.favorite_list_1.slug])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+
+        # check number of queries
+        with self.assertNumQueries(6):
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200)
