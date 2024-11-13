@@ -4,7 +4,8 @@
       {% if SITE_CONFIG.mourning %}data-fr-mourning{% endif %}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     {% dsfr_favicon %}
     {% dsfr_css %}
     {% compress css %}
@@ -25,7 +26,11 @@
     {% block extra_css %}
     {% endblock extra_css %}
     {% block title %}
-    <title>{% block page_title %}— Le marché de l'inclusion{% endblock page_title %}</title>
+      <title>
+        {% block page_title %}
+          — Le marché de l'inclusion
+        {% endblock page_title %}
+      </title>
     {% endblock title %}
     {% block meta_description %}
       <meta name="description"
@@ -46,12 +51,10 @@
     {% if SITE_CONFIG.notice %}
       {% dsfr_notice title=SITE_CONFIG.notice %}
     {% endif %}
-    
     {% block breadcrumb %}
-        {% comment %} empty because managed for each type of page {% endcomment %}
+      {% comment %} empty because managed for each type of page {% endcomment %}
     {% endblock breadcrumb %}
-    
-    <main id="content" role="main">
+    <main id="content" class="fr-mb-6w" role="main">
       {% block messages %}
         {% dsfr_django_messages wrapper_classes="fr-container fr-my-4v" %}
       {% endblock messages %}
@@ -74,7 +77,8 @@
             src="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.js' %}"></script>
     <script type="text/javascript"
             src="{% static 'vendor/leaflet-1.7.1/leaflet.js' %}"></script>
-    <script type="text/javascript" src="{% static 'vendor/htmx-1.9.12/htmx.min.js' %}"></script>
+    <script type="text/javascript"
+            src="{% static 'vendor/htmx-1.9.12/htmx.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/utils.js'%}"></script>
     {% if BITOUBI_ENV not in "dev" %}
       {% include "includes/_tracker_tarteaucitron.html" %}

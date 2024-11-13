@@ -1,7 +1,8 @@
 <span>
-    {% if tender.deadline_date_is_outdated_annotated %}
-        <p class="fr-badge fr-badge--sm">
-            {{ tender_kind_display|default:tender.get_kind_display }} clôturé{% if tender.kind == "QUOTE" %}e{% endif %}
+    {% if tender.deadline_date_is_outdated_annotated or tender.deadline_date_outdated %}
+        <p class="fr-badge fr-badge--sm fr-badge--warning">
+            {{ tender_kind_display|default:tender.get_kind_display }}
+            clôturé{% if tender.kind == "QUOTE" %}e{% endif %}
             le {{ tender.deadline_date|default:"" }}
         </p>
     {% else %}
@@ -12,9 +13,6 @@
                 {{ tender.get_kind_display }}
             {% endif %}
         </p>
-        Disponible <strong>jusqu'au : {{ tender.deadline_date|default:"" }}</strong>
-        {% if is_new_for_siaes %}
-            <p class="fr-badge fr-badge--sm fr-badge--green-emeraude">Nouveau</p>
-        {% endif %}
+        {% if is_new_for_siaes %}<p class="fr-badge fr-badge--sm fr-badge--green-emeraude">Nouveau</p>{% endif %}
     {% endif %}
 </span>
