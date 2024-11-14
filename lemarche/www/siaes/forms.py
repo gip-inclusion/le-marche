@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.gis.db.models.functions import Distance
-from django.db.models import BooleanField, Case, Q, Value, When
+from django.db.models import BooleanField, Case, OuterRef, Q, Subquery, Value, When
 
 from lemarche.favorites.models import FavoriteList
 from lemarche.labels.models import Label
@@ -8,7 +8,7 @@ from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.models import Siae, SiaeClientReference, SiaeGroup
+from lemarche.siaes.models import Siae, SiaeActivity, SiaeClientReference, SiaeGroup
 from lemarche.tenders.models import Tender
 from lemarche.utils.apis import api_elasticsearch
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
@@ -230,21 +230,24 @@ class SiaeFilterForm(forms.Form):
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
 
-        sectors = self.cleaned_data.get("sectors", None)
-        if sectors:
-            qs = qs.filter_sectors(sectors)
-
-        perimeters = self.cleaned_data.get("perimeters", None)
-        if perimeters:
-            qs = qs.geo_range_in_perimeter_list(perimeters)
-
         kinds = self.cleaned_data.get("kind", None)
         if kinds:
             qs = qs.filter(kind__in=kinds)
 
-        presta_types = self.cleaned_data.get("presta_type", None)
-        if presta_types:
-            qs = qs.filter(presta_type__overlap=presta_types)
+        # Create a very nice subquery to filter SiaeActivity by presta_type, sector and perimeter
+        siae_activity_subquery = SiaeActivity.objects.filter(siae=OuterRef("pk")).values("pk")
+
+        if sectors := self.cleaned_data.get("sectors", None):
+            siae_activity_subquery = siae_activity_subquery.filter_sectors(sectors)
+
+        if perimeters := self.cleaned_data.get("perimeters", None):
+            siae_activity_subquery = siae_activity_subquery.geo_range_in_perimeter_list(perimeters)
+
+        if presta_types := self.cleaned_data.get("presta_type", None):
+            siae_activity_subquery = siae_activity_subquery.filter(presta_type__overlap=presta_types)
+
+        if sectors or perimeters or presta_types:
+            qs = qs.filter(Q(activities__in=Subquery(siae_activity_subquery)))
 
         territory = self.cleaned_data.get("territory", None)
         if territory:
