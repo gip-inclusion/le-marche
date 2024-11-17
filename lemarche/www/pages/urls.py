@@ -8,6 +8,7 @@ from lemarche.www.pages.views import (
     ImpactCalculatorView,
     PageView,
     SiaeGroupListView,
+    SitemapView,
     SocialImpactBuyersCalculatorView,
     StatsView,
     TrackView,
@@ -83,6 +84,7 @@ urlpatterns = [
     path("cgu/", PageView.as_view(), {"url": "/cgu/"}, name="cgu"),
     path("cgu-api/", PageView.as_view(), {"url": "/cgu-api/"}, name="cgu-api"),
     path("confidentialite/", PageView.as_view(), {"url": "/confidentialite/"}, name="confidentialite"),
+    path("plan-du-site/", SitemapView.as_view(), name="plan-du-site"),
     # Error pages
     path("403/", TemplateView.as_view(template_name="403.html"), name="403"),
     path("404/", TemplateView.as_view(template_name="404.html"), name="404"),
