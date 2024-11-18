@@ -339,7 +339,6 @@ class SiaePerimeterSearchFilterTest(TestCase):
             department=cls.grenoble_perimeter.department_code,
             region=cls.auvergne_rhone_alpes_perimeter.name,
             post_code=cls.grenoble_perimeter.post_codes[0],
-            #    geo_range=siae_constants.GEO_RANGE_REGION,
         )
         siae_2_activity = SiaeActivityFactory(siae=siae_2, with_zones_perimeter=True)
         siae_2_activity.locations.add(cls.auvergne_rhone_alpes_perimeter)
@@ -349,7 +348,6 @@ class SiaePerimeterSearchFilterTest(TestCase):
             department=cls.grenoble_perimeter.department_code,
             region=cls.auvergne_rhone_alpes_perimeter.name,
             post_code=cls.grenoble_perimeter.post_codes[1],
-            # geo_range=siae_constants.GEO_RANGE_DEPARTMENT,
         )
         siae_3_activity = SiaeActivityFactory(siae=siae_3, with_zones_perimeter=True)
         siae_3_activity.locations.add(cls.isere_perimeter)
@@ -359,8 +357,6 @@ class SiaePerimeterSearchFilterTest(TestCase):
             department=cls.grenoble_perimeter.department_code,
             region=cls.auvergne_rhone_alpes_perimeter.name,
             post_code=cls.grenoble_perimeter.post_codes[2],
-            # geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            # geo_range_custom_distance=10,
             coords=Point(5.7301, 45.1825),
         )
         SiaeActivityFactory(siae=siae_4, geo_range=siae_constants.GEO_RANGE_CUSTOM, geo_range_custom_distance=10)
@@ -370,8 +366,6 @@ class SiaePerimeterSearchFilterTest(TestCase):
             city="La Tronche",
             department="38",
             region=cls.auvergne_rhone_alpes_perimeter.name,
-            # geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            # geo_range_custom_distance=10,
             coords=Point(5.746, 45.2124),
         )
         SiaeActivityFactory(siae=siae_5, geo_range=siae_constants.GEO_RANGE_CUSTOM, geo_range_custom_distance=10)
@@ -381,8 +375,6 @@ class SiaePerimeterSearchFilterTest(TestCase):
             city=cls.chamrousse_perimeter.name,
             department="38",
             region=cls.auvergne_rhone_alpes_perimeter.name,
-            # geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            # geo_range_custom_distance=5,
             coords=Point(5.8862, 45.1106),
         )
         SiaeActivityFactory(siae=siae_6, geo_range=siae_constants.GEO_RANGE_CUSTOM, geo_range_custom_distance=5)
@@ -391,7 +383,6 @@ class SiaePerimeterSearchFilterTest(TestCase):
             city="Lyon",
             department="69",
             region=cls.auvergne_rhone_alpes_perimeter.name,
-            # geo_range=siae_constants.GEO_RANGE_COUNTRY,
         )
         SiaeActivityFactory(siae=siae_7, with_country_perimeter=True)
 
@@ -399,7 +390,6 @@ class SiaePerimeterSearchFilterTest(TestCase):
             city="Lyon",
             department="69",
             region=cls.auvergne_rhone_alpes_perimeter.name,
-            # geo_range=siae_constants.GEO_RANGE_REGION,
         )
         siae_8_activity = SiaeActivityFactory(siae=siae_8, with_zones_perimeter=True)
         siae_8_activity.locations.add(cls.auvergne_rhone_alpes_perimeter)
@@ -407,7 +397,6 @@ class SiaePerimeterSearchFilterTest(TestCase):
             city="Lyon",
             department="69",
             region=cls.auvergne_rhone_alpes_perimeter.name,
-            # geo_range=siae_constants.GEO_RANGE_DEPARTMENT,
         )
         siae_9_activity = SiaeActivityFactory(siae=siae_9, with_zones_perimeter=True)
         siae_9_activity.locations.add(cls.isere_perimeter)
@@ -416,8 +405,6 @@ class SiaePerimeterSearchFilterTest(TestCase):
             city="Lyon",
             department="69",
             region=cls.auvergne_rhone_alpes_perimeter.name,
-            # geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            # geo_range_custom_distance=50,
             coords=Point(4.8236, 45.7685),
         )
         SiaeActivityFactory(siae=siae_10, geo_range=siae_constants.GEO_RANGE_CUSTOM, geo_range_custom_distance=50)
@@ -426,7 +413,6 @@ class SiaePerimeterSearchFilterTest(TestCase):
             city=cls.quimper_perimeter.name,
             department=cls.quimper_perimeter.department_code,
             region=cls.bretagne_perimeter.name,
-            #    geo_range=siae_constants.GEO_RANGE_COUNTRY,
         )
         SiaeActivityFactory(siae=siae_11, with_country_perimeter=True)
 
@@ -434,7 +420,6 @@ class SiaePerimeterSearchFilterTest(TestCase):
             city=cls.quimper_perimeter.name,
             department=cls.quimper_perimeter.department_code,
             region=cls.bretagne_perimeter.name,
-            # geo_range=siae_constants.GEO_RANGE_REGION,
         )
         siae_12_activity = SiaeActivityFactory(siae=siae_12, with_zones_perimeter=True)
         siae_12_activity.locations.add(cls.bretagne_perimeter)
@@ -443,7 +428,6 @@ class SiaePerimeterSearchFilterTest(TestCase):
             city=cls.quimper_perimeter.name,
             department=cls.quimper_perimeter.department_code,
             region=cls.bretagne_perimeter.name,
-            # geo_range=siae_constants.GEO_RANGE_DEPARTMENT,
         )
         siae_13_activity = SiaeActivityFactory(siae=siae_13, with_zones_perimeter=True)
         siae_13_activity.locations.add(cls.finister_perimeter)
@@ -452,8 +436,6 @@ class SiaePerimeterSearchFilterTest(TestCase):
             city=cls.quimper_perimeter.name,
             department=cls.quimper_perimeter.department_code,
             region=cls.bretagne_perimeter.name,
-            # geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            # geo_range_custom_distance=50,
             coords=Point(47.9914, -4.0916),
         )
         SiaeActivityFactory(siae=siae_14, geo_range=siae_constants.GEO_RANGE_CUSTOM, geo_range_custom_distance=50)
@@ -1193,7 +1175,6 @@ class SiaeSearchOrderTest(TestCase):
         siae_1 = SiaeFactory(
             name="ZZ GEO Pontcharra",
             department="38",
-            # geo_range=siae_constants.GEO_RANGE_DEPARTMENT,
             coords=Point(6.0271, 45.4144),
         )
         siae_activity_1 = SiaeActivityFactory(siae=siae_1, with_zones_perimeter=True)
@@ -1201,16 +1182,12 @@ class SiaeSearchOrderTest(TestCase):
         siae_2 = SiaeFactory(
             name="ZZ GEO La Tronche",
             department="38",
-            # geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            # geo_range_custom_distance=10,
             coords=Point(5.746, 45.2124),
         )
         SiaeActivityFactory(siae=siae_2, geo_range=siae_constants.GEO_RANGE_CUSTOM, geo_range_custom_distance=10)
         siae_3 = SiaeFactory(
             name="ZZ GEO Grenoble",
             department="38",
-            # geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            # geo_range_custom_distance=10,
             coords=Point(5.7301, 45.1825),
         )
         SiaeActivityFactory(siae=siae_3, geo_range=siae_constants.GEO_RANGE_CUSTOM, geo_range_custom_distance=10)
