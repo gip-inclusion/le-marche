@@ -113,11 +113,20 @@ django-admin import_departements
 django-admin import_communes
 ```
 
-Des données de test peuvent être chargées ainsi (fixtures) :
+### Données de test
 
+- fixtures :
 ```bash
 ls -d lemarche/fixtures/django/* | xargs django-admin loaddata
 ```
+
+- commande Django :
+```bash
+django-admin create_content_pages
+```
+
+> **Remarque** : La commande `create_content_pages` crée 6 pages de types ContentPage :
+('accessibilite', 'cgu', 'cgu-api', 'confidentialite', 'mentions-legales' et 'qui-sommes-nous').
 
 ## API
 
