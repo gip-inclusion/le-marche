@@ -4,9 +4,7 @@ from django.views.generic import TemplateView
 from lemarche.www.pages.views import (
     CompanyReferenceCalculatorView,
     ContactView,
-    HomeView,
     ImpactCalculatorView,
-    PageView,
     SiaeGroupListView,
     SitemapView,
     SocialImpactBuyersCalculatorView,
@@ -20,7 +18,6 @@ from lemarche.www.pages.views import (
 app_name = "pages"
 
 urlpatterns = [
-    path("ancien_accueil", HomeView.as_view(), name="home"),
     path("contact/", ContactView.as_view(), name="contact"),
     # Calculator endpoints
     path("calibrer-achat-socialement-responsable/", ImpactCalculatorView.as_view(), name="impact_calculator"),
@@ -68,22 +65,6 @@ urlpatterns = [
     path("sentry-debug/", trigger_error, name="sentry_debug"),
     # Tracking endpoint for the frontend
     path("track/", TrackView.as_view(), name="track_frontend"),
-    # Flatpages (created in the admin: faq, qui-sommes-nous, cgu, confidentialité)
-    # TODO: move to wagtail?
-    # path("", include("django.contrib.flatpages.urls")),
-    # path("<path:url>", PageView.as_view(), name="flatpage"),  # conflict with wagtail_urls
-    path("qui-sommes-nous/", PageView.as_view(), {"url": "/qui-sommes-nous/"}, name="qui-sommes-nous"),
-    path("faq/", PageView.as_view(), {"url": "/faq/"}, name="faq"),
-    path(
-        "2021-10-06-le-marche-fait-peau-neuve/",
-        PageView.as_view(),
-        {"url": "/2021-10-06-le-marche-fait-peau-neuve/"},
-        name="2021-10-06-le-marche-fait-peau-neuve",
-    ),
-    path("mentions-legales/", PageView.as_view(), {"url": "/mentions-legales/"}, name="mentions-legales"),
-    path("cgu/", PageView.as_view(), {"url": "/cgu/"}, name="cgu"),
-    path("cgu-api/", PageView.as_view(), {"url": "/cgu-api/"}, name="cgu-api"),
-    path("confidentialite/", PageView.as_view(), {"url": "/confidentialite/"}, name="confidentialite"),
     path("plan-du-site/", SitemapView.as_view(), name="plan-du-site"),
     # Error pages
     path("403/", TemplateView.as_view(template_name="403.html"), name="403"),
