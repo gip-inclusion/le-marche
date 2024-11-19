@@ -24,9 +24,9 @@
                 <div class="fr-col-12 fr-col-sm-6 fr-col-md-3">
                     <h3 class="fr-footer__top-cat">Documentation</h3>
                     <ul class="fr-footer__top-list">
-                        <li><a class="fr-footer__top-link" href="{% url 'pages:faq' %}">Comment ça marche&nbsp;?</a></li>
+                        <li><a class="fr-footer__top-link" href="{{ ABOUT }}">Qui sommes-nous&nbsp;?</a></li>
                         <li><a class="fr-footer__top-link" href="{% url 'pages:decouvrir_inclusion' %}">C'est quoi l'inclusion&nbsp;?</a></li>
-                        <li><a class="fr-footer__top-link" href="{% url 'pages:qui-sommes-nous' %}">Qui sommes-nous&nbsp;?</a></li>
+                        <li><a class="fr-footer__top-link" href="{{ RESSOURCES }}">Nos ressources</a></li>
                     </ul>
                 </div>
                 <div class="fr-col-12 fr-col-sm-6 fr-col-md-3">
@@ -71,19 +71,19 @@
                     <a class="fr-footer__bottom-link" href="{% url 'pages:plan-du-site' %}">Plan du site</a>
                 </li>
                 <li class="fr-footer__bottom-item">
-                    <a class="fr-footer__bottom-link" href="{% url 'pages:accessibilite' %}">Accessibilité : non conforme</a>
+                    <a class="fr-footer__bottom-link" href="{{ ACCESSIBILITY }}" title="Accessibilité">Accessibilité : non conforme</a>
                 </li>
                 <li class="fr-footer__bottom-item">
-                    <a class="fr-footer__bottom-link" href="{% url 'pages:mentions-legales' %}" title="Mentions légales">Mentions légales</a>
+                    <a class="fr-footer__bottom-link" href="{{ LEGAL_INFO }}" title="Mentions légales">Mentions légales</a>
                 </li>
                 <li class="fr-footer__bottom-item">
-                    <a class="fr-footer__bottom-link" href="{% url 'pages:cgu' %}" title="Conditions générales">Conditions générales</a>
+                    <a class="fr-footer__bottom-link" href="{{ CGU }}" title="Conditions générales">Conditions générales</a>
                 </li>
                 <li class="fr-footer__bottom-item">
-                    <a class="fr-footer__bottom-link" href="{% url 'pages:cgu-api' %}" title="Conditions générales de l'API">Conditions générales de l'API</a>
+                    <a class="fr-footer__bottom-link" href="{{ CGU_API }}" title="Conditions générales de l'API">Conditions générales de l'API</a>
                 </li>
                 <li class="fr-footer__bottom-item">
-                    <a class="fr-footer__bottom-link" href="{% url 'pages:confidentialite' %}" title="Confidentialité">Confidentialité</a>
+                    <a class="fr-footer__bottom-link" href="{{ PRIVACY_POLICY }}" title="Confidentialité">Confidentialité</a>
                 </li>
                 <li class="fr-footer__bottom-item">
                     <a class="fr-footer__bottom-link" href="{% url 'pages:contact' %}">Nous contacter</a>
