@@ -1,6 +1,7 @@
 from unittest import mock
 
 from django.contrib.gis.geos import Point
+from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.urls import reverse
 
@@ -59,8 +60,9 @@ class SiaeSearchNumQueriesTest(TestCase):
     def test_search_num_queries(self):
         url = reverse("siae:search_results")
 
-        # fix cache issue in parallel testing context, "SELECT 'django_site'" query appears additionally otherwise
-        self.client.get(url)
+        # fix cache issue in parallel testing context because only first call fetches database
+        # See https://docs.djangoproject.com/en/5.1/ref/contrib/sites/#caching-the-current-site-object
+        Site.objects.get_current()
 
         with self.assertNumQueries(12):
             response = self.client.get(url)
