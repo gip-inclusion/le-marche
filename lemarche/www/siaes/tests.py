@@ -11,7 +11,7 @@ from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.factories import SiaeClientReferenceFactory, SiaeFactory, SiaeOfferFactory
+from lemarche.siaes.factories import SiaeActivityFactory, SiaeClientReferenceFactory, SiaeFactory, SiaeOfferFactory
 from lemarche.siaes.models import Siae
 from lemarche.users.factories import UserFactory
 from lemarche.www.siaes.forms import SiaeFilterForm
@@ -108,8 +108,12 @@ class SiaeKindSearchFilterTest(TestCase):
 class SiaePrestaTypeSearchFilterTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        SiaeFactory(presta_type=[siae_constants.PRESTA_DISP])
-        SiaeFactory(presta_type=[siae_constants.PRESTA_DISP, siae_constants.PRESTA_BUILD])
+        siae_1 = SiaeFactory()
+        SiaeActivityFactory(siae=siae_1, presta_type=[siae_constants.PRESTA_DISP])
+
+        siae_2 = SiaeFactory()
+        SiaeActivityFactory(siae=siae_2, presta_type=[siae_constants.PRESTA_DISP, siae_constants.PRESTA_BUILD])
+
         cls.user = UserFactory()
 
     def setUp(self):
@@ -190,9 +194,22 @@ class SiaeSectorSearchFilterTest(TestCase):
         cls.sector_1 = SectorFactory()
         cls.sector_2 = SectorFactory()
         cls.sector_3 = SectorFactory()
-        siae_with_one_sector.sectors.add(cls.sector_1)
-        siae_with_two_sectors.sectors.add(cls.sector_1, cls.sector_2)
-        siae_with_other_sector.sectors.add(cls.sector_3)
+        siae_with_one_sector_activity = SiaeActivityFactory(siae=siae_with_one_sector, sector_group=cls.sector_1.group)
+        siae_with_one_sector_activity.sectors.add(cls.sector_1)
+
+        siae_with_two_sectors_activity_1 = SiaeActivityFactory(
+            siae=siae_with_two_sectors, sector_group=cls.sector_1.group
+        )
+        siae_with_two_sectors_activity_1.sectors.add(cls.sector_1)
+        siae_with_two_sectors_activity_2 = SiaeActivityFactory(
+            siae=siae_with_two_sectors, sector_group=cls.sector_2.group
+        )
+        siae_with_two_sectors_activity_2.sectors.add(cls.sector_2)
+
+        siae_with_other_sector_activity = SiaeActivityFactory(
+            siae=siae_with_other_sector, sector_group=cls.sector_3.group
+        )
+        siae_with_other_sector_activity.sectors.add(cls.sector_3)
 
     def test_search_sector_empty(self):
         url = reverse("siae:search_results")
@@ -315,106 +332,119 @@ class SiaePerimeterSearchFilterTest(TestCase):
             coords=Point(47.9911, -4.1126),
         )
         # create the Siaes
-        SiaeFactory(
+        siae_1 = SiaeFactory(
             city=cls.grenoble_perimeter.name,
             department=cls.grenoble_perimeter.department_code,
             region=cls.auvergne_rhone_alpes_perimeter.name,
             post_code=cls.grenoble_perimeter.post_codes[0],
-            geo_range=siae_constants.GEO_RANGE_COUNTRY,
         )
-        SiaeFactory(
+        SiaeActivityFactory(siae=siae_1, with_country_perimeter=True)
+
+        siae_2 = SiaeFactory(
             city=cls.grenoble_perimeter.name,
             department=cls.grenoble_perimeter.department_code,
             region=cls.auvergne_rhone_alpes_perimeter.name,
             post_code=cls.grenoble_perimeter.post_codes[0],
-            geo_range=siae_constants.GEO_RANGE_REGION,
         )
-        SiaeFactory(
+        siae_2_activity = SiaeActivityFactory(siae=siae_2, with_zones_perimeter=True)
+        siae_2_activity.locations.add(cls.auvergne_rhone_alpes_perimeter)
+
+        siae_3 = SiaeFactory(
             city=cls.grenoble_perimeter.name,
             department=cls.grenoble_perimeter.department_code,
             region=cls.auvergne_rhone_alpes_perimeter.name,
             post_code=cls.grenoble_perimeter.post_codes[1],
-            geo_range=siae_constants.GEO_RANGE_DEPARTMENT,
         )
-        SiaeFactory(
+        siae_3_activity = SiaeActivityFactory(siae=siae_3, with_zones_perimeter=True)
+        siae_3_activity.locations.add(cls.isere_perimeter)
+
+        siae_4 = SiaeFactory(
             city=cls.grenoble_perimeter.name,
             department=cls.grenoble_perimeter.department_code,
             region=cls.auvergne_rhone_alpes_perimeter.name,
             post_code=cls.grenoble_perimeter.post_codes[2],
-            geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            geo_range_custom_distance=10,
             coords=Point(5.7301, 45.1825),
         )
+        SiaeActivityFactory(siae=siae_4, geo_range=siae_constants.GEO_RANGE_CUSTOM, geo_range_custom_distance=10)
+
         # La Tronche is a city located just next to Grenoble
-        SiaeFactory(
+        siae_5 = SiaeFactory(
             city="La Tronche",
             department="38",
             region=cls.auvergne_rhone_alpes_perimeter.name,
-            geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            geo_range_custom_distance=10,
             coords=Point(5.746, 45.2124),
         )
+        SiaeActivityFactory(siae=siae_5, geo_range=siae_constants.GEO_RANGE_CUSTOM, geo_range_custom_distance=10)
+
         # Chamrousse is a city located further away from Grenoble
-        SiaeFactory(
+        siae_6 = SiaeFactory(
             city=cls.chamrousse_perimeter.name,
             department="38",
             region=cls.auvergne_rhone_alpes_perimeter.name,
-            geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            geo_range_custom_distance=5,
             coords=Point(5.8862, 45.1106),
         )
-        SiaeFactory(
+        SiaeActivityFactory(siae=siae_6, geo_range=siae_constants.GEO_RANGE_CUSTOM, geo_range_custom_distance=5)
+
+        siae_7 = SiaeFactory(
             city="Lyon",
             department="69",
             region=cls.auvergne_rhone_alpes_perimeter.name,
-            geo_range=siae_constants.GEO_RANGE_COUNTRY,
         )
-        SiaeFactory(
+        SiaeActivityFactory(siae=siae_7, with_country_perimeter=True)
+
+        siae_8 = SiaeFactory(
             city="Lyon",
             department="69",
             region=cls.auvergne_rhone_alpes_perimeter.name,
-            geo_range=siae_constants.GEO_RANGE_REGION,
         )
-        SiaeFactory(
+        siae_8_activity = SiaeActivityFactory(siae=siae_8, with_zones_perimeter=True)
+        siae_8_activity.locations.add(cls.auvergne_rhone_alpes_perimeter)
+        siae_9 = SiaeFactory(
             city="Lyon",
             department="69",
             region=cls.auvergne_rhone_alpes_perimeter.name,
-            geo_range=siae_constants.GEO_RANGE_DEPARTMENT,
         )
-        SiaeFactory(
+        siae_9_activity = SiaeActivityFactory(siae=siae_9, with_zones_perimeter=True)
+        siae_9_activity.locations.add(cls.isere_perimeter)
+
+        siae_10 = SiaeFactory(
             city="Lyon",
             department="69",
             region=cls.auvergne_rhone_alpes_perimeter.name,
-            geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            geo_range_custom_distance=50,
             coords=Point(4.8236, 45.7685),
         )
-        SiaeFactory(
+        SiaeActivityFactory(siae=siae_10, geo_range=siae_constants.GEO_RANGE_CUSTOM, geo_range_custom_distance=50)
+
+        siae_11 = SiaeFactory(
             city=cls.quimper_perimeter.name,
             department=cls.quimper_perimeter.department_code,
             region=cls.bretagne_perimeter.name,
-            geo_range=siae_constants.GEO_RANGE_COUNTRY,
         )
-        SiaeFactory(
+        SiaeActivityFactory(siae=siae_11, with_country_perimeter=True)
+
+        siae_12 = SiaeFactory(
             city=cls.quimper_perimeter.name,
             department=cls.quimper_perimeter.department_code,
             region=cls.bretagne_perimeter.name,
-            geo_range=siae_constants.GEO_RANGE_REGION,
         )
-        SiaeFactory(
+        siae_12_activity = SiaeActivityFactory(siae=siae_12, with_zones_perimeter=True)
+        siae_12_activity.locations.add(cls.bretagne_perimeter)
+
+        siae_13 = SiaeFactory(
             city=cls.quimper_perimeter.name,
             department=cls.quimper_perimeter.department_code,
             region=cls.bretagne_perimeter.name,
-            geo_range=siae_constants.GEO_RANGE_DEPARTMENT,
         )
-        SiaeFactory(
+        siae_13_activity = SiaeActivityFactory(siae=siae_13, with_zones_perimeter=True)
+        siae_13_activity.locations.add(cls.finister_perimeter)
+
+        siae_14 = SiaeFactory(
             city=cls.quimper_perimeter.name,
             department=cls.quimper_perimeter.department_code,
             region=cls.bretagne_perimeter.name,
-            geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            geo_range_custom_distance=50,
             coords=Point(47.9914, -4.0916),
         )
+        SiaeActivityFactory(siae=siae_14, geo_range=siae_constants.GEO_RANGE_CUSTOM, geo_range_custom_distance=50)
 
     def test_object_count(self):
         self.assertEqual(Perimeter.objects.count(), 7)
@@ -441,7 +471,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
     def test_search_perimeter_department(self):
         form = SiaeFilterForm(data={"perimeters": [self.isere_perimeter]})
         qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 6)
+        self.assertEqual(qs.count(), 8)
 
     def test_search_perimeter_city(self):
         """
@@ -449,11 +479,13 @@ class SiaePerimeterSearchFilterTest(TestCase):
         - all the Siae exactly in the city - Grenoble (4 Siae)
         + all the Siae in the city's department (except GEO_RANGE_CUSTOM) - Isere (0 new Siae)
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble (1 new Siae: La Tronche. Chamrousse is outside)  # noqa
+        + all the Siae with activities in the region Auvergne-Rhône-Alpes (1 new Siae)
+        + all the Siae with activities in the department Isere (1 new Siae)
         """
         form = SiaeFilterForm(data={"perimeters": [self.grenoble_perimeter.slug]})
         self.assertTrue(form.is_valid())
         qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 4 + 0 + 1)
+        self.assertEqual(qs.count(), 4 + 0 + 1 + 1 + 1)
 
     def test_search_perimeter_city_2(self):
         """
@@ -461,10 +493,12 @@ class SiaePerimeterSearchFilterTest(TestCase):
         - all the Siae exactly in the city - Chamrousse (1 Siae)
         + all the Siae in the city's department (except GEO_RANGE_CUSTOM) - Isere (3 new Siae)
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble (1 Siae, 0 new: Chamrousse. Grenoble & La Tronche are outside)  # noqa
+        + all the Siae with activities in the region Auvergne-Rhône-Alpes (0 new Siae, siae_8 already matched by city's department)  # noqa
+        + all the Siae with activities in the department Isere (1 new Siae)
         """
         form = SiaeFilterForm(data={"perimeters": [self.chamrousse_perimeter]})
         qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 1 + 3 + 0)
+        self.assertEqual(qs.count(), 1 + 3 + 0 + 0 + 1)
 
     def test_search_perimeter_multiperimeter_1(self):
         """
@@ -472,10 +506,12 @@ class SiaePerimeterSearchFilterTest(TestCase):
         - all the Siae exactly in these cities - Grenoble & Chamrousse (4 + 1 Siae)
         + all the Siae in the cities departments (except GEO_RANGE_CUSTOM) - Isere (0 new Siae)
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble or Chamrousse (2 Siae, 1 new) # noqa
+        + all the Siae with activities in the region Auvergne-Rhône-Alpes (1 new Siae)
+        + all the Siae with activities in the department Isere (1 new Siae)
         """
         form = SiaeFilterForm(data={"perimeters": [self.grenoble_perimeter, self.chamrousse_perimeter]})
         qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 5 + 0 + 1)
+        self.assertEqual(qs.count(), 5 + 0 + 1 + 1 + 1)
 
     def test_search_perimeter_multiperimeter_2(self):
         """
@@ -483,10 +519,12 @@ class SiaePerimeterSearchFilterTest(TestCase):
         - all the Siae exactly in these cities - Grenoble & Quimper (4 + 4)
         + all the Siae in the cities departments (except GEO_RANGE_CUSTOM) - Isere & 29 (0 new Siae)
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble or Quimper (1 new Siae) # noqa
+        + all the Siae with activities in the region Auvergne-Rhône-Alpes (1 new Siae)
+        + all the Siae with activities in the department Isere (0 new Siae, siae_9 already matched by city's department)
         """
         form = SiaeFilterForm(data={"perimeters": [self.grenoble_perimeter, self.quimper_perimeter]})
         qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 8 + 0 + 1)
+        self.assertEqual(qs.count(), 8 + 0 + 1 + 1 + 0)
 
     def test_search_perimeter_multiperimeter_error(self):
         """
@@ -1080,6 +1118,9 @@ class SiaeSearchOrderTest(TestCase):
         SiaeFactory(name="Ma boite")
         SiaeFactory(name="Une autre structure")
         SiaeFactory(name="ABC Insertion")
+        cls.isere_perimeter = PerimeterFactory(
+            name="Isère", kind=Perimeter.KIND_DEPARTMENT, insee_code="38", region_code="84"
+        )
         cls.grenoble_perimeter = PerimeterFactory(
             name="Grenoble",
             kind=Perimeter.KIND_CITY,
@@ -1137,26 +1178,25 @@ class SiaeSearchOrderTest(TestCase):
         self.assertEqual(siaes[0].name, "ZZ ESI offer")
 
     def test_should_bring_the_siae_closer_to_the_city_to_the_top(self):
-        SiaeFactory(
+        siae_1 = SiaeFactory(
             name="ZZ GEO Pontcharra",
             department="38",
-            geo_range=siae_constants.GEO_RANGE_DEPARTMENT,
             coords=Point(6.0271, 45.4144),
         )
-        SiaeFactory(
+        siae_activity_1 = SiaeActivityFactory(siae=siae_1, with_zones_perimeter=True)
+        siae_activity_1.locations.add(self.isere_perimeter)
+        siae_2 = SiaeFactory(
             name="ZZ GEO La Tronche",
             department="38",
-            geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            geo_range_custom_distance=10,
             coords=Point(5.746, 45.2124),
         )
-        SiaeFactory(
+        SiaeActivityFactory(siae=siae_2, geo_range=siae_constants.GEO_RANGE_CUSTOM, geo_range_custom_distance=10)
+        siae_3 = SiaeFactory(
             name="ZZ GEO Grenoble",
             department="38",
-            geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            geo_range_custom_distance=10,
             coords=Point(5.7301, 45.1825),
         )
+        SiaeActivityFactory(siae=siae_3, geo_range=siae_constants.GEO_RANGE_CUSTOM, geo_range_custom_distance=10)
         url = f"{self.url}?perimeters={self.grenoble_perimeter.slug}"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
