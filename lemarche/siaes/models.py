@@ -1008,8 +1008,12 @@ class Siae(models.Model):
             return "Intérim"
         if self.kind == siae_constants.KIND_AI:
             return "Mise à disposition du personnel"
-        if self.presta_type:
-            return choice_array_to_values(siae_constants.PRESTA_CHOICES, self.presta_type)
+        if self.activities.exists():
+            presta_types = set()
+            for activity in self.activities.all():
+                if activity.presta_type:
+                    presta_types.update(activity.presta_type)
+            return choice_array_to_values(siae_constants.PRESTA_CHOICES, list(presta_types))
         return ""
 
     @property

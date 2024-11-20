@@ -120,6 +120,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
                 current_sectors = siae_search_form.cleaned_data.get("sectors")
                 if current_sectors:
                     context["current_sectors"] = list(current_sectors.values("id", "slug", "name"))
+                    context["current_sector_groups"] = list(set(sector.group for sector in current_sectors))
 
         # store the current search query in the session
         current_search_query = self.request.GET.urlencode()
