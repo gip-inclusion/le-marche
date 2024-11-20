@@ -73,12 +73,14 @@ class SiaeEditSearchForm(forms.ModelForm):
         choices=siae_constants.PRESTA_CHOICES,
         required=True,
         widget=forms.CheckboxSelectMultiple,
+        disabled=True,
     )
     geo_range = forms.ChoiceField(
         label=Siae._meta.get_field("geo_range").verbose_name,
         choices=siae_constants.GEO_RANGE_CHOICES,
         required=True,
         widget=forms.RadioSelect,
+        disabled=True,
     )
     sectors = GroupedModelMultipleChoiceField(
         label=Sector._meta.verbose_name_plural,
@@ -86,6 +88,7 @@ class SiaeEditSearchForm(forms.ModelForm):
         choices_groupby="group",
         required=True,
         widget=forms.CheckboxSelectMultiple,
+        disabled=True,
     )
 
     class Meta:
