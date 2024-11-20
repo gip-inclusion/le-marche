@@ -912,6 +912,14 @@ WAGTAILTRANSFER_SECRET_KEY = os.getenv("WAGTAILTRANSFER_SOURCES_PROD_SECRET", "7
 # Specific home and purchasing impact page is setted here to avoid queries on every page
 SIAE_HOME_PAGE = env.str("SIAE_HOME_PAGE", "/accueil-structure/")
 PURCHASING_IMPACT_PAGE = env.str("PURCHASING_IMPACT_PAGE", "/impact-rse/")
+# Static pages
+ABOUT = env.str("ABOUT", "/qui-sommes-nous/")
+ACCESSIBILITY = env.str("ACCESSIBILITY", "/accessibilite/")
+CGU = env.str("CGU", "/cgu/")
+CGU_API = env.str("CGU_API", "/cgu-api/")
+LEGAL_INFO = env.str("LEGAL_INFO", "/mentions-legales/")
+PRIVACY_POLICY = env.str("PRIVACY_POLICY", "/confidentialite/")
+RESSOURCES = env.str("RESSOURCES", "/ressources/")
 
 # Increase throttling to avoid Bad request errors when saving large pages
 # https://docs.djangoproject.com/en/4.2/ref/settings/#data-upload-max-number-fields
