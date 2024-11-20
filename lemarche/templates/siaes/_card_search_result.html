@@ -6,20 +6,28 @@
                 <div class="fr-col-1">
                     {% if siae.logo_url %}
                         <img src="{{ siae.logo_url }}"
-                                class="fr-responsive-img"
-                                alt="Logo de la structure {{ siae.name }}"
-                                loading="lazy" />
+                             class="fr-responsive-img"
+                             alt="Logo de la structure {{ siae.name }}"
+                             loading="lazy" />
                     {% else %}
                         <img src="{% static 'img/default-listing.png' %}"
-                                class="fr-responsive-img"
-                                alt="{{ siae.name }}"
-                                loading="lazy" />
+                             class="fr-responsive-img"
+                             alt="{{ siae.name }}"
+                             loading="lazy" />
                     {% endif %}
                 </div>
                 <div class="fr-col-10 fr-col-lg-7">
                     <h3 class="fr-card__title">
                         <a href="{% url 'siae:detail' siae.slug %}">{{ siae.name_display }}</a>
                     </h3>
+                    <p class="fr-text--xs fr-mt-4v">
+                        <span class="fr-badge fr-badge--blue-cumulus fr-mr-2v"
+                              aria-describedby="tooltip-{{ siae.pk }}">{{ siae.kind }}</span> {{ siae.presta_type_display }}
+                        <span class="fr-tooltip fr-placement"
+                              id="tooltip-{{ siae.pk }}"
+                              role="tooltip"
+                              aria-hidden="true">{{ siae.get_kind_display }}</span>
+                    </p>
                 </div>
                 <div class="fr-col-12 fr-col-lg-4">
                     <ul class="fr-tags-group lemarche--align-right">
@@ -27,7 +35,7 @@
                         {% if siae.is_qpv %}
                             <li>
                                 <span class="fr-tag"
-                                        title="Quartier prioritaire de la politique de la ville">QPV</span>
+                                      title="Quartier prioritaire de la politique de la ville">QPV</span>
                             </li>
                         {% endif %}
                         {% if siae.is_zrr %}
@@ -39,63 +47,50 @@
                         <li>
                             {% if user.is_authenticated %}
                                 {% if from_profile or siae.in_user_favorite_list_count_annotated %}
-                                    <button 
-                                        id="favorite-remove-modal-btn"
-                                        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-star-fill"
-                                        x-data="favoriteItem"
-                                        x-init="initOptions('{{ siae.slug }}', '{{ siae.name_display|escapejs }}')"
-                                        @click="remove"
-                                        title="Dans votre liste d'achat">
-                                        Supprimer de votre liste d'achat
-                                    </button>
+                                    <button id="favorite-remove-modal-btn"
+                                            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-star-fill"
+                                            x-data="favoriteItem"
+                                            x-init="initOptions('{{ siae.slug }}', '{{ siae.name_display|escapejs }}')"
+                                            @click="remove"
+                                            title="Dans votre liste d'achat">Supprimer de votre liste d'achat</button>
                                 {% else %}
-                                    <button
-                                        id="favorite-add-modal-btn"
-                                        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-star-line"
-                                        x-data="favoriteItem"
-                                        x-init="initOptions('{{ siae.slug }}', '{{ siae.name_display|escapejs }}')"
-                                        @click="add"
-                                        title="Ajouter à votre liste d'achat">
+                                    <button id="favorite-add-modal-btn"
+                                            class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-star-line"
+                                            x-data="favoriteItem"
+                                            x-init="initOptions('{{ siae.slug }}', '{{ siae.name_display|escapejs }}')"
+                                            @click="add"
+                                            title="Ajouter à votre liste d'achat">
                                         Ajouter à votre liste d'achat
                                     </button>
                                 {% endif %}
                             {% else %}
-                                <button
-                                    id="favorite-modal-btn"
-                                    class="fr-btn fr-btn--tertiary-no-outline fr-icon-star-line"
-                                    data-fr-opened="false"
-                                    aria-controls="login_or_signup_modal"
-                                    data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}"
-                                    title="Ajouter à votre liste d'achat">
+                                <button id="favorite-modal-btn"
+                                        class="fr-btn fr-btn--tertiary-no-outline fr-icon-star-line"
+                                        data-fr-opened="false"
+                                        aria-controls="login_or_signup_modal"
+                                        data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}"
+                                        title="Ajouter à votre liste d'achat">
                                     Se connecter pour Ajouter à votre liste d'achat
                                 </button>
                             {% endif %}
                         </li>
                     </ul>
                 </div>
-                <div class="fr-col-12">
-                    <span class="fr-tag">{{ siae.get_kind_display }}</span>
-                </div>
-                <div class="fr-col-12 fr-col-lg-6">
-                    <p>
-                        <span class="fr-icon-briefcase-line" aria-hidden="true"></span> {{ siae.presta_type_display }}
-                    </p>
-                </div>
-                <div class="fr-col-12 fr-col-lg-6">
-                    <p>{% siae_sectors_display siae display_max=3 current_search_query=current_search_query %}</p>
-                </div>
             </div>
             <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col-12">
-                    <p class="fr-m-0">
-                        <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
-                        {{ siae.city }}
-                        <span class="fr-icon-road-map-line fr-ml-2w" aria-hidden="true"></span>
-                        {{ siae.geo_range_pretty_display }}
-                    </p>
+                    {% siae_sector_groups_display siae display_max=3 current_sector_groups=current_sector_groups %}
                     {% if user.is_authenticated and user.is_admin and not siae.user_count %}
                         <p class="fr-card__detail fr-icon-warning-fill fr-mt-3w">pas encore inscrite</p>
                     {% endif %}
+                </div>
+            </div>
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-lg-6">
+                    <p class="fr-m-0 fr-mt-4v">
+                        <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
+                        {{ siae.city }}
+                    </p>
                 </div>
             </div>
         </div>

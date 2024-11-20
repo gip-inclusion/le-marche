@@ -1,0 +1,12 @@
+<ul class="fr-tags-group">
+    {% for sector_group in current_search_sector_groups %}
+        <li>
+            <span class="fr-tag fr-tag--green-emeraude fr-tag--sm">{{ sector_group }}</span>
+        </li>
+    {% endfor %}
+    {% for sector_group in sector_groups %}
+        <li>
+            <span class="fr-tag fr-tag--sm">{{ sector_group }}</span>
+        </li>
+    {% endfor %}
+</ul>
