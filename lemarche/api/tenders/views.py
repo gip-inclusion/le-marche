@@ -2,9 +2,10 @@ from django.conf import settings
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import mixins, viewsets
+from rest_framework.permissions import IsAuthenticated
 
 from lemarche.api.tenders.serializers import TenderSerializer
-from lemarche.api.utils import BasicChoiceSerializer, check_user_token
+from lemarche.api.utils import BasicChoiceSerializer
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender
 from lemarche.users import constants as user_constants
@@ -16,6 +17,7 @@ PARTNER_APPROCH_UPDATE_FIELDS = ["title", "description", "deadline_date", "exter
 
 
 class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    permission_classes = [IsAuthenticated]
     serializer_class = TenderSerializer
 
     @extend_schema(
@@ -26,8 +28,6 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         ],
     )
     def create(self, request, *args, **kwargs):
-        token = request.GET.get("token", None)
-        check_user_token(token)
         return super().create(request, args, kwargs)
 
     def perform_create(self, serializer: TenderSerializer):
