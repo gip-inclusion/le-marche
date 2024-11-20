@@ -5,7 +5,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.db.models import Count
 from django.db.models.functions import Greatest, Lower
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.forms.models import model_to_dict
 from django.utils import timezone
@@ -231,6 +231,7 @@ class User(AbstractUser):
     )
 
     api_key = models.CharField(verbose_name="Clé API", max_length=128, unique=True, blank=True, null=True)
+    old_api_keys = models.JSONField(verbose_name="Anciennes clés API", blank=True, default=list)
     api_key_last_updated = models.DateTimeField(
         verbose_name="Date de dernière mise à jour de la clé API", blank=True, null=True
     )
@@ -408,6 +409,24 @@ class User(AbstractUser):
         from lemarche.tenders.models import Tender
 
         return Tender.objects.unread(self).count()
+
+
+@receiver(pre_save, sender=User)
+def update_old_api_keys(sender, instance, **kwargs):
+    """
+    Before saving a user, add the old value of `api_key` to `old_api_keys`
+    if `api_key` has been modified.
+    """
+    if instance.pk:  # Check if the user already exists (not a new creation)
+        try:
+            old_instance = sender.objects.get(pk=instance.pk)
+            if old_instance.api_key != instance.api_key and old_instance.api_key:
+                # Add the old key to the list of old keys
+                if instance.old_api_keys is None:
+                    instance.old_api_keys = list()
+                instance.old_api_keys.append(old_instance.api_key)
+        except sender.DoesNotExist:
+            pass  # The user does not exist yet
 
 
 @receiver(post_save, sender=User)
