@@ -3,21 +3,19 @@ import json
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import Http404, HttpResponsePermanentRedirect, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import DetailView, FormView, ListView, TemplateView, View
+from django.views.generic import FormView, ListView, TemplateView, View
 from django.views.generic.edit import FormMixin
 
-from lemarche.pages.models import Page, PageFragment
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae, SiaeGroup
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderStepsData
 from lemarche.users import constants as user_constants
-from lemarche.users.models import User
 from lemarche.utils.emails import add_to_contact_list
 from lemarche.utils.tracker import track
 from lemarche.www.pages.forms import (
@@ -32,34 +30,6 @@ from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_us
 from lemarche.www.tenders.views import TenderCreateMultiStepView
 
 from wagtail.models import Site as WagtailSite
-
-
-class HomeView(TemplateView):
-    template_name = "pages/home.html"
-
-    def get(self, request, *args, **kwargs):
-        """Check if there is any custom message to display."""
-        message = request.GET.get("message", None)
-        # On newsletter subscription success, users will be redirected to our website + show them a short message
-        if message == "newsletter-success":
-            messages.add_message(request, messages.INFO, "Merci de votre inscription à notre newsletter !")
-        return super().get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        """
-        - add sub_header
-        - add stats
-        - add SIAE that should appear in the section "à la une"
-        """
-        context = super().get_context_data(**kwargs)
-        try:
-            context["sub_header_custom_message"] = PageFragment.objects.get(title="Bandeau", is_live=True).content
-        except PageFragment.DoesNotExist:
-            pass
-        context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
-        context["siae_count"] = Siae.objects.is_live().count()
-        context["tender_count"] = Tender.objects.sent().count() + 30  # historic number (before form)
-        return context
 
 
 class ContactView(SuccessMessageMixin, FormView):
@@ -110,29 +80,6 @@ class StatsView(TemplateView):
         context = super().get_context_data(**kwargs)
         context["METABASE_PUBLIC_DASHBOARD_URL"] = settings.METABASE_PUBLIC_DASHBOARD_URL
         return context
-
-
-class PageView(DetailView):
-    context_object_name = "flatpage"
-    template_name = "pages/flatpage_template.html"
-
-    def get(self, request, *args, **kwargs):
-        url = self.kwargs.get("url")
-        if not url.endswith("/"):
-            return HttpResponsePermanentRedirect(url + "/")
-        return super().get(request, *args, **kwargs)
-
-    def get_object(self):
-        url = self.kwargs.get("url")
-        if not url.startswith("/"):
-            url = "/" + url
-
-        try:
-            page = Page.objects.get(url=url)
-        except Page.DoesNotExist:
-            raise Http404("Page inconnue")
-
-        return page
 
 
 class TrackView(View):
