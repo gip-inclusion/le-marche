@@ -134,7 +134,7 @@ class DashboardSiaeEditViewTest(TestCase):
 
     def test_only_siae_user_can_access_siae_edit_tabs(self):
         SIAE_EDIT_URLS = [
-            "dashboard_siaes:siae_edit_search",
+            "dashboard_siaes:siae_edit_activities",
             "dashboard_siaes:siae_edit_info",
             "dashboard_siaes:siae_edit_offer",
             "dashboard_siaes:siae_edit_links",
