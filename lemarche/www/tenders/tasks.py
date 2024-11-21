@@ -372,7 +372,13 @@ def send_confirmation_published_email_to_author(tender: Tender):
     """
     Send email to the author when the tender is published to the siaes
     """
-    email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_CONFIRMATION_VALIDATED")
+
+    template_code = (
+        "TENDERS_AUTHOR_CONFIRMATION_VALIDATED_COMMERCIAL_PARTNERS"
+        if tender.send_to_commercial_partners_only
+        else "TENDERS_AUTHOR_CONFIRMATION_VALIDATED"
+    )
+    email_template = TemplateTransactional.objects.get(code=template_code)
     recipient_list = whitelist_recipient_list([tender.author.email])
     if len(recipient_list):
         recipient_email = recipient_list[0]
