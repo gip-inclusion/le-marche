@@ -1,3 +1,6 @@
+import random
+import string
+
 from rest_framework import serializers
 from rest_framework.exceptions import APIException
 
@@ -34,6 +37,10 @@ def custom_preprocessing_hook(endpoints):
         if path.startswith("/api/"):
             filtered.append((path, path_regex, method, callback))
     return filtered
+
+
+def generate_random_string():
+    return "".join(random.choices(string.ascii_letters + string.digits, k=20))
 
 
 class BasicChoiceSerializer(serializers.Serializer):
