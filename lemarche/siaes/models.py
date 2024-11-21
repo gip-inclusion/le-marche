@@ -1582,7 +1582,7 @@ class SiaeActivity(models.Model):
 
     @property
     def presta_type_display(self) -> str:
-        return choice_array_to_values(siae_constants.PRESTA_CHOICES, self.presta_type)
+        return choice_array_to_values(siae_constants.PRESTA_CHOICES, self.presta_type) if self.presta_type else ""
 
     @property
     def geo_range_pretty_display(self):

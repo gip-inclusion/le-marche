@@ -9,11 +9,13 @@
         <ul>
             {% siae_sectors_display activity display_max=6 output_format='li' %}
         </ul>
-        <p class="fr-mt-4w">
-            <span class="fr-icon-briefcase-line" aria-hidden="true"></span>
-            <span class="fr-sr-only">Type(s) de prestation :</span>
-            <span>{{ activity.presta_type_display }}</span>
-        </p>
+        {% if activity.presta_type %}
+            <p class="fr-mt-4w">
+                <span class="fr-icon-briefcase-line" aria-hidden="true"></span>
+                <span class="fr-sr-only">Type(s) de prestation :</span>
+                <span>{{ activity.presta_type_display }}</span>
+            </p>
+        {% endif %}
         <p>
             <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
             <span class="fr-sr-only">Intervient sur :</span>
