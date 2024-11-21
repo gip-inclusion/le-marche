@@ -6,6 +6,26 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2024.7.0](https://github.com/gip-inclusion/le-marche/compare/v2024.6.0...v2024.7.0) (2024-11-21)
+
+
+### Features
+
+* **Activités des structures:** Adaptation de l'affichage des secteurs d'activités des structures ([#1517](https://github.com/gip-inclusion/le-marche/issues/1517)) ([fa792d0](https://github.com/gip-inclusion/le-marche/commit/fa792d02a1a1de128cdedc408c3a5c64670b0c2d))
+* **Activités des structures:** Adaptation de la recherche des Siaes ([#1519](https://github.com/gip-inclusion/le-marche/issues/1519)) ([b3a57e8](https://github.com/gip-inclusion/le-marche/commit/b3a57e8cdd997468f62b9955a18995b220d1a6df))
+* **Activités des structures:** Remplacement de l'onglet "Votre référencement" ([#1505](https://github.com/gip-inclusion/le-marche/issues/1505)) ([273a11b](https://github.com/gip-inclusion/le-marche/commit/273a11b865cdc32149063178ea7dfcc2bdbf81a2))
+* Ajout d'attributs de contact pour les acheteurs inscrits ([#1468](https://github.com/gip-inclusion/le-marche/issues/1468)) ([e508900](https://github.com/gip-inclusion/le-marche/commit/e5089008f713531b01b925cbafb3d4fbc03f68a6))
+* Ajout d'un sitemap ([#1450](https://github.com/gip-inclusion/le-marche/issues/1450)) ([6895348](https://github.com/gip-inclusion/le-marche/commit/68953481080dbc63aaa9e4cab47d10ef779c357a))
+* **Besoin:** Ajout d'un template de mail transactionnel quand le besoin est suivi par un partenaire commercial ([#1533](https://github.com/gip-inclusion/le-marche/issues/1533)) ([4939bf0](https://github.com/gip-inclusion/le-marche/commit/4939bf02a559177897eb539ec752e57f6d1f11ac))
+
+
+### Bug Fixes
+
+* **Activités des structures:** ajout de la correspondance directe sur la ville, le département ou la région de la structure ([#1487](https://github.com/gip-inclusion/le-marche/issues/1487)) ([21e97c4](https://github.com/gip-inclusion/le-marche/commit/21e97c428214e73c419e5ad0182cc19b2ace9636))
+* **Activités des structures:** Correction de l'affichage des fiches structures sans type de prestation ([#1532](https://github.com/gip-inclusion/le-marche/issues/1532)) ([810669e](https://github.com/gip-inclusion/le-marche/commit/810669e19048b4a8c0d533c6eb9b19865e0cc509))
+* Affichage du détail du dépôt de besoin ([#1515](https://github.com/gip-inclusion/le-marche/issues/1515)) ([b0b3a70](https://github.com/gip-inclusion/le-marche/commit/b0b3a706517442676fce76f2a18ff864fdfb3f12))
+* Correction au niveau des logos d'entête ([#1538](https://github.com/gip-inclusion/le-marche/issues/1538)) ([443dc3f](https://github.com/gip-inclusion/le-marche/commit/443dc3fd086971803e75dab7afb8ce28921b179c))
+
 ## [2024.6.0](https://github.com/gip-inclusion/le-marche/compare/v2024.5.0...v2024.6.0) (2024-10-31)
 
 
