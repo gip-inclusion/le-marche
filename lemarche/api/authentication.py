@@ -59,7 +59,18 @@ class CustomBearerAuthentication(BaseAuthentication):
 
 class DeprecationWarningMiddleware:
     """
-    Middleware pour informer les utilisateurs que l'authentification via URL `?token=` est dépréciée.
+    Middleware to inform users that authentication via URL `?token=` is deprecated.
+
+    This middleware checks if the request contains a deprecated authentication token
+    and adds a warning header to the response if it does.
+
+    Attributes:
+        get_response (callable): The next middleware or view in the chain.
+
+    Methods:
+        __call__(request):
+            Processes the request and adds a deprecation warning header to the response
+            if the request contains a deprecated authentication token.
     """
 
     def __init__(self, get_response):
@@ -70,8 +81,8 @@ class DeprecationWarningMiddleware:
 
         # Ajoute un warning si le marqueur est défini dans la requête
         if hasattr(request, "_deprecated_auth_warning") and request._deprecated_auth_warning:
-            response["Deprecation-Warning"] = (
-                "URL token authentication is deprecated and will be removed on [date]. "
+            response.headers["Deprecation-Warning"] = (
+                "URL token authentication is deprecated and will be removed on 2025/01. "
                 "Please use Authorization header with Bearer tokens."
             )
 
