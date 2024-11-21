@@ -15,9 +15,11 @@
             <div class="fr-header__logo">
               {% block brand %}
                 {% translate "Home page" as home_page %}
-                <a href="/" title="{{ home_page }} — {{ SITE_CONFIG.header_brand }}">
+                <a href="/" title="{{ home_page }} — Le marché de l'inclusion">
                   <p class="fr-logo">
-                    {{ SITE_CONFIG.header_brand_html|default_if_none:"république<br />française" | safe }}
+                    République
+                    <br />
+                    Française
                   </p>
                 </a>
               {% endblock brand %}
@@ -25,7 +27,7 @@
             <div class="fr-header__operator">
               <a href="{{ HOME_PAGE_PATH }}">
                 <img class="fr-responsive-img"
-                     style="max-width:16rem"
+                     style="max-width:15rem"
                      src="{% static_theme_images 'logo-marche-inclusion.svg' %}"
                      alt="Le marché de l'inclusion">
               </a>
