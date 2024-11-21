@@ -1,7 +1,6 @@
 {% load static compress dsfr_tags %}
 <!DOCTYPE html>
-<html lang="{% block lang %}fr{% endblock lang %}"
-      {% if SITE_CONFIG.mourning %}data-fr-mourning{% endif %}>
+<html lang="{% block lang %}fr{% endblock lang %}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport"
@@ -48,9 +47,6 @@
     {% block header %}
       {% include "layouts/_header.html" %}
     {% endblock header %}
-    {% if SITE_CONFIG.notice %}
-      {% dsfr_notice title=SITE_CONFIG.notice %}
-    {% endif %}
     {% block breadcrumb %}
       {% comment %} empty because managed for each type of page {% endcomment %}
     {% endblock breadcrumb %}

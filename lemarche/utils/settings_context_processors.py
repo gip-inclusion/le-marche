@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.urls import reverse_lazy
 
-from content_manager.models import CmsDsfrConfig
 from lemarche.users.models import User
 
 
@@ -16,8 +15,6 @@ def expose_settings(request):
     if request.user.is_authenticated and request.user.kind == User.KIND_SIAE:
         home_page = settings.SIAE_HOME_PAGE
 
-    site_config = CmsDsfrConfig.objects.first()
-
     return {
         "BITOUBI_ENV": settings.BITOUBI_ENV,
         "BITOUBI_ENV_COLOR": settings.BITOUBI_ENV_COLOR,
@@ -30,7 +27,6 @@ def expose_settings(request):
         # template & wording
         "BASE_TEMPLATE": base_template,
         "HOME_PAGE_PATH": home_page,
-        "SITE_CONFIG": site_config,
         "ABOUT": settings.ABOUT,
         "ACCESSIBILITY": settings.ACCESSIBILITY,
         "CGU": settings.CGU,
