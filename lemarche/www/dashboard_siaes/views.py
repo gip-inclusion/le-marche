@@ -225,7 +225,7 @@ class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, CreateView):
         return reverse_lazy("dashboard_siaes:siae_edit_activities", args=[self.kwargs.get("slug")])
 
     def get_success_message(self, cleaned_data):
-        return mark_safe(f"Votre activité <strong>{cleaned_data['sector_group']}</strong> a été crée avec succès.")
+        return mark_safe(f"Votre activité <strong>{cleaned_data['sector_group']}</strong> a été créée avec succès.")
 
 
 class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
