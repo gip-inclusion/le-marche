@@ -10,11 +10,16 @@ def create_template(apps, schema_editor):
     )
 
 
+def delete_template(apps, schema_editor):
+    TemplateTransactional = apps.get_model("conversations", "TemplateTransactional")
+    TemplateTransactional.objects.get(code="TENDERS_AUTHOR_CONFIRMATION_VALIDATED_COMMERCIAL_PARTNERS").delete()
+
+
 class Migration(migrations.Migration):
     dependencies = [
         ("tenders", "0093_alter_tender_send_to_commercial_partners_only"),
     ]
 
     operations = [
-        migrations.RunPython(create_template),
+        migrations.RunPython(create_template, reverse_code=delete_template),
     ]
