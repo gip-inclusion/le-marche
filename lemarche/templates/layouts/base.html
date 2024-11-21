@@ -1,7 +1,7 @@
 {% load static compress dsfr_tags %}
 <!DOCTYPE html>
 <html lang="{% block lang %}fr{% endblock lang %}"
-      {% if settings.content_manager.CmsDsfrConfig.mourning %}data-fr-mourning{% endif %}>
+      {% if SITE_CONFIG.mourning %}data-fr-mourning{% endif %}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport"
@@ -48,8 +48,8 @@
     {% block header %}
       {% include "layouts/_header.html" %}
     {% endblock header %}
-    {% if settings.content_manager.CmsDsfrConfig.notice %}
-      {% dsfr_notice title=settings.content_manager.CmsDsfrConfig.notice %}
+    {% if SITE_CONFIG.notice %}
+      {% dsfr_notice title=SITE_CONFIG.notice %}
     {% endif %}
     {% block breadcrumb %}
       {% comment %} empty because managed for each type of page {% endcomment %}
