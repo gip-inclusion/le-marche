@@ -2728,18 +2728,19 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "poethepoet"
-version = "0.12.3"
+version = "0.31.0"
 description = "A task runner that works well with poetry."
 optional = false
-python-versions = ">=3.6.2"
+python-versions = ">=3.9"
 files = [
-    {file = "poethepoet-0.12.3-py3-none-any.whl", hash = "sha256:5b645546d6bbda29cb362d563276c85c19e65dc8d84ed4155964f6e639cb3796"},
-    {file = "poethepoet-0.12.3.tar.gz", hash = "sha256:34d6396a5c9c9741d6cb72afb71797a9c522df1c37717ee15d84d73a1b353387"},
+    {file = "poethepoet-0.31.0-py3-none-any.whl", hash = "sha256:5067c5adf9f228b8af1f3df7d57dc319ed8b3f153bf21faf99f7b74494174c3d"},
+    {file = "poethepoet-0.31.0.tar.gz", hash = "sha256:b1cffb120149101b02ffa0583c6e61dfee53953a741df3dabf179836bdef97f5"},
 ]
 
 [package.dependencies]
 pastel = ">=0.2.1,<0.3.0"
-tomli = ">=1.2.2,<2.0.0"
+pyyaml = ">=6.0.2,<7.0.0"
+tomli = {version = ">=1.2.2", markers = "python_version < \"3.11\""}
 
 [package.extras]
 poetry-plugin = ["poetry (>=1.0,<2.0)"]
@@ -4593,4 +4594,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10.4"
-content-hash = "02ac41e5978cefc28923a85af8c5d9dd3f6ed929be4ea87fb2e2cc840863f8e4"
+content-hash = "2f0d9232fbf1bda2003529aa682ad9a6cf0ce3fdd1fa9922e377a7ef91580e2b"
