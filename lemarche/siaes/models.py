@@ -536,7 +536,7 @@ class Siae(models.Model):
     FIELDS_FROM_C1 = [
         "name",
         "slug",  # generated from 'name'
-        "brand",
+        # "brand",  # see UPDATE_FIELDS_IF_EMPTY in management/commands/sync_with_emplois_inclusion.py
         "siret",
         "naf",
         "website",
@@ -617,7 +617,7 @@ class Siae(models.Model):
 
     name = models.CharField(verbose_name="Raison sociale", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
-    brand = models.CharField(verbose_name="Enseigne", max_length=255, blank=True)
+    brand = models.CharField(verbose_name="Nom commercial", max_length=255, blank=True)
     kind = models.CharField(
         verbose_name="Type de structure",
         max_length=6,
