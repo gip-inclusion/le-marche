@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from lemarche.api.siaes.filters import SiaeFilter
 from lemarche.api.siaes.serializers import SiaeDetailSerializer, SiaeListSerializer
-from lemarche.api.utils import BasicChoiceSerializer, BasicChoiceWithParentSerializer, check_user_token
+from lemarche.api.utils import BasicChoiceSerializer, BasicChoiceWithParentSerializer
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 
@@ -24,7 +24,9 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         summary="Lister toutes les structures",
         tags=[Siae._meta.verbose_name_plural],
         parameters=[
-            OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
+            OpenApiParameter(
+                name="token", description="Token Utilisateur (pour compatibilité ancienne)", required=False, type=str
+            ),
         ],
     )
     def list(self, request, format=None):
@@ -33,23 +35,24 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
 
         <i>Un <strong>token</strong> est nécessaire pour l'accès complet à cette ressource.</i>
         """
-        if request.method == "GET":
-            token = request.GET.get("token", None)
-            if not token:
-                serializer = SiaeListSerializer(
-                    self.get_queryset()[:10],
-                    many=True,
-                )
-                return Response(serializer.data)
-            else:
-                check_user_token(token)
-                return super().list(request, format)
+        if request.user.is_authenticated:
+            # Utilisateur authentifié : accès complet
+            return super().list(request, format)
+        else:
+            # Utilisateur non authentifié : limiter à 10 résultats
+            serializer = SiaeListSerializer(
+                self.get_queryset()[:10],
+                many=True,
+            )
+            return Response(serializer.data)
 
     @extend_schema(
         summary="Détail d'une structure (par son id)",
         tags=[Siae._meta.verbose_name_plural],
         parameters=[
-            OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
+            OpenApiParameter(
+                name="token", description="Token Utilisateur (pour compatibilité ancienne)", required=False, type=str
+            ),
         ],
         responses=SiaeDetailSerializer,
     )
@@ -65,7 +68,9 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         summary="Détail d'une structure (par son slug)",
         tags=[Siae._meta.verbose_name_plural],
         parameters=[
-            OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
+            OpenApiParameter(
+                name="token", description="Token Utilisateur (pour compatibilité ancienne)", required=False, type=str
+            ),
         ],
         responses=SiaeDetailSerializer,
     )
@@ -82,7 +87,9 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         summary="Détail d'une structure (par son siren)",
         tags=[Siae._meta.verbose_name_plural],
         parameters=[
-            OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
+            OpenApiParameter(
+                name="token", description="Token Utilisateur (pour compatibilité ancienne)", required=False, type=str
+            ),
         ],
         responses=SiaeDetailSerializer,
     )
@@ -100,7 +107,9 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         summary="Détail d'une structure (par son siret)",
         tags=[Siae._meta.verbose_name_plural],
         parameters=[
-            OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
+            OpenApiParameter(
+                name="token", description="Token Utilisateur (pour compatibilité ancienne)", required=False, type=str
+            ),
         ],
         responses=SiaeDetailSerializer,
     )
@@ -115,14 +124,12 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         return self._list_return(request, queryset, format)
 
     def _retrieve_return(self, request, queryset, format):
-        token = request.GET.get("token", None)
-        if not token:
+        if not request.user.is_authenticated:
             serializer = SiaeListSerializer(
                 queryset,
                 many=False,
             )
         else:
-            check_user_token(token)
             serializer = SiaeDetailSerializer(
                 queryset,
                 many=False,
@@ -130,14 +137,12 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         return Response(serializer.data)
 
     def _list_return(self, request, queryset, format):
-        token = request.GET.get("token", None)
-        if not token:
+        if not request.user.is_authenticated:
             serializer = SiaeListSerializer(
                 queryset,
                 many=True,
             )
         else:
-            check_user_token(token)
             serializer = SiaeDetailSerializer(
                 queryset,
                 many=True,
