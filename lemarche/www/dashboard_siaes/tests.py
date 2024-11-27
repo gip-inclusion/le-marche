@@ -155,6 +155,44 @@ class DashboardSiaeEditViewTest(TestCase):
                 self.assertEqual(response.status_code, 302)
                 self.assertEqual(response.url, "/profil/")
 
+    def test_siae_edit_info_form(self):
+        self.client.force_login(self.user_siae)
+        url = reverse("dashboard_siaes:siae_edit_info", args=[self.siae_with_user.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        data = {
+            "description": "Nouvelle description de l'activité",
+            "ca": 1000000,
+            "year_constitution": 2024,
+            "employees_insertion_count": 10,
+            "employees_permanent_count": 5,
+            "labels_old-0-name": "Label 1",
+            "labels_old-1-name": "Label 2",
+            "labels_old-TOTAL_FORMS": 2,
+            "labels_old-INITIAL_FORMS": 0,
+        }
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("dashboard_siaes:siae_edit_info", args=[self.siae_with_user.slug]))
+
+        # Check that the data has been updated
+        self.siae_with_user.refresh_from_db()
+        self.assertEqual(self.siae_with_user.name_display, self.siae_with_user.name)
+        self.assertEqual(self.siae_with_user.description, "Nouvelle description de l'activité")
+        self.assertEqual(self.siae_with_user.ca, 1000000)
+        self.assertEqual(self.siae_with_user.year_constitution, 2024)
+        self.assertEqual(self.siae_with_user.employees_insertion_count, 10)
+        self.assertEqual(self.siae_with_user.employees_permanent_count, 5)
+
+        data["brand"] = "Nouveau nom commercial"
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("dashboard_siaes:siae_edit_info", args=[self.siae_with_user.slug]))
+        self.siae_with_user.refresh_from_db()
+        self.assertEqual(self.siae_with_user.brand, "Nouveau nom commercial")
+        self.assertEqual(self.siae_with_user.name_display, "Nouveau nom commercial")
+
 
 class DashboardSiaeUserViewTest(TestCase):
     @classmethod
