@@ -411,12 +411,11 @@ class User(AbstractUser):
 
 
 @receiver(pre_save, sender=User)
-def update_old_api_keys(sender, instance, **kwargs):
+def update_api_key_last_update(sender, instance, **kwargs):
     """
-    Before saving a user, add the old value of `api_key` to `old_api_keys`
-    if `api_key` has been modified.
+    Before saving a user, add the to `api_key_last_updated`
     """
-    if instance.pk:  # Check if the user already exists (not a new creation)
+    if instance.pk:
         try:
             old_instance = sender.objects.get(pk=instance.pk)
             if old_instance.api_key != instance.api_key:
@@ -424,6 +423,8 @@ def update_old_api_keys(sender, instance, **kwargs):
                 instance.api_key_last_updated = timezone.now()
         except sender.DoesNotExist:
             instance.api_key_last_updated = timezone.now()
+    else:
+        instance.api_key_last_updated = timezone.now()
 
 
 @receiver(post_save, sender=User)
