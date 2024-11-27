@@ -17,7 +17,7 @@ from lemarche.utils.data import rename_dict_key
 
 UPDATE_FIELDS = [
     # "name",  # what happens to the slug if the name is updated?
-    "brand",
+    # "brand",  # see UPDATE_FIELDS_IF_EMPTY
     # "kind"
     "siret",
     "siret_is_valid",
@@ -38,6 +38,8 @@ UPDATE_FIELDS = [
     "is_active",
     "c1_last_sync_date",
 ]
+
+UPDATE_FIELDS_IF_EMPTY = ["brand"]
 
 C1_EXTRA_KEYS = ["convention_is_active", "convention_asp_id"]
 
@@ -270,6 +272,11 @@ class Command(BaseCommand):
             c1_siae_filtered = dict()
             for key in UPDATE_FIELDS:
                 if key in c1_siae:
+                    c1_siae_filtered[key] = c1_siae[key]
+
+            # update fields only if empty
+            for key in UPDATE_FIELDS_IF_EMPTY:
+                if key in c1_siae and not c4_siae[key]:
                     c1_siae_filtered[key] = c1_siae[key]
 
             Siae.objects.filter(c1_id=c4_siae.c1_id).update(**c1_siae_filtered)  # avoid updated_at change
