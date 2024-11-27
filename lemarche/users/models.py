@@ -231,7 +231,6 @@ class User(AbstractUser):
     )
 
     api_key = models.CharField(verbose_name="Clé API", max_length=128, unique=True, blank=True, null=True)
-    old_api_keys = models.JSONField(verbose_name="Anciennes clés API", blank=True, default=list)
     api_key_last_updated = models.DateTimeField(
         verbose_name="Date de dernière mise à jour de la clé API", blank=True, null=True
     )
@@ -420,13 +419,11 @@ def update_old_api_keys(sender, instance, **kwargs):
     if instance.pk:  # Check if the user already exists (not a new creation)
         try:
             old_instance = sender.objects.get(pk=instance.pk)
-            if old_instance.api_key != instance.api_key and old_instance.api_key:
+            if old_instance.api_key != instance.api_key:
                 # Add the old key to the list of old keys
-                if instance.old_api_keys is None:
-                    instance.old_api_keys = list()
-                instance.old_api_keys.append(old_instance.api_key)
+                instance.api_key_last_updated = timezone.now()
         except sender.DoesNotExist:
-            pass  # The user does not exist yet
+            instance.api_key_last_updated = timezone.now()
 
 
 @receiver(post_save, sender=User)
