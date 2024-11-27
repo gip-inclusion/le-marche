@@ -1,235 +1,245 @@
 {% extends "dashboard/siae_edit_base.html" %}
 {% load static dsfr_tags get_verbose_name %}
-
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'vendor/dropzone-5.9.3/dropzone.min.css' %}" />
+    <link rel="stylesheet"
+          href="{% static 'vendor/dropzone-5.9.3/dropzone.min.css' %}" />
 {% endblock extra_css %}
-
 {% block content_siae_form %}
-<form method="post" action="">
-    {% csrf_token %}
-    {% if form.non_field_errors %}
-        <section class="fr-my-4v fr-input-group fr-input-group--error">
-            {{ form.non_field_errors }}
-        </section>
-    {% endif %}
-    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-        <div class="fr-col-12 fr-col-lg-8">
-            {% dsfr_form_field form.description %}
-            <!-- Logo -->
-            <div class="fr-grid-row fr-grid-row--gutters">
-                <div class="fr-col-12 fr-col-sm-6">
-                    <div class="fr-input-group">
-                        {{ form.logo_url.as_hidden }}
-                        <label for="logo_form" class="js-display-if-javascript-enabled">Importez votre logo</label>
-                        {% include "storage/s3_upload_form.html" with dropzone_form_id="logo_form" %}
-                    </div>
-                </div>
-                <div class="fr-col-12 fr-col-sm-6">
-                    <div class="fr-input-group">
-                        <label>Logo actuel</label>
-                        {% if form.logo_url.value %}
-                            <div>
-                                <img class="fr-responsive-img" src="{{ form.logo_url.value }}" />
-                            </div>
-                        {% else %}
-                            <p class="fr-text--xs">Aucun</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% if last_3_siae_content_filled_full_annotated %}
-            <div class="fr-col-12 fr-col-lg-4">
-                <div class="fr-callout fr-p-4v">
-                    <h3 class="fr-callout__title fr-text--sm"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Conseil</h3>
-                    <p class="fr-callout__text fr-text--sm fr-pl-7v">
-                        Inspirez-vous des fiches commerciales des prestataires inclusifs
-                        <a href="{% url 'siae:detail' last_3_siae_content_filled_full_annotated.0.slug %}" target="_blank" style="white-space:nowrap;">{{ last_3_siae_content_filled_full_annotated.0.name_display }}</a>
-                        et <a href="{% url 'siae:detail' last_3_siae_content_filled_full_annotated.1.slug %}" target="_blank" style="white-space:nowrap;">{{ last_3_siae_content_filled_full_annotated.1.name_display }}</a>.
-                        <br />
-                        Une fiche commerciale bien complétée c'est davantage de chances d'être sollicité par des clients.
-                    </p>
-                </div>
-            </div>
+    <form method="post" action="">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <section class="fr-my-4v fr-input-group fr-input-group--error">
+                {{ form.non_field_errors }}
+            </section>
         {% endif %}
-    </div>
-
-    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-        <div class="fr-col-12 fr-col-lg-8">
-            {% dsfr_form_field form.ca %}
-        </div>
-        <div class="fr-col-12 fr-col-lg-4">
-            <div class="fr-callout fr-p-4v">
-                <h3 class="fr-callout__title fr-text--sm"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Conseil</h3>
-                <p class="fr-callout__text fr-text--sm fr-pl-7v">
-                    Votre chiffre d'affaires est un élément d'information important aux yeux des acheteurs.
-                    Il permet de rendre compte de votre dimension et de votre capacité à répondre à certains marchés et appels d'offres.
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-        <div class="fr-col-12 fr-col-lg-8">
-            {% dsfr_form_field form.year_constitution %}
-        </div>
-    </div>
-
-    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-        <div class="fr-col-12 fr-col-lg-8">
-            {% dsfr_form_field form.employees_insertion_count %}
-        </div>
-        <div class="fr-col-12 fr-col-lg-4">
-            <div class="fr-callout fr-p-4v">
-                <h3 class="fr-callout__title fr-text--sm"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Conseil</h3>
-                <p class="fr-callout__text fr-text--sm fr-pl-7v">
-                    Le nombre de {{ siae.etp_count_label_display | lower }} démontre à la fois votre capacité de production et l'impact social de votre structure.
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-        <div class="fr-col-12 fr-col-lg-8">
-            {% dsfr_form_field form.employees_permanent_count %}
-        </div>
-    </div>
-
-    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-        <div class="fr-col-12 fr-col-lg-8">
-            {% include "includes/forms/_dsfr_formset.html" with formset_title="Labels et certifications" formset=label_formset %}
-            <div id="labels_old-formset-empty-form" class="fr-hidden">
-                <div class="formset-row-labels_old formset">
-                    {% dsfr_form label_formset.empty_form %}
-                </div>
-            </div>
-            <button id="labels_old-formset-add-more" 
-                type="button"
-                class="fr-btn fr-btn--secondary fr-fi-add-circle-line fr-btn--icon-right fr-mt-1w">
-                Ajouter un label
-            </button>
-        </div>
-        <div class="fr-col-12 fr-col-lg-4">
-            <div class="fr-callout fr-p-4v">
-                <h3 class="fr-callout__title fr-text--sm"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Pourquoi mettre des labels ?</h3>
-                <p class="fr-callout__text fr-text--sm fr-pl-7v">
-                    Certains labels sont recherchés par nos acheteurs, c'est donc un plus de les rendre visible rapidement.<br />
-                    Exemples : RSEI, ISO 14001, Ecocert…
-                </p>
-            </div>
-        </div>
-    </div>
-    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-        <div class="fr-col-12 fr-col-lg-8">
-
-            <div class="fr-card">
-                <div class="fr-card__body">
-                    <div class="fr-card__content">
-                        <h3 class="fr-card__title">{{ siae.name_display }}</h3>
-                        <div class="fr-card__desc">
-                            <div class="fr-grid-row fr-grid-row__gutters">
-                                <div class="fr-col-12 fr-col-md-6">
-                                    <div class="fr-grid-row" title="{% get_verbose_name siae 'siret' %}">
-                                        <div class="fr-col-12 mb-3">
-                                            <span class="fr-icon-profil-line" aria-hidden="true"></span>
-                                            <span>{{ siae.siret_display }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="fr-grid-row" title="{% get_verbose_name siae 'kind' %}">
-                                        <div class="fr-col-12 fr-mb-4v">
-                                            <span class="fr-icon-building-line" aria-hidden="true"></span>
-                                            <span>{{ siae.get_kind_display }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="fr-grid-row" title="{% get_verbose_name siae 'address' %}">
-                                        <div class="fr-col-12 fr-mb-4v">
-                                            <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
-                                            <span>{{ siae.address }},</span>
-                                            <span>{{ siae.post_code }},</span>
-                                            <span>{{ siae.city }},</span>
-                                            <span>{{ siae.department }},</span>
-                                            <span>{{ siae.region }}</span>
-                                        </div>
-                                    </div>
+        <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+            <div class="fr-col-12 fr-col-lg-8">
+                {% dsfr_form_field form.brand %}
+                {% dsfr_form_field form.description %}
+                <!-- Logo -->
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    <div class="fr-col-12 fr-col-sm-6">
+                        <div class="fr-input-group">
+                            {{ form.logo_url.as_hidden }}
+                            <label for="logo_form" class="js-display-if-javascript-enabled">Importez votre logo</label>
+                            {% include "storage/s3_upload_form.html" with dropzone_form_id="logo_form" %}
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-sm-6">
+                        <div class="fr-input-group">
+                            <label>Logo actuel</label>
+                            {% if form.logo_url.value %}
+                                <div>
+                                    <img class="fr-responsive-img" src="{{ form.logo_url.value }}" />
                                 </div>
-                                <div class="fr-col-12 fr-col-md-6">
-                                    <div class="fr-grid-row" title="{% get_verbose_name siae 'api_entreprise_date_constitution' %}">
-                                        <div class="fr-col-12 fr-mb-4v">
-                                            <span>Année de création :</span>
-                                            <span>{{ siae.api_entreprise_date_constitution|date:"Y"|default:"" }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="fr-grid-row" title="{% get_verbose_name siae 'api_entreprise_employees' %}">
-                                        <div class="fr-col-12 fr-mb-4v">
-                                            <span>{% if siae.kind == 'SEP' %}Travailleurs détenus{% else %}Salariés{% endif %} :</span>
-                                            <span>{{ siae.api_entreprise_employees|default:"non disponible" }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="fr-grid-row" title="{% get_verbose_name siae 'api_entreprise_ca' %}">
-                                        <div class="fr-col-12 fr-mb-4v">
-                                            <span>Chiffre d'affaires :</span>
-                                            <span>{{ siae.api_entreprise_ca|default:"non disponible" }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {% if siae.is_qpv or siae.is_zrr %}
-                                <div class="fr-grid-row fr-grid-row__gutters">
-                                    <div class="fr-col-12 fr-col-md-6">
-                                        {% if siae.is_qpv %}
-                                            <div class="fr-grid-row" title="{% get_verbose_name siae 'is_qpv' %}">
-                                                <div class="fr-col-12 fr-mb-4v">
-                                                    <span>QPV : {{ siae.qpv_name }} ({{ siae.qpv_code }})</span>
-                                                </div>
-                                            </div>
-                                        {% endif %}
-                                        {% if siae.is_zrr %}
-                                            <div class="fr-grid-row" title="{% get_verbose_name siae 'is_zrr' %}">
-                                                <div class="fr-col-12 fr-mb-4v">
-                                                    <span>ZRR : {{ siae.zrr_name }} ({{ siae.zrr_code }})</span>
-                                                </div>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
+                            {% else %}
+                                <p class="fr-text--xs">Aucun</p>
                             {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
+            {% if last_3_siae_content_filled_full_annotated %}
+                <div class="fr-col-12 fr-col-lg-4">
+                    <div class="fr-callout fr-p-4v">
+                        <h3 class="fr-callout__title fr-text--sm">
+                            <span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Conseil
+                        </h3>
+                        <p class="fr-callout__text fr-text--sm fr-pl-7v">
+                            Inspirez-vous des fiches commerciales des prestataires inclusifs
+                            <a href="{% url 'siae:detail' last_3_siae_content_filled_full_annotated.0.slug %}"
+                               target="_blank"
+                               style="white-space:nowrap">{{ last_3_siae_content_filled_full_annotated.0.name_display }}</a>
+                            et <a href="{% url 'siae:detail' last_3_siae_content_filled_full_annotated.1.slug %}"
+    target="_blank"
+    style="white-space:nowrap">{{ last_3_siae_content_filled_full_annotated.1.name_display }}</a>.
+                            <br />
+                            Une fiche commerciale bien complétée c'est davantage de chances d'être sollicité par des clients.
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
         </div>
-        <div class="fr-col-12 fr-col-lg-4">
-            <div class="fr-callout fr-p-4v">
-                <h3 class="fr-callout__title fr-text--sm"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Conseil</h3>
-                <p class="fr-callout__text fr-text--sm fr-pl-7v">
-                    Toutes les informations affichées ici sont en provenance de {{ siae.source_display }} et de données ouvertes (API Entreprise, API QPV et API ZRR).
-                </p>
+        <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+            <div class="fr-col-12 fr-col-lg-8">{% dsfr_form_field form.ca %}</div>
+            <div class="fr-col-12 fr-col-lg-4">
+                <div class="fr-callout fr-p-4v">
+                    <h3 class="fr-callout__title fr-text--sm">
+                        <span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Conseil
+                    </h3>
+                    <p class="fr-callout__text fr-text--sm fr-pl-7v">
+                        Votre chiffre d'affaires est un élément d'information important aux yeux des acheteurs.
+                        Il permet de rendre compte de votre dimension et de votre capacité à répondre à certains marchés et appels d'offres.
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
-
-    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-        <div class="fr-col-12 fr-col-lg-8">
-            <ul class="fr-btns-group--right fr-btns-group fr-btns-group--inline">
-                <li>
-                    {% dsfr_button label="Enregistrer mes modifications" extra_classes="fr-mt-4v" %}
-                    {% comment %}The following tooltip is triggered in s3_upload.js{% endcomment %}
-                    <span class="fr-tooltip fr-placement" id="tooltip-s3-info" role="tooltip" aria-hidden="true">Veuillez attendre la fin du transfert</span>
-                </li>
-            </ul>
+        <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+            <div class="fr-col-12 fr-col-lg-8">{% dsfr_form_field form.year_constitution %}</div>
         </div>
-        <div class="fr-col-12 fr-col-lg-4"></div>
-    </div>
-</form>
+        <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+            <div class="fr-col-12 fr-col-lg-8">{% dsfr_form_field form.employees_insertion_count %}</div>
+            <div class="fr-col-12 fr-col-lg-4">
+                <div class="fr-callout fr-p-4v">
+                    <h3 class="fr-callout__title fr-text--sm">
+                        <span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Conseil
+                    </h3>
+                    <p class="fr-callout__text fr-text--sm fr-pl-7v">
+                        Le nombre de {{ siae.etp_count_label_display | lower }} démontre à la fois votre capacité de production et l'impact social de votre structure.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+            <div class="fr-col-12 fr-col-lg-8">{% dsfr_form_field form.employees_permanent_count %}</div>
+        </div>
+        <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+            <div class="fr-col-12 fr-col-lg-8">
+                {% include "includes/forms/_dsfr_formset.html" with formset_title="Labels et certifications" formset=label_formset %}
+                <div id="labels_old-formset-empty-form" class="fr-hidden">
+                    <div class="formset-row-labels_old formset">{% dsfr_form label_formset.empty_form %}</div>
+                </div>
+                <button id="labels_old-formset-add-more"
+                        type="button"
+                        class="fr-btn fr-btn--secondary fr-fi-add-circle-line fr-btn--icon-right fr-mt-1w">
+                    Ajouter un label
+                </button>
+            </div>
+            <div class="fr-col-12 fr-col-lg-4">
+                <div class="fr-callout fr-p-4v">
+                    <h3 class="fr-callout__title fr-text--sm">
+                        <span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Pourquoi mettre des labels ?
+                    </h3>
+                    <p class="fr-callout__text fr-text--sm fr-pl-7v">
+                        Certains labels sont recherchés par nos acheteurs, c'est donc un plus de les rendre visible rapidement.
+                        <br />
+                        Exemples : RSEI, ISO 14001, Ecocert…
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+            <div class="fr-col-12 fr-col-lg-8">
+                <div class="fr-card">
+                    <div class="fr-card__body">
+                        <div class="fr-card__content">
+                            <h3 class="fr-card__title">{{ siae.name_display }}</h3>
+                            <div class="fr-card__desc">
+                                <div class="fr-grid-row fr-grid-row__gutters">
+                                    <div class="fr-col-12 fr-col-md-6">
+                                        <div class="fr-grid-row" title="{% get_verbose_name siae 'siret' %}">
+                                            <div class="fr-col-12 mb-3">
+                                                <span class="fr-icon-profil-line" aria-hidden="true"></span>
+                                                <span>{{ siae.siret_display }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="fr-grid-row" title="{% get_verbose_name siae 'kind' %}">
+                                            <div class="fr-col-12 fr-mb-4v">
+                                                <span class="fr-icon-building-line" aria-hidden="true"></span>
+                                                <span>{{ siae.get_kind_display }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="fr-grid-row" title="{% get_verbose_name siae 'address' %}">
+                                            <div class="fr-col-12 fr-mb-4v">
+                                                <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
+                                                <span>{{ siae.address }},</span>
+                                                <span>{{ siae.post_code }},</span>
+                                                <span>{{ siae.city }},</span>
+                                                <span>{{ siae.department }},</span>
+                                                <span>{{ siae.region }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="fr-col-12 fr-col-md-6">
+                                        <div class="fr-grid-row"
+                                             title="{% get_verbose_name siae 'api_entreprise_date_constitution' %}">
+                                            <div class="fr-col-12 fr-mb-4v">
+                                                <span>Année de création :</span>
+                                                <span>{{ siae.api_entreprise_date_constitution|date:"Y"|default:"" }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="fr-grid-row"
+                                             title="{% get_verbose_name siae 'api_entreprise_employees' %}">
+                                            <div class="fr-col-12 fr-mb-4v">
+                                                <span>
+                                                    {% if siae.kind == 'SEP' %}
+                                                        Travailleurs détenus
+                                                    {% else %}
+                                                        Salariés
+                                                    {% endif %}
+                                                :</span>
+                                                <span>{{ siae.api_entreprise_employees|default:"non disponible" }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="fr-grid-row"
+                                             title="{% get_verbose_name siae 'api_entreprise_ca' %}">
+                                            <div class="fr-col-12 fr-mb-4v">
+                                                <span>Chiffre d'affaires :</span>
+                                                <span>{{ siae.api_entreprise_ca|default:"non disponible" }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if siae.is_qpv or siae.is_zrr %}
+                                    <div class="fr-grid-row fr-grid-row__gutters">
+                                        <div class="fr-col-12 fr-col-md-6">
+                                            {% if siae.is_qpv %}
+                                                <div class="fr-grid-row" title="{% get_verbose_name siae 'is_qpv' %}">
+                                                    <div class="fr-col-12 fr-mb-4v">
+                                                        <span>QPV : {{ siae.qpv_name }} ({{ siae.qpv_code }})</span>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                            {% if siae.is_zrr %}
+                                                <div class="fr-grid-row" title="{% get_verbose_name siae 'is_zrr' %}">
+                                                    <div class="fr-col-12 fr-mb-4v">
+                                                        <span>ZRR : {{ siae.zrr_name }} ({{ siae.zrr_code }})</span>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="fr-col-12 fr-col-lg-4">
+                <div class="fr-callout fr-p-4v">
+                    <h3 class="fr-callout__title fr-text--sm">
+                        <span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Conseil
+                    </h3>
+                    <p class="fr-callout__text fr-text--sm fr-pl-7v">
+                        Toutes les informations affichées ici sont en provenance de {{ siae.source_display }} et de données ouvertes (API Entreprise, API QPV et API ZRR).
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+            <div class="fr-col-12 fr-col-lg-8">
+                <ul class="fr-btns-group--right fr-btns-group fr-btns-group--inline">
+                    <li>
+                        {% dsfr_button label="Enregistrer mes modifications" extra_classes="fr-mt-4v" %}
+                        {% comment %}The following tooltip is triggered in s3_upload.js{% endcomment %}
+                        <span class="fr-tooltip fr-placement"
+                              id="tooltip-s3-info"
+                              role="tooltip"
+                              aria-hidden="true">Veuillez attendre la fin du transfert</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="fr-col-12 fr-col-lg-4"></div>
+        </div>
+    </form>
 {% endblock content_siae_form %}
-
 {% block extra_js %}
-<script type="text/javascript" src="{% static 'vendor/dropzone-5.9.3/dropzone.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/s3_upload.js' %}"></script>
-{{ s3_form_values_siae_logo|json_script:"s3-form-values-siae-logo" }}
-{{ s3_upload_config_siae_logo|json_script:"s3-upload-config-siae-logo" }}
-<script type="text/javascript">
+    <script type="text/javascript"
+            src="{% static 'vendor/dropzone-5.9.3/dropzone.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/s3_upload.js' %}"></script>
+    {{ s3_form_values_siae_logo|json_script:"s3-form-values-siae-logo" }}
+    {{ s3_upload_config_siae_logo|json_script:"s3-upload-config-siae-logo" }}
+    <script type="text/javascript">
 // init dropzone
 s3UploadInit({
     dropzoneSelector: "#logo_form",
@@ -240,8 +250,8 @@ s3UploadInit({
     sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
     sentryCsrfToken: "{{ csrf_token }}"
 });
-</script>
-<script type="text/javascript">
+    </script>
+    <script type="text/javascript">
     /**
      * Add labels formset items dynamically
      */
@@ -267,5 +277,5 @@ s3UploadInit({
         var formsetGroup = document.querySelector(`.formset-${formsetPrefix}.formset-group`);
         formsetGroup.insertBefore(newFormElement, null);
     });
-</script>
+    </script>
 {% endblock extra_js %}
