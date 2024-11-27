@@ -82,7 +82,7 @@ class DeprecationWarningMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
 
-        # Ajoute un warning si le marqueur est défini dans la requête
+        # Add a warning if the marker is set in the request
         if hasattr(request, "_deprecated_auth_warning") and request._deprecated_auth_warning:
             response.headers["Deprecation-Warning"] = (
                 "URL token authentication is deprecated and will be removed on 2025/01. "
