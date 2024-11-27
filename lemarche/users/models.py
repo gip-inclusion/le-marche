@@ -5,7 +5,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.db.models import Count
 from django.db.models.functions import Greatest, Lower
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.forms.models import model_to_dict
 from django.utils import timezone
@@ -408,6 +408,23 @@ class User(AbstractUser):
         from lemarche.tenders.models import Tender
 
         return Tender.objects.unread(self).count()
+
+
+@receiver(pre_save, sender=User)
+def update_api_key_last_update(sender, instance, **kwargs):
+    """
+    Before saving a user, add the to `api_key_last_updated`
+    """
+    if instance.pk:
+        try:
+            old_instance = sender.objects.get(pk=instance.pk)
+            if old_instance.api_key != instance.api_key:
+                instance.api_key_last_updated = timezone.now()
+        except sender.DoesNotExist:
+            if instance.api_key:
+                instance.api_key_last_updated = timezone.now()
+    elif instance.api_key:
+        instance.api_key_last_updated = timezone.now()
 
 
 @receiver(post_save, sender=User)

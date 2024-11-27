@@ -4,6 +4,7 @@ from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 
+from lemarche.api.utils import generate_random_string
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.sectors.factories import SectorFactory
 from lemarche.tenders import constants as tender_constants
@@ -45,10 +46,11 @@ TENDER_JSON = {
 class TenderCreateApiTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.url = reverse("api:tenders-list") + "?token=admin"
+        cls.user_token = generate_random_string()
+        cls.url = reverse("api:tenders-list") + "?token=" + cls.user_token
         cls.user = UserFactory()
         cls.user_buyer = UserFactory(kind=User.KIND_BUYER, company_name="Entreprise Buyer")
-        cls.user_with_token = UserFactory(email="admin@example.com", api_key="admin")
+        cls.user_with_token = UserFactory(email="admin@example.com", api_key=cls.user_token)
         cls.perimeter = PerimeterFactory()
         cls.sector_1 = SectorFactory()
         cls.sector_2 = SectorFactory()
@@ -256,8 +258,9 @@ def test_create_tender_with_distance_location(self):
 class TenderCreateApiPartnerTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.url = reverse("api:tenders-list") + "?token=approch"
-        cls.user_partner_with_token = UserFactory(email="approch@example.com", api_key="approch")
+        cls.api_token_approch = generate_random_string()
+        cls.url = reverse("api:tenders-list") + "?token=" + cls.api_token_approch
+        cls.user_partner_with_token = UserFactory(email="approch@example.com", api_key=cls.api_token_approch)
 
     def test_partner_approch_can_create_tender(self):
         with self.settings(PARTNER_APPROCH_USER_ID=self.user_partner_with_token.id):
