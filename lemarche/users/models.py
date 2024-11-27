@@ -419,11 +419,11 @@ def update_api_key_last_update(sender, instance, **kwargs):
         try:
             old_instance = sender.objects.get(pk=instance.pk)
             if old_instance.api_key != instance.api_key:
-                # Add the old key to the list of old keys
                 instance.api_key_last_updated = timezone.now()
         except sender.DoesNotExist:
-            instance.api_key_last_updated = timezone.now()
-    else:
+            if instance.api_key:
+                instance.api_key_last_updated = timezone.now()
+    elif instance.api_key:
         instance.api_key_last_updated = timezone.now()
 
 
