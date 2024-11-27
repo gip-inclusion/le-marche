@@ -34,8 +34,11 @@ class CustomBearerAuthentication(BaseAuthentication):
             return None
 
         # Check the minimum length of the token
-        if len(token) < 20:
+        if len(token) < 64:
             raise AuthenticationFailed("Token too short. Possible security issue detected.")
+
+        if not token.isalnum():
+            raise AuthenticationFailed("Token contains invalid characters. Possible security issue detected.")
 
         # Validate the token
         try:

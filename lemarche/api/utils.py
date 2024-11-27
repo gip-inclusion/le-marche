@@ -39,8 +39,8 @@ def custom_preprocessing_hook(endpoints):
     return filtered
 
 
-def generate_random_string():
-    return "".join(random.choices(string.ascii_letters + string.digits, k=20))
+def generate_random_string(n=64):
+    return "".join(random.choices(string.ascii_letters + string.digits, k=n))
 
 
 class BasicChoiceSerializer(serializers.Serializer):
