@@ -193,6 +193,19 @@ class DashboardSiaeEditViewTest(TestCase):
         self.assertEqual(self.siae_with_user.brand, "Nouveau nom commercial")
         self.assertEqual(self.siae_with_user.name_display, "Nouveau nom commercial")
 
+    def test_siae_edit_info_form_brand_unique(self):
+        SiaeFactory(brand="Nouveau nom commercial")
+
+        self.client.force_login(self.user_siae)
+        url = reverse("dashboard_siaes:siae_edit_info", args=[self.siae_with_user.slug])
+
+        data = {
+            "brand": "Nouveau nom commercial",
+        }
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ce nom commercial est déjà utilisé par une autre structure.")
+
 
 class DashboardSiaeUserViewTest(TestCase):
     @classmethod
