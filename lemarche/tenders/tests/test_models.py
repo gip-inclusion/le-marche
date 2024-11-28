@@ -1,8 +1,6 @@
-# import datetime
 from datetime import timedelta
 from importlib import import_module
 from random import randint
-from unittest import mock
 
 from django.apps import apps
 from django.contrib.gis.geos import Point
@@ -218,22 +216,17 @@ class TenderModelMatchingTest(TestCase):
         cls.siae_five = SiaeFactory()
 
     def test_set_siae_found_list(self):
-        with mock.patch(
-            "lemarche.tenders.models.api_elasticsearch.siaes_similarity_search"
-        ) as mock_siaes_similarity_search:
-            tender = TenderFactory(
-                presta_type=[siae_constants.PRESTA_BUILD],
-                sectors=[self.sector],
-                is_country_area=True,
-                validated_at=None,
-            )
+        tender = TenderFactory(
+            presta_type=[siae_constants.PRESTA_BUILD],
+            sectors=[self.sector],
+            is_country_area=True,
+            validated_at=None,
+        )
 
-            siaes_found = Siae.objects.filter_with_tender_through_activities(tender)
-            tender.set_siae_found_list()
-            tender.refresh_from_db()
-            self.assertEqual(list(siaes_found), list(tender.siaes.all()))
-
-        mock_siaes_similarity_search.assert_not_called()
+        siaes_found = Siae.objects.filter_with_tender_through_activities(tender)
+        tender.set_siae_found_list()
+        tender.refresh_from_db()
+        self.assertEqual(list(siaes_found), list(tender.siaes.all()))
 
 
 class TenderModelQuerysetTest(TestCase):

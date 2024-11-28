@@ -22,10 +22,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
     initModalMessages();
 
-    // reload click events and tooltip after htmx content loading as in semantic search
-    document.addEventListener('htmx:afterSwap', function (event) {
-        initSuperBadges();
-    });
     initSuperBadges();
 
     // some elements have their url in data-url attribute

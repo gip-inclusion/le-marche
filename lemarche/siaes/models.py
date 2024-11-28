@@ -1192,41 +1192,6 @@ class Siae(models.Model):
             latest_activity_at = self.updated_at
         return latest_activity_at
 
-    @property
-    def elasticsearch_index_text(self):
-        text = self.description
-        if self.offers.count() > 0:
-            offers = "\n\nPrestations:\n"
-            for offer in self.offers.all():
-                offers += f"- {offer.name}:\n{offer.description}\n\n"
-            text += offers
-        return text
-
-    @property
-    def elasticsearch_index_metadata(self):
-        metadata = {
-            "id": self.id,
-            "name": self.name,
-            "website": self.website if self.website else "",
-            "kind": self.kind,
-        }
-        if self.latitude and self.longitude:
-            metadata["geo_location"] = {
-                "lat": self.latitude,
-                "lon": self.longitude,
-            }
-
-        if self.geo_range == siae_constants.GEO_RANGE_COUNTRY:
-            metadata["geo_country"] = True
-        elif self.geo_range == siae_constants.GEO_RANGE_REGION:
-            metadata["geo_reg"] = self.region
-        elif self.geo_range == siae_constants.GEO_RANGE_DEPARTMENT:
-            metadata["geo_dep"] = self.department
-        elif self.geo_range == siae_constants.GEO_RANGE_CUSTOM:
-            metadata["geo_dist"] = self.geo_range_custom_distance
-
-        return metadata
-
     def sector_groups_list_string(self, display_max=3):
         # Retrieve sectors from activities instead of directly from the sectors field
         sectors_name_list = set(self.activities.values_list("sector_group__name", flat=True))
