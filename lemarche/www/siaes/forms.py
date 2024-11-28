@@ -10,7 +10,6 @@ from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae, SiaeActivity, SiaeClientReference, SiaeGroup
 from lemarche.tenders.models import Tender
-from lemarche.utils.apis import api_elasticsearch
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.utils.widgets import CustomSelectMultiple
 from lemarche.www.siaes.widgets import CustomLocationWidget
@@ -181,21 +180,6 @@ class SiaeFilterForm(forms.Form):
         widget=forms.TextInput(attrs={"placeholder": "Votre recherche…"}),
     )
 
-    # semantic search
-    semantic_q = forms.CharField(
-        label="Prestation recherchée",
-        required=False,
-        widget=forms.TextInput(attrs={"placeholder": "Nettoyage de locaux"}),
-        min_length=5,
-    )
-    semantic_city = forms.ModelChoiceField(
-        label="Localisation de votre besoin",
-        queryset=Perimeter.objects.cities(),
-        to_field_name="slug",
-        required=False,
-        widget=forms.HiddenInput(),  # displayed with a JS autocomplete library (see `perimeter_autocomplete_field.js`)  # noqa
-    )
-
     # other hidden filters
     tender = forms.ModelChoiceField(
         queryset=Tender.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
@@ -337,16 +321,6 @@ class SiaeFilterForm(forms.Form):
                 full_text_string = full_text_string.replace(" ", "")
             qs = qs.filter_full_text(full_text_string)
 
-        # semantic search
-        semantic_q = self.cleaned_data.get("semantic_q", None)
-        semantic_city = self.cleaned_data.get("semantic_city", None)
-        if semantic_q:
-            if semantic_city:
-                siaes_id = api_elasticsearch.siaes_similarity_search_with_city(semantic_q, semantic_city)
-            else:
-                siaes_id = api_elasticsearch.siaes_similarity_search(semantic_q)
-            qs = qs.filter(pk__in=siaes_id)
-
         # a Tender author can export its Siae list
         tender = self.cleaned_data.get("tender", None)
         if tender:
@@ -419,11 +393,6 @@ class SiaeFilterForm(forms.Form):
         full_text_string = self.cleaned_data.get("q", None)
         if full_text_string:
             ORDER_BY_FIELDS = ["-similarity"]
-
-        # if semantic search, no ordering
-        semantic_q = self.cleaned_data.get("semantic_q", None)
-        if semantic_q:
-            return qs
 
         # final ordering
         qs = qs.order_by(*ORDER_BY_FIELDS)
