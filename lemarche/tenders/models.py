@@ -36,7 +36,6 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
 from lemarche.tenders.utils import find_amount_ranges
 from lemarche.users.models import User
-from lemarche.utils.apis import api_elasticsearch
 from lemarche.utils.constants import (
     ADMIN_FIELD_HELP_TEXT,
     AUTO_FIELD_HELP_TEXT,
@@ -747,41 +746,6 @@ class Tender(models.Model):
         """
         siae_found_list = Siae.objects.filter_with_tender_through_activities(self)
         self.siaes.set(siae_found_list, clear=False)
-
-        if self.with_ai_matching and self.validated_at is None:
-            if (
-                self.location
-                and self.location.kind == Perimeter.KIND_CITY
-                and self.distance_location
-                and self.distance_location > 0
-            ):
-                # with geo distance
-                siae_ids = api_elasticsearch.siaes_similarity_search_with_geo_distance(
-                    self.description,
-                    geo_distance=self.distance_location,
-                    geo_lat=self.location.coords.y,
-                    geo_lon=self.location.coords.x,
-                    siae_kinds=self.siae_kind,
-                )
-            else:
-                siae_ids = api_elasticsearch.siaes_similarity_search(self.description, siae_kinds=self.siae_kind)
-
-            siaes_had_found_by_ia = Siae.objects.filter(id__in=siae_ids)
-            siaes_had_found_by_ia_too = []
-            for siae in siaes_had_found_by_ia:
-                if siae not in siae_found_list:
-                    self.siaes.add(
-                        siae,
-                        through_defaults={
-                            "source": tender_constants.TENDER_SIAE_SOURCE_AI,
-                            "found_with_ai": True,
-                        },
-                    )
-                else:
-                    siaes_had_found_by_ia_too.append(siae)
-
-            # keep the info that the AI also found those siaes
-            TenderSiae.objects.filter(tender_id=self.id, siae__in=siaes_had_found_by_ia_too).update(found_with_ai=True)
 
     def save(self, *args, **kwargs):
         """

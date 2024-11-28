@@ -202,7 +202,7 @@ class TenderModelMatchingTest(TestCase):
         )
         siae_one_activity.sectors.add(cls.sector)
 
-        # siae found by presta_type and semantic search
+        # siae found by presta_type
         cls.siae_two = SiaeFactory(
             is_active=True,
             kind=siae_constants.KIND_ESAT,
@@ -214,14 +214,10 @@ class TenderModelMatchingTest(TestCase):
         )
         siae_two_activity.sectors.add(cls.sector)
 
-        # siaes found by mocked semantic search
-        cls.siae_three = SiaeFactory()
-        cls.siae_four = SiaeFactory()
-
         # siae not found
         cls.siae_five = SiaeFactory()
 
-    def test_set_siae_found_list_without_semantic_search(self):
+    def test_set_siae_found_list(self):
         with mock.patch(
             "lemarche.tenders.models.api_elasticsearch.siaes_similarity_search"
         ) as mock_siaes_similarity_search:
@@ -238,50 +234,6 @@ class TenderModelMatchingTest(TestCase):
             self.assertEqual(list(siaes_found), list(tender.siaes.all()))
 
         mock_siaes_similarity_search.assert_not_called()
-
-    def test_set_siae_found_list_with_semantic_search(self):
-        with mock.patch(
-            "lemarche.tenders.models.api_elasticsearch.siaes_similarity_search"
-        ) as mock_siaes_similarity_search:
-            mock_siaes_similarity_search.return_value = [self.siae_two.pk, self.siae_three.pk, self.siae_four.pk]
-            tender = TenderFactory(
-                presta_type=[siae_constants.PRESTA_BUILD],
-                sectors=[self.sector],
-                is_country_area=True,
-                with_ai_matching=True,
-                validated_at=None,
-            )
-
-            siaes_found = Siae.objects.filter_with_tender_through_activities(tender)
-            tender.set_siae_found_list()
-            tender.refresh_from_db()
-
-            self.assertEqual(tender.siaes.count(), 4)
-            for siae in list(siaes_found) + [self.siae_three, self.siae_four]:
-                with self.subTest(siae=siae):
-                    self.assertIn(siae, tender.siaes.all())
-
-            # test found_with_ai field value
-            self.assertEqual(TenderSiae.objects.get(tender=tender, siae=self.siae_one).found_with_ai, False)
-            tender_siae_two = TenderSiae.objects.get(tender=tender, siae=self.siae_two)
-            self.assertEqual(tender_siae_two.found_with_ai, True)
-            for siae in [self.siae_two, self.siae_three, self.siae_four]:
-                with self.subTest(siae=siae):
-                    self.assertEqual(TenderSiae.objects.get(tender=tender, siae=siae).found_with_ai, True)
-
-            # test source
-            for siae in [self.siae_one, self.siae_two]:
-                with self.subTest(siae=siae):
-                    self.assertEqual(
-                        TenderSiae.objects.get(tender=tender, siae=siae).source,
-                        tender_constants.TENDER_SIAE_SOURCE_EMAIL,
-                    )
-            for siae in [self.siae_three, self.siae_four]:
-                with self.subTest(siae=siae):
-                    self.assertEqual(
-                        TenderSiae.objects.get(tender=tender, siae=siae).source, tender_constants.TENDER_SIAE_SOURCE_AI
-                    )
-        mock_siaes_similarity_search.assert_called_once()
 
 
 class TenderModelQuerysetTest(TestCase):
