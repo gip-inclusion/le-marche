@@ -197,6 +197,13 @@ class TenderCreateMultiStepView(SessionWizardView):
             # update
             self.instance.status = tender_status
             self.instance.published_at = tender_published_at
+            self.instance.logs.append(
+                {
+                    "Statut": "published",
+                    "Date de publication": self.instance.published_at.isoformat(),
+                    "Détails": f"Le besoin a été publié par {self.request.user.full_name}.",
+                }
+            )
             sectors = None
             for step, model_form in form_dict.items():
                 if model_form.has_changed():

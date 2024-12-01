@@ -150,7 +150,7 @@ class TemplateTransactionalAdmin(admin.ModelAdmin):
     ]
     search_fields = ["id", "name", "code", "mailjet_id", "brevo_id"]
 
-    readonly_fields = ["code", "template_transactional_send_log_count_with_link", "created_at", "updated_at"]
+    readonly_fields = ["template_transactional_send_log_count_with_link", "created_at", "updated_at"]
 
     fieldsets = (
         (None, {"fields": ("name", "code", "description")}),

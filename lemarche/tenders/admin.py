@@ -8,6 +8,7 @@ from django.db import models
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.html import format_html
 from django_admin_filters import MultiChoice
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
@@ -287,6 +288,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "start_working_date_in_list",
         "siae_count_annotated_with_link_in_list",
         "siae_detail_contact_click_count_annotated_with_link_in_list",
+        "email_sent_for_modification",
         "is_validated_or_sent",
         "is_followed_by_us",
     ]
@@ -294,6 +296,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     list_filter = [
         AmountCustomFilter,
         ("kind", KindFilter),
+        "email_sent_for_modification",
         "is_followed_by_us",
         AuthorKindFilter,
         "status",
@@ -498,6 +501,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             {
                 "fields": (
                     "admins",
+                    "email_sent_for_modification",
                     "is_followed_by_us",
                     "proj_resulted_in_reserved_tender",
                     "proj_link_to_tender",
@@ -571,6 +575,18 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         """
         if not obj.id and not obj.author_id:
             obj.author = request.user
+
+        if obj.status == tender_constants.STATUS_PUBLISHED:
+            obj.published_at = timezone.now()
+
+        if obj.published_at:
+            obj.logs.append(
+                {
+                    "Statut": "published",
+                    "Date de publication": obj.published_at.isoformat(),
+                    "Détails": f"Le besoin a été publié par {request.user.full_name}.",
+                }
+            )
         obj.save()
 
     def save_formset(self, request, form, formset, change):

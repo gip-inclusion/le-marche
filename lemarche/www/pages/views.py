@@ -9,6 +9,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import FormView, ListView, TemplateView, View
 from django.views.generic.edit import FormMixin
+from wagtail.models import Site as WagtailSite
 
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
@@ -28,8 +29,6 @@ from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_
 from lemarche.www.tenders.tasks import notify_admin_tender_created
 from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user_from_anonymous_content
 from lemarche.www.tenders.views import TenderCreateMultiStepView
-
-from wagtail.models import Site as WagtailSite
 
 
 class ContactView(SuccessMessageMixin, FormView):
@@ -281,6 +280,14 @@ def csrf_failure(request, reason=""):  # noqa C901
                     elif key_cleaned == "is_draft":
                         tender_dict["status"] = tender_constants.STATUS_DRAFT
                         tender_dict["published_at"] = None
+                    elif key_cleaned == "is_published":
+                        tender_dict["logs"] = [
+                            {
+                                "Statut": "published",
+                                "Date de publication": tender_dict["published_at"].isoformat(),
+                                "Détails": f"Le besoin a été publié par {request.user.full_name}.",
+                            }
+                        ]
                     else:  # response_kind, marche_benefits
                         tender_dict[key_cleaned] = list() if value[0] == "" else value
         # get user
