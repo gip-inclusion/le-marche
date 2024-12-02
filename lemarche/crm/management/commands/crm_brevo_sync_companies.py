@@ -8,7 +8,7 @@ from lemarche.utils.apis import api_brevo
 from lemarche.utils.commands import BaseCommand
 
 
-ten_days_ago = timezone.now() - timedelta(days=10)
+two_weeks_ago = timezone.now() - timedelta(weeks=2)
 
 
 class Command(BaseCommand):
@@ -34,11 +34,25 @@ class Command(BaseCommand):
         self.stdout.write(f"Sync Siae > Brevo: we have {Siae.objects.count()} siaes")
         # Update only the recently updated siaes
         if recently_updated:
-            siaes_qs = siaes_qs.filter(updated_at__gte=ten_days_ago)
+            siaes_qs = siaes_qs.filter(updated_at__gte=two_weeks_ago)
             self.stdout.write(f"Sync Siae > Brevo: {siaes_qs.count()} recently updated")
 
-        # Step 2: loop on the siaes
+        # Step 2: Add the 90-day limited annotations
+        siaes_qs = siaes_qs.with_tender_stats(since_days=90)
+
+        # Step 3: loop on the siaes
         for index, siae in enumerate(siaes_qs):
+            new_extra_data = {
+                "TAUX DE COMPLÉTION": siae.completion_rate,
+                "BESOINS REÇUS": siae.tender_email_send_count_annotated,
+                "BESOINS INTERESSÉS": siae.tender_detail_contact_click_count_annotated,
+            }
+
+            # extra_data update if needed
+            if siae.extra_data != new_extra_data:
+                siae.extra_data = new_extra_data
+                siae.save(update_fields=["extra_data"])
+
             api_brevo.create_or_update_company(siae)
             if (index % 10) == 0:  # avoid API rate-limiting
                 time.sleep(1)
