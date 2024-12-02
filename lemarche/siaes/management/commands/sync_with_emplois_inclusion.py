@@ -1,9 +1,11 @@
+import logging
 import os
 import re
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.management.base import CommandError
+from django.db.models import Q
 from django.utils import timezone
 from stdnum.fr import siret
 
@@ -13,6 +15,9 @@ from lemarche.utils.apis import api_emplois_inclusion, api_mailjet, api_slack
 from lemarche.utils.commands import BaseCommand
 from lemarche.utils.constants import DEPARTMENT_TO_REGION
 from lemarche.utils.data import rename_dict_key
+
+
+logger = logging.getLogger(__name__)
 
 
 UPDATE_FIELDS = [
@@ -245,11 +250,21 @@ class Command(BaseCommand):
         c1_siae["contact_email"] = c1_siae["admin_email"] or c1_siae["email"]
         c1_siae["contact_phone"] = c1_siae["phone"]
 
-        # create object
+        # create object if brand is empty or not already used
         if not dry_run:
-            siae = Siae.objects.create(**c1_siae)
-            self.add_siae_to_contact_list(siae)
-            self.stdout_info(f"New Siae created / {siae.id} / {siae.name} / {siae.siret}")
+            if (
+                "brand" not in c1_siae
+                or c1_siae["brand"] == ""
+                or not Siae.objects.filter(Q(name=c1_siae["brand"]) | Q(brand=c1_siae["brand"])).exists()
+            ):
+                siae = Siae.objects.create(**c1_siae)
+
+                self.add_siae_to_contact_list(siae)
+                self.stdout_info(f"New Siae created / {siae.id} / {siae.name} / {siae.siret}")
+            else:
+                logger.error(
+                    f"Brand name is already used by another SIAE: '{c1_siae['brand']}' / name: '{c1_siae['name']}'"
+                )
 
     def add_siae_to_contact_list(self, siae: Siae):
         if siae.kind != "OPCS" and siae.is_active:
@@ -276,8 +291,21 @@ class Command(BaseCommand):
 
             # update fields only if empty
             for key in UPDATE_FIELDS_IF_EMPTY:
-                if key in c1_siae and not c4_siae[key]:
+                if key in c1_siae and not getattr(c4_siae, key, None):
                     c1_siae_filtered[key] = c1_siae[key]
 
-            Siae.objects.filter(c1_id=c4_siae.c1_id).update(**c1_siae_filtered)  # avoid updated_at change
+            # update siae only if brand is empty or not already used
+            if (
+                "brand" not in c1_siae_filtered
+                or c1_siae_filtered["brand"] == ""
+                or not Siae.objects.exclude(c1_id=c4_siae.c1_id)
+                .filter(Q(name=c1_siae_filtered["brand"]) | Q(brand=c1_siae_filtered["brand"]))
+                .exists()
+            ):
+                Siae.objects.filter(c1_id=c4_siae.c1_id).update(**c1_siae_filtered)  # avoid updated_at change
+            else:
+                logger.error(
+                    f"Brand name is already used by another SIAE: '{c1_siae['brand']}' / name: '{c1_siae['name']}'"
+                )
+
             # self.stdout_info(f"Siae updated / {c4_siae.id} / {c4_siae.siret}")
