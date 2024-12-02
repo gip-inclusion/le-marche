@@ -1,3 +1,4 @@
+from datetime import timedelta
 from uuid import uuid4
 
 from django.conf import settings
@@ -76,6 +77,24 @@ def get_city_filter(perimeter, with_country=False):
     if with_country:
         filters |= Q(geo_range=siae_constants.GEO_RANGE_COUNTRY)
     return filters
+
+
+def count_field(field_name, date_limit):
+    """
+    Helper method to construct a conditional count annotation.
+    """
+    condition = (
+        Q(**{f"tendersiae__{field_name}__gte": date_limit})
+        if date_limit
+        else Q(**{f"tendersiae__{field_name}__isnull": False})
+    )
+    return Sum(
+        Case(
+            When(condition, then=1),
+            default=0,
+            output_field=IntegerField(),
+        )
+    )
 
 
 class SiaeGroupQuerySet(models.QuerySet):
@@ -425,41 +444,20 @@ class SiaeQuerySet(models.QuerySet):
 
         return qs.distinct()
 
-    def with_tender_stats(self):
+    def with_tender_stats(self, since_days=None):
         """
-        Enrich each Siae with stats on their linked Tender
+        Enrich each Siae with stats on their linked Tender.
+        Optionally, limit the stats to the last `since_days` days.
         """
+        date_limit = timezone.now() - timedelta(days=since_days) if since_days else None
+
         return self.annotate(
             tender_count_annotated=Count("tenders", distinct=True),
-            tender_email_send_count_annotated=Sum(
-                Case(When(tendersiae__email_send_date__isnull=False, then=1), default=0, output_field=IntegerField())
-            ),
-            tender_email_link_click_count_annotated=Sum(
-                Case(
-                    When(tendersiae__email_link_click_date__isnull=False, then=1),
-                    default=0,
-                    output_field=IntegerField(),
-                )
-            ),
-            tender_detail_display_count_annotated=Sum(
-                Case(
-                    When(tendersiae__detail_display_date__isnull=False, then=1), default=0, output_field=IntegerField()
-                )
-            ),
-            tender_detail_contact_click_count_annotated=Sum(
-                Case(
-                    When(tendersiae__detail_contact_click_date__isnull=False, then=1),
-                    default=0,
-                    output_field=IntegerField(),
-                )
-            ),
-            tender_detail_not_interested_count_annotated=Sum(
-                Case(
-                    When(tendersiae__detail_not_interested_click_date__isnull=False, then=1),
-                    default=0,
-                    output_field=IntegerField(),
-                )
-            ),
+            tender_email_send_count_annotated=count_field("email_send_date", date_limit),
+            tender_email_link_click_count_annotated=count_field("email_link_click_date", date_limit),
+            tender_detail_display_count_annotated=count_field("detail_display_date", date_limit),
+            tender_detail_contact_click_count_annotated=count_field("detail_contact_click_date", date_limit),
+            tender_detail_not_interested_count_annotated=count_field("detail_not_interested_click_date", date_limit),
         )
 
     def with_brand_or_name(self, with_order_by=False):
