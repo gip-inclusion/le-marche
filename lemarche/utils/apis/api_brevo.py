@@ -146,6 +146,7 @@ def create_or_update_company(siae):
             "geo_range": siae.geo_range,
             "app_url": get_object_share_url(siae),
             "app_admin_url": get_object_admin_url(siae),
+            **siae.extra_data,  # includes completion_rate, tender_email_send_count, etc.
         },
     )
 
