@@ -33,7 +33,7 @@ class TenderFactory(DjangoModelFactory):
     deadline_date = date.today() + timedelta(days=10)
     start_working_date = date.today() + timedelta(days=random.randint(12, 90))
     author = factory.SubFactory(UserFactory)
-    external_link = factory.Sequence("https://{0}example.com".format)
+    external_link = "https://www.example.com"
     # Contact fields
     contact_first_name = factory.Sequence("first_name{0}".format)
     contact_last_name = factory.Sequence("last_name{0}".format)
