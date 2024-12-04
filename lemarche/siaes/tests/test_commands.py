@@ -1,12 +1,15 @@
+import factory
 from django.core.management import call_command
+from django.db.models import signals
 from django.test import TransactionTestCase
 
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.factories import SiaeFactory
+from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
 from lemarche.siaes.models import SiaeActivity
+from lemarche.users.factories import UserFactory
 
 
 class SiaeActivitiesCreateCommandTest(TransactionTestCase):
@@ -153,3 +156,75 @@ class SiaeActivitiesCreateCommandTest(TransactionTestCase):
         self.assertEqual(siae5_activities.first().presta_type, [siae_constants.PRESTA_DISP])
         self.assertEqual(siae5_activities.first().geo_range, siae_constants.GEO_RANGE_ZONES)
         self.assertEqual(siae5_activities.first().locations.count(), 0)
+
+
+class SiaeUpdateCountFieldsCommandTest(TransactionTestCase):
+    @factory.django.mute_signals(signals.post_save, signals.m2m_changed)
+    def test_update_count_fields(self):
+        """
+        Create two siaes with users and activities, and check that the count fields are updated correctly
+        """
+        siae_1 = SiaeFactory()
+        for _ in range(3):
+            user = UserFactory()
+            siae_1.users.add(user)
+        SiaeActivityFactory.create_batch(2, siae=siae_1)
+
+        self.assertEqual(siae_1.user_count, 0)
+        self.assertEqual(siae_1.sector_count, 0)
+        self.assertEqual(siae_1.network_count, 0)
+        self.assertEqual(siae_1.group_count, 0)
+        self.assertEqual(siae_1.offer_count, 0)
+        self.assertEqual(siae_1.client_reference_count, 0)
+        self.assertEqual(siae_1.label_count, 0)
+        self.assertEqual(siae_1.image_count, 0)
+        self.assertEqual(siae_1.etablissement_count, 0)
+        self.assertEqual(siae_1.completion_rate, None)
+        self.assertEqual(siae_1.tender_count, 0)
+        self.assertEqual(siae_1.tender_email_send_count, 0)
+        self.assertEqual(siae_1.tender_email_link_click_count, 0)
+        self.assertEqual(siae_1.tender_detail_display_count, 0)
+        self.assertEqual(siae_1.tender_detail_contact_click_count, 0)
+
+        siae_2 = SiaeFactory()
+        for _ in range(2):
+            user = UserFactory()
+            siae_2.users.add(user)
+        SiaeActivityFactory.create_batch(4, siae=siae_2)
+
+        self.assertEqual(siae_2.user_count, 0)
+        self.assertEqual(siae_2.sector_count, 0)
+
+        call_command("update_siae_count_fields")
+        siae_1.refresh_from_db()
+        self.assertEqual(siae_1.user_count, 3)
+        self.assertEqual(siae_1.sector_count, 2)
+        siae_2.refresh_from_db()
+        self.assertEqual(siae_2.user_count, 2)
+        self.assertEqual(siae_2.sector_count, 4)
+
+    @factory.django.mute_signals(signals.post_save, signals.m2m_changed)
+    def test_update_count_fields_with_id(self):
+        """
+        Create two siaes with users and activities, and check that the count fields are updated correctly
+        Only for the siae with id
+        """
+        siae_to_update = SiaeFactory()
+        for _ in range(3):
+            user = UserFactory()
+            siae_to_update.users.add(user)
+        SiaeActivityFactory.create_batch(2, siae=siae_to_update)
+
+        siae_not_updated = SiaeFactory()
+        for _ in range(3):
+            user = UserFactory()
+            siae_not_updated.users.add(user)
+        SiaeActivityFactory.create_batch(2, siae=siae_not_updated)
+
+        call_command("update_siae_count_fields", id=siae_to_update.id)
+        siae_to_update.refresh_from_db()
+        self.assertEqual(siae_to_update.user_count, 3)
+        self.assertEqual(siae_to_update.sector_count, 2)
+        siae_not_updated.refresh_from_db()
+        self.assertEqual(siae_not_updated.user_count, 0)
+        self.assertEqual(siae_not_updated.sector_count, 0)

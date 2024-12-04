@@ -37,7 +37,7 @@
                                 <ol class="mb-0">
                                     {% if not siae.sector_count %}
                                         <li>
-                                            <a href="{% url 'dashboard_siaes:siae_edit_search' siae.slug %}">Ajoutez un ou plusieurs secteurs d'activité</a>
+                                            <a href="{% url 'dashboard_siaes:siae_edit_activities' siae.slug %}">Ajoutez un ou plusieurs secteurs d'activité</a>
                                         </li>
                                     {% endif %}
                                     {% if not siae.description and not siae.logo_url %}

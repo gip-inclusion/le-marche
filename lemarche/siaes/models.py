@@ -1227,15 +1227,16 @@ class Siae(models.Model):
 
         return metadata
 
-    def sectors_list_string(self, display_max=3):
-        sectors_name_list = self.sectors.form_filter_queryset().values_list("name", flat=True)
+    def sector_groups_list_string(self, display_max=3):
+        # Retrieve sectors from activities instead of directly from the sectors field
+        sectors_name_list = set(self.activities.values_list("sector_group__name", flat=True))
         if display_max and len(sectors_name_list) > display_max:
             sectors_name_list = sectors_name_list[:display_max]
             sectors_name_list.append("…")
         return ", ".join(sectors_name_list)
 
-    def sectors_full_list_string(self):
-        return self.sectors_list_string(display_max=None)
+    def sector_groups_full_list_string(self):
+        return self.sector_groups_list_string(display_max=None)
 
     @cached_property
     def stat_view_count_last_3_months(self):
@@ -1305,14 +1306,6 @@ def siae_users_changed(sender, instance, action, **kwargs):
         if instance.user_count > 0 and not instance.signup_date:
             instance.signup_date = timezone.now()
         instance.save()
-
-
-@receiver(m2m_changed, sender=Siae.sectors.through)
-def siae_sectors_changed(sender, instance, action, **kwargs):
-    if isinstance(instance, Siae):
-        if action in ("post_add", "post_remove", "post_clear"):
-            instance.sector_count = instance.sectors.count()
-            instance.save()
 
 
 @receiver(m2m_changed, sender=Siae.networks.through)
@@ -1612,6 +1605,14 @@ class SiaeOffer(models.Model):
 
     def __str__(self):
         return self.name
+
+
+@receiver(post_save, sender=SiaeActivity)
+@receiver(post_delete, sender=SiaeActivity)
+def siae_activity_post_save(sender, instance, **kwargs):
+    """Update sector_count when SiaeActivity is created or updated."""
+    instance.siae.sector_count = instance.siae.activities.values("sector_group").distinct().count()
+    instance.siae.save()
 
 
 class SiaeClientReference(models.Model):
