@@ -245,6 +245,68 @@ class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
 
         self.assertEqual(Siae.objects.filter(name="Other New SIAE").count(), 1)  # error logged but sync continued
 
+    @patch("lemarche.utils.apis.api_emplois_inclusion.get_siae_list")
+    def test_sync_with_emplois_inclusion_with_kind_not_supported(self, mock_get_siae_list):
+        mock_get_siae_list.return_value = [
+            {
+                "id": 123,
+                "siret": "12345678901234",
+                "kind": "FAKE",
+                "name": "Fake SIAE",
+                "naf": "8899B",
+                "brand": "",
+                "phone": "",
+                "email": "",
+                "website": "",
+                "description": "",
+                "address_line_1": "1 rue Test",
+                "address_line_2": "",
+                "post_code": "37000",
+                "city": "Tours",
+                "department": "37",
+                "source": "ASP",
+                "latitude": 0,
+                "longitude": 0,
+                "convention_is_active": True,
+                "convention_asp_id": 0,
+                "admin_name": "",
+                "admin_email": "",
+            },
+            {
+                "id": 124,
+                "siret": "12345678901235",
+                "naf": "8899B",
+                "kind": "EI",
+                "name": "Other SIAE",
+                "brand": "",
+                "phone": "",
+                "email": "",
+                "website": "",
+                "description": "",
+                "address_line_1": "1 rue Test",
+                "address_line_2": "",
+                "post_code": "37000",
+                "city": "Tours",
+                "department": "37",
+                "source": "ASP",
+                "latitude": 0,
+                "longitude": 0,
+                "convention_is_active": True,
+                "convention_asp_id": 0,
+                "admin_name": "",
+                "admin_email": "",
+            },
+        ]
+        os.environ["API_EMPLOIS_INCLUSION_TOKEN"] = "test"
+        with self.assertLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion", level="ERROR") as log:
+            call_command("sync_with_emplois_inclusion")
+
+        self.assertIn("Kind not supported: FAKE", log.output[0])
+
+        # Verify only one SIAE was created to check if the sync was not interrupted
+        self.assertEqual(Siae.objects.count(), 1)
+        self.assertEqual(Siae.objects.first().name, "Other SIAE")
+
 
 class SiaeActivitiesCreateCommandTest(TransactionTestCase):
     def setUp(self):
