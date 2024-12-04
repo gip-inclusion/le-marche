@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 UPDATE_FIELDS = [
     # "name",  # what happens to the slug if the name is updated?
     # "brand",  # see UPDATE_FIELDS_IF_EMPTY
-    # "kind"
+    "kind",
     "siret",
     "siret_is_valid",
     "naf",
@@ -213,9 +213,13 @@ class Command(BaseCommand):
         c1_list_filtered = []
 
         for c1_siae in c1_list:
-            if c1_siae["kind"] not in ("RESERVED",):
-                c1_list_filtered.append(c1_siae)
-
+            if c1_siae["kind"] not in ("RESERVED",):  # do nothing if kind is filtered as reserved
+                if c1_siae["kind"] in siae_constants.KIND_INSERTION_LIST + siae_constants.KIND_HANDICAP_LIST:
+                    c1_list_filtered.append(c1_siae)
+                else:
+                    logger.error(
+                        f"Kind not supported: {c1_siae['kind']}/{c1_siae['id']}/{c1_siae['name']}/{c1_siae['siret']}"
+                    )
         return c1_list_filtered
 
     def c4_update(self, c1_list, dry_run):
