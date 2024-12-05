@@ -345,6 +345,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "extra_data_display",
         "import_raw_object_display",
         "logs_display",
+        "with_ai_matching",
     ]
     formfield_overrides = {
         models.TextField: {"widget": CKEditorWidget},
