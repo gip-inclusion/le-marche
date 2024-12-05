@@ -43,14 +43,18 @@ class Command(BaseCommand):
         # Step 3: loop on the siaes
         for index, siae in enumerate(siaes_qs):
             new_extra_data = {
-                "TAUX DE COMPLÉTION": siae.completion_rate,
-                "BESOINS REÇUS": siae.tender_email_send_count_annotated,
-                "BESOINS INTERESSÉS": siae.tender_detail_contact_click_count_annotated,
+                "completion_rate": siae.completion_rate if siae.completion_rate is not None else 0,
+                "tender_received": siae.tender_email_send_count_annotated,
+                "tender_interest": siae.tender_detail_contact_click_count_annotated,
             }
 
             # extra_data update if needed
             if siae.extra_data != new_extra_data:
-                siae.extra_data = new_extra_data
+                siae.extra_data.update(
+                    {
+                        "brevo_company_data": new_extra_data,
+                    }
+                )
                 siae.save(update_fields=["extra_data"])
 
             api_brevo.create_or_update_company(siae)
