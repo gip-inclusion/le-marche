@@ -1,5 +1,3 @@
-from unittest import mock
-
 from django.contrib.gis.geos import Point
 from django.contrib.sites.models import Site
 from django.test import TestCase
@@ -1050,65 +1048,6 @@ class SiaeClientReferenceTextSearchTest(TestCase):
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 2)
-
-
-class SiaeSemanticSearchTest(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        cls.url = reverse("siae:search_results")
-        cls.siae_one = SiaeFactory()
-        cls.siae_two = SiaeFactory()
-        cls.siae_three = SiaeFactory()
-        cls.siae_four = SiaeFactory()
-        cls.city = PerimeterFactory(kind=Perimeter.KIND_CITY)
-
-    def test_search_query_no_result(self):
-        with mock.patch(
-            "lemarche.utils.apis.api_elasticsearch.siaes_similarity_search"
-        ) as mock_siaes_similarity_search:
-            mock_siaes_similarity_search.return_value = []
-            url = self.url + "?semantic_q=entretien espace vert&id_semantic_city_name=&semantic_city="
-            response = self.client.get(url)
-            siaes = list(response.context["siaes"])
-            self.assertEqual(len(siaes), 0)
-            self.assertContains(response, "Oups, aucun prestataire trouvé !")
-
-        mock_siaes_similarity_search.assert_called_once()
-
-    def test_search_query_with_results(self):
-        with (
-            mock.patch(
-                "lemarche.utils.apis.api_elasticsearch.siaes_similarity_search"
-            ) as mock_siaes_similarity_search,
-            mock.patch(
-                "lemarche.utils.apis.api_elasticsearch.siaes_similarity_search_with_city"
-            ) as mock_siaes_similarity_search_with_city,
-        ):
-            mock_siaes_similarity_search.return_value = [self.siae_two.pk, self.siae_three.pk, self.siae_four.pk]
-            url = self.url + "?semantic_q=entretien espace vert&id_semantic_city_name=&semantic_city="
-            response = self.client.get(url)
-            siaes = list(response.context["siaes"])
-            self.assertEqual(len(siaes), 3)
-            self.assertIn(self.siae_two, siaes)
-            self.assertIn(self.siae_three, siaes)
-            self.assertIn(self.siae_four, siaes)
-
-        mock_siaes_similarity_search.assert_called_once()
-        mock_siaes_similarity_search_with_city.assert_not_called()
-
-    def test_search_query_with_city(self):
-        with mock.patch(
-            "lemarche.utils.apis.api_elasticsearch.siaes_similarity_search_with_city"
-        ) as mock_siaes_similarity_search_with_city:
-            mock_siaes_similarity_search_with_city.return_value = [self.siae_two.pk, self.siae_four.pk]
-            url = f"{self.url}?semantic_q=entretien foret&id_semantic_city_name={self.city.name}&semantic_city={self.city.slug}"  # noqa
-            response = self.client.get(url)
-            siaes = list(response.context["siaes"])
-            self.assertEqual(len(siaes), 2)
-            self.assertIn(self.siae_two, siaes)
-            self.assertIn(self.siae_four, siaes)
-
-        mock_siaes_similarity_search_with_city.assert_called_once()
 
 
 class SiaeSearchOrderTest(TestCase):
