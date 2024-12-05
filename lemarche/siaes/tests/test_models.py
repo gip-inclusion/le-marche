@@ -5,9 +5,9 @@ from lemarche.labels.factories import LabelFactory
 from lemarche.networks.factories import NetworkFactory
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
-from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants, utils as siae_utils
 from lemarche.siaes.factories import (
+    SiaeActivityFactory,
     SiaeClientReferenceFactory,
     SiaeFactory,
     SiaeGroupFactory,
@@ -171,8 +171,7 @@ class SiaeModelTest(TestCase):
         )
         self.assertTrue(score_completion_before < siae_full.completion_rate_calculated)
         score_completion_before = siae_full.completion_rate_calculated
-        sector = SectorFactory()
-        siae_full.sectors.add(sector)
+        SiaeActivityFactory(siae=siae_full)
         SiaeOfferFactory(siae=siae_full)
         SiaeLabelOldFactory(siae=siae_full)
         siae_full.save()  # to update stats
@@ -186,7 +185,7 @@ class SiaeModelTest(TestCase):
             # contact_phone="0000000000",
             description="test",
         )
-        siae_full_2.sectors.add(sector)
+        SiaeActivityFactory(siae=siae_full_2)
         SiaeOfferFactory(siae=siae_full_2)
         SiaeLabelOldFactory(siae=siae_full_2)
         siae_full_2.save()  # to update stats
@@ -265,13 +264,11 @@ class SiaeModelSaveTest(TestCase):
         siae.save()
         self.assertEqual(siae.offer_count, 1)
 
-    def test_update_m2m_sector_count_on_save(self):
+    def test_update_o2m_sector_count_on_save(self):
         siae = SiaeFactory()
-        sector = SectorFactory()
         self.assertEqual(siae.sector_count, 0)
-        siae.sectors.add(sector)
-        self.assertEqual(siae.sectors.count(), 1)
-        # siae.save()  # no need to run save(), m2m_changed signal was triggered above
+        SiaeActivityFactory(siae=siae)
+        self.assertEqual(siae.activities.count(), 1)
         self.assertEqual(siae.sector_count, 1)
 
     def test_update_m2m_network_count_on_save(self):
@@ -328,8 +325,7 @@ class SiaeModelSaveTest(TestCase):
         siae = SiaeFactory(description="")
         user = UserFactory()
         siae.users.add(user)
-        sector = SectorFactory()
-        siae.sectors.add(sector)
+        SiaeActivityFactory(siae=siae)
         self.assertIsNone(siae.content_filled_basic_date)
         siae.description = "test"
         siae.save()
