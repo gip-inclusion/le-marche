@@ -133,7 +133,7 @@ def send_tender_email_to_siae(tendersiae: TenderSiae, email_subject: str, recipi
         variables = {
             "SIAE_ID": tendersiae.siae.id,
             "SIAE_CONTACT_FIRST_NAME": tendersiae.siae.contact_first_name,
-            "SIAE_SECTORS": tendersiae.siae.sectors_list_string(),
+            "SIAE_SECTORS": tendersiae.siae.sector_groups_list_string(),
             "SIAE_PERIMETER": tendersiae.siae.geo_range_pretty_display,
             "TENDER_ID": tendersiae.tender.id,
             "TENDER_TITLE": tendersiae.tender.title,
@@ -275,7 +275,7 @@ def send_tender_contacted_reminder_email_to_siae(tendersiae: TenderSiae, email_t
         variables = {
             "SIAE_ID": tendersiae.siae.id,
             "SIAE_CONTACT_FIRST_NAME": tendersiae.siae.contact_first_name,
-            "SIAE_SECTORS": tendersiae.siae.sectors_list_string(),
+            "SIAE_SECTORS": tendersiae.siae.sector_groups_list_string(),
             "SIAE_PERIMETER": tendersiae.siae.geo_range_pretty_display,
             "TENDER_ID": tendersiae.tender.id,
             "TENDER_TITLE": tendersiae.tender.title,
@@ -343,7 +343,7 @@ def send_tender_interested_reminder_email_to_siae(
         variables = {
             "SIAE_ID": tendersiae.siae.id,
             "SIAE_CONTACT_FIRST_NAME": tendersiae.siae.contact_first_name,
-            "SIAE_SECTORS": tendersiae.siae.sectors_list_string(),
+            "SIAE_SECTORS": tendersiae.siae.sector_groups_list_string(),
             "SIAE_PERIMETER": tendersiae.siae.geo_range_pretty_display,
             "TENDER_ID": tendersiae.tender.id,
             "TENDER_TITLE": tendersiae.tender.title,
