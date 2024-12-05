@@ -41,7 +41,7 @@ from lemarche.utils.constants import DEPARTMENTS_PRETTY, RECALCULATED_FIELD_HELP
 from lemarche.utils.data import choice_array_to_values, phone_number_display, round_by_base
 from lemarche.utils.fields import ChoiceArrayField
 from lemarche.utils.urls import get_object_admin_url
-from lemarche.utils.validators import validate_naf, validate_post_code, validate_siret
+from lemarche.utils.validators import OptionalSchemeURLValidator, validate_naf, validate_post_code, validate_siret
 
 
 def get_region_filter(perimeter):
@@ -100,12 +100,18 @@ class SiaeGroup(models.Model):
     contact_first_name = models.CharField(verbose_name="Prénom", max_length=150, blank=True)
     contact_last_name = models.CharField(verbose_name="Nom", max_length=150, blank=True)
     contact_website = models.URLField(
-        verbose_name="Site internet", help_text="Doit commencer par http:// ou https://", blank=True
+        verbose_name="Site internet",
+        validators=[OptionalSchemeURLValidator()],
+        help_text="Doit commencer par http:// ou https://",
+        blank=True,
     )
     contact_email = models.EmailField(verbose_name="E-mail", blank=True, db_index=True)
     contact_phone = PhoneNumberField(verbose_name="Téléphone", max_length=150, blank=True)
     contact_social_website = models.URLField(
-        verbose_name="Réseau social", help_text="Doit commencer par http:// ou https://", blank=True
+        verbose_name="Réseau social",
+        validators=[OptionalSchemeURLValidator()],
+        help_text="Doit commencer par http:// ou https://",
+        blank=True,
     )
 
     logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True)
@@ -648,7 +654,7 @@ class Siae(models.Model):
         db_index=True,
     )
 
-    website = models.URLField(verbose_name="Site internet", blank=True)
+    website = models.URLField(verbose_name="Site internet", validators=[OptionalSchemeURLValidator()], blank=True)
     email = models.EmailField(verbose_name="E-mail", blank=True)
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True)
 
@@ -677,7 +683,10 @@ class Siae(models.Model):
     contact_first_name = models.CharField(verbose_name="Prénom", max_length=150, blank=True)
     contact_last_name = models.CharField(verbose_name="Nom", max_length=150, blank=True)
     contact_website = models.URLField(
-        verbose_name="Site internet", help_text="Doit commencer par http:// ou https://", blank=True
+        verbose_name="Site internet",
+        validators=[OptionalSchemeURLValidator()],
+        help_text="Doit commencer par http:// ou https://",
+        blank=True,
     )
     contact_email = models.EmailField(
         verbose_name="E-mail",
@@ -686,7 +695,10 @@ class Siae(models.Model):
     )
     contact_phone = PhoneNumberField(verbose_name="Téléphone", max_length=150, blank=True)
     contact_social_website = models.URLField(
-        verbose_name="Réseau social", help_text="Doit commencer par http:// ou https://", blank=True
+        verbose_name="Réseau social",
+        validators=[OptionalSchemeURLValidator()],
+        help_text="Doit commencer par http:// ou https://",
+        blank=True,
     )
 
     image_name = models.CharField(verbose_name="Nom de l'image", max_length=255, blank=True)
