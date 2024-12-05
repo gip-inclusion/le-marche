@@ -1195,7 +1195,7 @@ class Siae(models.Model):
 
     def sector_groups_list_string(self, display_max=3):
         # Retrieve sectors from activities instead of directly from the sectors field
-        sectors_name_list = set(self.activities.values_list("sector_group__name", flat=True))
+        sectors_name_list = list(set(self.activities.values_list("sector_group__name", flat=True)))
         if display_max and len(sectors_name_list) > display_max:
             sectors_name_list = sectors_name_list[:display_max]
             sectors_name_list.append("…")
