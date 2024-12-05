@@ -6,6 +6,7 @@ from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django.contrib.postgres.search import TrigramSimilarity  # SearchVector
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models, transaction
 from django.db.models import (
     BooleanField,
@@ -536,7 +537,7 @@ class Siae(models.Model):
     FIELDS_FROM_C1 = [
         "name",
         "slug",  # generated from 'name'
-        "brand",
+        # "brand",  # see UPDATE_FIELDS_IF_EMPTY in management/commands/sync_with_emplois_inclusion.py
         "siret",
         "naf",
         "website",
@@ -617,7 +618,7 @@ class Siae(models.Model):
 
     name = models.CharField(verbose_name="Raison sociale", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
-    brand = models.CharField(verbose_name="Enseigne", max_length=255, blank=True)
+    brand = models.CharField(verbose_name="Nom commercial", max_length=255, blank=True)
     kind = models.CharField(
         verbose_name="Type de structure",
         max_length=6,
@@ -1244,6 +1245,18 @@ class Siae(models.Model):
             update_fields_list.append("super_badge_last_updated")
 
         self.save(update_fields=update_fields_list)
+
+    def clean(self):
+        """
+        Validate that brand is not used as a brand or name by another Siae
+        Does not use a unique constraint on model because it allows blank values and checks two fields simultaneously.
+        """
+        super().clean()
+        if self.brand:
+            # Check if brand is used as name by another Siae
+            name_exists = Siae.objects.exclude(id=self.id).filter(Q(name=self.brand) | Q(brand=self.brand)).exists()
+            if name_exists:
+                raise ValidationError({"brand": "Ce nom commercial est déjà utilisé par une autre structure."})
 
 
 @receiver(post_save, sender=Siae)

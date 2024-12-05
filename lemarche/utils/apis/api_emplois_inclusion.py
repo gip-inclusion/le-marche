@@ -8,6 +8,7 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 
+# Doc : https://emplois.inclusion.beta.gouv.fr/api/v1/redoc/#tag/marche/operation/marche_list
 API_ENDPOINT = f"{settings.API_EMPLOIS_INCLUSION_URL}/marche"
 API_HEADERS = {"Authorization": f"Token {settings.API_EMPLOIS_INCLUSION_TOKEN}"}
 

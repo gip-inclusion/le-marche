@@ -9,12 +9,12 @@
                     {% if siae.logo_url %}
                         <img src="{{ siae.logo_url }}"
                              width="100"
-                             alt="Logo de la structure {{ siae.name }}"
+                             alt="Logo de la structure {{ siae.name_display }}"
                              loading="lazy" />
                     {% else %}
                         <img src="{% static 'img/default-listing.png' %}"
                              width="100"
-                             alt="{{ siae.name }}"
+                             alt="{{ siae.name_display }}"
                              loading="lazy" />
                     {% endif %}
                 </div>
@@ -72,12 +72,12 @@
                         <div class="fr-col-md-6">
                             <ul class="list-unstyled">
                                 <li>
-                                    <i class="fr-icon-building-line"></i>
+                                    <i class="fr-icon--sm fr-icon-building-line"></i>
                                     <span>{{ siae.get_kind_display }}</span>
                                 </li>
                                 {% if siae.legal_form %}
                                     <li>
-                                        <i class="fr-icon-building-fill"></i>
+                                        <i class="fr-icon--sm fr-icon-building-fill"></i>
                                         <span>{{ siae.get_legal_form_display }}</span>
                                     </li>
                                 {% endif %}

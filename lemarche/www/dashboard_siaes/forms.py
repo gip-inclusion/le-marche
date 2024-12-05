@@ -115,6 +115,7 @@ class SiaeEditInfoForm(forms.ModelForm, DsfrBaseForm):
     class Meta:
         model = Siae
         fields = [
+            "brand",
             "description",
             "logo_url",
             "ca",
@@ -126,6 +127,7 @@ class SiaeEditInfoForm(forms.ModelForm, DsfrBaseForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["brand"].widget.attrs.update({"placeholder": self.instance.name})
         self.fields["description"].label = "Présentation commerciale de votre structure"
         self.fields["description"].widget.attrs.update(
             {
