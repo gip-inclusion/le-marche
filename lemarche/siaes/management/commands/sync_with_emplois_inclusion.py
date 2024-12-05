@@ -1,9 +1,11 @@
+import logging
 import os
 import re
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.management.base import CommandError
+from django.db.models import Q
 from django.utils import timezone
 from stdnum.fr import siret
 
@@ -15,10 +17,13 @@ from lemarche.utils.constants import DEPARTMENT_TO_REGION
 from lemarche.utils.data import rename_dict_key
 
 
+logger = logging.getLogger(__name__)
+
+
 UPDATE_FIELDS = [
     # "name",  # what happens to the slug if the name is updated?
-    "brand",
-    # "kind"
+    # "brand",  # see UPDATE_FIELDS_IF_EMPTY
+    "kind",
     "siret",
     "siret_is_valid",
     "naf",
@@ -38,6 +43,8 @@ UPDATE_FIELDS = [
     "is_active",
     "c1_last_sync_date",
 ]
+
+UPDATE_FIELDS_IF_EMPTY = ["brand"]
 
 C1_EXTRA_KEYS = ["convention_is_active", "convention_asp_id"]
 
@@ -206,9 +213,13 @@ class Command(BaseCommand):
         c1_list_filtered = []
 
         for c1_siae in c1_list:
-            if c1_siae["kind"] not in ("RESERVED",):
-                c1_list_filtered.append(c1_siae)
-
+            if c1_siae["kind"] not in ("RESERVED",):  # do nothing if kind is filtered as reserved
+                if c1_siae["kind"] in siae_constants.KIND_INSERTION_LIST + siae_constants.KIND_HANDICAP_LIST:
+                    c1_list_filtered.append(c1_siae)
+                else:
+                    logger.error(
+                        f"Kind not supported: {c1_siae['kind']}/{c1_siae['id']}/{c1_siae['name']}/{c1_siae['siret']}"
+                    )
         return c1_list_filtered
 
     def c4_update(self, c1_list, dry_run):
@@ -243,11 +254,21 @@ class Command(BaseCommand):
         c1_siae["contact_email"] = c1_siae["admin_email"] or c1_siae["email"]
         c1_siae["contact_phone"] = c1_siae["phone"]
 
-        # create object
+        # create object if brand is empty or not already used
         if not dry_run:
-            siae = Siae.objects.create(**c1_siae)
-            self.add_siae_to_contact_list(siae)
-            self.stdout_info(f"New Siae created / {siae.id} / {siae.name} / {siae.siret}")
+            if (
+                "brand" not in c1_siae
+                or c1_siae["brand"] == ""
+                or not Siae.objects.filter(Q(name=c1_siae["brand"]) | Q(brand=c1_siae["brand"])).exists()
+            ):
+                siae = Siae.objects.create(**c1_siae)
+
+                self.add_siae_to_contact_list(siae)
+                self.stdout_info(f"New Siae created / {siae.id} / {siae.name} / {siae.siret}")
+            else:
+                logger.error(
+                    f"Brand name is already used by another SIAE: '{c1_siae['brand']}' / name: '{c1_siae['name']}'"
+                )
 
     def add_siae_to_contact_list(self, siae: Siae):
         if siae.kind != "OPCS" and siae.is_active:
@@ -272,5 +293,23 @@ class Command(BaseCommand):
                 if key in c1_siae:
                     c1_siae_filtered[key] = c1_siae[key]
 
-            Siae.objects.filter(c1_id=c4_siae.c1_id).update(**c1_siae_filtered)  # avoid updated_at change
+            # update fields only if empty
+            for key in UPDATE_FIELDS_IF_EMPTY:
+                if key in c1_siae and not getattr(c4_siae, key, None):
+                    c1_siae_filtered[key] = c1_siae[key]
+
+            # update siae only if brand is empty or not already used
+            if (
+                "brand" not in c1_siae_filtered
+                or c1_siae_filtered["brand"] == ""
+                or not Siae.objects.exclude(c1_id=c4_siae.c1_id)
+                .filter(Q(name=c1_siae_filtered["brand"]) | Q(brand=c1_siae_filtered["brand"]))
+                .exists()
+            ):
+                Siae.objects.filter(c1_id=c4_siae.c1_id).update(**c1_siae_filtered)  # avoid updated_at change
+            else:
+                logger.error(
+                    f"Brand name is already used by another SIAE: '{c1_siae['brand']}' / name: '{c1_siae['name']}'"
+                )
+
             # self.stdout_info(f"Siae updated / {c4_siae.id} / {c4_siae.siret}")
