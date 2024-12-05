@@ -57,9 +57,13 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
 
         # siae_with_brevo_id.extra_data initialization
         cls.siae_with_brevo_id.extra_data = {
-            "TAUX DE COMPLÉTION": cls.siae_with_brevo_id.completion_rate,
-            "BESOINS REÇUS": cls.siae_with_brevo_id_recent_stats.tender_email_send_count_annotated,
-            "BESOINS INTERESSÉS": cls.siae_with_brevo_id_recent_stats.tender_detail_contact_click_count_annotated,
+            "brevo_company_data": {
+                "completion_rate": cls.siae_with_brevo_id.completion_rate
+                if cls.siae_with_brevo_id.completion_rate is not None
+                else 0,
+                "tender_received": cls.siae_with_brevo_id_recent_stats.tender_email_send_count_annotated,
+                "tender_interest": cls.siae_with_brevo_id_recent_stats.tender_detail_contact_click_count_annotated,
+            }
         }
         cls.siae_with_brevo_id.save()
         cls.initial_extra_data = cls.siae_with_brevo_id.extra_data.copy()
@@ -115,18 +119,29 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
         )
 
     def test_siae_extra_data_is_set_on_first_sync(self):
-        """Test siae is updated if extra_data is changed."""
-        # siae_with_user.extra_data should be empty
+        """
+        - Test siae is updated if extra_data is changed.
+        - Test siae.extra_data update does not erase existing data.
+        """
         initial_extra_data = self.siae_with_user.extra_data.copy()
+        initial_extra_data["test_data"] = "test value"
+
+        self.siae_with_user.extra_data = initial_extra_data
+        self.siae_with_user.save(update_fields=["extra_data"])
 
         call_command("crm_brevo_sync_companies", recently_updated=True)
 
         self.siae_with_user.refresh_from_db()
 
         expected_extra_data = {
-            "TAUX DE COMPLÉTION": self.siae_with_user.completion_rate,
-            "BESOINS REÇUS": self.siae_with_user_stats.tender_email_send_count_annotated,
-            "BESOINS INTERESSÉS": self.siae_with_user_stats.tender_detail_contact_click_count_annotated,
+            "brevo_company_data": {
+                "completion_rate": self.siae_with_user.completion_rate
+                if self.siae_with_user.completion_rate is not None
+                else 0,
+                "tender_received": self.siae_with_user_stats.tender_email_send_count_annotated,
+                "tender_interest": self.siae_with_user_stats.tender_detail_contact_click_count_annotated,
+            },
+            "test_data": "test value",
         }
 
         self.assertNotEqual(initial_extra_data, expected_extra_data, "siae.extra_data aurait dû être mis à jour.")
@@ -188,9 +203,13 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
         )
 
         expected_extra_data = {
-            "TAUX DE COMPLÉTION": self.siae_with_brevo_id.completion_rate,
-            "BESOINS REÇUS": self.siae_with_brevo_id_recent_stats.tender_email_send_count_annotated,
-            "BESOINS INTERESSÉS": self.siae_with_brevo_id_recent_stats.tender_detail_contact_click_count_annotated,
+            "brevo_company_data": {
+                "completion_rate": self.siae_with_brevo_id.completion_rate
+                if self.siae_with_brevo_id.completion_rate is not None
+                else 0,
+                "tender_received": self.siae_with_brevo_id_recent_stats.tender_email_send_count_annotated,
+                "tender_interest": self.siae_with_brevo_id_recent_stats.tender_detail_contact_click_count_annotated,
+            }
         }
 
         self.assertNotEqual(
