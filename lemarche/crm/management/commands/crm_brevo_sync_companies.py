@@ -49,7 +49,7 @@ class Command(BaseCommand):
             }
 
             # extra_data update if needed
-            if siae.extra_data != new_extra_data:
+            if siae.extra_data.get("brevo_company_data") != new_extra_data:
                 siae.extra_data.update(
                     {
                         "brevo_company_data": new_extra_data,
