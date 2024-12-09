@@ -20,8 +20,6 @@ window.addEventListener('DOMContentLoaded', function () {
         location.href = "mailto:?" + rot13(this.dataset['nextUrl']);
     });
 
-    initModalMessages();
-
     initSuperBadges();
 
     // some elements have their url in data-url attribute
