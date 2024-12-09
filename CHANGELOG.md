@@ -6,6 +6,22 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2024.8.0](https://github.com/gip-inclusion/le-marche/compare/v2024.7.0...v2024.8.0) (2024-12-09)
+
+
+### Features
+
+* Ajout d'attributs dans Brevo pour les structures ([#1513](https://github.com/gip-inclusion/le-marche/issues/1513)) ([f41f5c5](https://github.com/gip-inclusion/le-marche/commit/f41f5c52b51808eb921f370aa5a5022be1a7dfdb))
+* **Siae:** Permettre aux structures de changer leur nom commercial ([#1552](https://github.com/gip-inclusion/le-marche/issues/1552)) ([9c32349](https://github.com/gip-inclusion/le-marche/commit/9c32349e3761b0f23e539b7decbb034fb5cb229e))
+
+
+### Bug Fixes
+
+* 'set' object is not subscriptable ([b83aecd](https://github.com/gip-inclusion/le-marche/commit/b83aecd754e824249f84fec9c9367bfb436c91da))
+* Migration de l'authentification de token vers un middleware + Sauvegarde des anciennes clés d'apis ([#1531](https://github.com/gip-inclusion/le-marche/issues/1531)) ([f37debf](https://github.com/gip-inclusion/le-marche/commit/f37debf5b8d1e43c3caa4095343ce6f046c1e27b))
+* **Secteurs d'activités:** Mise à jour du calcul du nombre de secteurs pour le déduire des activités associées ([#1564](https://github.com/gip-inclusion/le-marche/issues/1564)) ([7ab2f2a](https://github.com/gip-inclusion/le-marche/commit/7ab2f2aee14b91a84dd2d02906bf03e7e98c668c))
+* sectors_list_string replace by sector_groups_list_string on siae model ([0a27eca](https://github.com/gip-inclusion/le-marche/commit/0a27eca8492249916e4c634755566c6f608a6409))
+
 ## [2024.7.0](https://github.com/gip-inclusion/le-marche/compare/v2024.6.0...v2024.7.0) (2024-11-21)
 
 
