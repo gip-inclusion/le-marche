@@ -7,7 +7,7 @@ import lemarche.utils.validators
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("siaes", "0077_remove_siaeactivity_location_siaeactivity_locations_and_more"),
+        ("siaes", "0078_alter_historicalsiae_brand_alter_siae_brand"),
     ]
 
     operations = [
