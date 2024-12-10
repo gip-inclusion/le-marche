@@ -43,6 +43,7 @@ def read_csv():
 
 class Command(BaseCommand):
     """
+    Warning; the openai package has been updated to 1.57.1 from 0.28.1 since last command execution without testing.
     Usage: poetry run python manage.py import_esat_from_asp
     """
 
