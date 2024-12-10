@@ -27,7 +27,7 @@ class CustomBearerAuthentication(BaseAuthentication):
         elif request.GET.get("token"):  # Otherwise, try the URL parameter
             token = request.GET.get("token")
             warning_issued = True
-            logger.warning("Authentication via URL token detected. This method is deprecated and less secure.")
+            logger.info("Authentication via URL token detected. This method is deprecated and less secure.")
 
         # If no token is provided
         if not token:
