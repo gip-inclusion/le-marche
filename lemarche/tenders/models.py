@@ -730,6 +730,17 @@ class Tender(models.Model):
             self.logs.append({"Date de publication": timezone.now().isoformat()})
             fields_to_update.add("logs")
 
+    def reset_modification_request(self, fields_to_update):
+        """
+        Reset the modification request attributes if the tender is republished.
+        """
+        if self.status == self.STATUS_PUBLISHED and self.email_sent_for_modification:
+            if self.changes_information:
+                self.changes_information = ""
+                fields_to_update.add("changes_information")
+            self.email_sent_for_modification = False
+            fields_to_update.add("email_sent_for_modification")
+
     def set_slug(self, with_uuid=False):
         """
         The slug field should be unique.
