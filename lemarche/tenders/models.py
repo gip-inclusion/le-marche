@@ -712,6 +712,23 @@ class Tender(models.Model):
         for field_name in self.TRACK_UPDATE_FIELDS:
             setattr(self, f"__previous_{field_name}", getattr(self, field_name))
 
+    def add_log_entry(self, action, details=None):
+        """
+        Add an entry to the log list.
+
+        Args:
+            action (str): The action that was performed (e.g. status change, email sent, etc.)
+            details (dict, optional): Additional details about the action
+        """
+        log_entry = {
+            "action": action,
+            "timestamp": timezone.now().isoformat(),
+        }
+        if details:
+            log_entry["details"] = details
+
+        self.logs.append(log_entry)
+
     def set_slug(self, with_uuid=False):
         """
         The slug field should be unique.
