@@ -2,14 +2,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import DetailView, UpdateView
+from django.views.generic import DetailView, FormView, UpdateView
 
 from content_manager.models import ContentPage, Tag
 from lemarche.cms.models import ArticleList
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
-from lemarche.www.dashboard.forms import ProfileEditForm
+from lemarche.www.dashboard.forms import DisabledEmailEditForm, ProfileEditForm
 
 
 SLUG_RESSOURCES_CAT_SIAES = "solutions"
@@ -91,3 +91,19 @@ class ProfileEditView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
     def get_object(self):
         return self.request.user
+
+
+class DisabledEmailEditView(LoginRequiredMixin, SuccessMessageMixin, FormView):
+    form_class = DisabledEmailEditForm
+    template_name = "dashboard/disabled_email_edit.html"
+    success_url = reverse_lazy("dashboard:notifications_edit")
+    success_message = "Vos préférences de notifications ont été mises à jour."
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)

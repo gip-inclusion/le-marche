@@ -1,0 +1,62 @@
+{% extends "layouts/base.html" %}
+{% load static widget_tweaks dsfr_tags process_dict theme_inclusion %}
+{% block page_title %}
+    Notifications{{ block.super }}
+{% endblock page_title %}
+{% block breadcrumb %}
+    {% process_dict root_dir=HOME_PAGE_PATH current="Notifications" as breadcrumb_data %}
+    {% dsfr_breadcrumb breadcrumb_data %}
+{% endblock breadcrumb %}
+{% block content %}
+    <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+        <div class="fr-col-12 fr-col-lg-10">
+            <div class="fr-container fr-px-md-0 fr-py-2v fr-py-md-4v">
+                <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+                    <div class="fr-col-12 fr-col-lg-8">
+                        <h1>Notifications</h1>
+                        <div>
+                            <form method="post">
+                                {% csrf_token %}
+                                <fieldset class="fr-fieldset">
+                                    <div class="fr-fieldset__element">
+                                        {% if form.non_field_errors %}
+                                            <section class="fr-my-4v fr-input-group fr-input-group--error">
+                                                {{ form.non_field_errors }}
+                                            </section>
+                                        {% endif %}
+                                        <ul class="fr-toggle__list">
+                                            {% for group_item in form.group_items %}
+                                                {% get_form_field form group_item.field_name as field %}
+                                                <li>
+                                                    <div class="fr-toggle fr-toggle--label-left fr-toggle--border-bottom fr-mt-8v">
+                                                        {% with aria_describedby="aria-describedby:"|add:field.auto_id|add:"-hint-text" %}
+                                                            {{ field|dsfr_input_class_attr|attr:"type:checkbox"|attr:aria_describedby|attr:"class:fr-toggle__input" }}
+                                                        {% endwith %}
+                                                        <label class="fr-toggle__label"
+                                                               for="{{ field.id_for_label }}"
+                                                               data-fr-checked-label="Activé"
+                                                               data-fr-unchecked-label="Désactivé">
+                                                            {{ group_item.group.display_name }}
+                                                        </label>
+                                                        <p class="fr-hint-text" id="{{ field.id_for_label }}-hint-text">{{ group_item.group.description }}</p>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <div class="fr-fieldset__element">
+                                        <ul class="fr-btns-group--right fr-btns-group fr-btns-group--inline">
+                                            <li>
+                                                <button class="fr-mt-2v fr-btn fr-btn" type="submit">Sauvegarder</button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

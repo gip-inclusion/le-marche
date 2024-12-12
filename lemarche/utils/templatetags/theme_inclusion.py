@@ -3,6 +3,7 @@ https://docs.djangoproject.com/en/dev/howto/custom-template-tags/
 Exist also in the base code of C1 :
     https://github.com/betagouv/itou/blob/master/itou/utils/templatetags/theme_inclusion.py
 """
+
 from django import template
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
@@ -99,3 +100,8 @@ def import_static_JS_theme_inclusion():
         else:
             scripts_import += '<script src="{}"></script>'.format(static_theme(js_dep["src"]))
     return mark_safe(scripts_import)
+
+
+@register.simple_tag
+def get_form_field(form, field_name):
+    return form[field_name]
