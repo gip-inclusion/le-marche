@@ -613,6 +613,10 @@ class Tender(models.Model):
     )
     # admins
     is_followed_by_us = models.BooleanField("Suivi par l'équipe", null=True)
+    email_sent_for_modification = models.BooleanField(
+        "Modifications requises", help_text="Envoyer un e-mail pour demander des modifications", default=False
+    )
+    changes_information = models.TextField("Informations complémentaires sur les modifications requises", blank=True)
     # Admin specific for proj
     proj_resulted_in_reserved_tender = models.BooleanField(
         "Abouti à un appel d’offre (uniquement sourcing)", null=True
