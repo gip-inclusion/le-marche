@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.html import format_html
 
-from lemarche.conversations.models import Conversation, TemplateTransactional, TemplateTransactionalSendLog
+from lemarche.conversations.models import Conversation, EmailGroup, TemplateTransactional, TemplateTransactionalSendLog
 from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.fields import pretty_print_readonly_jsonfield, pretty_print_readonly_jsonfield_to_table
 from lemarche.www.conversations.tasks import send_first_email_from_conversation
@@ -153,7 +153,7 @@ class TemplateTransactionalAdmin(admin.ModelAdmin):
     readonly_fields = ["code", "template_transactional_send_log_count_with_link", "created_at", "updated_at"]
 
     fieldsets = (
-        (None, {"fields": ("name", "code", "description")}),
+        (None, {"fields": ("name", "code", "description", "group")}),
         ("Paramètres d'envoi", {"fields": ("mailjet_id", "brevo_id", "source", "is_active")}),
         ("Stats", {"fields": ("template_transactional_send_log_count_with_link",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
@@ -234,3 +234,10 @@ class TemplateTransactionalSendLogAdmin(admin.ModelAdmin):
         return "-"
 
     extra_data_display.short_description = TemplateTransactionalSendLog._meta.get_field("extra_data").verbose_name
+
+
+@admin.register(EmailGroup, site=admin_site)
+class EmailGroupAdmin(admin.ModelAdmin):
+    list_display = ["id", "relevant_user_kind", "display_name", "description", "can_be_unsubscribed"]
+    search_fields = ["id", "display_name"]
+    readonly_fields = []

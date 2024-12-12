@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 
+from lemarche.conversations.models import EmailGroup
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 
@@ -64,3 +65,41 @@ class DashboardHomeViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(User.objects.get(id=self.user.id).dashboard_last_seen_date)
+
+
+class DisabledEmailEditViewTest(TestCase):
+    def setUp(self):
+        self.user = UserFactory(kind=User.KIND_BUYER)
+        self.url = reverse("dashboard:notifications_edit")
+
+    def test_login_required(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/accounts/login/", response.url)
+
+    def test_get_form_displays_correctly(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "dashboard/disabled_email_edit.html")
+
+        # Check that the groups are displayed and that the 2 checkboxes are checked by default
+        for group in EmailGroup.objects.filter(relevant_user_kind=self.user.kind):
+            self.assertContains(response, group.display_name)
+            self.assertContains(response, " checked>", count=2)
+
+    def test_form_submission_updates_preferences(self):
+        self.assertEqual(self.user.disabled_emails.count(), 0)
+        self.client.force_login(self.user)
+        response = self.client.post(
+            self.url,
+            {
+                "email_group_1": True,
+                "email_group_2": False,
+            },
+            follow=True,
+        )
+        self.assertContains(response, "Vos préférences de notifications ont été mises à jour.")
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.disabled_emails.count(), 1)
+        self.assertEqual(self.user.disabled_emails.first().group.pk, 2)
