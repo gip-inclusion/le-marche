@@ -729,6 +729,18 @@ class Tender(models.Model):
 
         self.logs.append(log_entry)
 
+    def reset_modification_request(self):
+        """
+        Reset modification request when republishing a tender.
+        This method can only be called on Tender updates if status is changed to published
+        """
+        if self.status == self.STATUS_PUBLISHED and self.email_sent_for_modification:
+            if self.changes_information:
+                self.changes_information = ""
+                self.save(update_fields=["changes_information"])
+            self.email_sent_for_modification = False
+            self.save(update_fields=["email_sent_for_modification"])
+
     def set_slug(self, with_uuid=False):
         """
         The slug field should be unique.
