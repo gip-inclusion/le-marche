@@ -314,8 +314,8 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "start_working_date",
     )
     # filter on "perimeters"? (loads ALL the perimeters... Use django-admin-autocomplete-filter instead?)
-    search_fields = ["id", "title", "slug", "author__id", "author__email"]
-    search_help_text = "Cherche sur les champs : ID, Titre, Slug, Auteur (ID, E-mail)"
+    search_fields = ["id", "title", "slug", "author__id", "author__email", "contact_phone"]
+    search_help_text = "Cherche sur les champs : ID, Titre, Slug, Auteur (ID, E-mail), Contact Phone"
     ordering = ["-created_at"]
 
     form = TenderForm
