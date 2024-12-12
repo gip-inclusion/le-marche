@@ -213,7 +213,7 @@ class EmailGroup(models.Model):
     can_be_unsubscribed = models.BooleanField(verbose_name="L'utilisateur peut s'y désincrire", default=False)
 
     def __str__(self):
-        return self.display_name
+        return f"{self.display_name} ({self.relevant_user_kind if self.relevant_user_kind else 'Tous'})"
 
     def disabled_for_user(self, user):
         return DisabledEmail.objects.filter(user=user, group=self).exists()
