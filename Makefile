@@ -18,7 +18,7 @@ shell_on_postgres_container:
 populate_db:
 	pg_restore -d marche --if-exists --clean --no-owner --no-privileges lemarche/perimeters/management/commands/data/perimeters_20220104.sql
 	ls -d lemarche/fixtures/django/* | xargs django-admin loaddata
-	djan-admin create_content_pages
+	django-admin create_content_pages
 
 populate_db_container:
 	docker compose exec -ti app bash -c "ls -d lemarche/fixtures/django/* | xargs django-admin loaddata"
