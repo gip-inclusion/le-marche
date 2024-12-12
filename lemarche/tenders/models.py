@@ -722,6 +722,14 @@ class Tender(models.Model):
         for field_name in self.TRACK_UPDATE_FIELDS:
             setattr(self, f"__previous_{field_name}", getattr(self, field_name))
 
+    def add_log_entry_if_published(self, fields_to_update):
+        """
+        Add a log entry if the tender is published
+        """
+        if self.status == tender_constants.STATUS_PUBLISHED:
+            self.logs.append({"Date de publication": timezone.now().isoformat()})
+            fields_to_update.add("logs")
+
     def set_slug(self, with_uuid=False):
         """
         The slug field should be unique.
