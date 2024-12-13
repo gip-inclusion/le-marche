@@ -81,6 +81,11 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             source=tender_source,
             import_raw_object=self.request.data,
         )
+        # Check before adding logs or resetting modification request
+        if tender.status == tender_constants.STATUS_PUBLISHED:
+            tender.add_log_entry("PUBLISHED")
+            tender.reset_modification_request()
+
         add_to_contact_list(user=user, type="signup", tender=tender)
 
 

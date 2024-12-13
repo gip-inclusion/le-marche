@@ -286,6 +286,9 @@ def csrf_failure(request, reason=""):  # noqa C901
         # create tender
         if is_adding:
             tender: Tender = create_tender_from_dict(tender_dict)
+            if tender.status == tender_constants.STATUS_PUBLISHED:
+                tender.add_log_entry("PUBLISHED")
+            tender.save()
             add_to_contact_list(user=user, type="signup", tender=tender)
         elif is_update:
             slug = request.path.split("/")[-1]
@@ -300,6 +303,10 @@ def csrf_failure(request, reason=""):  # noqa C901
                     tender.perimeters.set([location])
                 else:
                     setattr(tender, attribute, tender_dict.get(attribute))
+            # Check before adding logs or resetting modification request
+            if tender.status == tender_constants.STATUS_PUBLISHED:
+                tender.add_log_entry("PUBLISHED")
+                tender.reset_modification_request()
             tender.save()
 
         # remove steps data
