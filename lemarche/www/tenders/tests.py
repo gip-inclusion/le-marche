@@ -295,6 +295,23 @@ class TenderCreateViewTest(TestCase):
             attributes["TYPE_VERTICALE_ACHETEUR"], "Expected TYPE_VERTICALE_ACHETEUR to be None for non-TALLY sources"
         )
 
+    def test_add_log_entry_method(self):
+        """Test 'add_log_entry' method to check tender logs"""
+        tender, _ = self.setup_mock_user_and_tender_creation(user=self.user_buyer)
+        tender.add_log_entry("PUBLISHED")
+        tender.save()
+
+        self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
+        self.assertEqual(len(tender.logs), 1)
+
+        tender.status = tender_constants.STATUS_DRAFT
+        tender.save()
+        tender.status = tender_constants.STATUS_PUBLISHED
+        tender.add_log_entry("PUBLISHED")
+        tender.save()
+
+        self.assertEqual(len(tender.logs), 2)
+
 
 class TenderListViewTest(TestCase):
     @classmethod
