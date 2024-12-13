@@ -316,6 +316,17 @@ class TenderCreateViewTest(TestCase):
 
         self.assertEqual(len(tender.logs), 2)
 
+    def test_reset_modification_request(self):
+        """Test 'reset_modification_request' method to check tender fields updates"""
+        tender, _ = self.setup_mock_user_and_tender_creation(user=self.user_buyer)
+        fields_set = set()
+        tender.reset_modification_request(fields_set)
+        tender.save()
+
+        self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
+        self.assertEqual(tender.email_sent_for_modification, False)
+        self.assertEqual(tender.changes_information, "")
+
 
 class TenderListViewTest(TestCase):
     @classmethod
