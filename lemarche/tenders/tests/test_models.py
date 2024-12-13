@@ -1080,6 +1080,40 @@ class TenderAdminTest(TestCase):
         self.assertContains(response, "Validé le ")
         self.assertTrue(tender_response.send_to_commercial_partners_only)
 
+    def test_email_sent_for_modification_set_tender_status_to_draft(self):
+        """Test 'email_sent_for_modification' sets tender status to draft."""
+        self.client.force_login(self.user)
+        tender_update_post_url = get_admin_change_view_url(self.tender)
+
+        response = self.client.post(
+            tender_update_post_url,
+            self.form_data
+            | {
+                "title": "New title",
+                "email_sent_for_modification": True,
+            },
+            follow=True,
+        )
+        tender_response = response.context_data["adminform"].form.instance
+        self.assertEqual(tender_response.status, tender_constants.STATUS_DRAFT)
+
+    def test_changes_information_cannot_be_edited_if_email_not_sent(self):
+        """Test changes information cannot be edited if email not sent."""
+        self.client.force_login(self.user)
+        tender_update_post_url = get_admin_change_view_url(self.tender)
+
+        response = self.client.post(
+            tender_update_post_url,
+            self.form_data
+            | {
+                "title": "New title",
+                "changes_information": "test",
+            },
+            follow=True,
+        )
+        tender_response = response.context_data["adminform"].form.instance
+        self.assertEqual(tender_response.changes_information, "")
+
 
 class TenderUtilsTest(TestCase):
     @classmethod
