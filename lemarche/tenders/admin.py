@@ -624,6 +624,9 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             # slug cannot be changed once the tender is validated
             if obj.status == tender_constants.STATUS_VALIDATED:
                 readonly_fields.append("slug")
+            # cannot edit 'email_sent_for_modification' while tender is not published
+            if obj and obj.email_sent_for_modification and obj.status != Tender.STATUS_PUBLISHED:
+                readonly_fields.append("email_sent_for_modification")
         return readonly_fields
 
     def save_model(self, request, obj: Tender, form, change):
