@@ -568,6 +568,19 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         self.message_user(request, "Un email a été envoyé à l'auteur du besoin")
         return HttpResponseRedirect(".")
 
+    def get_object(self, request, object_id, from_field=None):
+        """
+        Retrieve the object with the given primary key and optionally from a specific field.
+
+        If the object is found, store its original 'email_sent_for_modification' and 'status'
+        values in private attributes for later comparison or use.
+        """
+        obj = super().get_object(request, object_id, from_field)
+        if obj:
+            obj._original_email_sent_for_modification = obj.email_sent_for_modification
+            obj._original_status = obj.status
+        return obj
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.select_related("author")
