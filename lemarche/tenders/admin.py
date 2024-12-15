@@ -629,9 +629,17 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     def save_model(self, request, obj: Tender, form, change):
         """
         Set Tender author on create
+        Set 'email_sent_for_modification' and 'changes_information' on update
         """
         if not obj.id and not obj.author_id:
             obj.author = request.user
+
+        if change and obj.email_sent_for_modification:
+            fields_to_update = ["email_sent_for_modification"]
+            if obj.changes_information:
+                fields_to_update.append("changes_information")
+            obj.save(update_fields=fields_to_update)
+
         obj.save()
 
     def save_formset(self, request, form, formset, change):
