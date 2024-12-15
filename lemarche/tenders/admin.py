@@ -278,6 +278,9 @@ class TenderForm(forms.ModelForm):
         """
         cleaned_data = super().clean()
         distance_location = cleaned_data.get("distance_location")
+        email_sent_for_modification = cleaned_data.get("email_sent_for_modification")
+        changes_information = cleaned_data.get("changes_information")
+
         if distance_location:
             location = cleaned_data.get("location")
             if not location:
@@ -288,6 +291,11 @@ class TenderForm(forms.ModelForm):
                 raise ValidationError(
                     {"location": "Le champ 'Distance en km' est spécifié, ce champ doit être une ville"}
                 )
+
+        if not email_sent_for_modification and changes_information:
+            raise forms.ValidationError(
+                {"changes_information": "Vous devez cocher la case 'Modifications requises' pour remplir ce champ"}
+            )
 
 
 @admin.register(Tender, site=admin_site)
