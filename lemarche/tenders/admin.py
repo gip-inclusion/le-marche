@@ -287,6 +287,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "start_working_date_in_list",
         "siae_count_annotated_with_link_in_list",
         "siae_detail_contact_click_count_annotated_with_link_in_list",
+        "email_sent_for_modification",
         "is_validated_or_sent",
         "is_followed_by_us",
     ]
@@ -294,6 +295,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     list_filter = [
         AmountCustomFilter,
         ("kind", KindFilter),
+        "email_sent_for_modification",
         "is_followed_by_us",
         AuthorKindFilter,
         "status",
@@ -499,6 +501,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             {
                 "fields": (
                     "admins",
+                    "email_sent_for_modification",
                     "is_followed_by_us",
                     "proj_resulted_in_reserved_tender",
                     "proj_link_to_tender",
