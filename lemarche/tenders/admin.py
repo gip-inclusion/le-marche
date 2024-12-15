@@ -25,7 +25,11 @@ from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.apis import api_brevo
 from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
-from lemarche.www.tenders.tasks import restart_send_tender_task
+from lemarche.www.tenders.tasks import (
+    restart_send_tender_task,
+    send_tender_author_modification_request,
+    send_tender_author_reject_message,
+)
 
 
 class KindFilter(MultiChoice):
@@ -542,6 +546,28 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     class Media:
         js = ["/static/js/admin_tender_confirmation.js"]
 
+    def handle_email_sent_for_modification(self, request, obj):
+        """
+        If the "email_sent_for_modification" field is checked, send an email to the author of the tender
+        with a modification request and set the status to DRAFT. If the field was not previously checked,
+        save the new values and redirect to the same page.
+        """
+        if not obj._original_email_sent_for_modification:
+            send_tender_author_modification_request(tender=obj)
+            self.message_user(request, "Une demande de modification a été envoyée à l'auteur du besoin")
+            obj.email_sent_for_modification = True
+            obj.status = tender_constants.STATUS_DRAFT
+            obj.save(update_fields=["email_sent_for_modification", "status"])
+        return HttpResponseRedirect(".")
+
+    def handle_rejected_status(self, request, obj):
+        """
+        If tender status is REJECTED, send an email to the author and redirect to the same page.
+        """
+        send_tender_author_reject_message(tender=obj)
+        self.message_user(request, "Un email a été envoyé à l'auteur du besoin")
+        return HttpResponseRedirect(".")
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.select_related("author")
@@ -817,6 +843,10 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             # we don't need to send it in the crm, parteners manage them
             self.message_user(request, "Ce dépôt de besoin a été validé. Il sera envoyé aux partenaires :)")
             return HttpResponseRedirect(".")
+        if obj.email_sent_for_modification:
+            return self.handle_email_sent_for_modification(request, obj)
+        if obj.status == tender_constants.STATUS_REJECTED:
+            return self.handle_rejected_status(request, obj)
         elif request.POST.get("_restart_tender"):
             restart_send_tender_task(tender=obj)
             self.message_user(request, "Ce dépôt de besoin a été renvoyé aux structures")
