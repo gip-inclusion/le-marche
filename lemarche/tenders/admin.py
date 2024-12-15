@@ -502,6 +502,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                 "fields": (
                     "admins",
                     "email_sent_for_modification",
+                    "changes_information",
                     "is_followed_by_us",
                     "proj_resulted_in_reserved_tender",
                     "proj_link_to_tender",
