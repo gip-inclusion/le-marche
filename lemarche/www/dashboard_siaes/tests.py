@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from lemarche.conversations.factories import TemplateTransactionalFactory
+from lemarche.conversations.factories import EmailGroupFactory, TemplateTransactionalFactory
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory, SectorGroupFactory
@@ -23,7 +23,8 @@ class DashboardSiaeSearchAdoptViewTest(TestCase):
         cls.siae_with_user = SiaeFactory()
         cls.siae_with_user.users.add(cls.user_siae)
         cls.siae_without_user = SiaeFactory()
-        TemplateTransactionalFactory(code="SIAEUSERREQUEST_ASSIGNEE")
+        group = EmailGroupFactory()
+        TemplateTransactionalFactory(code="SIAEUSERREQUEST_ASSIGNEE", group=group)
 
     def test_anonymous_user_cannot_adopt_siae(self):
         url = reverse("dashboard_siaes:siae_search_by_siret")

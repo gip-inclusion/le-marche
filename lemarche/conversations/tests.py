@@ -6,7 +6,7 @@ from django.test import TestCase, TransactionTestCase
 from django.utils import timezone
 
 from lemarche.conversations import constants as conversation_constants
-from lemarche.conversations.factories import ConversationFactory, TemplateTransactionalFactory
+from lemarche.conversations.factories import ConversationFactory, EmailGroupFactory, TemplateTransactionalFactory
 from lemarche.conversations.models import Conversation, TemplateTransactional
 from lemarche.siaes.factories import SiaeFactory
 
@@ -105,22 +105,31 @@ class TemplateTransactionalModelTest(TestCase):
 
 class TemplateTransactionalModelSaveTest(TransactionTestCase):
     @classmethod
-    def setUpTestData(cls):
-        pass
+    def setUp(cls):
+        cls.email_group = EmailGroupFactory()
 
     def test_template_transactional_field_rules(self):
-        self.assertRaises(IntegrityError, TemplateTransactionalFactory, source=None)
+        self.assertRaises(IntegrityError, TemplateTransactionalFactory, group=self.email_group, source=None)
 
     def test_template_transactional_validation_on_save(self):
         TemplateTransactionalFactory(
-            mailjet_id=None, brevo_id=None, source=conversation_constants.SOURCE_BREVO, is_active=False
+            group=self.email_group,
+            mailjet_id=None,
+            brevo_id=None,
+            source=conversation_constants.SOURCE_BREVO,
+            is_active=False,
         )
         TemplateTransactionalFactory(
-            mailjet_id=None, brevo_id=123, source=conversation_constants.SOURCE_BREVO, is_active=True
+            group=self.email_group,
+            mailjet_id=None,
+            brevo_id=123,
+            source=conversation_constants.SOURCE_BREVO,
+            is_active=True,
         )
         self.assertRaises(
             ValidationError,
             TemplateTransactionalFactory,
+            group=self.email_group,
             mailjet_id=123,
             brevo_id=None,
             source=conversation_constants.SOURCE_BREVO,
@@ -129,6 +138,7 @@ class TemplateTransactionalModelSaveTest(TransactionTestCase):
         self.assertRaises(
             ValidationError,
             TemplateTransactionalFactory,
+            group=self.email_group,
             mailjet_id=None,
             brevo_id=123,
             source=conversation_constants.SOURCE_MAILJET,

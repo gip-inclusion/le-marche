@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.utils import timezone
 from sesame.utils import get_query_string as sesame_get_query_string
 
-from lemarche.conversations.factories import TemplateTransactionalFactory
+from lemarche.conversations.factories import EmailGroupFactory, TemplateTransactionalFactory
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
@@ -1133,7 +1133,8 @@ class TenderDetailContactClickStatViewTest(TestCase):
         cls.tender_contact_click_stat_url = reverse(
             "tenders:detail-contact-click-stat", kwargs={"slug": cls.tender.slug}
         )
-        TemplateTransactionalFactory(code="TENDERS_AUTHOR_SIAE_INTERESTED_1")
+        group = EmailGroupFactory()
+        TemplateTransactionalFactory(code="TENDERS_AUTHOR_SIAE_INTERESTED_1", group=group)
 
     def test_anonymous_user_cannot_notify_interested(self):
         response = self.client.get(self.tender_detail_url)
