@@ -4,7 +4,6 @@ import time
 
 import sib_api_v3_sdk
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
 from huey.contrib.djhuey import task
 from sib_api_v3_sdk.rest import ApiException
 
@@ -52,41 +51,41 @@ def create_contact(user, list_id: int, tender=None):
         # WHATSAPP, TYPE_ORGANISATION, LIEN_FICHE_COMMERCIALE, TAUX_DE_COMPLETION
     }
 
-    try:
-        tender = user.tenders.get(id=tender.id)
-        first_sector = tender.sectors.first()
-        attributes["MONTANT_BESOIN_ACHETEUR"] = tender.amount_int
-        attributes["TYPE_BESOIN_ACHETEUR"] = tender.kind
+    if tender:
+        try:
+            first_sector = tender.sectors.first()
+            attributes["MONTANT_BESOIN_ACHETEUR"] = tender.amount_int
+            attributes["TYPE_BESOIN_ACHETEUR"] = tender.kind
 
-        # Check if there is one sector whose tender source is TALLY
-        if tender.source == tender_constants.SOURCE_TALLY and first_sector:
-            attributes["TYPE_VERTICALE_ACHETEUR"] = first_sector.name
-        else:
-            attributes["TYPE_VERTICALE_ACHETEUR"] = None
+            # Check if there is one sector whose tender source is TALLY
+            if tender.source == tender_constants.SOURCE_TALLY and first_sector:
+                attributes["TYPE_VERTICALE_ACHETEUR"] = first_sector.name
+            else:
+                attributes["TYPE_VERTICALE_ACHETEUR"] = None
 
-    except ObjectDoesNotExist:
-        print("L'objet Tender demandé n'existe pas pour cet utilisateur.")
-    except AttributeError as e:
-        print(f"Erreur d'attribut : {e}")
-    except Exception as e:
-        print(f"Une erreur inattendue est survenue : {e}")
+        except AttributeError as e:
+            logger.error(f"Erreur d'attribut : {e}")
+        except Exception as e:
+            logger.error(f"Une erreur inattendue est survenue : {e}")
 
     new_contact = sib_api_v3_sdk.CreateContact(
         email=user.email,
         list_ids=[list_id],
         attributes=attributes,
         ext_id=str(user.id),
-        update_enabled=True,
+        update_enabled=False,
     )
 
     try:
-        api_response = api_instance.create_contact(new_contact).to_dict()
         if not user.brevo_contact_id:
+            api_response = api_instance.create_contact(new_contact).to_dict()
             user.brevo_contact_id = api_response.get("id")
             user.save()
-        logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response}")
+            logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response.body}")
+        else:
+            logger.info("User already exists in Brevo")
     except ApiException as e:
-        logger.error(f"Exception when calling Brevo->ContactsApi->create_contact: {e}")
+        logger.error(f"Exception when calling Brevo->ContactsApi->create_contact (list_id : {list_id}): {e.body}")
 
 
 def update_contact(user_identifier: str, attributes_to_update: dict):
