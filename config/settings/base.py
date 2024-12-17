@@ -507,7 +507,7 @@ API_GEO_BASE_URL = "https://geo.api.gouv.fr"
 # API Entreprise.
 # https://dashboard.entreprise.api.gouv.fr/login (login is done through auth.api.gouv.fr)
 # https://doc.entreprise.api.gouv.fr/
-API_ENTREPRISE_BASE_URL = "https://entreprise.api.gouv.fr/v2"
+API_ENTREPRISE_BASE_URL = env.str("API_ENTREPRISE_BASE_URL", "https://entreprise.api.gouv.fr/v3")
 API_ENTREPRISE_CONTEXT = "emplois.inclusion.beta.gouv.fr"
 API_ENTREPRISE_RECIPIENT = env.str("API_ENTREPRISE_RECIPIENT", "")
 API_ENTREPRISE_TOKEN = env.str("API_ENTREPRISE_TOKEN", "")
