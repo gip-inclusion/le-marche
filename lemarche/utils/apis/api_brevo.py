@@ -81,7 +81,7 @@ def create_contact(user, list_id: int, tender=None):
             api_response = api_instance.create_contact(new_contact).to_dict()
             user.brevo_contact_id = api_response.get("id")
             user.save()
-            logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response.body}")
+            logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response}")
         else:
             logger.info("User already exists in Brevo")
     except ApiException as e:
