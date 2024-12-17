@@ -73,7 +73,7 @@ def create_contact(user, list_id: int, tender=None):
         list_ids=[list_id],
         attributes=attributes,
         ext_id=str(user.id),
-        update_enabled=False,
+        update_enabled=True,
     )
 
     try:
