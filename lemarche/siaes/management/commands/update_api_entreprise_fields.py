@@ -1,6 +1,7 @@
 import time
 
 from django.db.models import Q
+from sentry_sdk.crons import monitor
 
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis import api_slack
@@ -33,6 +34,7 @@ class Command(BaseCommand):
         parser.add_argument("--siret", type=str, default=None, help="Lancer sur un Siret spécifique")
         parser.add_argument("--limit", type=int, default=None, help="Limiter le nombre de structures à processer")
 
+    @monitor(monitor_slug="update-api-entreprise-fields")
     def handle(self, *args, **options):
         self.stdout_info("-" * 80)
         self.stdout_info("Populating API Entreprise fields...")
