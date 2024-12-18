@@ -623,6 +623,10 @@ class Tender(models.Model):
     )
     # admins
     is_followed_by_us = models.BooleanField("Suivi par l'équipe", null=True)
+    email_sent_for_modification = models.BooleanField(
+        "Modifications requises", help_text="Envoyer un e-mail pour demander des modifications", default=False
+    )
+    changes_information = models.TextField("Informations sur les modifications", blank=True)
     # Admin specific for proj
     proj_resulted_in_reserved_tender = models.BooleanField(
         "Abouti à un appel d’offre (uniquement sourcing)", null=True
@@ -717,6 +721,25 @@ class Tender(models.Model):
         super().__init__(*args, **kwargs)
         for field_name in self.TRACK_UPDATE_FIELDS:
             setattr(self, f"__previous_{field_name}", getattr(self, field_name))
+
+    def add_log_entry_if_published(self, fields_to_update):
+        """
+        Add a log entry if the tender is published
+        """
+        if self.status == tender_constants.STATUS_PUBLISHED:
+            self.logs.append({"Date de publication": timezone.now().isoformat()})
+            fields_to_update.add("logs")
+
+    def reset_modification_request(self, fields_to_update):
+        """
+        Reset the modification request attributes if the tender is republished.
+        """
+        if self.status == self.STATUS_PUBLISHED and self.email_sent_for_modification:
+            if self.changes_information:
+                self.changes_information = ""
+                fields_to_update.add("changes_information")
+            self.email_sent_for_modification = False
+            fields_to_update.add("email_sent_for_modification")
 
     def set_slug(self, with_uuid=False):
         """
