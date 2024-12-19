@@ -213,12 +213,14 @@ class Command(BaseCommand):
         c1_list_filtered = []
 
         for c1_siae in c1_list:
-            if c1_siae["kind"] not in ("RESERVED",):  # do nothing if kind is filtered as reserved
+            if c1_siae["kind"] not in ["RESERVED", "OPCS"]:  # do nothing if kind is filtered as reserved
                 if c1_siae["kind"] in siae_constants.KIND_INSERTION_LIST + siae_constants.KIND_HANDICAP_LIST:
                     c1_list_filtered.append(c1_siae)
                 else:
                     logger.error(
-                        f"Kind not supported: {c1_siae['kind']}/{c1_siae['id']}/{c1_siae['name']}/{c1_siae['siret']}"
+                        "Kind not supported: %s",
+                        c1_siae["kind"],
+                        extra=dict(c1_id=c1_siae["id"], c1_name=c1_siae["name"], c1_siret=c1_siae["siret"]),
                     )
         return c1_list_filtered
 
