@@ -61,6 +61,9 @@ class Command(BaseCommand):
         if options["limit"]:
             siae_queryset = siae_queryset[: options["limit"]]
 
+        self._update_siae_api_entreprise_fields(siae_queryset, options["scope"])
+
+    def _update_siae_api_entreprise_fields(self, siae_queryset, scope):
         results = {
             "entreprise": {"success": 0, "error": 0},
             "etablissement": {"success": 0, "error": 0},
@@ -73,72 +76,56 @@ class Command(BaseCommand):
             if (progress % 50) == 0:
                 self.stdout_info(f"{progress}...")
 
-            if siae.siret:
-                update_data = dict()
-                if options["scope"] in ("all", "entreprise") and siae.api_entreprise_entreprise_last_sync_date is None:
-                    entreprise, error = entreprise_get_or_error(siae.siret[:9], reason=API_ENTREPRISE_REASON)
-                    if error:
-                        results["entreprise"]["error"] += 1
-                        self.stdout_error(str(error))
-                    else:
-                        results["entreprise"]["success"] += 1
-                        if entreprise:
-                            if entreprise.forme_juridique:
-                                update_data["api_entreprise_forme_juridique"] = entreprise.forme_juridique
-                            if entreprise.forme_juridique_code:
-                                update_data["api_entreprise_forme_juridique_code"] = entreprise.forme_juridique_code
-                        update_data["api_entreprise_entreprise_last_sync_date"] = timezone.now()
-
-                if (
-                    options["scope"] in ("all", "etablissement")
-                    and siae.api_entreprise_etablissement_last_sync_date is None
-                ):
-                    etablissement, error = etablissement_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)
-                    if error:
-                        results["etablissement"]["error"] += 1
-                        self.stdout_error(str(error))
-                    else:
-                        results["etablissement"]["success"] += 1
-                        if etablissement:
-                            if etablissement.employees:
-                                update_data["api_entreprise_employees"] = (
-                                    etablissement.employees
-                                    if (etablissement.employees != "Unités non employeuses")
-                                    else "Non renseigné"
-                                )
-                            if etablissement.employees_date_reference:
-                                update_data[
-                                    "api_entreprise_employees_year_reference"
-                                ] = etablissement.employees_date_reference
-                            if etablissement.date_constitution:
-                                update_data["api_entreprise_date_constitution"] = etablissement.date_constitution
-
-                        update_data["api_entreprise_etablissement_last_sync_date"] = timezone.now()
-
-                if options["scope"] in ("all", "exercice") and siae.api_entreprise_exercice_last_sync_date is None:
-                    exercice, error = exercice_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)
-                    if error:
-                        results["exercice"]["error"] += 1
-                        self.stdout_error(str(error))
-                    else:
-                        results["exercice"]["success"] += 1
-                        if exercice:
-                            if exercice.chiffre_affaires:
-                                update_data["api_entreprise_ca"] = exercice.chiffre_affaires
-                            if exercice.date_fin_exercice:
-                                update_data["api_entreprise_ca_date_fin_exercice"] = datetime.strptime(
-                                    exercice.date_fin_exercice, "%Y-%m-%d"
-                                ).date()
-
-                        update_data["api_entreprise_exercice_last_sync_date"] = timezone.now()
-
-                Siae.objects.filter(id=siae.id).update(**update_data)
-
-                # small delay to avoid going above the API limitation
-                # "max. 250 requêtes/min/jeton cumulées sur tous les endpoints"
-                time.sleep(0.5)
-            else:
+            if not siae.siret:
                 self.stdout_error(f"SIAE {siae.id} without SIRET")
+                continue
+
+            update_data = dict()
+            if scope in ("all", "entreprise") and siae.api_entreprise_entreprise_last_sync_date is None:
+                entreprise, error = entreprise_get_or_error(siae.siret[:9], reason=API_ENTREPRISE_REASON)
+                if error:
+                    results["entreprise"]["error"] += 1
+                    self.stdout_error(str(error))
+                else:
+                    results["entreprise"]["success"] += 1
+                    update_data["api_entreprise_forme_juridique"] = entreprise.forme_juridique
+                    update_data["api_entreprise_forme_juridique_code"] = entreprise.forme_juridique_code
+                    update_data["api_entreprise_entreprise_last_sync_date"] = timezone.now()
+
+            if scope in ("all", "etablissement") and siae.api_entreprise_etablissement_last_sync_date is None:
+                etablissement, error = etablissement_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)
+                if error:
+                    results["etablissement"]["error"] += 1
+                    self.stdout_error(str(error))
+                else:
+                    results["etablissement"]["success"] += 1
+                    update_data["api_entreprise_employees"] = (
+                        etablissement.employees
+                        if (etablissement.employees != "Unités non employeuses")
+                        else "Non renseigné"
+                    )
+                    update_data["api_entreprise_employees_year_reference"] = etablissement.employees_date_reference
+                    update_data["api_entreprise_date_constitution"] = etablissement.date_constitution
+                    update_data["api_entreprise_etablissement_last_sync_date"] = timezone.now()
+
+            if scope in ("all", "exercice") and siae.api_entreprise_exercice_last_sync_date is None:
+                exercice, error = exercice_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)
+                if error:
+                    results["exercice"]["error"] += 1
+                    self.stdout_error(str(error))
+                else:
+                    results["exercice"]["success"] += 1
+                    update_data["api_entreprise_ca"] = exercice.chiffre_affaires
+                    update_data["api_entreprise_ca_date_fin_exercice"] = datetime.strptime(
+                        exercice.date_fin_exercice, "%Y-%m-%d"
+                    ).date()
+                    update_data["api_entreprise_exercice_last_sync_date"] = timezone.now()
+
+            Siae.objects.filter(id=siae.id).update(**update_data)
+
+            # small delay to avoid going above the API limitation, one loop generates 3 requests
+            # "max. 250 requêtes/min/jeton cumulées sur tous les endpoints"
+            time.sleep(1)
 
         msg_success = [
             "----- Synchronisation API Entreprise -----",
