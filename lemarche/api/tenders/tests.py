@@ -198,6 +198,41 @@ class TenderCreateApiTest(TestCase):
         if sectors.exists():
             attributes["TYPE_VERTICALE_ACHETEUR"] = sectors.first().name
 
+    def test_add_log_entry_if_published(self):
+        """Test 'add_log_entry_if_published' method to check tender logs"""
+        extra_data = {"source": "TALLY"}
+        _, tender, _ = self.setup_mock_user_and_tender_creation(
+            title="Test tally", user=self.user_buyer, extra_data=extra_data
+        )
+        fields_set = set()
+        tender.add_log_entry_if_published(fields_set)
+        tender.save()
+
+        self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
+        self.assertEqual(len(tender.logs), 1)
+
+        tender.status = tender_constants.STATUS_DRAFT
+        tender.save()
+        tender.status = tender_constants.STATUS_PUBLISHED
+        tender.add_log_entry_if_published(fields_set)
+        tender.save()
+
+        self.assertEqual(len(tender.logs), 2)
+
+    def test_reset_modification_request(self):
+        """Test 'reset_modification_request' method to check tender fields updates"""
+        extra_data = {"source": "TALLY"}
+        _, tender, _ = self.setup_mock_user_and_tender_creation(
+            title="Test tally", user=self.user_buyer, extra_data=extra_data
+        )
+        fields_set = set()
+        tender.reset_modification_request(fields_set)
+        tender.save()
+
+        self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
+        self.assertEqual(tender.email_sent_for_modification, False)
+        self.assertEqual(tender.changes_information, "")
+
     def test_create_tender_with_different_contact_data(self):
         tender_data = TENDER_JSON.copy()
         tender_data["title"] = "Test tally contact"

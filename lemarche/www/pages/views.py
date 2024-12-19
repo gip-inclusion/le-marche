@@ -9,6 +9,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import FormView, ListView, TemplateView, View
 from django.views.generic.edit import FormMixin
+from wagtail.models import Site as WagtailSite
 
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
@@ -28,8 +29,6 @@ from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_
 from lemarche.www.tenders.tasks import notify_admin_tender_created
 from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user_from_anonymous_content
 from lemarche.www.tenders.views import TenderCreateMultiStepView
-
-from wagtail.models import Site as WagtailSite
 
 
 class ContactView(SuccessMessageMixin, FormView):
@@ -292,6 +291,9 @@ def csrf_failure(request, reason=""):  # noqa C901
         # create tender
         if is_adding:
             tender: Tender = create_tender_from_dict(tender_dict)
+            fields_set = set()
+            tender.add_log_entry_if_published(fields_set)
+            tender.save(update_fields=["logs"])
             add_to_contact_list(user=user, type="signup", source=user_constants.SOURCE_TENDER_FORM, tender=tender)
         elif is_update:
             slug = request.path.split("/")[-1]
@@ -306,6 +308,9 @@ def csrf_failure(request, reason=""):  # noqa C901
                     tender.perimeters.set([location])
                 else:
                     setattr(tender, attribute, tender_dict.get(attribute))
+            fields_set = set()
+            tender.add_log_entry_if_published(fields_set)
+            tender.reset_modification_request(fields_set)
             tender.save()
 
         # remove steps data

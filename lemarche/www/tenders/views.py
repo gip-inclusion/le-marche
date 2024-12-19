@@ -215,7 +215,13 @@ class TenderCreateMultiStepView(SessionWizardView):
                                 )
                             case _:
                                 setattr(self.instance, attribute, tender_dict.get(attribute))
-            self.instance.save()
+
+            fields_set = set()
+            self.instance.add_log_entry_if_published(fields_set)
+            self.instance.reset_modification_request(fields_set)
+
+            if fields_set:
+                self.instance.save(update_fields=fields_set)
         else:
             tender_dict |= {"status": tender_status, "published_at": tender_published_at}
             self.instance = create_tender_from_dict(tender_dict)
