@@ -1,14 +1,4 @@
-import datetime
-import json
-from unittest.mock import patch
-
-from django.test import TestCase
-from django.utils import timezone
-
-from lemarche.siaes.factories import SiaeFactory
-from lemarche.utils.apis.api_entreprise import siae_update_entreprise, siae_update_etablissement, siae_update_exercice
-
-
+# Result for a call to: https://entreprises.api.gouv.fr/api/v3/insee/unites_legales/130025265
 MOCK_ENTREPRISE_API_DATA = """
 {
     "data": {
@@ -66,31 +56,7 @@ MOCK_ENTREPRISE_API_DATA = """
 }
 """
 
-
-class TestSiaeUpdateEntreprise(TestCase):
-    def setUp(self):
-        self.siae = SiaeFactory(siret="13002526500013")
-
-    @patch("requests.get")
-    def test_siae_update_entreprise(self, mock_api):
-        mock_response = mock_api.return_value
-        mock_response.json.return_value = json.loads(MOCK_ENTREPRISE_API_DATA)
-        mock_response.status_code = 200
-
-        result, entreprise = siae_update_entreprise(self.siae)
-
-        self.siae.refresh_from_db()
-
-        # Assert the result
-        self.assertEqual(result, 1)
-        self.assertIsNotNone(entreprise)
-
-        # Assert the updates
-        self.assertEqual(self.siae.api_entreprise_forme_juridique, "Service central d'un ministère")
-        self.assertEqual(self.siae.api_entreprise_forme_juridique_code, "7120")
-        self.assertLess((timezone.now() - self.siae.api_entreprise_entreprise_last_sync_date).total_seconds(), 60)
-
-
+# Result for a call to: https://entreprises.api.gouv.fr/api/v3/insee/sirene/etablissements/30613890001294
 MOCK_ETABLISSEMENT_API_DATA = """
 {
     "data": {
@@ -194,32 +160,7 @@ MOCK_ETABLISSEMENT_API_DATA = """
 }
 """
 
-
-class TestSiaeUpdateEtablissement(TestCase):
-    def setUp(self):
-        self.siae = SiaeFactory(siret="30613890001294")
-
-    @patch("requests.get")
-    def test_siae_update_etablissement(self, mock_api):
-        mock_response = mock_api.return_value
-        mock_response.json.return_value = json.loads(MOCK_ETABLISSEMENT_API_DATA)
-        mock_response.status_code = 200
-
-        result, etablissement = siae_update_etablissement(self.siae)
-
-        # Assert the result
-        self.assertEqual(result, 1)
-        self.assertIsNotNone(etablissement)
-
-        # Assert the updates
-        self.siae.refresh_from_db()
-        self.assertEqual(self.siae.siret, "30613890001294")
-        self.assertEqual(self.siae.api_entreprise_employees, "2 000 à 4 999 salariés")
-        self.assertEqual(self.siae.api_entreprise_employees_year_reference, "2016")
-        self.assertEqual(self.siae.api_entreprise_date_constitution, datetime.date(2021, 10, 13))
-        self.assertLess((timezone.now() - self.siae.api_entreprise_etablissement_last_sync_date).total_seconds(), 60)
-
-
+# Result for a call to: https://entreprises.api.gouv.fr/api/v3/dgfip/etablissements/30613890001294/chiffres_affaires
 MOCK_EXERCICES_API_DATA = """
 {
     "data": [
@@ -236,21 +177,3 @@ MOCK_EXERCICES_API_DATA = """
     "links": {}
 }
 """
-
-
-class TestSiaeUpdateExercice(TestCase):
-    def setUp(self):
-        self.siae = SiaeFactory(siret="30613890001294")
-
-    @patch("requests.get")
-    def test_siae_update_exercice(self, mock_api):
-        mock_response = mock_api.return_value
-        mock_response.json.return_value = json.loads(MOCK_EXERCICES_API_DATA)
-        mock_response.status_code = 200
-
-        siae_update_exercice(self.siae)
-
-        self.siae.refresh_from_db()
-        self.assertEqual(self.siae.api_entreprise_ca, 900001)
-        self.assertEqual(self.siae.api_entreprise_ca_date_fin_exercice, datetime.date(2015, 12, 1))
-        self.assertLess((timezone.now() - self.siae.api_entreprise_exercice_last_sync_date).total_seconds(), 60)

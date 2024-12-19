@@ -2,20 +2,16 @@
 
 import logging
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date
 
 import requests
 from django.conf import settings
-from django.utils import timezone
 from django.utils.http import urlencode
-
-from lemarche.siaes.models import Siae
 
 
 logger = logging.getLogger(__name__)
 
 API_ENTREPRISE_REASON = "Mise à jour données Marché de la plateforme de l'Inclusion"
-DATE_FORMAT = "%Y-%m-%d"
 
 
 @dataclass
@@ -40,6 +36,17 @@ class Exercice:
     date_fin_exercice: date
 
 
+def get_url_endpoint(endpoint: str, reason: str) -> str:
+    query_string = urlencode(
+        {
+            "recipient": settings.API_ENTREPRISE_RECIPIENT,
+            "context": settings.API_ENTREPRISE_CONTEXT,
+            "object": reason,
+        }
+    )
+    return f"{settings.API_ENTREPRISE_BASE_URL}/{endpoint}?{query_string}"
+
+
 def entreprise_get_or_error(siren, reason="Inscription au marché de l'inclusion"):
     """
     Obtain company data from entreprise.api.gouv.fr
@@ -50,14 +57,7 @@ def entreprise_get_or_error(siren, reason="Inscription au marché de l'inclusion
     """
     error = None
 
-    query_string = urlencode(
-        {
-            "recipient": settings.API_ENTREPRISE_RECIPIENT,
-            "context": settings.API_ENTREPRISE_CONTEXT,
-            "object": reason,
-        }
-    )
-    url = f"{settings.API_ENTREPRISE_BASE_URL}/insee/sirene/unites_legales/{siren}?{query_string}"
+    url = get_url_endpoint(f"insee/sirene/unites_legales/{siren}", reason)
     headers = {"Authorization": f"Bearer {settings.API_ENTREPRISE_TOKEN}"}
 
     try:
@@ -98,27 +98,6 @@ def entreprise_get_or_error(siren, reason="Inscription au marché de l'inclusion
     return entreprise, None
 
 
-def siae_update_entreprise(siae):
-    if siae.siret:
-        siae_siren = siae.siret[:9]
-        entreprise, error = entreprise_get_or_error(siae_siren, reason=API_ENTREPRISE_REASON)
-        if error:
-            return 0, error
-
-        update_data = dict()
-        if entreprise:
-            if entreprise.forme_juridique:
-                update_data["api_entreprise_forme_juridique"] = entreprise.forme_juridique
-            if entreprise.forme_juridique_code:
-                update_data["api_entreprise_forme_juridique_code"] = entreprise.forme_juridique_code
-
-        update_data["api_entreprise_entreprise_last_sync_date"] = timezone.now()
-        Siae.objects.filter(id=siae.id).update(**update_data)
-
-        return 1, entreprise
-    return 0, f"SIAE {siae.id} without SIREN"
-
-
 def etablissement_get_or_error(siret, reason="Inscription au marché de l'inclusion"):
     """
     Obtain company data from entreprise.api.gouv.fr
@@ -132,14 +111,7 @@ def etablissement_get_or_error(siret, reason="Inscription au marché de l'inclus
     """
     error = None
 
-    query_string = urlencode(
-        {
-            "recipient": settings.API_ENTREPRISE_RECIPIENT,
-            "context": settings.API_ENTREPRISE_CONTEXT,
-            "object": reason,
-        }
-    )
-    url = f"{settings.API_ENTREPRISE_BASE_URL}/insee/sirene/etablissements/{siret}?{query_string}"
+    url = get_url_endpoint(f"insee/sirene/etablissements/{siret}", reason)
     headers = {"Authorization": f"Bearer {settings.API_ENTREPRISE_TOKEN}"}
     try:
         r = requests.get(url, headers=headers)
@@ -187,33 +159,6 @@ def etablissement_get_or_error(siret, reason="Inscription au marché de l'inclus
     return etablissement, None
 
 
-def siae_update_etablissement(siae):
-    if siae.siret:
-        etablissement, error = etablissement_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)
-        if error:
-            return 0, error
-
-        update_data = dict()
-        if etablissement:
-            if etablissement.employees:
-                update_data["api_entreprise_employees"] = (
-                    etablissement.employees
-                    if (etablissement.employees != "Unités non employeuses")
-                    else "Non renseigné"
-                )
-            if etablissement.employees_date_reference:
-                update_data["api_entreprise_employees_year_reference"] = etablissement.employees_date_reference
-            if etablissement.date_constitution:
-                update_data["api_entreprise_date_constitution"] = etablissement.date_constitution
-
-        update_data["api_entreprise_etablissement_last_sync_date"] = timezone.now()
-        Siae.objects.filter(id=siae.id).update(**update_data)
-
-        return 1, etablissement
-
-    return 0, f"SIAE {siae.id} without SIRET"
-
-
 def exercice_get_or_error(siret, reason="Inscription au marché de l'inclusion"):
     """
     Obtain company data from entreprises.api.gouv.fr
@@ -226,14 +171,7 @@ def exercice_get_or_error(siret, reason="Inscription au marché de l'inclusion")
     """
     error = None
 
-    query_string = urlencode(
-        {
-            "recipient": settings.API_ENTREPRISE_RECIPIENT,
-            "context": settings.API_ENTREPRISE_CONTEXT,
-            "object": reason,
-        }
-    )
-    url = f"{settings.API_ENTREPRISE_BASE_URL}/dgfip/etablissements/{siret}/chiffres_affaires?{query_string}"
+    url = get_url_endpoint(f"dgfip/etablissements/{siret}/chiffres_affaires", reason)
     headers = {"Authorization": f"Bearer {settings.API_ENTREPRISE_TOKEN}"}
 
     try:
@@ -268,27 +206,3 @@ def exercice_get_or_error(siret, reason="Inscription au marché de l'inclusion")
         date_fin_exercice=response["data"][0]["data"]["date_fin_exercice"],
     )
     return exercice, None
-
-
-def siae_update_exercice(siae):
-    if siae.siret:
-        exercice, error = exercice_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)
-        if error:
-            return 0, error
-
-        update_data = dict()
-
-        if exercice:
-            update_data = dict()
-            if exercice.chiffre_affaires:
-                update_data["api_entreprise_ca"] = exercice.chiffre_affaires
-            if exercice.date_fin_exercice:
-                update_data["api_entreprise_ca_date_fin_exercice"] = datetime.strptime(
-                    exercice.date_fin_exercice, DATE_FORMAT
-                ).date()
-
-        update_data["api_entreprise_exercice_last_sync_date"] = timezone.now()
-        Siae.objects.filter(id=siae.id).update(**update_data)
-
-        return 1, exercice
-    return 0, f"SIAE {siae.id} without SIRET"
