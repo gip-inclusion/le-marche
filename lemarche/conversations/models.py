@@ -210,7 +210,7 @@ class EmailGroup(models.Model):
         choices=user_constants.KIND_CHOICES,
         default=user_constants.KIND_BUYER,
     )
-    can_be_unsubscribed = models.BooleanField(verbose_name="L'utilisateur peut s'y désincrire", default=False)
+    can_be_unsubscribed = models.BooleanField(verbose_name="L'utilisateur peut s'y désinscrire", default=False)
 
     def __str__(self):
         return f"{self.display_name} ({self.relevant_user_kind if self.relevant_user_kind else 'Tous'})"

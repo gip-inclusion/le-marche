@@ -88,7 +88,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "can_be_unsubscribed",
-                    models.BooleanField(default=False, verbose_name="L'utilisateur peut s'y désincrire"),
+                    models.BooleanField(default=False, verbose_name="L'utilisateur peut s'y désinscrire"),
                 ),
             ],
         ),
