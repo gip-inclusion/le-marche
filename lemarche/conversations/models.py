@@ -13,6 +13,7 @@ from django_extensions.db.fields import ShortUUIDField
 from shortuuid import uuid
 
 from lemarche.conversations import constants as conversation_constants
+from lemarche.users import constants as user_constants
 from lemarche.utils.apis import api_brevo, api_mailjet
 from lemarche.utils.data import add_validation_error
 
@@ -200,6 +201,24 @@ class Conversation(models.Model):
         self.save()
 
 
+class EmailGroup(models.Model):
+    display_name = models.CharField(verbose_name="Nom", max_length=255, blank=True)
+    description = models.TextField(verbose_name="Description", blank=True)
+    relevant_user_kind = models.CharField(
+        verbose_name="Type d'utilisateur",
+        max_length=20,
+        choices=user_constants.KIND_CHOICES,
+        default=user_constants.KIND_BUYER,
+    )
+    can_be_unsubscribed = models.BooleanField(verbose_name="L'utilisateur peut s'y désinscrire", default=False)
+
+    def __str__(self):
+        return f"{self.display_name} ({self.relevant_user_kind if self.relevant_user_kind else 'Tous'})"
+
+    def disabled_for_user(self, user):
+        return DisabledEmail.objects.filter(user=user, group=self).exists()
+
+
 class TemplateTransactionalQuerySet(models.QuerySet):
     def with_stats(self):
         return self.annotate(
@@ -213,6 +232,7 @@ class TemplateTransactional(models.Model):
         verbose_name="Nom technique", max_length=255, unique=True, db_index=True, blank=True, null=True
     )
     description = models.TextField(verbose_name="Description", blank=True)
+    group = models.ForeignKey("EmailGroup", on_delete=models.CASCADE, null=True)
 
     # email_subject = models.CharField(
     #     verbose_name="E-mail : objet",
@@ -363,3 +383,14 @@ class TemplateTransactionalSendLog(models.Model):
     class Meta:
         verbose_name = "Template transactionnel: logs d'envois"
         verbose_name_plural = "Templates transactionnels: logs d'envois"
+
+
+class DisabledEmail(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="disabled_emails")
+    group = models.ForeignKey("EmailGroup", on_delete=models.CASCADE)
+    disabled_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint("user", "group", name="unique_group_per_user"),
+        ]

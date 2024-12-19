@@ -1,7 +1,7 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from lemarche.conversations.models import Conversation, TemplateTransactional
+from lemarche.conversations.models import Conversation, EmailGroup, TemplateTransactional
 from lemarche.siaes.factories import SiaeFactory
 
 
@@ -17,9 +17,18 @@ class ConversationFactory(DjangoModelFactory):
     initial_body_message = factory.Faker("name", locale="fr_FR")
 
 
+class EmailGroupFactory(DjangoModelFactory):
+    class Meta:
+        model = EmailGroup
+
+    display_name = factory.Faker("name", locale="fr_FR")
+    description = factory.Faker("name", locale="fr_FR")
+
+
 class TemplateTransactionalFactory(DjangoModelFactory):
     class Meta:
         model = TemplateTransactional
 
     name = factory.Faker("name", locale="fr_FR")
     code = factory.Faker("name", locale="fr_FR")
+    group = factory.SubFactory(EmailGroupFactory)

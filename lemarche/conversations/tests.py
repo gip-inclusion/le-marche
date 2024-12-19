@@ -104,6 +104,8 @@ class TemplateTransactionalModelTest(TestCase):
 
 
 class TemplateTransactionalModelSaveTest(TransactionTestCase):
+    reset_sequences = True
+
     @classmethod
     def setUpTestData(cls):
         pass
