@@ -1,11 +1,18 @@
 import time
+from datetime import datetime
 
 from django.db.models import Q
+from django.utils import timezone
 from sentry_sdk.crons import monitor
 
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis import api_slack
-from lemarche.utils.apis.api_entreprise import siae_update_entreprise, siae_update_etablissement, siae_update_exercice
+from lemarche.utils.apis.api_entreprise import (
+    API_ENTREPRISE_REASON,
+    entreprise_get_or_error,
+    etablissement_get_or_error,
+    exercice_get_or_error,
+)
 from lemarche.utils.commands import BaseCommand
 
 
@@ -54,124 +61,96 @@ class Command(BaseCommand):
         if options["limit"]:
             siae_queryset = siae_queryset[: options["limit"]]
 
-        # self.stdout_info(f"Found {siae_queryset.count()} Siae")
+        results = {
+            "entreprise": {"success": 0, "error": 0},
+            "etablissement": {"success": 0, "error": 0},
+            "exercice": {"success": 0, "error": 0},
+        }
 
-        if options["scope"] in ("all", "entreprise"):
-            self.update_api_entreprise_entreprise_fields(siae_queryset)
-
-        if options["scope"] in ("all", "etablissement"):
-            self.update_api_entreprise_etablissement_fields(siae_queryset)
-
-        if options["scope"] in ("all", "exercice"):
-            self.update_api_entreprise_exercice_fields(siae_queryset)
-
-    # API Entreprise: entreprises
-    def update_api_entreprise_entreprise_fields(self, siae_queryset):
         progress = 0
-        results = {"success": 0, "error": 0}
-        siae_queryset_entreprise = siae_queryset.filter(api_entreprise_entreprise_last_sync_date=None)
-        self.stdout_info("-" * 80)
-        self.stdout_info(f"Populating 'entreprise' for {siae_queryset_entreprise.count()} Siae...")
+        for siae in siae_queryset:
+            progress += 1
+            if (progress % 50) == 0:
+                self.stdout_info(f"{progress}...")
 
-        for siae in siae_queryset_entreprise:
-            try:
-                progress += 1
-                if (progress % 50) == 0:
-                    self.stdout_info(f"{progress}...")
-                # self.stdout_info("-" * 80)
-                # self.stdout_info(f"{siae.id} / {siae.name} / {siae.siret}")
-                response, message = siae_update_entreprise(siae)
-                if response:
-                    results["success"] += 1
-                else:
-                    self.stdout_error(str(message))
-                    results["error"] += 1
+            if siae.siret:
+                update_data = dict()
+                if options["scope"] in ("all", "entreprise") and siae.api_entreprise_entreprise_last_sync_date is None:
+                    entreprise, error = entreprise_get_or_error(siae.siret[:9], reason=API_ENTREPRISE_REASON)
+                    if error:
+                        results["entreprise"]["error"] += 1
+                        self.stdout_error(str(error))
+                    else:
+                        results["entreprise"]["success"] += 1
+                        if entreprise:
+                            if entreprise.forme_juridique:
+                                update_data["api_entreprise_forme_juridique"] = entreprise.forme_juridique
+                            if entreprise.forme_juridique_code:
+                                update_data["api_entreprise_forme_juridique_code"] = entreprise.forme_juridique_code
+                        update_data["api_entreprise_entreprise_last_sync_date"] = timezone.now()
+
+                if (
+                    options["scope"] in ("all", "etablissement")
+                    and siae.api_entreprise_etablissement_last_sync_date is None
+                ):
+                    etablissement, error = etablissement_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)
+                    if error:
+                        results["etablissement"]["error"] += 1
+                        self.stdout_error(str(error))
+                    else:
+                        results["etablissement"]["success"] += 1
+                        if etablissement:
+                            if etablissement.employees:
+                                update_data["api_entreprise_employees"] = (
+                                    etablissement.employees
+                                    if (etablissement.employees != "Unités non employeuses")
+                                    else "Non renseigné"
+                                )
+                            if etablissement.employees_date_reference:
+                                update_data[
+                                    "api_entreprise_employees_year_reference"
+                                ] = etablissement.employees_date_reference
+                            if etablissement.date_constitution:
+                                update_data["api_entreprise_date_constitution"] = etablissement.date_constitution
+
+                        update_data["api_entreprise_etablissement_last_sync_date"] = timezone.now()
+
+                if options["scope"] in ("all", "exercice") and siae.api_entreprise_exercice_last_sync_date is None:
+                    exercice, error = exercice_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)
+                    if error:
+                        results["exercice"]["error"] += 1
+                        self.stdout_error(str(error))
+                    else:
+                        results["exercice"]["success"] += 1
+                        if exercice:
+                            if exercice.chiffre_affaires:
+                                update_data["api_entreprise_ca"] = exercice.chiffre_affaires
+                            if exercice.date_fin_exercice:
+                                update_data["api_entreprise_ca_date_fin_exercice"] = datetime.strptime(
+                                    exercice.date_fin_exercice, "%Y-%m-%d"
+                                ).date()
+
+                        update_data["api_entreprise_exercice_last_sync_date"] = timezone.now()
+
+                Siae.objects.filter(id=siae.id).update(**update_data)
+
                 # small delay to avoid going above the API limitation
                 # "max. 250 requêtes/min/jeton cumulées sur tous les endpoints"
                 time.sleep(0.5)
-            except Exception as e:
-                self.stdout_error(str(e))
-                api_slack.send_message_to_channel("Erreur lors de la synchronisation API entreprises: entreprises")
+            else:
+                self.stdout_error(f"SIAE {siae.id} without SIRET")
 
         msg_success = [
-            "----- Synchronisation API Entreprise (/entreprises) -----",
-            f"Done! Processed {siae_queryset_entreprise.count()} siae",
-            f"success count: {results['success']}/{siae_queryset_entreprise.count()}",
-            f"error count: {results['error']}/{siae_queryset_entreprise.count()} (voir les logs)",
-        ]
-        self.stdout_messages_success(msg_success)
-        api_slack.send_message_to_channel("\n".join(msg_success))
-
-    # API Entreprise: etablissements
-    def update_api_entreprise_etablissement_fields(self, siae_queryset):
-        progress = 0
-        results = {"success": 0, "error": 0}
-        siae_queryset_etablissement = siae_queryset.filter(api_entreprise_etablissement_last_sync_date=None)
-        self.stdout_info("-" * 80)
-        self.stdout_info(f"Populating 'etablissement' for {siae_queryset_etablissement.count()} Siae...")
-
-        for siae in siae_queryset_etablissement:
-            try:
-                progress += 1
-                if (progress % 50) == 0:
-                    self.stdout_info(f"{progress}...")
-                # self.stdout_info("-" * 80)
-                # self.stdout_info(f"{siae.id} / {siae.name} / {siae.siret}")
-                response, message = siae_update_etablissement(siae)
-                if response:
-                    results["success"] += 1
-                else:
-                    self.stdout_error(str(message))
-                    results["error"] += 1
-                # small delay to avoid going above the API limitation
-                # "max. 250 requêtes/min/jeton cumulées sur tous les endpoints"
-                time.sleep(0.5)
-            except Exception as e:
-                self.stdout_error(str(e))
-                api_slack.send_message_to_channel("Erreur lors de la synchronisation API entreprises: etablissements")
-
-        msg_success = [
-            "----- Synchronisation API Entreprise (/etablissements) -----",
-            f"Done! Processed {siae_queryset_etablissement.count()} siae",
-            f"success count: {results['success']}/{siae_queryset_etablissement.count()}",
-            f"error count: {results['error']}/{siae_queryset_etablissement.count()} (voir les logs)",
-        ]
-        self.stdout_messages_success(msg_success)
-        api_slack.send_message_to_channel("\n".join(msg_success))
-
-    # API Entreprise: exercices
-    def update_api_entreprise_exercice_fields(self, siae_queryset):
-        progress = 0
-        results = {"success": 0, "error": 0}
-        siae_queryset_exercice = siae_queryset.filter(api_entreprise_exercice_last_sync_date=None)
-        self.stdout_info("-" * 80)
-        self.stdout_info(f"Populating 'exercice' for {siae_queryset_exercice.count()} Siae...")
-
-        for siae in siae_queryset_exercice:
-            try:
-                progress += 1
-                if (progress % 50) == 0:
-                    self.stdout_info(f"{progress}...")
-                # self.stdout_info("-" * 80)
-                # self.stdout_info(f"{siae.id} / {siae.name} / {siae.siret}")
-                response, message = siae_update_exercice(siae)
-                if response:
-                    results["success"] += 1
-                else:
-                    self.stdout_error(str(message))
-                    results["error"] += 1
-                # small delay to avoid going above the API limitation
-                # "max. 250 requêtes/min/jeton cumulées sur tous les endpoints"
-                time.sleep(0.5)
-            except Exception as e:
-                self.stdout_error(str(e))
-                api_slack.send_message_to_channel("Erreur lors de la synchronisation API entreprises: exercices")
-
-        msg_success = [
-            "----- Synchronisation API Entreprise (/exercices) -----",
-            f"Done! Processed {siae_queryset_exercice.count()} siae",
-            f"success count: {results['success']}/{siae_queryset_exercice.count()}",
-            f"error count: {results['error']}/{siae_queryset_exercice.count()} (voir les logs)",
+            "----- Synchronisation API Entreprise -----",
+            f"Done! Processed {siae_queryset.count()} siae",
+            "----- Success -----",
+            f"entreprise: {results['entreprise']['success']}/{siae_queryset.count()}",
+            f"etablissement: {results['etablissement']['success']}/{siae_queryset.count()}",
+            f"exercice: {results['exercice']['success']}/{siae_queryset.count()}",
+            "----- Error ----- (voir les logs)",
+            f"entreprise: {results['entreprise']['error']}/{siae_queryset.count()}",
+            f"etablissement: {results['etablissement']['error']}/{siae_queryset.count()}",
+            f"exercice: {results['exercice']['error']}/{siae_queryset.count()}",
         ]
         self.stdout_messages_success(msg_success)
         api_slack.send_message_to_channel("\n".join(msg_success))
