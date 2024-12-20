@@ -1262,7 +1262,17 @@ class Siae(models.Model):
         Does not use a unique constraint on model because it allows blank values and checks two fields simultaneously.
         """
         super().clean()
+
+        # Check only if brand is set and different from the original brand
+        # (to avoid validation error on update without brand change)
+        check_brand_uniqueness = False
         if self.brand:
+            check_brand_uniqueness = True
+            if self.pk:
+                original_brand = Siae.objects.get(pk=self.pk).brand
+                check_brand_uniqueness = original_brand != self.brand
+
+        if check_brand_uniqueness:
             # Check if brand is used as name by another Siae
             name_exists = Siae.objects.exclude(id=self.id).filter(Q(name=self.brand) | Q(brand=self.brand)).exists()
             if name_exists:
