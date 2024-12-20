@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils import timezone
 
@@ -417,6 +418,45 @@ class SiaeModelSaveTest(TestCase):
         siae_super_badge_2.set_super_badge()
         self.assertTrue(siae_super_badge_2.super_badge)
         self.assertEqual(siae_super_badge_2.super_badge_last_updated, siae_super_badge_last_updated_current_value)
+
+    def test_brand_uniqueness(self):
+        SiaeFactory(name="Name 1", brand="Brand 1")
+        SiaeFactory(brand="Brand 2")
+        siae_3 = SiaeFactory(brand="Brand 1")
+        self.assertEqual(Siae.objects.filter(brand="Brand 1").count(), 2)
+
+        # can update something else than brand
+        siae_3.contact_first_name = "Contact 1"
+        siae_3.clean()
+        siae_3.save()
+
+        self.assertEqual(Siae.objects.filter(brand="Brand 1").count(), 2)
+        siae_3.refresh_from_db()
+        self.assertEqual(siae_3.contact_first_name, "Contact 1")
+
+        # can't update brand to an existing brand
+        siae_3.brand = "Brand 2"
+        with self.assertRaises(ValidationError):
+            siae_3.clean()
+            siae_3.save()
+        self.assertEqual(Siae.objects.filter(brand="Brand 1").count(), 2)
+
+        # can't update brand to an existing name
+        siae_3.brand = "Name 1"
+        with self.assertRaises(ValidationError):
+            siae_3.clean()
+            siae_3.save()
+
+        siae_3.refresh_from_db()
+        self.assertEqual(siae_3.brand, "Brand 1")
+
+        # can update brand to a non existing brand
+        siae_3.brand = "Brand 3"
+        siae_3.name = "Name 3"
+        siae_3.clean()
+        siae_3.save()
+        siae_3.refresh_from_db()
+        self.assertEqual(siae_3.brand, "Brand 3")
 
 
 class SiaeModelQuerysetTest(TestCase):
