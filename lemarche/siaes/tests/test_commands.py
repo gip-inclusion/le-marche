@@ -1,11 +1,14 @@
-import factory
+import datetime
+import json
 import logging
 import os
 from unittest.mock import patch
 
+import factory
 from django.core.management import call_command
 from django.db.models import signals
 from django.test import TransactionTestCase
+from django.utils import timezone
 
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
@@ -14,6 +17,11 @@ from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
 from lemarche.siaes.models import Siae, SiaeActivity
 from lemarche.users.factories import UserFactory
+from lemarche.utils.mocks.api_entreprise import (
+    MOCK_ENTREPRISE_API_DATA,
+    MOCK_ETABLISSEMENT_API_DATA,
+    MOCK_EXERCICES_API_DATA,
+)
 
 
 class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
@@ -524,3 +532,55 @@ class SiaeUpdateCountFieldsCommandTest(TransactionTestCase):
         siae_not_updated.refresh_from_db()
         self.assertEqual(siae_not_updated.user_count, 0)
         self.assertEqual(siae_not_updated.sector_count, 0)
+
+
+class SiaeUpdateApiEntrepriseFieldsCommandTest(TransactionTestCase):
+    @patch("requests.get")
+    def test_siae_update_entreprise(self, mock_api):
+        mock_response = mock_api.return_value
+        mock_response.json.return_value = json.loads(MOCK_ENTREPRISE_API_DATA)
+        mock_response.status_code = 200
+
+        siae = SiaeFactory(siret="13002526500013")
+
+        call_command("update_api_entreprise_fields", scope="entreprise")
+
+        # Assert the updates
+        siae.refresh_from_db()
+        self.assertEqual(siae.api_entreprise_forme_juridique, "Service central d'un ministère")
+        self.assertEqual(siae.api_entreprise_forme_juridique_code, "7120")
+        self.assertLess((timezone.now() - siae.api_entreprise_entreprise_last_sync_date).total_seconds(), 60)
+
+    @patch("requests.get")
+    def test_siae_update_etablissement(self, mock_api):
+        mock_response = mock_api.return_value
+        mock_response.json.return_value = json.loads(MOCK_ETABLISSEMENT_API_DATA)
+        mock_response.status_code = 200
+
+        siae = SiaeFactory(siret="30613890001294")
+
+        call_command("update_api_entreprise_fields", scope="etablissement")
+
+        # Assert the updates
+        siae.refresh_from_db()
+        self.assertEqual(siae.siret, "30613890001294")
+        self.assertEqual(siae.api_entreprise_employees, "2 000 à 4 999 salariés")
+        self.assertEqual(siae.api_entreprise_employees_year_reference, "2016")
+        self.assertEqual(siae.api_entreprise_date_constitution, datetime.date(2021, 10, 13))
+        self.assertLess((timezone.now() - siae.api_entreprise_etablissement_last_sync_date).total_seconds(), 60)
+
+    @patch("requests.get")
+    def test_siae_update_exercice(self, mock_api):
+        mock_response = mock_api.return_value
+        mock_response.json.return_value = json.loads(MOCK_EXERCICES_API_DATA)
+        mock_response.status_code = 200
+
+        siae = SiaeFactory(siret="30613890001294")
+
+        call_command("update_api_entreprise_fields", scope="exercice")
+
+        # Assert the updates
+        siae.refresh_from_db()
+        self.assertEqual(siae.api_entreprise_ca, 900001)
+        self.assertEqual(siae.api_entreprise_ca_date_fin_exercice, datetime.date(2015, 12, 1))
+        self.assertLess((timezone.now() - siae.api_entreprise_exercice_last_sync_date).total_seconds(), 60)

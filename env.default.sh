@@ -29,3 +29,7 @@ export OPENAI_API_BASE=""
 export OPENAI_API_KEY=""
 export OPENAI_MODEL=""
 
+# API Entreprise / see https://entreprise.api.gouv.fr/developpeurs#kit-de-mise-en-production
+export API_ENTREPRISE_RECIPIENT=""
+export API_ENTREPRISE_BASE_URL="https://staging.entreprise.api.gouv.fr/v3"
+export API_ENTREPRISE_TOKEN=""
