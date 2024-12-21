@@ -39,7 +39,7 @@ class TrackerTest(TestCase):
 
 class EmailTest(TestCase):
     def should_filter_out_non_betagouv_emails_when_not_in_prod(self):
-        email_list = ["test@beta.gouv.fr", "test@example.com"]
+        email_list = ["test@inclusion.gouv.fr", "test@example.com"]
         email_list_filtered = whitelist_recipient_list(email_list)
-        self.assertTrue("test@beta.gouv.fr" in email_list_filtered)
+        self.assertTrue("test@inclusion.gouv.fr" in email_list_filtered)
         self.assertTrue("test@example.com" not in email_list_filtered)
