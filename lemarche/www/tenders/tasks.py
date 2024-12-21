@@ -572,6 +572,15 @@ def send_tender_author_modification_request(tender: Tender):
                 parent_content_object=tender,
             )
 
+        # Log email sent date
+        tender.logs.append(
+            {
+                "action": "send_tender_author_modification_request",
+                "email_sent_at": timezone.now().isoformat(),
+            }
+        )
+        tender.save(update_fields=["logs"])
+
 
 def send_tender_author_reject_message(tender: Tender):
     """
