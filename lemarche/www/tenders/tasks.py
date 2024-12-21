@@ -544,6 +544,12 @@ def send_tender_author_modification_request(tender: Tender):
         recipient_email = recipient_list[0]
         recipient_name = tender.author.full_name
 
+        # Custom message if tender.changes_information is not empty
+        if tender.changes_information:
+            changes_information = f"Message complémentaire de l'administration : {tender.changes_information}"
+        else:
+            changes_information = ""
+
         tender_update_url = f"{get_object_update_url(tender, 'tenders')}"
         variables = {
             "TENDER_ID": tender.id,
@@ -551,7 +557,7 @@ def send_tender_author_modification_request(tender: Tender):
             "TENDER_CREATED_AT": tender.created_at.strftime("%d %B %Y"),
             "TENDER_AUTHOR_ID": tender.author.id,
             "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
-            "TENDER_CHANGED_INFO": tender.changes_information,
+            "TENDER_CHANGES_INFORMATION": changes_information,
             "TENDER_UPDATE_URL": tender_update_url,
         }
 
