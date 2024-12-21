@@ -16,7 +16,7 @@ from lemarche.utils import constants
 from lemarche.utils.apis import api_mailjet, api_slack
 from lemarche.utils.data import date_to_string
 from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
-from lemarche.utils.urls import get_domain_url, get_object_admin_url, get_object_share_url
+from lemarche.utils.urls import get_domain_url, get_object_admin_url, get_object_share_url, get_object_update_url
 
 
 logger = logging.getLogger(__name__)
@@ -546,7 +546,7 @@ def send_tender_author_modification_request(tender: Tender):
         recipient_email = recipient_list[0]
         recipient_name = tender.author.full_name
 
-        tender_update_url = f"{get_object_share_url(tender)}/modifier/{tender.slug}"
+        tender_update_url = f"{get_object_update_url(tender, 'tenders')}"
         variables = {
             "TENDER_ID": tender.id,
             "TENDER_TITLE": tender.title,
