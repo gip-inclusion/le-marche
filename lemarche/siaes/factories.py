@@ -47,7 +47,7 @@ class SiaeFactory(DjangoModelFactory):
     post_code = factory.Faker("postalcode")
     department = "35"
     region = "Bretagne"
-    contact_email = factory.Sequence("siae_contact_email{0}@beta.gouv.fr".format)
+    contact_email = factory.Sequence("siae_contact_email{0}@inclusion.gouv.fr".format)
     contact_first_name = factory.Faker("name", locale="fr_FR")
     contact_last_name = factory.Faker("name", locale="fr_FR")
 
