@@ -178,9 +178,9 @@ class UserAnonymizationTestCase(TestCase):
             first_name="inactive_user",
             last_name="doe",
             phone="06 15 15 15 15",
-            # todo api key ?
-            # todo image ?
-            # todo c4 stuff ?
+            api_key="123456789",
+            api_key_last_updated=frozen_now,
+            # todo image ? stockée en S3 ??
         )
 
     def test_set_inactive_user(self):
@@ -220,9 +220,18 @@ class UserAnonymizationTestCase(TestCase):
         self.assertEqual(User.objects.filter(is_active=False).count(), 1)
 
         anonymized_user = User.objects.get(is_active=False)
+
         self.assertEqual(anonymized_user.email, f"{anonymized_user.id}@inactive.com")
+
         self.assertFalse(anonymized_user.first_name)
         self.assertFalse(anonymized_user.last_name)
         self.assertFalse(anonymized_user.phone)
+
+        self.assertIsNone(anonymized_user.api_key)
+        self.assertIsNone(anonymized_user.api_key_last_updated)
+
+        self.assertFalse(anonymized_user.has_usable_password())
+        # from UNUSABLE_PASSWORD_SUFFIX_LENGTH it should be 40, but we're pretty close
+        self.assertEqual(len(anonymized_user.password), 37)
 
         self.assertIn("Utilisateurs anonymisés avec succès", out.getvalue())
