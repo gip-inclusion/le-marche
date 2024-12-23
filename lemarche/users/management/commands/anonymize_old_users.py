@@ -20,7 +20,6 @@ class Command(BaseCommand):
             help="Délai en mois à partir duquel les utilisateurs sont considérés inactifs",
         )
 
-
     def handle(self, *args, **options):
         """Update inactive users since x monts and strip them from their personal data
         email cannot be deleted, so it is replaced by a concatenation of the User id
@@ -30,10 +29,10 @@ class Command(BaseCommand):
         with transaction.atomic():
             User.objects.filter(last_login__lt=expiry_date).update(
                 is_active=False,  # inactive users should not be allowed to log in
-                email=Concat(F('id'), Value('@inactive.com')),
-                first_name='',
-                last_name='',
-                phone='',
+                email=Concat(F("id"), Value("@inactive.com")),
+                first_name="",
+                last_name="",
+                phone="",
             )
 
             self.stdout.write("Utilisateurs anonymisés avec succès")
