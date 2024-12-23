@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.db.models import F, Value
 from django.db.models.functions import Concat
 from django.core.management import call_command
+from dateutil.relativedelta import relativedelta
 
 from lemarche.companies.factories import CompanyFactory
 from lemarche.favorites.factories import FavoriteListFactory
@@ -170,9 +171,13 @@ class UserModelSaveTest(TestCase):
 class UserAnonymizationTestCase(TestCase):
 
     def setUp(self):
-        UserFactory(first_name="active_user", last_login=datetime(year=2024, month=1, day=1, tzinfo=timezone.utc))
+        frozen_now = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
+        self.frozen_last_year = frozen_now - relativedelta(years=1)
+        frozen_warning_date = frozen_now + relativedelta(days=7)
+
+        UserFactory(first_name="active_user", last_login=frozen_now)
         UserFactory(
-            last_login=datetime(year=2022, month=1, day=1, tzinfo=timezone.utc),
+            last_login=self.frozen_last_year,
             # personal data
             email="personal@email.com",
             first_name="inactive_user",
@@ -185,15 +190,14 @@ class UserAnonymizationTestCase(TestCase):
 
     def test_set_inactive_user(self):
         """Select users that last logged for more than a year and flag them as inactive"""
-        last_year = datetime(year=2023, month=1, day=1, tzinfo=timezone.utc)
-        User.objects.filter(last_login__lt=last_year).update(
+        User.objects.filter(last_login__lte=self.frozen_last_year).update(
             is_active=False,  # inactive users should not be allowed to log in
             email=Concat(F("id"), Value("@inactive.com")),
             first_name="",
             last_name="",
             phone="",
         )
-        qs = User.objects.filter(last_login__lt=last_year)
+        qs = User.objects.filter(last_login__lte=self.frozen_last_year)
 
         self.assertQuerySetEqual(qs, User.objects.filter(is_active=False))
 
