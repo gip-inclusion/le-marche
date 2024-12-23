@@ -264,25 +264,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             {"classes": ["collapse"], "fields": ("is_active", "is_staff", "is_superuser", "groups")},
         ),
         (
-            "Données C4 Cocorico",
-            {
-                "classes": ["collapse"],
-                "fields": (
-                    "c4_id",
-                    "c4_website",
-                    "c4_siret",
-                    "c4_naf",
-                    "c4_phone_prefix",
-                    "c4_time_zone",
-                    "c4_phone_verified",
-                    "c4_email_verified",
-                    "c4_id_card_verified",
-                    "image_url",
-                    "image_url_display",
-                ),
-            },
-        ),
-        (
             "Stats",
             {
                 "classes": ["collapse"],
