@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from django.test import TestCase
+from django.utils import timezone
 
 from lemarche.companies.factories import CompanyFactory
 from lemarche.favorites.factories import FavoriteListFactory
@@ -157,3 +160,28 @@ class UserModelSaveTest(TestCase):
         user.favorite_lists.first().delete()
         self.assertEqual(user.favorite_lists.count(), 1)
         self.assertEqual(user.favorite_list_count, 1)
+
+
+class UserAnonymizationTestCase(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        UserFactory(
+            first_name="active_user",
+            last_login=datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
+        )
+        UserFactory(
+            first_name="inactive_user",
+            last_login=datetime(year=2022, month=1, day=1, tzinfo=timezone.utc)
+        )
+
+    def test_set_inactive_user(self):
+        """Select users that last logged for more than a year and flag them as inactive"""
+        last_year = datetime(year=2023, month=1, day=1, tzinfo=timezone.utc)
+        User.objects.filter(last_login__lt=last_year).update(is_active=False)
+        qs = User.objects.filter(last_login__lt=last_year)
+
+        self.assertQuerySetEqual(
+            qs,
+            User.objects.filter(is_active=False)
+        )
