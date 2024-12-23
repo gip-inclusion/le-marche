@@ -2,6 +2,8 @@ from datetime import datetime
 
 from django.test import TestCase
 from django.utils import timezone
+from django.db.models import F, Value
+from django.db.models.functions import Concat
 
 from lemarche.companies.factories import CompanyFactory
 from lemarche.favorites.factories import FavoriteListFactory
@@ -164,21 +166,33 @@ class UserModelSaveTest(TestCase):
 
 class UserAnonymizationTestCase(TestCase):
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
         UserFactory(
             first_name="active_user",
             last_login=datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
         )
         UserFactory(
-            first_name="inactive_user",
-            last_login=datetime(year=2022, month=1, day=1, tzinfo=timezone.utc)
+            last_login=datetime(year=2022, month=1, day=1, tzinfo=timezone.utc),
+            # personal data
+            email='personal@email.com',
+            first_name='inactive_user',
+            last_name='doe',
+            phone='06 15 15 15 15'
+            # todo api key ?
+            # todo image ?
+            # todo c4 stuff ?
         )
 
     def test_set_inactive_user(self):
         """Select users that last logged for more than a year and flag them as inactive"""
         last_year = datetime(year=2023, month=1, day=1, tzinfo=timezone.utc)
-        User.objects.filter(last_login__lt=last_year).update(is_active=False)
+        User.objects.filter(last_login__lt=last_year).update(
+            is_active=False,  # inactive users should not be allowed to log in
+            email=Concat(F('id'), Value('@inactive.com')),
+            first_name='',
+            last_name='',
+            phone='',
+        )
         qs = User.objects.filter(last_login__lt=last_year)
 
         self.assertQuerySetEqual(
