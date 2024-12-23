@@ -3,6 +3,8 @@ from django.utils import timezone
 from django.db import transaction
 from django.db.models import F, Value
 from django.db.models.functions import Concat
+from django.contrib.auth.hashers import UNUSABLE_PASSWORD_PREFIX
+from django.contrib.postgres.functions import RandomUUID
 
 from dateutil.relativedelta import relativedelta
 
@@ -21,7 +23,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        """Update inactive users since x monts and strip them from their personal data
+        """Update inactive users since x months and strip them from their personal data
         email cannot be deleted, so it is replaced by a concatenation of the User id
         and a fake domain name"""
         expiry_date = timezone.now() - relativedelta(months=options["month_timeout"])
@@ -33,6 +35,12 @@ class Command(BaseCommand):
                 first_name="",
                 last_name="",
                 phone="",
+                api_key=None,
+                api_key_last_updated=None,
+                # https://docs.djangoproject.com/en/5.1/ref/contrib/auth/#django.contrib.auth.models.User.set_unusable_password
+                # Imitating the method but in sql. Prevent password reset attempt
+                # Random string is to avoid chances of impersonation by admins https://code.djangoproject.com/ticket/20079
+                password=Concat(Value(UNUSABLE_PASSWORD_PREFIX), RandomUUID()),
             )
 
             self.stdout.write("Utilisateurs anonymisés avec succès")
