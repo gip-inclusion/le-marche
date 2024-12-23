@@ -1,9 +1,12 @@
 from datetime import datetime
+from io import StringIO
+from unittest.mock import patch
 
 from django.test import TestCase
 from django.utils import timezone
 from django.db.models import F, Value
 from django.db.models.functions import Concat
+from django.core.management import call_command
 
 from lemarche.companies.factories import CompanyFactory
 from lemarche.favorites.factories import FavoriteListFactory
@@ -167,17 +170,14 @@ class UserModelSaveTest(TestCase):
 class UserAnonymizationTestCase(TestCase):
 
     def setUp(self):
-        UserFactory(
-            first_name="active_user",
-            last_login=datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
-        )
+        UserFactory(first_name="active_user", last_login=datetime(year=2024, month=1, day=1, tzinfo=timezone.utc))
         UserFactory(
             last_login=datetime(year=2022, month=1, day=1, tzinfo=timezone.utc),
             # personal data
-            email='personal@email.com',
-            first_name='inactive_user',
-            last_name='doe',
-            phone='06 15 15 15 15'
+            email="personal@email.com",
+            first_name="inactive_user",
+            last_name="doe",
+            phone="06 15 15 15 15",
             # todo api key ?
             # todo image ?
             # todo c4 stuff ?
@@ -188,14 +188,41 @@ class UserAnonymizationTestCase(TestCase):
         last_year = datetime(year=2023, month=1, day=1, tzinfo=timezone.utc)
         User.objects.filter(last_login__lt=last_year).update(
             is_active=False,  # inactive users should not be allowed to log in
-            email=Concat(F('id'), Value('@inactive.com')),
-            first_name='',
-            last_name='',
-            phone='',
+            email=Concat(F("id"), Value("@inactive.com")),
+            first_name="",
+            last_name="",
+            phone="",
         )
         qs = User.objects.filter(last_login__lt=last_year)
 
-        self.assertQuerySetEqual(
-            qs,
-            User.objects.filter(is_active=False)
-        )
+        self.assertQuerySetEqual(qs, User.objects.filter(is_active=False))
+
+        anonymized_user = User.objects.get(is_active=False)
+        self.assertEqual(anonymized_user.email, f"{anonymized_user.id}@inactive.com")
+        self.assertFalse(anonymized_user.first_name)
+        self.assertFalse(anonymized_user.last_name)
+        self.assertFalse(anonymized_user.phone)
+
+        # todo check password login
+
+    @patch("django.utils.timezone.now")
+    def test_anonymize_command(self, mock_timezone):
+        """Test the admin command 'anonymize_old_users'"""
+
+        # To avoid different results when test will be run in the future, we mock
+        # and froze timezone.now used in the command
+        now_dt = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
+        mock_timezone.return_value = now_dt
+
+        out = StringIO()
+        call_command("anonymize_old_users", month_timeout=12, stdout=out)
+
+        self.assertEqual(User.objects.filter(is_active=False).count(), 1)
+
+        anonymized_user = User.objects.get(is_active=False)
+        self.assertEqual(anonymized_user.email, f"{anonymized_user.id}@inactive.com")
+        self.assertFalse(anonymized_user.first_name)
+        self.assertFalse(anonymized_user.last_name)
+        self.assertFalse(anonymized_user.phone)
+
+        self.assertIn("Utilisateurs anonymisés avec succès", out.getvalue())
