@@ -33,15 +33,16 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Update inactive users since x months and strip them from their personal data
-        email cannot be deleted, so it is replaced by a concatenation of the User id
-        and a fake domain name"""
+        email is unique and not nullable, therefore it's replaced with the object id."""
         expiry_date = timezone.now() - relativedelta(months=options["month_timeout"])
         warning_date = expiry_date + relativedelta(days=options["warning_delay"])
 
-        with transaction.atomic():
-            User.objects.filter(last_login__lt=expiry_date).update(
-                is_active=False,  # inactive users should not be allowed to log in
-                email=Concat(F("id"), Value("@inactive.com")),
+        with (
+            transaction.atomic()
+        ):  # fixme tester a ne pas anonymiser a chaque fois (mettre un flag) on supprime aussi les admins ect ??
+            User.objects.filter(last_login__lte=expiry_date).update(
+                is_active=False,  # inactive users are allowed to log in standard login views
+                email=F("id"),
                 first_name="",
                 last_name="",
                 phone="",
