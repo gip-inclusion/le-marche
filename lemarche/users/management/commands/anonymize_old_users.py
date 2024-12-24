@@ -56,7 +56,7 @@ class Command(BaseCommand):
         self.warn_users_by_email(expiry_date=expiry_date, warning_date=warning_date, dry_run=options["dry_run"])
 
     @transaction.atomic
-    def anonymize_old_users(self, expiry_date, dry_run: bool):  # todo c'est bien date ??
+    def anonymize_old_users(self, expiry_date: timezone.datetime, dry_run: bool):
         """Update inactive users since x months and strip them from their personal data.
         email is unique and not nullable, therefore it's replaced with the object id."""
 
@@ -82,7 +82,7 @@ class Command(BaseCommand):
             raise DryRunException
 
     @transaction.atomic
-    def warn_users_by_email(self, warning_date, expiry_date, dry_run: bool):
+    def warn_users_by_email(self, warning_date: timezone.datetime, expiry_date: timezone.datetime, dry_run: bool):
         email_template = TemplateTransactional.objects.get(code="USER_ANONYMIZATION_WARNING")
 
         # Users that have already received the mail are excluded
