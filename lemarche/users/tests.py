@@ -16,6 +16,7 @@ from lemarche.tenders.factories import TenderFactory
 from lemarche.users import constants as user_constants
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
+from lemarche.conversations.models import TemplateTransactionalSendLog, TemplateTransactional
 
 
 class UserModelTest(TestCase):
@@ -173,7 +174,7 @@ class UserAnonymizationTestCase(TestCase):
     def setUp(self):
         frozen_now = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
         self.frozen_last_year = frozen_now - relativedelta(years=1)
-        frozen_warning_date = frozen_now + relativedelta(days=7)
+        frozen_warning_date = self.frozen_last_year + relativedelta(days=7)
 
         UserFactory(first_name="active_user", last_login=frozen_now)
         UserFactory(
@@ -187,6 +188,12 @@ class UserAnonymizationTestCase(TestCase):
             api_key_last_updated=frozen_now,
             # todo image ? stockée en S3 ??
         )
+        UserFactory(
+            last_login=frozen_warning_date,
+            first_name="about_to_be_inactive",
+        )
+        # Set email as active to check if it's really sent
+        TemplateTransactional.objects.all().update(is_active=True)
 
     def test_set_inactive_user(self):
         """Select users that last logged for more than a year and flag them as inactive"""
@@ -219,7 +226,7 @@ class UserAnonymizationTestCase(TestCase):
         mock_timezone.return_value = now_dt
 
         out = StringIO()
-        call_command("anonymize_old_users", month_timeout=12, stdout=out)
+        call_command("anonymize_old_users", month_timeout=12, warning_delay=7, stdout=out)
 
         self.assertEqual(User.objects.filter(is_active=False).count(), 1)
 
@@ -239,3 +246,32 @@ class UserAnonymizationTestCase(TestCase):
         self.assertEqual(len(anonymized_user.password), 37)
 
         self.assertIn("Utilisateurs anonymisés avec succès", out.getvalue())
+
+    @patch("django.utils.timezone.now")
+    def test_warn_command(self, mock_timezone):
+        """Test the admin command 'anonymize_old_users' to check if users are warned by email
+        before their account is being removed"""
+
+        now_dt = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
+        mock_timezone.return_value = now_dt
+
+        out = StringIO()
+        call_command("anonymize_old_users", month_timeout=12, warning_delay=7, stdout=out)
+
+        log_qs = TemplateTransactionalSendLog.objects.all()
+        self.assertEqual(
+            log_qs.count(),
+            1,
+        )
+
+        # Called twice to veryfi that emails are not sent multiple times
+        call_command("anonymize_old_users", month_timeout=12, warning_delay=7, stdout=out)
+        log_qs = TemplateTransactionalSendLog.objects.all()
+        self.assertEqual(
+            log_qs.count(),
+            1,
+            msg="Warning emails are sent multiple times !",
+        )
+
+        email_log = log_qs.first()
+        self.assertEqual(email_log.recipient_content_object, User.objects.get(first_name="about_to_be_inactive"))

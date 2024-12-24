@@ -6,9 +6,11 @@ from django.db.models.functions import Concat
 from django.contrib.auth.hashers import UNUSABLE_PASSWORD_PREFIX
 from django.contrib.postgres.functions import RandomUUID
 from django.conf import settings
+from django.template import defaulttags
 
 from dateutil.relativedelta import relativedelta
 
+from lemarche.conversations.models import TemplateTransactional
 from lemarche.users.models import User
 
 
@@ -22,12 +24,19 @@ class Command(BaseCommand):
             default=settings.INACTIVE_USER_TIMEOUT_IN_MONTHS,
             help="Délai en mois à partir duquel les utilisateurs sont considérés inactifs",
         )
+        parser.add_argument(
+            "--warning_delay",
+            type=int,
+            default=settings.INACTIVE_USER_WARNING_DELAY_IN_DAYS,
+            help="Délai en jours avant la date de suppression pour prevenir les utilisateurs",
+        )
 
     def handle(self, *args, **options):
         """Update inactive users since x months and strip them from their personal data
         email cannot be deleted, so it is replaced by a concatenation of the User id
         and a fake domain name"""
         expiry_date = timezone.now() - relativedelta(months=options["month_timeout"])
+        warning_date = expiry_date + relativedelta(days=options["warning_delay"])
 
         with transaction.atomic():
             User.objects.filter(last_login__lt=expiry_date).update(
@@ -45,3 +54,21 @@ class Command(BaseCommand):
             )
 
             self.stdout.write("Utilisateurs anonymisés avec succès")
+
+        email_template = TemplateTransactional.objects.get(code="USER_ANONYMIZATION_WARNING")
+
+        with transaction.atomic():
+            # Users that have already received the mail are excluded
+            users_to_warn = User.objects.filter(last_login__lte=warning_date, is_active=True).exclude(
+                recipient_transactional_send_logs__template_transactional__code=email_template.code
+            )
+            for user in users_to_warn:
+                email_template.send_transactional_email(
+                    recipient_email=user.email,
+                    recipient_name=user.full_name,
+                    variables={
+                        "user_full_name": user.full_name,
+                        "anonymization_date": defaulttags.date(expiry_date),  # natural date
+                    },
+                    recipient_content_object=user,
+                )
