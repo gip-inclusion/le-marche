@@ -2,7 +2,7 @@ from datetime import datetime
 from io import StringIO
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import timezone
 from django.db.models import F
 from django.core.management import call_command
@@ -168,6 +168,10 @@ class UserModelSaveTest(TestCase):
         self.assertEqual(user.favorite_list_count, 1)
 
 
+@override_settings(
+    INACTIVE_USER_TIMEOUT_IN_MONTHS=12,
+    INACTIVE_USER_WARNING_DELAY_IN_DAYS=7,
+)
 class UserAnonymizationTestCase(TestCase):
 
     def setUp(self):
@@ -237,7 +241,7 @@ class UserAnonymizationTestCase(TestCase):
         mock_timezone.return_value = now_dt
 
         out = StringIO()
-        call_command("anonymize_old_users", month_timeout=12, warning_delay=7, stdout=out)
+        call_command("anonymize_old_users", stdout=out)
 
         self.assertEqual(User.objects.filter(is_active=False).count(), 2)
         # fixme flag anonyme tout ca
@@ -268,7 +272,7 @@ class UserAnonymizationTestCase(TestCase):
         mock_timezone.return_value = now_dt
 
         out = StringIO()
-        call_command("anonymize_old_users", month_timeout=12, warning_delay=7, stdout=out)
+        call_command("anonymize_old_users", stdout=out)
 
         log_qs = TemplateTransactionalSendLog.objects.all()
         self.assertEqual(
@@ -277,7 +281,7 @@ class UserAnonymizationTestCase(TestCase):
         )
 
         # Called twice to veryfi that emails are not sent multiple times
-        call_command("anonymize_old_users", month_timeout=12, warning_delay=7, stdout=out)
+        call_command("anonymize_old_users", stdout=out)
         log_qs = TemplateTransactionalSendLog.objects.all()
         self.assertEqual(
             log_qs.count(),
@@ -298,7 +302,7 @@ class UserAnonymizationTestCase(TestCase):
         original_qs_count = User.objects.filter(is_active=True).count()
 
         out = StringIO()
-        call_command("anonymize_old_users", month_timeout=12, warning_delay=7, dry_run=True, stdout=out)
+        call_command("anonymize_old_users", dry_run=True, stdout=out)
 
         self.assertEqual(original_qs_count, User.objects.filter(is_active=True).count())
 
@@ -312,6 +316,6 @@ class UserAnonymizationTestCase(TestCase):
         mock_timezone.return_value = now_dt
 
         out = StringIO()
-        call_command("anonymize_old_users", month_timeout=12, warning_delay=7, dry_run=True, stdout=out)
+        call_command("anonymize_old_users", dry_run=True, stdout=out)
 
         self.assertFalse(TemplateTransactionalSendLog.objects.all())
