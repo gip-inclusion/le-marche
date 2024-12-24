@@ -287,3 +287,17 @@ class UserAnonymizationTestCase(TestCase):
 
         email_log = log_qs.first()
         self.assertEqual(email_log.recipient_content_object, User.objects.get(first_name="about_to_be_inactive"))
+
+    @patch("django.utils.timezone.now")
+    def test_dryrun_command(self, mock_timezone):
+        """Ensure that the database is not modified after dryrun"""
+
+        now_dt = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
+        mock_timezone.return_value = now_dt
+
+        original_qs_count = User.objects.filter(is_active=True).count()
+
+        out = StringIO()
+        call_command("anonymize_old_users", month_timeout=12, warning_delay=7, dry_run=True, stdout=out)
+
+        self.assertEqual(original_qs_count, User.objects.filter(is_active=True).count())
