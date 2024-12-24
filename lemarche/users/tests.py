@@ -1,4 +1,14 @@
-from django.test import TestCase
+from datetime import datetime
+from io import StringIO
+from unittest.mock import patch
+from importlib import import_module
+
+from django.test import TestCase, override_settings
+from django.utils import timezone
+from django.db.models import F
+from django.core.management import call_command
+from django.apps import apps
+from dateutil.relativedelta import relativedelta
 
 from lemarche.companies.factories import CompanyFactory
 from lemarche.favorites.factories import FavoriteListFactory
@@ -7,6 +17,7 @@ from lemarche.tenders.factories import TenderFactory
 from lemarche.users import constants as user_constants
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
+from lemarche.conversations.models import TemplateTransactionalSendLog, TemplateTransactional
 
 
 class UserModelTest(TestCase):
@@ -157,3 +168,173 @@ class UserModelSaveTest(TestCase):
         user.favorite_lists.first().delete()
         self.assertEqual(user.favorite_lists.count(), 1)
         self.assertEqual(user.favorite_list_count, 1)
+
+
+@override_settings(
+    INACTIVE_USER_TIMEOUT_IN_MONTHS=12,
+    INACTIVE_USER_WARNING_DELAY_IN_DAYS=7,
+)
+class UserAnonymizationTestCase(TestCase):
+
+    def setUp(self):
+        frozen_now = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
+        self.frozen_last_year = frozen_now - relativedelta(years=1)
+        self.frozen_warning_date = self.frozen_last_year + relativedelta(days=7)
+
+        UserFactory(first_name="active_user", last_login=frozen_now)
+        UserFactory(
+            last_login=self.frozen_last_year,
+            # personal data
+            email="inactive_user_1@email.com",
+            first_name="inactive_user_1",
+            last_name="doe",
+            phone="06 15 15 15 15",
+            api_key="123456789",
+            api_key_last_updated=frozen_now,
+        )
+        UserFactory(
+            last_login=self.frozen_last_year,
+            # personal data
+            email="inactive_user_2@email.com",
+            first_name="inactive_user_2",
+            last_name="doe",
+            phone="06 15 15 15 15",
+            api_key="0000000000",
+            api_key_last_updated=frozen_now,
+        )
+        UserFactory(
+            last_login=self.frozen_warning_date,
+            first_name="about_to_be_inactive",
+        )
+        # Set email as active to check if it's really sent
+        TemplateTransactional.objects.all().update(is_active=True)
+
+    def test_set_inactive_user(self):
+        """Select users that last logged for more than a year and flag them as inactive"""
+        User.objects.filter(last_login__lte=self.frozen_last_year).update(
+            is_active=False,  # inactive users should not be allowed to log in
+            email=F("id"),
+            first_name="",
+            last_name="",
+            phone="",
+        )
+        qs = User.objects.filter(last_login__lte=self.frozen_last_year)
+        self.assertQuerySetEqual(qs.order_by("id"), User.objects.filter(is_active=False).order_by("id"))
+
+        anonymized_user = User.objects.filter(is_active=False).first()
+        self.assertEqual(anonymized_user.email, f"{anonymized_user.id}")
+        self.assertFalse(anonymized_user.first_name)
+        self.assertFalse(anonymized_user.last_name)
+        self.assertFalse(anonymized_user.phone)
+
+        # ensure that no error is raised calling save() with a malformed user email
+        anonymized_user.email = "000"
+        anonymized_user.save()
+
+        # todo check password login
+
+    @patch("django.utils.timezone.now")
+    def test_anonymize_command(self, mock_timezone):
+        """Test the admin command 'anonymize_old_users'"""
+
+        # To avoid different results when test will be run in the future, we mock
+        # and froze timezone.now used in the command
+        now_dt = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
+        mock_timezone.return_value = now_dt
+
+        out = StringIO()
+        call_command("anonymize_old_users", stdout=out)
+
+        self.assertEqual(User.objects.filter(is_active=False).count(), 2)
+        # fixme flag anonyme tout ca
+
+        anonymized_user = User.objects.filter(is_active=False).first()
+
+        self.assertEqual(anonymized_user.email, str(anonymized_user.id))
+
+        self.assertFalse(anonymized_user.first_name)
+        self.assertFalse(anonymized_user.last_name)
+        self.assertFalse(anonymized_user.phone)
+
+        self.assertIsNone(anonymized_user.api_key)
+        self.assertIsNone(anonymized_user.api_key_last_updated)
+
+        self.assertFalse(anonymized_user.has_usable_password())
+        # from UNUSABLE_PASSWORD_SUFFIX_LENGTH it should be 40, but we're pretty close
+        self.assertEqual(len(anonymized_user.password), 37)
+
+        self.assertIn("Utilisateurs anonymisés avec succès", out.getvalue())
+
+    @patch("django.utils.timezone.now")
+    def test_warn_command(self, mock_timezone):
+        """Test the admin command 'anonymize_old_users' to check if users are warned by email
+        before their account is being removed"""
+
+        now_dt = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
+        mock_timezone.return_value = now_dt
+
+        out = StringIO()
+        call_command("anonymize_old_users", stdout=out)
+
+        log_qs = TemplateTransactionalSendLog.objects.all()
+        self.assertEqual(
+            log_qs.count(),
+            1,
+        )
+
+        # Called twice to veryfi that emails are not sent multiple times
+        call_command("anonymize_old_users", stdout=out)
+        log_qs = TemplateTransactionalSendLog.objects.all()
+        self.assertEqual(
+            log_qs.count(),
+            1,
+            msg="Warning emails are sent multiple times !",
+        )
+
+        email_log = log_qs.first()
+        self.assertEqual(email_log.recipient_content_object, User.objects.get(first_name="about_to_be_inactive"))
+
+    @patch("django.utils.timezone.now")
+    def test_dryrun_anonymize_command(self, mock_timezone):
+        """Ensure that the database is not modified after dryrun"""
+
+        now_dt = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
+        mock_timezone.return_value = now_dt
+
+        original_qs_count = User.objects.filter(is_active=True).count()
+
+        out = StringIO()
+        call_command("anonymize_old_users", dry_run=True, stdout=out)
+
+        self.assertEqual(original_qs_count, User.objects.filter(is_active=True).count())
+
+        self.assertIn("Utilisateurs anonymisés avec succès (2 traités)", out.getvalue())
+
+    @patch("django.utils.timezone.now")
+    def test_dryrun_warn_command(self, mock_timezone):
+        """Ensure that the database is not modified after dryrun and no email have been sent"""
+
+        now_dt = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
+        mock_timezone.return_value = now_dt
+
+        out = StringIO()
+        call_command("anonymize_old_users", dry_run=True, stdout=out)
+
+        self.assertFalse(TemplateTransactionalSendLog.objects.all())
+
+    @patch("django.utils.timezone.now")
+    def test_last_login_migration(self, mock_timezone):
+        """We test the runpython function inside the migration file"""
+
+        now_dt = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
+        mock_timezone.return_value = now_dt
+
+        migration = import_module("lemarche.users.migrations.0043_update_inactive_last_login")
+
+        expired_user = User.objects.filter(last_login__lte=self.frozen_last_year)
+        self.assertTrue(expired_user)
+
+        migration.update_last_login(apps, None)
+
+        self.assertFalse(User.objects.filter(last_login__lte=self.frozen_last_year))
+        self.assertEqual(User.objects.filter(last_login__lte=self.frozen_warning_date).count(), 3)
