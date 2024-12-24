@@ -5,6 +5,7 @@ from django.db.models import F, Value
 from django.db.models.functions import Concat
 from django.contrib.auth.hashers import UNUSABLE_PASSWORD_PREFIX
 from django.contrib.postgres.functions import RandomUUID
+from django.conf import settings
 
 from dateutil.relativedelta import relativedelta
 
@@ -18,7 +19,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--month_timeout",
             type=int,
-            default=12,  # todo define a constant, but where ? base.py ?
+            default=settings.INACTIVE_USER_TIMEOUT_IN_MONTHS,
             help="Délai en mois à partir duquel les utilisateurs sont considérés inactifs",
         )
 
