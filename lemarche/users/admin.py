@@ -6,7 +6,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db import models
 from django.urls import reverse
-from django.utils.html import format_html, mark_safe
+from django.utils.html import format_html
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
 from lemarche.conversations.models import TemplateTransactionalSendLog
@@ -194,8 +194,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             "siae_count_annotated_with_link",
             "tender_count_annotated_with_link",
             "favorite_list_count_with_link",
-            "image_url",
-            "image_url_display",
             "recipient_transactional_send_logs_count_with_link",
             "brevo_contact_id",
             "extra_data_display",
@@ -363,17 +361,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
 
     favorite_list_count_with_link.short_description = "Nombre de listes de favoris"
     favorite_list_count_with_link.admin_order_field = "favorite_list_count"
-
-    def image_url_display(self, user):
-        if user.image_url:
-            return mark_safe(
-                f'<a href="{user.image_url}" target="_blank">'
-                f'<img src="{user.image_url}" title="{user.image_url}" style="max-height:300px" />'
-                f"</a>"
-            )
-        return mark_safe("<div>-</div>")
-
-    image_url_display.short_description = "Image"
 
     def recipient_transactional_send_logs_count_with_link(self, obj):
         url = reverse("admin:conversations_templatetransactionalsendlog_changelist") + f"?user__id__exact={obj.id}"
