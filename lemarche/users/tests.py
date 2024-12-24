@@ -1,11 +1,13 @@
 from datetime import datetime
 from io import StringIO
 from unittest.mock import patch
+from importlib import import_module
 
 from django.test import TestCase, override_settings
 from django.utils import timezone
 from django.db.models import F
 from django.core.management import call_command
+from django.apps import apps
 from dateutil.relativedelta import relativedelta
 
 from lemarche.companies.factories import CompanyFactory
@@ -177,7 +179,7 @@ class UserAnonymizationTestCase(TestCase):
     def setUp(self):
         frozen_now = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
         self.frozen_last_year = frozen_now - relativedelta(years=1)
-        frozen_warning_date = self.frozen_last_year + relativedelta(days=7)
+        self.frozen_warning_date = self.frozen_last_year + relativedelta(days=7)
 
         UserFactory(first_name="active_user", last_login=frozen_now)
         UserFactory(
@@ -201,7 +203,7 @@ class UserAnonymizationTestCase(TestCase):
             api_key_last_updated=frozen_now,
         )
         UserFactory(
-            last_login=frozen_warning_date,
+            last_login=self.frozen_warning_date,
             first_name="about_to_be_inactive",
         )
         # Set email as active to check if it's really sent
@@ -319,3 +321,20 @@ class UserAnonymizationTestCase(TestCase):
         call_command("anonymize_old_users", dry_run=True, stdout=out)
 
         self.assertFalse(TemplateTransactionalSendLog.objects.all())
+
+    @patch("django.utils.timezone.now")
+    def test_last_login_migration(self, mock_timezone):
+        """We test the runpython function inside the migration file"""
+
+        now_dt = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
+        mock_timezone.return_value = now_dt
+
+        migration = import_module("lemarche.users.migrations.0043_update_inactive_last_login")
+
+        expired_user = User.objects.filter(last_login__lte=self.frozen_last_year)
+        self.assertTrue(expired_user)
+
+        migration.update_last_login(apps, None)
+
+        self.assertFalse(User.objects.filter(last_login__lte=self.frozen_last_year))
+        self.assertEqual(User.objects.filter(last_login__lte=self.frozen_warning_date).count(), 3)
