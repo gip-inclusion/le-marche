@@ -1,3 +1,4 @@
+from datetime import timedelta
 from io import StringIO
 from unittest.mock import patch
 
@@ -8,6 +9,7 @@ from django.utils import timezone
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
+from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.factories import TenderFactory
 from lemarche.tenders.models import TenderSiae
 from lemarche.users.factories import UserFactory
@@ -182,3 +184,38 @@ class TestSendAuthorListOfSuperSiaesEmails(TestCase):
         self.assertNotIn("Email sent to tender author", output)
 
         mock_send_email.assert_not_called()
+
+
+class UpdateTenderStatusToRejectedCommandTest(TestCase):
+    def test_update_tender_status_to_rejected(self):
+        """
+        Test 'update_tender_status_to_rejected' command.
+        """
+        recent_date = timezone.now() - timedelta(days=5)
+        threshold_date = timezone.now() - timedelta(days=10)
+
+        tender_recent = TenderFactory(
+            status=tender_constants.STATUS_DRAFT,
+            logs=[
+                {"action": "send_tender_author_modification_request", "email_sent_at": recent_date.isoformat()},
+            ],
+        )
+
+        tender_expired = TenderFactory(
+            status=tender_constants.STATUS_DRAFT,
+            logs=[
+                {"action": "send_tender_author_modification_request", "email_sent_at": threshold_date.isoformat()},
+            ],
+        )
+
+        tender_with_no_modification_request = TenderFactory(status=tender_constants.STATUS_DRAFT)
+
+        call_command("update_tender_status_to_rejected")
+
+        tender_recent.refresh_from_db()
+        tender_expired.refresh_from_db()
+        tender_with_no_modification_request.refresh_from_db()
+
+        self.assertEqual(tender_recent.status, tender_constants.STATUS_DRAFT)
+        self.assertEqual(tender_expired.status, tender_constants.STATUS_REJECTED)
+        self.assertEqual(tender_with_no_modification_request.status, tender_constants.STATUS_DRAFT)
