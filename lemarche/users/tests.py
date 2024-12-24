@@ -185,6 +185,8 @@ class UserAnonymizationTestCase(TestCase):
         self.frozen_last_year = frozen_now - relativedelta(years=1)
         self.frozen_warning_date = self.frozen_last_year + relativedelta(days=7)
 
+        self.std_out = StringIO()  # to read output from executed management commands
+
         UserFactory(first_name="active_user", last_login=frozen_now)
         UserFactory(
             last_login=self.frozen_last_year,
@@ -240,8 +242,7 @@ class UserAnonymizationTestCase(TestCase):
     def test_anonymize_command(self):
         """Test the admin command 'anonymize_old_users'"""
 
-        out = StringIO()
-        call_command("anonymize_old_users", stdout=out)
+        call_command("anonymize_old_users", stdout=self.std_out)
 
         self.assertEqual(User.objects.filter(is_active=False).count(), 2)
         # fixme flag anonyme tout ca
@@ -261,14 +262,13 @@ class UserAnonymizationTestCase(TestCase):
         # from UNUSABLE_PASSWORD_SUFFIX_LENGTH it should be 40, but we're pretty close
         self.assertEqual(len(anonymized_user.password), 37)
 
-        self.assertIn("Utilisateurs anonymisés avec succès", out.getvalue())
+        self.assertIn("Utilisateurs anonymisés avec succès", self.std_out.getvalue())
 
     def test_warn_command(self):
         """Test the admin command 'anonymize_old_users' to check if users are warned by email
         before their account is being removed"""
 
-        out = StringIO()
-        call_command("anonymize_old_users", stdout=out)
+        call_command("anonymize_old_users", stdout=self.std_out)
 
         log_qs = TemplateTransactionalSendLog.objects.all()
         self.assertEqual(
@@ -277,7 +277,7 @@ class UserAnonymizationTestCase(TestCase):
         )
 
         # Called twice to veryfi that emails are not sent multiple times
-        call_command("anonymize_old_users", stdout=out)
+        call_command("anonymize_old_users", stdout=self.std_out)
         log_qs = TemplateTransactionalSendLog.objects.all()
         self.assertEqual(
             log_qs.count(),
@@ -293,18 +293,16 @@ class UserAnonymizationTestCase(TestCase):
 
         original_qs_count = User.objects.filter(is_active=True).count()
 
-        out = StringIO()
-        call_command("anonymize_old_users", dry_run=True, stdout=out)
+        call_command("anonymize_old_users", dry_run=True, stdout=self.std_out)
 
         self.assertEqual(original_qs_count, User.objects.filter(is_active=True).count())
 
-        self.assertIn("Utilisateurs anonymisés avec succès (2 traités)", out.getvalue())
+        self.assertIn("Utilisateurs anonymisés avec succès (2 traités)", self.std_out.getvalue())
 
     def test_dryrun_warn_command(self):
         """Ensure that the database is not modified after dryrun and no email have been sent"""
 
-        out = StringIO()
-        call_command("anonymize_old_users", dry_run=True, stdout=out)
+        call_command("anonymize_old_users", dry_run=True, stdout=self.std_out)
 
         self.assertFalse(TemplateTransactionalSendLog.objects.all())
 
