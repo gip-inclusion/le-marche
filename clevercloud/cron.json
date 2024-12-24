@@ -19,5 +19,6 @@
     "35 8 * * * $ROOT/clevercloud/tenders_send_siae_transactioned_question_emails.sh",
     "0 9 * * * $ROOT/clevercloud/tenders_send_siae_contacted_reminder_emails.sh",
     "10 9 * * * $ROOT/clevercloud/tenders_send_siae_interested_reminder_emails.sh",
-    "*/5 8-15 * * 1-5 $ROOT/clevercloud/tenders_send_validated.sh"
+    "*/5 8-15 * * 1-5 $ROOT/clevercloud/tenders_send_validated.sh",
+    "0 23 * * * $ROOT/clevercloud/tenders_update_status_to_rejected.sh"
 ]
