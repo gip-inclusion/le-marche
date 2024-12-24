@@ -170,6 +170,10 @@ class UserModelSaveTest(TestCase):
         self.assertEqual(user.favorite_list_count, 1)
 
 
+# To avoid different results when test will be run in the future, we patch
+# and froze timezone.now used in the command
+# Settings are also overriden to avoid changing settings breaking tests
+@patch("django.utils.timezone.now", lambda: datetime(year=2024, month=1, day=1, tzinfo=timezone.utc))
 @override_settings(
     INACTIVE_USER_TIMEOUT_IN_MONTHS=12,
     INACTIVE_USER_WARNING_DELAY_IN_DAYS=7,
@@ -233,14 +237,8 @@ class UserAnonymizationTestCase(TestCase):
 
         # todo check password login
 
-    @patch("django.utils.timezone.now")
-    def test_anonymize_command(self, mock_timezone):
+    def test_anonymize_command(self):
         """Test the admin command 'anonymize_old_users'"""
-
-        # To avoid different results when test will be run in the future, we mock
-        # and froze timezone.now used in the command
-        now_dt = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
-        mock_timezone.return_value = now_dt
 
         out = StringIO()
         call_command("anonymize_old_users", stdout=out)
@@ -265,13 +263,9 @@ class UserAnonymizationTestCase(TestCase):
 
         self.assertIn("Utilisateurs anonymisés avec succès", out.getvalue())
 
-    @patch("django.utils.timezone.now")
-    def test_warn_command(self, mock_timezone):
+    def test_warn_command(self):
         """Test the admin command 'anonymize_old_users' to check if users are warned by email
         before their account is being removed"""
-
-        now_dt = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
-        mock_timezone.return_value = now_dt
 
         out = StringIO()
         call_command("anonymize_old_users", stdout=out)
@@ -294,12 +288,8 @@ class UserAnonymizationTestCase(TestCase):
         email_log = log_qs.first()
         self.assertEqual(email_log.recipient_content_object, User.objects.get(first_name="about_to_be_inactive"))
 
-    @patch("django.utils.timezone.now")
-    def test_dryrun_anonymize_command(self, mock_timezone):
+    def test_dryrun_anonymize_command(self):
         """Ensure that the database is not modified after dryrun"""
-
-        now_dt = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
-        mock_timezone.return_value = now_dt
 
         original_qs_count = User.objects.filter(is_active=True).count()
 
@@ -310,24 +300,16 @@ class UserAnonymizationTestCase(TestCase):
 
         self.assertIn("Utilisateurs anonymisés avec succès (2 traités)", out.getvalue())
 
-    @patch("django.utils.timezone.now")
-    def test_dryrun_warn_command(self, mock_timezone):
+    def test_dryrun_warn_command(self):
         """Ensure that the database is not modified after dryrun and no email have been sent"""
-
-        now_dt = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
-        mock_timezone.return_value = now_dt
 
         out = StringIO()
         call_command("anonymize_old_users", dry_run=True, stdout=out)
 
         self.assertFalse(TemplateTransactionalSendLog.objects.all())
 
-    @patch("django.utils.timezone.now")
-    def test_last_login_migration(self, mock_timezone):
+    def test_last_login_migration(self):
         """We test the runpython function inside the migration file"""
-
-        now_dt = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
-        mock_timezone.return_value = now_dt
 
         migration = import_module("lemarche.users.migrations.0043_update_inactive_last_login")
 
