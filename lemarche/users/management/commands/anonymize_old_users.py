@@ -14,6 +14,12 @@ from lemarche.conversations.models import TemplateTransactional
 from lemarche.users.models import User
 
 
+class DryRunException(Exception):
+    """To be raised in a dry run mode to abort current transaction"""
+
+    pass
+
+
 class Command(BaseCommand):
     """Update and anonymize inactive users past a defined inactivity period"""
 
@@ -30,31 +36,48 @@ class Command(BaseCommand):
             default=settings.INACTIVE_USER_WARNING_DELAY_IN_DAYS,
             help="Délai en jours avant la date de suppression pour prevenir les utilisateurs",
         )
+        parser.add_argument(
+            "--dry_run",
+            type=bool,
+            default=False,
+            help="La commande est exécutée sans que les modifications soient transmises à la base",
+        )
+
+    @transaction.atomic
+    def anonymize_old_users(self, expiry_date, dry_run: bool):  # todo c'est bien date ??
+        """Update inactive users since x months and strip them from their personal data.
+        email is unique and not nullable, therefore it's replaced with the object id."""
+
+        # fixme tester a ne pas anonymiser a chaque fois (mettre un flag) on supprime aussi les admins ect ??
+        qs = User.objects.filter(last_login__lte=expiry_date)
+        qs.update(
+            is_active=False,  # inactive users are allowed to log in standard login views
+            email=F("id"),
+            first_name="",
+            last_name="",
+            phone="",
+            api_key=None,
+            api_key_last_updated=None,
+            # https://docs.djangoproject.com/en/5.1/ref/contrib/auth/#django.contrib.auth.models.User.set_unusable_password
+            # Imitating the method but in sql. Prevent password reset attempt
+            # Random string is to avoid chances of impersonation by admins https://code.djangoproject.com/ticket/20079
+            password=Concat(Value(UNUSABLE_PASSWORD_PREFIX), RandomUUID()),
+        )
+
+        self.stdout.write(f"Utilisateurs anonymisés avec succès ({qs.count} traités)")
+
+        if dry_run:  # cancel transaction
+            raise DryRunException
 
     def handle(self, *args, **options):
-        """Update inactive users since x months and strip them from their personal data
-        email is unique and not nullable, therefore it's replaced with the object id."""
+
         expiry_date = timezone.now() - relativedelta(months=options["month_timeout"])
         warning_date = expiry_date + relativedelta(days=options["warning_delay"])
 
-        with (
-            transaction.atomic()
-        ):  # fixme tester a ne pas anonymiser a chaque fois (mettre un flag) on supprime aussi les admins ect ??
-            User.objects.filter(last_login__lte=expiry_date).update(
-                is_active=False,  # inactive users are allowed to log in standard login views
-                email=F("id"),
-                first_name="",
-                last_name="",
-                phone="",
-                api_key=None,
-                api_key_last_updated=None,
-                # https://docs.djangoproject.com/en/5.1/ref/contrib/auth/#django.contrib.auth.models.User.set_unusable_password
-                # Imitating the method but in sql. Prevent password reset attempt
-                # Random string is to avoid chances of impersonation by admins https://code.djangoproject.com/ticket/20079
-                password=Concat(Value(UNUSABLE_PASSWORD_PREFIX), RandomUUID()),
-            )
-
-            self.stdout.write("Utilisateurs anonymisés avec succès")
+        try:
+            self.anonymize_old_users(expiry_date=expiry_date, dry_run=options["dry_run"])
+        except DryRunException:
+            self.stdout.write("Fin du dry_run d'anonymisation")
 
         email_template = TemplateTransactional.objects.get(code="USER_ANONYMIZATION_WARNING")
 
