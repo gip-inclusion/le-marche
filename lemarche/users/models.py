@@ -255,9 +255,6 @@ class User(AbstractUser):
         default=False,
     )
 
-    image_name = models.CharField(verbose_name="Nom de l'image", max_length=255, blank=True)
-    image_url = models.URLField(verbose_name="Lien vers l'image", max_length=500, blank=True)
-
     # services data
     brevo_contact_id = models.PositiveIntegerField("Brevo contact id", blank=True, null=True)
 
