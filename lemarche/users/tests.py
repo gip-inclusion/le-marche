@@ -4,8 +4,7 @@ from unittest.mock import patch
 
 from django.test import TestCase
 from django.utils import timezone
-from django.db.models import F, Value
-from django.db.models.functions import Concat
+from django.db.models import F
 from django.core.management import call_command
 from dateutil.relativedelta import relativedelta
 
@@ -180,13 +179,22 @@ class UserAnonymizationTestCase(TestCase):
         UserFactory(
             last_login=self.frozen_last_year,
             # personal data
-            email="personal@email.com",
-            first_name="inactive_user",
+            email="inactive_user_1@email.com",
+            first_name="inactive_user_1",
             last_name="doe",
             phone="06 15 15 15 15",
             api_key="123456789",
             api_key_last_updated=frozen_now,
-            # todo image ? stockée en S3 ??
+        )
+        UserFactory(
+            last_login=self.frozen_last_year,
+            # personal data
+            email="inactive_user_2@email.com",
+            first_name="inactive_user_2",
+            last_name="doe",
+            phone="06 15 15 15 15",
+            api_key="0000000000",
+            api_key_last_updated=frozen_now,
         )
         UserFactory(
             last_login=frozen_warning_date,
@@ -199,20 +207,23 @@ class UserAnonymizationTestCase(TestCase):
         """Select users that last logged for more than a year and flag them as inactive"""
         User.objects.filter(last_login__lte=self.frozen_last_year).update(
             is_active=False,  # inactive users should not be allowed to log in
-            email=Concat(F("id"), Value("@inactive.com")),
+            email=F("id"),
             first_name="",
             last_name="",
             phone="",
         )
         qs = User.objects.filter(last_login__lte=self.frozen_last_year)
+        self.assertQuerySetEqual(qs.order_by("id"), User.objects.filter(is_active=False).order_by("id"))
 
-        self.assertQuerySetEqual(qs, User.objects.filter(is_active=False))
-
-        anonymized_user = User.objects.get(is_active=False)
-        self.assertEqual(anonymized_user.email, f"{anonymized_user.id}@inactive.com")
+        anonymized_user = User.objects.filter(is_active=False).first()
+        self.assertEqual(anonymized_user.email, f"{anonymized_user.id}")
         self.assertFalse(anonymized_user.first_name)
         self.assertFalse(anonymized_user.last_name)
         self.assertFalse(anonymized_user.phone)
+
+        # ensure that no error is raised calling save() with a malformed user email
+        anonymized_user.email = "000"
+        anonymized_user.save()
 
         # todo check password login
 
@@ -228,11 +239,12 @@ class UserAnonymizationTestCase(TestCase):
         out = StringIO()
         call_command("anonymize_old_users", month_timeout=12, warning_delay=7, stdout=out)
 
-        self.assertEqual(User.objects.filter(is_active=False).count(), 1)
+        self.assertEqual(User.objects.filter(is_active=False).count(), 2)
+        # fixme flag anonyme tout ca
 
-        anonymized_user = User.objects.get(is_active=False)
+        anonymized_user = User.objects.filter(is_active=False).first()
 
-        self.assertEqual(anonymized_user.email, f"{anonymized_user.id}@inactive.com")
+        self.assertEqual(anonymized_user.email, str(anonymized_user.id))
 
         self.assertFalse(anonymized_user.first_name)
         self.assertFalse(anonymized_user.last_name)
