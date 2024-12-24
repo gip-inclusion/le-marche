@@ -43,6 +43,18 @@ class Command(BaseCommand):
             help="La commande est exécutée sans que les modifications soient transmises à la base",
         )
 
+    def handle(self, *args, **options):
+
+        expiry_date = timezone.now() - relativedelta(months=options["month_timeout"])
+        warning_date = expiry_date + relativedelta(days=options["warning_delay"])
+
+        try:
+            self.anonymize_old_users(expiry_date=expiry_date, dry_run=options["dry_run"])
+        except DryRunException:
+            self.stdout.write("Fin du dry_run d'anonymisation")
+
+        self.warn_users_by_email(expiry_date=expiry_date, warning_date=warning_date, dry_run=options["dry_run"])
+
     @transaction.atomic
     def anonymize_old_users(self, expiry_date, dry_run: bool):  # todo c'est bien date ??
         """Update inactive users since x months and strip them from their personal data.
@@ -64,35 +76,35 @@ class Command(BaseCommand):
             password=Concat(Value(UNUSABLE_PASSWORD_PREFIX), RandomUUID()),
         )
 
-        self.stdout.write(f"Utilisateurs anonymisés avec succès ({qs.count} traités)")
+        self.stdout.write(f"Utilisateurs anonymisés avec succès ({qs.count()} traités)")
 
         if dry_run:  # cancel transaction
             raise DryRunException
 
-    def handle(self, *args, **options):
-
-        expiry_date = timezone.now() - relativedelta(months=options["month_timeout"])
-        warning_date = expiry_date + relativedelta(days=options["warning_delay"])
-
-        try:
-            self.anonymize_old_users(expiry_date=expiry_date, dry_run=options["dry_run"])
-        except DryRunException:
-            self.stdout.write("Fin du dry_run d'anonymisation")
-
+    @transaction.atomic
+    def warn_users_by_email(self, warning_date, expiry_date, dry_run: bool):
         email_template = TemplateTransactional.objects.get(code="USER_ANONYMIZATION_WARNING")
 
-        with transaction.atomic():
-            # Users that have already received the mail are excluded
-            users_to_warn = User.objects.filter(last_login__lte=warning_date, is_active=True).exclude(
-                recipient_transactional_send_logs__template_transactional__code=email_template.code
+        # Users that have already received the mail are excluded
+        users_to_warn = User.objects.filter(last_login__lte=warning_date, is_active=True).exclude(
+            recipient_transactional_send_logs__template_transactional__code=email_template.code
+        )
+
+        if dry_run:
+            self.stdout.write(
+                f"Fin du dry_run d'avertissement des utilisateurs, {users_to_warn.count()} auraient été avertis"
             )
-            for user in users_to_warn:
-                email_template.send_transactional_email(
-                    recipient_email=user.email,
-                    recipient_name=user.full_name,
-                    variables={
-                        "user_full_name": user.full_name,
-                        "anonymization_date": defaulttags.date(expiry_date),  # natural date
-                    },
-                    recipient_content_object=user,
-                )
+            return  # exit before sending emails
+
+        for user in users_to_warn:
+            email_template.send_transactional_email(
+                recipient_email=user.email,
+                recipient_name=user.full_name,
+                variables={
+                    "user_full_name": user.full_name,
+                    "anonymization_date": defaulttags.date(expiry_date),  # natural date
+                },
+                recipient_content_object=user,
+            )
+
+        self.stdout.write(f"Un email d'avertissement a été envoyé à {users_to_warn.count()} utilisateurs")
