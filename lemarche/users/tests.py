@@ -309,3 +309,5 @@ class UserAnonymizationTestCase(TestCase):
         call_command("anonymize_old_users", dry_run=True, stdout=self.std_out)
 
         self.assertFalse(TemplateTransactionalSendLog.objects.all())
+
+    # test push
