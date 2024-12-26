@@ -236,19 +236,18 @@ class UserAnonymizationTestCase(TestCase):
         anonymized_user.email = "000"
         anonymized_user.save()
 
-        # todo check password login
-
     def test_anonymize_command(self):
         """Test the admin command 'anonymize_old_users'"""
 
         call_command("anonymize_old_users", stdout=self.std_out)
 
         self.assertEqual(User.objects.filter(is_active=False).count(), 2)
-        # fixme flag anonyme tout ca
 
         anonymized_user = User.objects.filter(is_active=False).first()
 
         self.assertEqual(anonymized_user.email, str(anonymized_user.id))
+
+        self.assertTrue(anonymized_user.is_anonymized)
 
         self.assertFalse(anonymized_user.first_name)
         self.assertFalse(anonymized_user.last_name)

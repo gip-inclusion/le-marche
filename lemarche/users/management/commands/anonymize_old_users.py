@@ -58,10 +58,12 @@ class Command(BaseCommand):
         """Update inactive users since x months and strip them from their personal data.
         email is unique and not nullable, therefore it's replaced with the object id."""
 
-        # fixme tester a ne pas anonymiser a chaque fois (mettre un flag) on supprime aussi les admins ect ??
-        qs = User.objects.filter(last_login__lte=expiry_date)
+        qs = User.objects.filter(last_login__lte=expiry_date, is_anonymized=False)
+        users_to_update_count = qs.count()
+
         qs.update(
             is_active=False,  # inactive users are allowed to log in standard login views
+            is_anonymized=True,
             email=F("id"),
             first_name="",
             last_name="",
@@ -74,7 +76,7 @@ class Command(BaseCommand):
             password=Concat(Value(UNUSABLE_PASSWORD_PREFIX), RandomUUID()),
         )
 
-        self.stdout.write(f"Utilisateurs anonymisés avec succès ({qs.count()} traités)")
+        self.stdout.write(f"Utilisateurs anonymisés avec succès ({users_to_update_count} traités)")
 
         if dry_run:  # cancel transaction
             raise DryRunException
@@ -84,7 +86,7 @@ class Command(BaseCommand):
         email_template = TemplateTransactional.objects.get(code="USER_ANONYMIZATION_WARNING")
 
         # Users that have already received the mail are excluded
-        users_to_warn = User.objects.filter(last_login__lte=warning_date, is_active=True).exclude(
+        users_to_warn = User.objects.filter(last_login__lte=warning_date, is_active=True, is_anonymized=False).exclude(
             recipient_transactional_send_logs__template_transactional__code=email_template.code
         )
 
