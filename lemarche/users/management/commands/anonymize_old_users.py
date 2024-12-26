@@ -10,6 +10,7 @@ from django.template import defaulttags
 from django.utils import timezone
 
 from lemarche.conversations.models import TemplateTransactional
+from lemarche.siaes.models import SiaeUser
 from lemarche.users.models import User
 
 
@@ -75,6 +76,8 @@ class Command(BaseCommand):
             # Random string is to avoid chances of impersonation by admins https://code.djangoproject.com/ticket/20079
             password=Concat(Value(UNUSABLE_PASSWORD_PREFIX), RandomUUID()),
         )
+        # remove anonymized users in Siaes
+        SiaeUser.objects.filter(user__is_anonymized=True).delete()
 
         self.stdout.write(f"Utilisateurs anonymisés avec succès ({users_to_update_count} traités)")
 

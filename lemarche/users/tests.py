@@ -186,6 +186,9 @@ class UserAnonymizationTestCase(TestCase):
 
         self.std_out = StringIO()  # to read output from executed management commands
 
+        siae_1 = SiaeFactory()
+        siae_2 = SiaeFactory()
+
         UserFactory(first_name="active_user", last_login=frozen_now)
         UserFactory(
             last_login=self.frozen_last_year,
@@ -196,6 +199,7 @@ class UserAnonymizationTestCase(TestCase):
             phone="06 15 15 15 15",
             api_key="123456789",
             api_key_last_updated=frozen_now,
+            siaes=[siae_1],
         )
         UserFactory(
             last_login=self.frozen_last_year,
@@ -206,6 +210,7 @@ class UserAnonymizationTestCase(TestCase):
             phone="06 15 15 15 15",
             api_key="0000000000",
             api_key_last_updated=frozen_now,
+            siaes=[siae_1, siae_2],
         )
         UserFactory(
             last_login=self.frozen_warning_date,
@@ -252,6 +257,7 @@ class UserAnonymizationTestCase(TestCase):
         self.assertFalse(anonymized_user.first_name)
         self.assertFalse(anonymized_user.last_name)
         self.assertFalse(anonymized_user.phone)
+        self.assertFalse(anonymized_user.siaes.all())
 
         self.assertIsNone(anonymized_user.api_key)
         self.assertIsNone(anonymized_user.api_key_last_updated)
