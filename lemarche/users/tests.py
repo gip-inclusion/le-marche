@@ -1,10 +1,8 @@
 from datetime import datetime
-from importlib import import_module
 from io import StringIO
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
-from django.apps import apps
 from django.core.management import call_command
 from django.db.models import F
 from django.test import TestCase, override_settings
@@ -309,16 +307,3 @@ class UserAnonymizationTestCase(TestCase):
         call_command("anonymize_old_users", dry_run=True, stdout=self.std_out)
 
         self.assertFalse(TemplateTransactionalSendLog.objects.all())
-
-    def test_last_login_migration(self):
-        """We test the runpython function inside the migration file"""
-
-        migration = import_module("lemarche.users.migrations.0043_update_inactive_last_login")
-
-        expired_user = User.objects.filter(last_login__lte=self.frozen_last_year)
-        self.assertTrue(expired_user)
-
-        migration.update_last_login(apps, None)
-
-        self.assertFalse(User.objects.filter(last_login__lte=self.frozen_last_year))
-        self.assertEqual(User.objects.filter(last_login__lte=self.frozen_warning_date).count(), 3)
