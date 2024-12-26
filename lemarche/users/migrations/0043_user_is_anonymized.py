@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("users", "0043_update_inactive_last_login"),
+        ("users", "0042_email_template_anonymise_user"),
     ]
 
     operations = [
