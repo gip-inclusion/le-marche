@@ -65,7 +65,7 @@ class Command(BaseCommand):
         qs.update(
             is_active=False,  # inactive users are allowed to log in standard login views
             is_anonymized=True,
-            email=F("id"),
+            email=Concat(F("id"), Value("@domain.invalid")),
             first_name="",
             last_name="",
             phone="",

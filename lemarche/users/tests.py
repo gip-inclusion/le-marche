@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 from django.core.management import call_command
+from django.core.validators import validate_email
 from django.db.models import F
 from django.test import TestCase, override_settings
 from django.utils import timezone
@@ -248,7 +249,8 @@ class UserAnonymizationTestCase(TestCase):
 
         anonymized_user = User.objects.filter(is_active=False).first()
 
-        self.assertEqual(anonymized_user.email, str(anonymized_user.id))
+        self.assertEqual(anonymized_user.email, f"{anonymized_user.id}@domain.invalid")
+        validate_email(anonymized_user.email)
 
         self.assertTrue(anonymized_user.is_anonymized)
 
