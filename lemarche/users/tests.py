@@ -1,23 +1,23 @@
 from datetime import datetime
+from importlib import import_module
 from io import StringIO
 from unittest.mock import patch
-from importlib import import_module
 
+from dateutil.relativedelta import relativedelta
+from django.apps import apps
+from django.core.management import call_command
+from django.db.models import F
 from django.test import TestCase, override_settings
 from django.utils import timezone
-from django.db.models import F
-from django.core.management import call_command
-from django.apps import apps
-from dateutil.relativedelta import relativedelta
 
 from lemarche.companies.factories import CompanyFactory
+from lemarche.conversations.models import TemplateTransactional, TemplateTransactionalSendLog
 from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.tenders.factories import TenderFactory
 from lemarche.users import constants as user_constants
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
-from lemarche.conversations.models import TemplateTransactionalSendLog, TemplateTransactional
 
 
 class UserModelTest(TestCase):
@@ -179,7 +179,6 @@ class UserModelSaveTest(TestCase):
     INACTIVE_USER_WARNING_DELAY_IN_DAYS=7,
 )
 class UserAnonymizationTestCase(TestCase):
-
     def setUp(self):
         frozen_now = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
         self.frozen_last_year = frozen_now - relativedelta(years=1)

@@ -1,14 +1,13 @@
+from dateutil.relativedelta import relativedelta
+from django.conf import settings
+from django.contrib.auth.hashers import UNUSABLE_PASSWORD_PREFIX
+from django.contrib.postgres.functions import RandomUUID
 from django.core.management.base import BaseCommand
-from django.utils import timezone
 from django.db import transaction
 from django.db.models import F, Value
 from django.db.models.functions import Concat
-from django.contrib.auth.hashers import UNUSABLE_PASSWORD_PREFIX
-from django.contrib.postgres.functions import RandomUUID
-from django.conf import settings
 from django.template import defaulttags
-
-from dateutil.relativedelta import relativedelta
+from django.utils import timezone
 
 from lemarche.conversations.models import TemplateTransactional
 from lemarche.users.models import User
@@ -44,7 +43,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-
         expiry_date = timezone.now() - relativedelta(months=options["month_timeout"])
         warning_date = expiry_date + relativedelta(days=options["warning_delay"])
 
