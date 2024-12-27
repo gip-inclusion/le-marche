@@ -90,7 +90,8 @@ class Command(BaseCommand):
 
         # Users that have already received the mail are excluded
         users_to_warn = User.objects.filter(last_login__lte=warning_date, is_active=True, is_anonymized=False).exclude(
-            recipient_transactional_send_logs__template_transactional__code=email_template.code
+            recipient_transactional_send_logs__template_transactional__code=email_template.code,
+            recipient_transactional_send_logs__extra_data__contains={"sent": True},
         )
 
         if dry_run:
