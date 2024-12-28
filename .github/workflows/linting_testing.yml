@@ -125,6 +125,5 @@ jobs:
         run: |
           source .venv/bin/activate
           python manage.py collectstatic
-          echo $DJANGO_SETTINGS_MODULE
-          coverage run --source='./lemarche' ./manage.py test --settings=config.settings.test --parallel auto lemarche
+          coverage run --source='./lemarche' ./manage.py test --parallel auto lemarche
           coverage report
