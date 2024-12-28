@@ -123,5 +123,6 @@ jobs:
       - name: 🤹‍ Run Tests
         run: |
           source .venv/bin/activate
-          coverage run --source='./lemarche' ./manage.py test --parallel auto lemarche
+          coverage run --source='./lemarche' ./manage.py test --keepdb --parallel auto lemarche
           coverage report
+          ./manage.py test --keepdb --failfast --parallel auto lemarche
