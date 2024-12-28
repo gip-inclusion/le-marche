@@ -125,5 +125,5 @@ jobs:
         run: |
           source .venv/bin/activate
           python manage.py collectstatic
-          coverage run --source='./lemarche' ./manage.py test --parallel auto lemarche
+          coverage run --settings=config.settings.test --source='./lemarche' ./manage.py test --parallel auto lemarche
           coverage report
