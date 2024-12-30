@@ -9,6 +9,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import FormView, ListView, TemplateView, View
 from django.views.generic.edit import FormMixin
+from wagtail.models import Site as WagtailSite
 
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
@@ -28,8 +29,6 @@ from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_
 from lemarche.www.tenders.tasks import notify_admin_tender_created
 from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user_from_anonymous_content
 from lemarche.www.tenders.views import TenderCreateMultiStepView
-
-from wagtail.models import Site as WagtailSite
 
 
 class ContactView(SuccessMessageMixin, FormView):
@@ -231,13 +230,8 @@ def csrf_failure(request, reason=""):  # noqa C901
     # if path_add_tender in request.path:
     is_adding = path_add_tender in request.path
     is_update = path_update_tender in request.path
-    if (
-        is_adding
-        or is_update
-        and (
-            request.POST.get("tender_create_multi_step_view-current_step")
-            == TenderCreateMultiStepView.STEP_CONFIRMATION
-        )
+    if (is_adding or is_update) and (
+        request.POST.get("tender_create_multi_step_view-current_step") == TenderCreateMultiStepView.STEP_CONFIRMATION
     ):
         # in some cases, there is no POST data...
         # create initial tender_dict
