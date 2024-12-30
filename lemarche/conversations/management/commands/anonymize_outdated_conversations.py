@@ -2,8 +2,14 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.utils import timezone
 
+from lemarche.conversations.constants import ATTRIBUTES_TO_KEEP_FOR_INBOUND
 from lemarche.conversations.models import Conversation
 from lemarche.utils.commands import BaseCommand
+
+
+def clean_inbound_data(inbound_data: dict) -> dict:
+    """Keep only allowed data once anonymized"""
+    return {key: inbound_data[key] for key in ATTRIBUTES_TO_KEEP_FOR_INBOUND}
 
 
 class Command(BaseCommand):
@@ -24,7 +30,7 @@ class Command(BaseCommand):
             conversation.sender_first_name = ""
             conversation.sender_last_name = ""
             conversation.initial_body_message = str(len(conversation.initial_body_message))
-            conversation.data = [str(len(conversation.data))]
+            conversation.data = [clean_inbound_data(data) for data in conversation.data]
             conversation.is_anonymized = True
 
         Conversation.objects.bulk_update(

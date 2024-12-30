@@ -8,6 +8,7 @@ from django.test import TestCase, TransactionTestCase, override_settings
 from django.utils import timezone
 
 from lemarche.conversations import constants as conversation_constants
+from lemarche.conversations.constants import ATTRIBUTES_TO_KEEP_FOR_INBOUND, ATTRIBUTES_TO_SAVE_FOR_INBOUND
 from lemarche.conversations.factories import ConversationFactory, TemplateTransactionalFactory
 from lemarche.conversations.models import Conversation, TemplateTransactional
 from lemarche.siaes.factories import SiaeFactory
@@ -84,11 +85,14 @@ class ConversationAnonymizationTestCase(TestCase):
     """
 
     def setUp(self):
+        inbound_data = {key: "something" for key in ATTRIBUTES_TO_SAVE_FOR_INBOUND}
+        self.anonymized_inbound_data = {key: "something" for key in ATTRIBUTES_TO_KEEP_FOR_INBOUND}
+
         ConversationFactory(
             title="anonymized",
             created_at=datetime(year=2023, month=6, day=1, tzinfo=timezone.utc),
             initial_body_message="blabla",
-            data=["blabla", "blabla"],
+            data=[inbound_data, inbound_data],
         )
         ConversationFactory(created_at=datetime(year=2023, month=8, day=1, tzinfo=timezone.utc))
 
@@ -101,7 +105,7 @@ class ConversationAnonymizationTestCase(TestCase):
         self.assertEqual(conv_anonymized.sender_first_name, "")
         self.assertEqual(conv_anonymized.sender_last_name, "")
         self.assertEqual(conv_anonymized.initial_body_message, "6")
-        self.assertEqual(conv_anonymized.data, ["2"])
+        self.assertEqual(conv_anonymized.data, [self.anonymized_inbound_data, self.anonymized_inbound_data])
 
         self.assertTrue(Conversation.objects.get(is_anonymized=False), msg="active conversation wrongly anonymised !!")
 
