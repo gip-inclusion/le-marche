@@ -126,6 +126,31 @@ class HasApiKeyFilter(admin.SimpleListFilter):
         return queryset
 
 
+class IsAnonymizedFilter(admin.SimpleListFilter):
+    """Custom admin filter to target users who are anonymized"""
+
+    title = "Est anonymisé"
+    parameter_name = "is_anonymized"
+
+    def lookups(self, request, model_admin):
+        return ("Yes", "Oui"), (None, "Non")
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "Yes":
+            return queryset.filter(is_anonymized=True)
+        return queryset.filter(is_anonymized=False)
+
+    def choices(self, changelist):
+        """Removed the first yield from the base method to only have 2 choices, defaulting too No"""
+        for lookup, title in self.lookup_choices:
+            yield {
+                "selected": self.value() == lookup,
+                "query_string": changelist.get_query_string({self.parameter_name: lookup}),
+                "display": title,
+            }
+
+
 class UserNoteInline(GenericTabularInline):
     model = Note
     fields = ["text", "author", "created_at", "updated_at"]
@@ -181,6 +206,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         HasApiKeyFilter,
         "is_staff",
         "is_superuser",
+        IsAnonymizedFilter,
     ]
     search_fields = ["id", "email", "first_name", "last_name"]
     search_help_text = "Cherche sur les champs : ID, E-mail, Prénom, Nom"
