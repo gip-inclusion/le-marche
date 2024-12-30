@@ -22,6 +22,7 @@ class PerimeterAutocompleteViewSet(mixins.ListModelMixin, viewsets.GenericViewSe
     serializer_class = PerimeterSimpleSerializer
     filterset_class = PerimeterAutocompleteFilter
     pagination_class = None
+    http_method_names = ["get"]
 
     def finalize_response(self, request, response, *args, **kwargs):
         """
