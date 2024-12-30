@@ -1,7 +1,10 @@
+import ipaddress
 import logging
 
+from django.conf import settings
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
+from rest_framework.permissions import BasePermission
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -30,7 +33,22 @@ def clean_saved_data_of_inbound(data_inbound: dict):
     return clean_saved_data
 
 
+class BrevoWhitelistPermission(BasePermission):
+    """
+    Permission check for allowed IPs.
+    """
+
+    def has_permission(self, request, view) -> bool:
+        """Check if ip adress is in network range"""
+        ip_addr = ipaddress.ip_address(request.META["REMOTE_ADDR"])
+        network = ipaddress.ip_network(settings.BREVO_IP_WHITELIST_RANGE)
+
+        return ip_addr in network
+
+
 class InboundParsingEmailView(APIView):
+    permission_classes = [BrevoWhitelistPermission] + APIView.permission_classes
+
     @extend_schema(exclude=True)
     def post(self, request):
         serializer = EmailsSerializer(data=request.data)
