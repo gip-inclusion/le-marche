@@ -24,9 +24,9 @@ class EmailItemSerializer(serializers.Serializer):
     RawTextBody = serializers.CharField(required=False, allow_null=True, allow_blank=True)
     ExtractedMarkdownMessage = serializers.CharField(required=False, allow_null=True)
     ExtractedMarkdownSignature = serializers.CharField(required=False, allow_null=True, allow_blank=True)
-    SpamScore = serializers.FloatField()
+    SpamScore = serializers.FloatField(required=False)
     Attachments = serializers.ListField(child=serializers.DictField(), required=False)
-    Headers = serializers.DictField()
+    Headers = serializers.DictField(required=False)
 
 
 class EmailsSerializer(serializers.Serializer):
