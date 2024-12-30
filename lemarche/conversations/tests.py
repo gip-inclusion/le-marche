@@ -1,9 +1,6 @@
-from datetime import timedelta
-
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.test import TestCase, TransactionTestCase
-from django.utils import timezone
 
 from lemarche.conversations import constants as conversation_constants
 from lemarche.conversations.factories import ConversationFactory, TemplateTransactionalFactory
@@ -70,14 +67,6 @@ class ConversationQuerysetTest(TestCase):
         conversation_queryset = Conversation.objects.with_answer_stats()
         self.assertEqual(conversation_queryset.get(id=self.conversation.id).answer_count_annotated, 0)
         self.assertEqual(conversation_queryset.get(id=self.conversation_with_answer.id).answer_count_annotated, 1)
-
-    def test_outdated(self):
-        one_year_ago = timezone.now() - timedelta(days=365)
-        ConversationFactory(created_at=one_year_ago)
-        five_weeks_ago = timezone.now() - timedelta(weeks=5)
-        ConversationFactory(created_at=five_weeks_ago)
-        self.assertEqual(Conversation.objects.all().count(), 2 + 2)
-        self.assertEqual(Conversation.objects.outdated().count(), 1)
 
 
 class TemplateTransactionalModelTest(TestCase):

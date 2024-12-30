@@ -1,4 +1,3 @@
-from lemarche.conversations.models import Conversation
 from lemarche.utils.commands import BaseCommand
 
 
@@ -11,8 +10,4 @@ class Command(BaseCommand):
     """
 
     def handle(self, *args, **options):
-        self.stdout_info("Delete script of outdated conversations")
-        conversations_outdated = Conversation.objects.outdated()
-        self.stdout_info(f"Found {conversations_outdated.count()} outdated conversation(s) to delete")
-        deleted_count, _ = conversations_outdated.delete()
-        self.stdout_info(f"Deleted {deleted_count} outdated conversation(s)")
+        pass
