@@ -101,7 +101,7 @@ class ConversationAnonymizationTestCase(TestCase):
         self.assertEqual(conv_anonymized.sender_first_name, "")
         self.assertEqual(conv_anonymized.sender_last_name, "")
         self.assertEqual(conv_anonymized.initial_body_message, "6")
-        self.assertEqual(conv_anonymized.data, ["6", "6"])
+        self.assertEqual(conv_anonymized.data, ["2"])
 
         self.assertTrue(Conversation.objects.get(is_anonymized=False), msg="active conversation wrongly anonymised !!")
 

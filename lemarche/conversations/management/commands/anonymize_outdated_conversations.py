@@ -24,7 +24,7 @@ class Command(BaseCommand):
             conversation.sender_first_name = ""
             conversation.sender_last_name = ""
             conversation.initial_body_message = str(len(conversation.initial_body_message))
-            conversation.data = [str(len(element)) for element in conversation.data]
+            conversation.data = [str(len(conversation.data))]
             conversation.is_anonymized = True
 
         Conversation.objects.bulk_update(
