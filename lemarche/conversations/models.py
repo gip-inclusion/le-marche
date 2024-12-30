@@ -88,6 +88,8 @@ class Conversation(models.Model):
 
     data = models.JSONField(default=list)
 
+    is_anonymized = models.BooleanField(verbose_name="Est anonymisé", default=False)
+
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
     validated_at = models.DateTimeField(verbose_name="Date de validation", blank=True, null=True)

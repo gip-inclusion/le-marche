@@ -16,7 +16,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         inactive_datetime = timezone.now() - relativedelta(months=settings.INACTIVE_CONVERSATION_TIMEOUT_IN_MONTHS)
-        outdated_conversations = Conversation.objects.filter(created_at__lte=inactive_datetime)
+        outdated_conversations = Conversation.objects.filter(created_at__lte=inactive_datetime, is_anonymized=False)
 
         for conversation in outdated_conversations:
             conversation.sender_user = None
@@ -25,6 +25,7 @@ class Command(BaseCommand):
             conversation.sender_last_name = ""
             conversation.initial_body_message = str(len(conversation.initial_body_message))
             conversation.data = [str(len(element)) for element in conversation.data]
+            conversation.is_anonymized = True
 
         Conversation.objects.bulk_update(
             outdated_conversations,
@@ -35,5 +36,6 @@ class Command(BaseCommand):
                 "sender_last_name",
                 "initial_body_message",
                 "data",
+                "is_anonymized",
             ],
         )

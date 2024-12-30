@@ -95,13 +95,15 @@ class ConversationAnonymizationTestCase(TestCase):
     def test_anonymize_command(self):
         call_command("anonymize_outdated_conversations")
 
-        conv = Conversation.objects.get(title="anonymized")
-        self.assertIsNone(conv.sender_user)
-        self.assertIsNone(conv.sender_email)
-        self.assertEqual(conv.sender_first_name, "")
-        self.assertEqual(conv.sender_last_name, "")
-        self.assertEqual(conv.initial_body_message, "6")
-        self.assertEqual(conv.data, ["6", "6"])
+        conv_anonymized = Conversation.objects.get(title="anonymized", is_anonymized=True)
+        self.assertIsNone(conv_anonymized.sender_user)
+        self.assertIsNone(conv_anonymized.sender_email)
+        self.assertEqual(conv_anonymized.sender_first_name, "")
+        self.assertEqual(conv_anonymized.sender_last_name, "")
+        self.assertEqual(conv_anonymized.initial_body_message, "6")
+        self.assertEqual(conv_anonymized.data, ["6", "6"])
+
+        self.assertTrue(Conversation.objects.get(is_anonymized=False), msg="active conversation wrongly anonymised !!")
 
 
 class TemplateTransactionalModelTest(TestCase):
