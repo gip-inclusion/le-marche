@@ -119,7 +119,6 @@ class SignupFormTest(StaticLiveServerTestCase):
         except:  # noqa # selenium.common.exceptions.NoSuchElementException:
             pass
 
-        user_profile = user_profile.copy()
         user_kind = user_profile.pop("id_kind")
         self.driver.find_element(By.CSS_SELECTOR, f"label[for='id_kind_{user_kind}']").click()
         for key in user_profile:
