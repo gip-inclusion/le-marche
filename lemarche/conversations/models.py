@@ -322,7 +322,7 @@ class TemplateTransactional(models.Model):
     ):
         if self.is_active:
             args = {
-                "object_model_id": self.id,
+                "template_transactional": self,
                 "recipient_content_object": recipient_content_object,
                 "parent_content_object": parent_content_object,
                 "template_id": self.get_template_id,

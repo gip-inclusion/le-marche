@@ -96,7 +96,7 @@ def add_to_contact_list_async(email_address, properties, contact_list_id, client
 
 @task()
 def send_transactional_email_with_template(
-    object_model_id: int,
+    template_transactional,
     recipient_content_object,
     parent_content_object,
     template_id: int,
@@ -108,8 +108,6 @@ def send_transactional_email_with_template(
     from_name=settings.DEFAULT_FROM_NAME,
     client=None,
 ):
-    from lemarche.conversations.models import TemplateTransactional
-
     data = {
         "Messages": [
             {
@@ -142,7 +140,6 @@ def send_transactional_email_with_template(
     }
 
     # create log
-    template_transactional = TemplateTransactional.objects.get(pk=object_model_id)
     template_transactional.send_logs.create(
         recipient_content_object=recipient_content_object,
         parent_content_object=parent_content_object,

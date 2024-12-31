@@ -8,7 +8,6 @@ from huey.contrib.djhuey import task
 from sib_api_v3_sdk.rest import ApiException
 
 from lemarche.conversations.constants import SOURCE_BREVO
-from lemarche.conversations.models import TemplateTransactional
 from lemarche.tenders import constants as tender_constants
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 from lemarche.utils.data import sanitize_to_send_by_email
@@ -350,7 +349,7 @@ def get_all_users_from_list(
 
 @task()
 def send_transactional_email_with_template(
-    object_model_id: int,
+    template_transactional,
     recipient_content_object,
     parent_content_object,
     template_id: int,
@@ -387,7 +386,6 @@ def send_transactional_email_with_template(
     }
 
     # create log
-    template_transactional = TemplateTransactional.objects.get(pk=object_model_id)
     template_transactional.send_logs.create(
         recipient_content_object=recipient_content_object,
         parent_content_object=parent_content_object,
