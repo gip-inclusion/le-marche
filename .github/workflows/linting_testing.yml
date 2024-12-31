@@ -119,11 +119,10 @@ jobs:
 
       #----------------------------------------------
       # run tests
-      # collectstatic needed for selenium tests
       #----------------------------------------------
       - name: 🤹‍ Run Tests
         run: |
           source .venv/bin/activate
-          python manage.py collectstatic
-          coverage run --source='./lemarche' ./manage.py test --parallel auto lemarche
+          coverage run --source='./lemarche' ./manage.py test --keepdb --parallel auto lemarche
           coverage report
+          ./manage.py test --keepdb --failfast --parallel auto lemarche
