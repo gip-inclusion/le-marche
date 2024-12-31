@@ -833,6 +833,9 @@ ENV_COLOR_MAPPING = {
 }
 BITOUBI_ENV_COLOR = ENV_COLOR_MAPPING.get(BITOUBI_ENV, "")
 
+# Privacy timeouts
+# ------------------------------------------------------------------------------
+INACTIVE_CONVERSATION_TIMEOUT_IN_MONTHS = env.int("INACTIVE_CONVERSATION_TIMEOUT_IN_MONTHS", 6)
 
 # Wagtail
 # ------------------------------------------------------------------------------
