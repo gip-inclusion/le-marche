@@ -18,11 +18,9 @@ SIAE = {
     "first_name": "Prenom",
     "last_name": "Nom",
     "phone": "+33123456789",  # not required
-    # "company_name": "",  # not asked here
     "email": "siae@example.com",
     "password1": EXAMPLE_PASSWORD,
     "password2": EXAMPLE_PASSWORD,
-    # "id_accept_rgpd"  # required
 }
 
 BUYER = {
@@ -30,16 +28,11 @@ BUYER = {
     "first_name": "Prenom",
     "last_name": "Nom",
     "phone": "0123456789",
-    # "buyer_kind_detail": "PRIVATE_BIG_CORP",
     "company_name": "Ma boite",
     "position": "Role important",
     "email": "buyer@example.com",
     "password1": EXAMPLE_PASSWORD,
     "password2": EXAMPLE_PASSWORD,
-    # "nb_of_handicap_provider_last_year": "3",
-    # "nb_of_inclusive_provider_last_year": "4",
-    # "id_accept_rgpd"  # required
-    # "id_accept_survey"  # not required
 }
 
 PARTNER = {
@@ -47,13 +40,10 @@ PARTNER = {
     "first_name": "Prenom",
     "last_name": "Nom",
     "phone": "01 23 45 67 89",  # not required
-    # "partner_kind": "RESEAU_IAE",
     "company_name": "Ma boite",
     "email": "partner@example.com",
     "password1": EXAMPLE_PASSWORD,
     "password2": EXAMPLE_PASSWORD,
-    # "id_accept_rgpd"  # required
-    # "id_accept_survey"  # not required
 }
 
 PARTNER_2 = {
@@ -61,25 +51,19 @@ PARTNER_2 = {
     "first_name": "Prenom",
     "last_name": "Nom",
     "phone": "+33123456789",  # not required
-    # "partner_kind": "RESEAU_IAE",
     "company_name": "Ma boite",
     "email": "partner2@example.com",
     "password1": EXAMPLE_PASSWORD,
     "password2": EXAMPLE_PASSWORD,
-    # "id_accept_rgpd"  # required
-    # "id_accept_survey"  # not required
 }
 
 INDIVIDUAL = {
     "id_kind": 3,
     "first_name": "Prenom",
     "last_name": "Nom",
-    # "phone": "012345678",  # not required
     "email": "individual@example.com",
     "password1": EXAMPLE_PASSWORD,
     "password2": EXAMPLE_PASSWORD,
-    # "id_accept_rgpd"  # required
-    # "id_accept_survey"  # not required
 }
 
 
@@ -244,7 +228,6 @@ class SignupFormTest(StaticLiveServerTestCase):
         # should not submit form (position field is required)
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
-    # TODO: problem with this test
     def test_partner_submits_signup_form_success(self):
         self._complete_form(user_profile=PARTNER, with_submit=False)
         partner_kind_option_element = self.driver.find_element(
