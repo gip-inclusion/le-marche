@@ -40,8 +40,6 @@ class SignupFormTest(StaticLiveServerTestCase):
         options.add_argument("-headless")
         cls.driver = webdriver.Firefox(options=options)
         cls.driver.implicitly_wait(1)
-        # other init
-        cls.user_count = User.objects.count()
 
     def setUp(self):
         EXAMPLE_PASSWORD = "c*[gkp`0="
@@ -136,7 +134,7 @@ class SignupFormTest(StaticLiveServerTestCase):
             list: list of success messages
         """
         # should create User
-        self.assertEqual(User.objects.count(), self.user_count + 1)
+        self.assertEqual(User.objects.count(), 1)
         # user should be automatically logged in
         header = self.driver.find_element(By.CSS_SELECTOR, "header#header")
         self.assertTrue("Tableau de bord" in header.text)
