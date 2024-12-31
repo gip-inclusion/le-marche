@@ -1,5 +1,3 @@
-import secrets
-import string
 import time
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -13,7 +11,7 @@ from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
 
 
-EXAMPLE_PASSWORD = "".join(secrets.choice(string.ascii_letters + string.digits + string.punctuation) for i in range(9))
+EXAMPLE_PASSWORD = "c*[gkp`0="
 
 SIAE = {
     "id_kind": 0,  # required
@@ -247,16 +245,16 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
     # TODO: problem with this test
-    # def test_partner_submits_signup_form_success(self):
-    #     self._complete_form(user_profile=PARTNER, with_submit=False)
-    #     partner_kind_option_element = self.driver.find_element(
-    #         By.XPATH, "//select[@id='id_partner_kind']/option[text()='Réseaux IAE']"
-    #     )
-    #     scroll_to_and_click_element(self.driver, partner_kind_option_element, sleep_time=10)
-    #     submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
-    #     scroll_to_and_click_element(self.driver, submit_element)
+    def test_partner_submits_signup_form_success(self):
+        self._complete_form(user_profile=PARTNER, with_submit=False)
+        partner_kind_option_element = self.driver.find_element(
+            By.XPATH, "//select[@id='id_partner_kind']/option[text()='Réseaux IAE']"
+        )
+        scroll_to_and_click_element(self.driver, partner_kind_option_element, sleep_time=10)
+        submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
+        scroll_to_and_click_element(self.driver, submit_element)
 
-    #     self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)))
+        self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)))
 
     def test_partner_submits_signup_form_error(self):
         user_profile = PARTNER.copy()
