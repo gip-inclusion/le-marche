@@ -8,7 +8,7 @@ from django.test import TestCase, TransactionTestCase, override_settings
 from django.utils import timezone
 
 from lemarche.conversations import constants as conversation_constants
-from lemarche.conversations.constants import ATTRIBUTES_TO_KEEP_FOR_INBOUND, ATTRIBUTES_TO_SAVE_FOR_INBOUND
+from lemarche.conversations.constants import ATTRIBUTES_TO_NOT_ANONYMIZE_FOR_INBOUND, ATTRIBUTES_TO_SAVE_FOR_INBOUND
 from lemarche.conversations.factories import ConversationFactory, TemplateTransactionalFactory
 from lemarche.conversations.models import Conversation, TemplateTransactional
 from lemarche.siaes.factories import SiaeFactory
@@ -86,7 +86,7 @@ class ConversationAnonymizationTestCase(TestCase):
 
     def setUp(self):
         inbound_data = {key: "something" for key in ATTRIBUTES_TO_SAVE_FOR_INBOUND}
-        self.anonymized_inbound_data = {key: "something" for key in ATTRIBUTES_TO_KEEP_FOR_INBOUND}
+        self.anonymized_inbound_data = {key: "something" for key in ATTRIBUTES_TO_NOT_ANONYMIZE_FOR_INBOUND}
 
         ConversationFactory(
             title="anonymized",
