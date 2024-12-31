@@ -11,62 +11,6 @@ from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
 
 
-EXAMPLE_PASSWORD = "c*[gkp`0="
-
-SIAE = {
-    "id_kind": 0,  # required
-    "first_name": "Prenom",
-    "last_name": "Nom",
-    "phone": "+33123456789",  # not required
-    "email": "siae@example.com",
-    "password1": EXAMPLE_PASSWORD,
-    "password2": EXAMPLE_PASSWORD,
-}
-
-BUYER = {
-    "id_kind": 1,  # required
-    "first_name": "Prenom",
-    "last_name": "Nom",
-    "phone": "0123456789",
-    "company_name": "Ma boite",
-    "position": "Role important",
-    "email": "buyer@example.com",
-    "password1": EXAMPLE_PASSWORD,
-    "password2": EXAMPLE_PASSWORD,
-}
-
-PARTNER = {
-    "id_kind": 2,  # required
-    "first_name": "Prenom",
-    "last_name": "Nom",
-    "phone": "01 23 45 67 89",  # not required
-    "company_name": "Ma boite",
-    "email": "partner@example.com",
-    "password1": EXAMPLE_PASSWORD,
-    "password2": EXAMPLE_PASSWORD,
-}
-
-PARTNER_2 = {
-    "id_kind": 2,  # required
-    "first_name": "Prenom",
-    "last_name": "Nom",
-    "phone": "+33123456789",  # not required
-    "company_name": "Ma boite",
-    "email": "partner2@example.com",
-    "password1": EXAMPLE_PASSWORD,
-    "password2": EXAMPLE_PASSWORD,
-}
-
-INDIVIDUAL = {
-    "id_kind": 3,
-    "first_name": "Prenom",
-    "last_name": "Nom",
-    "email": "individual@example.com",
-    "password1": EXAMPLE_PASSWORD,
-    "password2": EXAMPLE_PASSWORD,
-}
-
-
 def scroll_to_and_click_element(driver, element, click=True, sleep_time=1):
     """
     Helper to avoid some errors with selenium
@@ -95,13 +39,69 @@ class SignupFormTest(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        # selenium browser  # TODO: make it test-wide
+        # selenium browser
         options = Options()
         options.add_argument("-headless")
         cls.driver = webdriver.Firefox(options=options)
         cls.driver.implicitly_wait(1)
         # other init
         cls.user_count = User.objects.count()
+
+    def setUp(self):
+        EXAMPLE_PASSWORD = "c*[gkp`0="
+
+        self.SIAE = {
+            "id_kind": 0,  # required
+            "first_name": "Prenom",
+            "last_name": "Nom",
+            "phone": "+33123456789",  # not required
+            "email": "siae@example.com",
+            "password1": EXAMPLE_PASSWORD,
+            "password2": EXAMPLE_PASSWORD,
+        }
+
+        self.BUYER = {
+            "id_kind": 1,  # required
+            "first_name": "Prenom",
+            "last_name": "Nom",
+            "phone": "0123456789",
+            "company_name": "Ma boite",
+            "position": "Role important",
+            "email": "buyer@example.com",
+            "password1": EXAMPLE_PASSWORD,
+            "password2": EXAMPLE_PASSWORD,
+        }
+
+        self.PARTNER = {
+            "id_kind": 2,  # required
+            "first_name": "Prenom",
+            "last_name": "Nom",
+            "phone": "01 23 45 67 89",  # not required
+            "company_name": "Ma boite",
+            "email": "partner@example.com",
+            "password1": EXAMPLE_PASSWORD,
+            "password2": EXAMPLE_PASSWORD,
+        }
+
+        self.PARTNER_2 = {
+            "id_kind": 2,  # required
+            "first_name": "Prenom",
+            "last_name": "Nom",
+            "phone": "+33123456789",  # not required
+            "company_name": "Ma boite",
+            "email": "partner2@example.com",
+            "password1": EXAMPLE_PASSWORD,
+            "password2": EXAMPLE_PASSWORD,
+        }
+
+        self.INDIVIDUAL = {
+            "id_kind": 3,
+            "first_name": "Prenom",
+            "last_name": "Nom",
+            "email": "individual@example.com",
+            "password1": EXAMPLE_PASSWORD,
+            "password2": EXAMPLE_PASSWORD,
+        }
 
     def _complete_form(self, user_profile: dict, signup_url=reverse("auth:signup"), with_submit=True):
         """the function allows you to go to the "signup" page and complete the user profile.
@@ -154,7 +154,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         return messages
 
     def test_siae_submits_signup_form_success(self):
-        self._complete_form(user_profile=SIAE.copy(), with_submit=True)
+        self._complete_form(user_profile=self.SIAE, with_submit=True)
 
         # should redirect SIAE to dashboard
         messages = self._assert_signup_success(redirect_url=reverse("dashboard:home"))
@@ -162,7 +162,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertTrue("Vous pouvez maintenant ajouter votre structure" in messages.text)
 
     def test_siae_submits_signup_form_error(self):
-        user_profile = SIAE.copy()
+        user_profile = self.SIAE
         del user_profile["last_name"]
 
         self._complete_form(user_profile=user_profile, with_submit=True)
@@ -171,9 +171,9 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
     def test_siae_submits_signup_form_email_already_exists(self):
-        UserFactory(email=SIAE["email"], kind=User.KIND_SIAE)
+        UserFactory(email=self.SIAE["email"], kind=User.KIND_SIAE)
 
-        user_profile = SIAE.copy()
+        user_profile = self.SIAE
         self._complete_form(user_profile=user_profile, with_submit=True)
 
         # should not submit form (email field already used)
@@ -183,7 +183,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertTrue("Cette adresse e-mail est déjà utilisée." in alerts.text)
 
     def test_buyer_submits_signup_form_success(self):
-        self._complete_form(user_profile=BUYER, with_submit=False)
+        self._complete_form(user_profile=self.BUYER, with_submit=False)
 
         buyer_kind_detail_select_element = self.driver.find_element(By.CSS_SELECTOR, "select#id_buyer_kind_detail")
         element_select_option(self.driver, buyer_kind_detail_select_element, "Grand groupe (+5000 salariés)")
@@ -195,7 +195,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._assert_signup_success(redirect_url=reverse("siae:search_results"))
 
     def test_buyer_submits_signup_form_success_extra_data(self):
-        self._complete_form(user_profile=BUYER, with_submit=False)
+        self._complete_form(user_profile=self.BUYER, with_submit=False)
 
         buyer_kind_detail_select_element = self.driver.find_element(By.CSS_SELECTOR, "select#id_buyer_kind_detail")
         element_select_option(self.driver, buyer_kind_detail_select_element, "Grand groupe (+5000 salariés)")
@@ -213,14 +213,14 @@ class SignupFormTest(StaticLiveServerTestCase):
         submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
         scroll_to_and_click_element(self.driver, submit_element)
         # should get created User
-        user = User.objects.get(email=BUYER.get("email"))
+        user = User.objects.get(email=self.BUYER["email"])
 
         # assert extra_data are inserted
         self.assertEqual(user.extra_data.get("nb_of_handicap_provider_last_year"), nb_of_handicap)
         self.assertEqual(user.extra_data.get("nb_of_inclusive_provider_last_year"), nb_of_inclusive)
 
     def test_buyer_submits_signup_form_error(self):
-        user_profile = BUYER.copy()
+        user_profile = self.BUYER
         del user_profile["position"]
 
         self._complete_form(user_profile=user_profile, with_submit=True)
@@ -229,7 +229,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
     def test_partner_submits_signup_form_success(self):
-        self._complete_form(user_profile=PARTNER, with_submit=False)
+        self._complete_form(user_profile=self.PARTNER, with_submit=False)
         partner_kind_option_element = self.driver.find_element(
             By.XPATH, "//select[@id='id_partner_kind']/option[text()='Réseaux IAE']"
         )
@@ -240,7 +240,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)))
 
     def test_partner_submits_signup_form_error(self):
-        user_profile = PARTNER.copy()
+        user_profile = self.PARTNER
         del user_profile["company_name"]
 
         self._complete_form(user_profile=user_profile, with_submit=True)
@@ -256,7 +256,7 @@ class SignupFormTest(StaticLiveServerTestCase):
     #     self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)))
 
     def test_individual_submits_signup_form_error(self):
-        user_profile = INDIVIDUAL.copy()
+        user_profile = self.INDIVIDUAL
         del user_profile["last_name"]
 
         self._complete_form(user_profile=user_profile, with_submit=True)
@@ -267,7 +267,7 @@ class SignupFormTest(StaticLiveServerTestCase):
     def test_user_submits_signup_form_with_next_param_success_and_redirect(self):
         next_url = f"{reverse('siae:search_results')}?kind=ESAT"
         self._complete_form(
-            user_profile=SIAE.copy(),
+            user_profile=self.SIAE,
             signup_url=f"{reverse('auth:signup')}?next={next_url}",
             with_submit=False,
         )
