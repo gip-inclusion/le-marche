@@ -1,5 +1,3 @@
-import time
-
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 from selenium import webdriver
@@ -11,17 +9,15 @@ from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
 
 
-def scroll_to_and_click_element(driver, element, click=True, sleep_time=1):
+def scroll_to_and_click_element(driver, element, click=True):
     """
     Helper to avoid some errors with selenium
     - selenium.common.exceptions.ElementNotInteractableException
     - selenium.common.exceptions.ElementClickInterceptedException
     """
-    # element.click()
     # click instead with javascript
     driver.execute_script("arguments[0].scrollIntoView();", element)
     # small pause
-    time.sleep(sleep_time)
     if click:
         try:
             element.click()
@@ -232,7 +228,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         partner_kind_option_element = self.driver.find_element(
             By.XPATH, "//select[@id='id_partner_kind']/option[text()='Réseaux IAE']"
         )
-        scroll_to_and_click_element(self.driver, partner_kind_option_element, sleep_time=10)
+        scroll_to_and_click_element(self.driver, partner_kind_option_element)
         submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
         scroll_to_and_click_element(self.driver, submit_element)
 
