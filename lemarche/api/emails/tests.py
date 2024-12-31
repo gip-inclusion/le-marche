@@ -2,7 +2,7 @@ import json
 import os
 
 from django.core import mail
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils.text import slugify
 
@@ -110,3 +110,20 @@ class InboundEmailParsingApiTest(InboundEmailParsingApiTestV0):
         self.assertEqual(self.conv.siae_encoded.split("_")[:-1], slugify(self.conv.siae.contact_full_name).split("-"))
         siae_conv = Conversation.objects.get_conv_from_uuid(conv_uuid=self.conv.siae_encoded, version=1)
         self.assertEqual(siae_conv, self.conv)
+
+
+@override_settings(BREVO_IP_WHITELIST_RANGE="1.179.112.0/20")
+class PermissionInboundEmailTestCase(TestCase):
+    """Check that BrevoWhitelistPermission is working by only allowing ips
+    defined in BREVO_IP_WHITELIST_RANGE and mocked above"""
+
+    def setUp(self):
+        self.url = reverse("api:inbound-email-parsing")
+
+    def test_ip_rejected(self):
+        response = self.client.post(path=self.url, data={}, REMOTE_ADDR="127.0.0.1")
+        self.assertEqual(response.status_code, 401)  # unauthorized
+
+    def test_ip_allowed(self):
+        response = self.client.post(path=self.url, data={}, REMOTE_ADDR="1.179.112.0")
+        self.assertEqual(response.status_code, 400)  # bad request
