@@ -1,6 +1,5 @@
 from ckeditor.widgets import CKEditorWidget
 from django import forms
-from django.conf import settings
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.core.exceptions import ValidationError
@@ -789,7 +788,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             return HttpResponseRedirect("./#structures")  # redirect to structures sections
         if request.POST.get("_validate_send_to_siaes"):
             obj.set_validated()
-            if obj.amount_int > settings.BREVO_TENDERS_MIN_AMOUNT_TO_SEND:
+            if obj.is_followed_by_us:
                 try:
                     api_brevo.create_deal(tender=obj, owner_email=request.user.email)
                     # we link deal(tender) with author contact
