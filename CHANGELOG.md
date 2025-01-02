@@ -6,6 +6,39 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2024.8.0](https://github.com/gip-inclusion/le-marche/compare/v2024.7.0...v2024.8.0) (2025-01-02)
+
+
+### Features
+
+* **Admin:** Ajout de 'contact_phone' dans la recherche ([#1575](https://github.com/gip-inclusion/le-marche/issues/1575)) ([2dff083](https://github.com/gip-inclusion/le-marche/commit/2dff0830c369304c2c2db3df4e477e297584c4b9))
+* Ajout d'attributs dans Brevo pour les structures ([#1513](https://github.com/gip-inclusion/le-marche/issues/1513)) ([f41f5c5](https://github.com/gip-inclusion/le-marche/commit/f41f5c52b51808eb921f370aa5a5022be1a7dfdb))
+* ajouter le tri des activités dans l'admin par date de modification ([1db3999](https://github.com/gip-inclusion/le-marche/commit/1db399932dc524898e37636634a95f061b412cf2))
+* Conversations: anonymisation des données ([#1618](https://github.com/gip-inclusion/le-marche/issues/1618)) ([4d65073](https://github.com/gip-inclusion/le-marche/commit/4d650732beb750840b43d490f065d429bfbe65c6))
+* **Email Notifications:** Ajout du formulaire d'édition des préférences ([#1595](https://github.com/gip-inclusion/le-marche/issues/1595)) ([b50530a](https://github.com/gip-inclusion/le-marche/commit/b50530afd8dd60d5e5d5f3939468e85a707c1cfa))
+* **Siae:** Permettre aux structures de changer leur nom commercial ([#1552](https://github.com/gip-inclusion/le-marche/issues/1552)) ([9c32349](https://github.com/gip-inclusion/le-marche/commit/9c32349e3761b0f23e539b7decbb034fb5cb229e))
+* Suppression des données personnelles ([#1607](https://github.com/gip-inclusion/le-marche/issues/1607)) ([ec4fbbf](https://github.com/gip-inclusion/le-marche/commit/ec4fbbfc5caaa70110729be8683d13bb640891b7))
+* Whitelist des ips de Brevo pour inbound emails ([#1620](https://github.com/gip-inclusion/le-marche/issues/1620)) ([e33ed12](https://github.com/gip-inclusion/le-marche/commit/e33ed1229724788a646d2c2849b96d52fcf40b84))
+
+
+### Bug Fixes
+
+* 'set' object is not subscriptable ([b83aecd](https://github.com/gip-inclusion/le-marche/commit/b83aecd754e824249f84fec9c9367bfb436c91da))
+* Amélioration de la commande 'create_content_pages' ([#1545](https://github.com/gip-inclusion/le-marche/issues/1545)) ([f4eefc8](https://github.com/gip-inclusion/le-marche/commit/f4eefc8e5f2c8ba479606de26e200703b8148e2c))
+* Amélioration de la validation des champs url ([#1565](https://github.com/gip-inclusion/le-marche/issues/1565)) ([fb26956](https://github.com/gip-inclusion/le-marche/commit/fb2695650b97d312c104f00569f0b41f33bbf9d3))
+* Autoriser seulement les "GET" sur PerimeterAutocompleteViewSet ([#1615](https://github.com/gip-inclusion/le-marche/issues/1615)) ([848df37](https://github.com/gip-inclusion/le-marche/commit/848df37fda048107621c3b30374833df1b1dd256))
+* **Brevo:** AttributeError in 'api_brevo.create_contact' ([#1594](https://github.com/gip-inclusion/le-marche/issues/1594)) ([84c637c](https://github.com/gip-inclusion/le-marche/commit/84c637ccd0a31f3363ad06d8ee8a2bc362a9709e))
+* **Brevo:** synchro des utilisateurs sans Tender ([#1592](https://github.com/gip-inclusion/le-marche/issues/1592)) ([1c8be5f](https://github.com/gip-inclusion/le-marche/commit/1c8be5f4f3b8398af6d77ec0c0ee76f2f9ae6460))
+* **Brevo:** update_enabled arg in 'api_brevo.create_contact' ([#1593](https://github.com/gip-inclusion/le-marche/issues/1593)) ([b7b1c04](https://github.com/gip-inclusion/le-marche/commit/b7b1c0465c7f38b4224cef6712a15fc87294fc47))
+* Condition invalide pour échapper le CSRF ([#1616](https://github.com/gip-inclusion/le-marche/issues/1616)) ([d35c21d](https://github.com/gip-inclusion/le-marche/commit/d35c21d3a0527d3cb54cd837b6b88800b15d6931))
+* Erreurs de serialisation des inbound email ([#1619](https://github.com/gip-inclusion/le-marche/issues/1619)) ([987b044](https://github.com/gip-inclusion/le-marche/commit/987b04484948484015c564b9d795ce60383829ae))
+* **Import des emplois:** exclusion du type OPCS de l'import ([#1603](https://github.com/gip-inclusion/le-marche/issues/1603)) ([67a64ab](https://github.com/gip-inclusion/le-marche/commit/67a64ab509dd0cd14188f84d0ecc42f27361dc32))
+* **Liste des dépôts de besoin:** Correction d'une erreur javascript pour éviter un bug sur la liste ([#1574](https://github.com/gip-inclusion/le-marche/issues/1574)) ([8532546](https://github.com/gip-inclusion/le-marche/commit/8532546557dbb81db1445403a0c8004bafee8434))
+* Migration de l'authentification de token vers un middleware + Sauvegarde des anciennes clés d'apis ([#1531](https://github.com/gip-inclusion/le-marche/issues/1531)) ([f37debf](https://github.com/gip-inclusion/le-marche/commit/f37debf5b8d1e43c3caa4095343ce6f046c1e27b))
+* Remove dependabot auto pr action ([#1612](https://github.com/gip-inclusion/le-marche/issues/1612)) ([9925bcd](https://github.com/gip-inclusion/le-marche/commit/9925bcd6c10f526e4796f46032b3f4078de4028e))
+* **Secteurs d'activités:** Mise à jour du calcul du nombre de secteurs pour le déduire des activités associées ([#1564](https://github.com/gip-inclusion/le-marche/issues/1564)) ([7ab2f2a](https://github.com/gip-inclusion/le-marche/commit/7ab2f2aee14b91a84dd2d02906bf03e7e98c668c))
+* sectors_list_string replace by sector_groups_list_string on siae model ([0a27eca](https://github.com/gip-inclusion/le-marche/commit/0a27eca8492249916e4c634755566c6f608a6409))
+
 ## [2024.7.0](https://github.com/gip-inclusion/le-marche/compare/v2024.6.0...v2024.7.0) (2024-11-21)
 
 
