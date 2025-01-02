@@ -1,6 +1,5 @@
 from django import forms
 from django.forms.models import inlineformset_factory
-from django.utils.html import mark_safe
 from django_select2.forms import ModelSelect2MultipleWidget
 from dsfr.forms import DsfrBaseForm
 
@@ -193,11 +192,6 @@ SiaeImageFormSet = inlineformset_factory(Siae, SiaeImage, form=SiaeImageForm, ex
 
 
 class SiaeEditLinksForm(forms.ModelForm):
-    is_cocontracting = forms.BooleanField(
-        label="Êtes-vous ouvert à la co-traitance ?",
-        required=False,
-        widget=forms.RadioSelect(choices=[(True, "Oui"), (False, "Non")]),
-    )
     networks = forms.ModelMultipleChoiceField(
         queryset=Network.objects.all().order_by("name"),
         required=False,
@@ -220,7 +214,6 @@ class SiaeEditLinksForm(forms.ModelForm):
     class Meta:
         model = Siae
         fields = [
-            "is_cocontracting",
             "networks",
             "groups",
         ]
@@ -229,13 +222,6 @@ class SiaeEditLinksForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields["networks"].label = "Votre structure est-elle adhérente à un réseau ou une fédération ?"
-        self.fields["is_cocontracting"].label = mark_safe(
-            (
-                "Êtes-vous ouvert à la co-traitance ou au groupement momentané d'entreprises "
-                '(<a href="https://www.economie.gouv.fr/dae/groupement-momentane-dentreprises" target="_blank"'
-                ' rel="noopener">GME</a>) ?'
-            )
-        )
         self.fields["groups"].label = "Appartenez-vous à un groupement ou ensemblier ?"
 
 
