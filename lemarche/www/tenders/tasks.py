@@ -605,32 +605,6 @@ def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_questio
             tendersiae.save()
 
 
-def notify_admin_siae_wants_cocontracting(tender: Tender, siae: Siae):
-    email_subject = f"Marché de l'inclusion : la structure {siae.name} souhaite répondre en co-traitance"
-    tender_admin_url = get_object_admin_url(tender)
-    variables = {
-        "TENDER_ID": tender.id,
-        "TENDER_TITLE": tender.title,
-        "TENDER_KIND": tender.get_kind_display(),
-        "TENDER_KIND_LOWER": tender.get_kind_display().lower(),
-        "TENDER_ADMIN_URL": tender_admin_url,
-        "SIAE_ID": siae.id,
-        "SIAE_NAME": siae.name,
-        "SIAE_CONTACT_EMAIL": siae.contact_email,
-        "SIAE_SIRET": siae.siret,
-        # "TENDERSIAE_ID": tendersiae.id,
-    }
-    email_body = render_to_string("tenders/cocontracting_notification_email_admin_body.txt", variables)
-    send_mail_async(
-        email_subject=email_subject,
-        email_body=email_body,
-        recipient_list=[settings.NOTIFY_EMAIL],
-    )
-
-    if settings.BITOUBI_ENV == "prod":
-        api_slack.send_message_to_channel(text=email_body, service_id=settings.SLACK_WEBHOOK_C4_TENDER_CHANNEL)
-
-
 def send_super_siaes_email_to_author(tender: Tender, top_siaes: list[Siae]):
     email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_SUPER_SIAES")
     recipient_list = whitelist_recipient_list([tender.author.email])
