@@ -255,6 +255,23 @@ class TenderForm(forms.ModelForm):
         model = Tender
         fields = "__all__"
 
+    is_followed_by_us = forms.BooleanField(
+        widget=forms.CheckboxInput(),
+        required=False,
+        label=Tender._meta.get_field("is_followed_by_us").verbose_name,
+    )
+    proj_resulted_in_reserved_tender = forms.BooleanField(
+        widget=forms.CheckboxInput(),
+        required=False,
+        label=Tender._meta.get_field("proj_resulted_in_reserved_tender").verbose_name,
+    )
+
+    is_reserved_tender = forms.BooleanField(
+        widget=forms.CheckboxInput(),
+        required=False,
+        label=Tender._meta.get_field("is_reserved_tender").verbose_name,
+    )
+
     def clean(self):
         """
         Add validation on form rules:
@@ -500,8 +517,8 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "admins",
                     "is_followed_by_us",
                     "proj_resulted_in_reserved_tender",
-                    "proj_link_to_tender",
                     "is_reserved_tender",
+                    "proj_link_to_tender",
                 )
             },
         ),

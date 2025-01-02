@@ -1,4 +1,3 @@
-import random
 from datetime import datetime, timedelta
 from uuid import uuid4
 
@@ -754,27 +753,19 @@ class Tender(models.Model):
         - update the object content_fill_dates
         - generate the slug field
         """
-        self.set_last_updated_fields()
-        try:
-            self.set_slug()
-            # generate random status for is_followed_by_us
-            if (
-                not self.pk
-                and self.kind == tender_constants.KIND_PROJECT
-                and self.is_followed_by_us is None
-                and self.amount_int > settings.BREVO_TENDERS_MIN_AMOUNT_TO_SEND
-            ):
-                self.is_followed_by_us = random.random() < 0.5  # 50% True, 50% False
-            with transaction.atomic():
+        with transaction.atomic():
+            self.set_last_updated_fields()
+            try:
+                self.set_slug()
                 super().save(*args, **kwargs)
-        except IntegrityError as e:
-            # check that it's a slug conflict
-            # Full message expected: duplicate key value violates unique constraint "tenders_tender_slug_0f0b821f_uniq" DETAIL:  Key (slug)=(...) already exists.  # noqa
-            if "tenders_tender_slug" in str(e):
-                self.set_slug(with_uuid=True)
-                super().save(*args, **kwargs)
-            else:
-                raise e
+            except IntegrityError as e:
+                # check that it's a slug conflict
+                # Full message expected: duplicate key value violates unique constraint "tenders_tender_slug_0f0b821f_uniq" DETAIL:  Key (slug)=(...) already exists.  # noqa
+                if "tenders_tender_slug" in str(e):
+                    self.set_slug(with_uuid=True)
+                    super().save(*args, **kwargs)
+                else:
+                    raise e
 
     @cached_property
     def contact_full_name(self) -> str:
