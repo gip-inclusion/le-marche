@@ -255,19 +255,6 @@ class User(AbstractUser):
         default=False,
     )
 
-    image_name = models.CharField(verbose_name="Nom de l'image", max_length=255, blank=True)
-    image_url = models.URLField(verbose_name="Lien vers l'image", max_length=500, blank=True)
-
-    c4_id = models.IntegerField(blank=True, null=True)
-    c4_phone_prefix = models.CharField(verbose_name="Indicatif international", max_length=20, blank=True)
-    c4_time_zone = models.CharField(verbose_name="Fuseau", max_length=150, blank=True)
-    c4_website = models.URLField(verbose_name="Site web", blank=True)
-    c4_siret = models.CharField(verbose_name="Siret ou Siren", max_length=14, blank=True)
-    c4_naf = models.CharField(verbose_name="Naf", max_length=5, blank=True)
-    c4_phone_verified = models.BooleanField(default=False)
-    c4_email_verified = models.BooleanField(default=False)
-    c4_id_card_verified = models.BooleanField(default=False)
-
     # services data
     brevo_contact_id = models.PositiveIntegerField("Brevo contact id", blank=True, null=True)
 
@@ -291,6 +278,7 @@ class User(AbstractUser):
     )
 
     # is_active, is_staff, is_superuser
+    is_anonymized = models.BooleanField(verbose_name="L'utilisateur à été anonymisé", default=False)
 
     # date_joined, last_login
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)

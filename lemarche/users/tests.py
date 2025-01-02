@@ -1,6 +1,17 @@
-from django.test import TestCase
+from datetime import datetime
+from io import StringIO
+from unittest.mock import patch
+
+from dateutil.relativedelta import relativedelta
+from django.core.management import call_command
+from django.core.validators import validate_email
+from django.db.models import F
+from django.test import TestCase, override_settings
+from django.utils import timezone
 
 from lemarche.companies.factories import CompanyFactory
+from lemarche.conversations.constants import SOURCE_BREVO
+from lemarche.conversations.models import TemplateTransactional, TemplateTransactionalSendLog
 from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.tenders.factories import TenderFactory
@@ -157,3 +168,145 @@ class UserModelSaveTest(TestCase):
         user.favorite_lists.first().delete()
         self.assertEqual(user.favorite_lists.count(), 1)
         self.assertEqual(user.favorite_list_count, 1)
+
+
+# To avoid different results when test will be run in the future, we patch
+# and froze timezone.now used in the command
+# Settings are also overriden to avoid changing settings breaking tests
+@patch("django.utils.timezone.now", lambda: datetime(year=2024, month=1, day=1, tzinfo=timezone.utc))
+@override_settings(
+    INACTIVE_USER_TIMEOUT_IN_MONTHS=12,
+    INACTIVE_USER_WARNING_DELAY_IN_DAYS=7,
+)
+class UserAnonymizationTestCase(TestCase):
+    def setUp(self):
+        frozen_now = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
+        self.frozen_last_year = frozen_now - relativedelta(years=1)
+        self.frozen_warning_date = self.frozen_last_year + relativedelta(days=7)
+
+        self.std_out = StringIO()  # to read output from executed management commands
+
+        siae_1 = SiaeFactory()
+        siae_2 = SiaeFactory()
+
+        UserFactory(first_name="active_user", last_login=frozen_now)
+        UserFactory(
+            last_login=self.frozen_last_year,
+            # personal data
+            email="inactive_user_1@email.com",
+            first_name="inactive_user_1",
+            last_name="doe",
+            phone="06 15 15 15 15",
+            api_key="123456789",
+            api_key_last_updated=frozen_now,
+            siaes=[siae_1],
+        )
+        UserFactory(
+            last_login=self.frozen_last_year,
+            # personal data
+            email="inactive_user_2@email.com",
+            first_name="inactive_user_2",
+            last_name="doe",
+            phone="06 15 15 15 15",
+            api_key="0000000000",
+            api_key_last_updated=frozen_now,
+            siaes=[siae_1, siae_2],
+        )
+        UserFactory(
+            last_login=self.frozen_warning_date,
+            first_name="about_to_be_inactive",
+        )
+        # Set email as active to check if it's really sent
+        TemplateTransactional.objects.all().update(is_active=True, source=SOURCE_BREVO)
+
+    def test_set_inactive_user(self):
+        """Select users that last logged for more than a year and flag them as inactive"""
+        User.objects.filter(last_login__lte=self.frozen_last_year).update(
+            is_active=False,  # inactive users should not be allowed to log in
+            email=F("id"),
+            first_name="",
+            last_name="",
+            phone="",
+        )
+        qs = User.objects.filter(last_login__lte=self.frozen_last_year)
+        self.assertQuerySetEqual(qs.order_by("id"), User.objects.filter(is_active=False).order_by("id"))
+
+        anonymized_user = User.objects.filter(is_active=False).first()
+        self.assertEqual(anonymized_user.email, f"{anonymized_user.id}")
+        self.assertFalse(anonymized_user.first_name)
+        self.assertFalse(anonymized_user.last_name)
+        self.assertFalse(anonymized_user.phone)
+
+        # ensure that no error is raised calling save() with a malformed user email
+        anonymized_user.email = "000"
+        anonymized_user.save()
+
+    def test_anonymize_command(self):
+        """Test the admin command 'anonymize_old_users'"""
+
+        call_command("anonymize_old_users", stdout=self.std_out)
+
+        self.assertEqual(User.objects.filter(is_active=False).count(), 2)
+
+        anonymized_user = User.objects.filter(is_active=False).first()
+
+        self.assertEqual(anonymized_user.email, f"{anonymized_user.id}@domain.invalid")
+        validate_email(anonymized_user.email)
+
+        self.assertTrue(anonymized_user.is_anonymized)
+
+        self.assertFalse(anonymized_user.first_name)
+        self.assertFalse(anonymized_user.last_name)
+        self.assertFalse(anonymized_user.phone)
+        self.assertFalse(anonymized_user.siaes.all())
+
+        self.assertIsNone(anonymized_user.api_key)
+        self.assertIsNone(anonymized_user.api_key_last_updated)
+
+        self.assertFalse(anonymized_user.has_usable_password())
+        # from UNUSABLE_PASSWORD_SUFFIX_LENGTH it should be 40, but we're pretty close
+        self.assertEqual(len(anonymized_user.password), 37)
+
+        self.assertIn("Utilisateurs anonymisés avec succès", self.std_out.getvalue())
+
+    def test_warn_command(self):
+        """Test the admin command 'anonymize_old_users' to check if users are warned by email
+        before their account is being removed"""
+
+        call_command("anonymize_old_users", stdout=self.std_out)
+
+        log_qs = TemplateTransactionalSendLog.objects.all()
+        self.assertEqual(
+            log_qs.count(),
+            1,
+        )
+
+        # Called twice to veryfi that emails are not sent multiple times
+        call_command("anonymize_old_users", stdout=self.std_out)
+        log_qs = TemplateTransactionalSendLog.objects.all()
+        self.assertEqual(
+            log_qs.count(),
+            1,
+            msg="Warning emails are sent multiple times !",
+        )
+
+        email_log = log_qs.first()
+        self.assertEqual(email_log.recipient_content_object, User.objects.get(first_name="about_to_be_inactive"))
+
+    def test_dryrun_anonymize_command(self):
+        """Ensure that the database is not modified after dryrun"""
+
+        original_qs_count = User.objects.filter(is_active=True).count()
+
+        call_command("anonymize_old_users", dry_run=True, stdout=self.std_out)
+
+        self.assertEqual(original_qs_count, User.objects.filter(is_active=True).count())
+
+        self.assertIn("Utilisateurs anonymisés avec succès (2 traités)", self.std_out.getvalue())
+
+    def test_dryrun_warn_command(self):
+        """Ensure that the database is not modified after dryrun and no email have been sent"""
+
+        call_command("anonymize_old_users", dry_run=True, stdout=self.std_out)
+
+        self.assertFalse(TemplateTransactionalSendLog.objects.all())
