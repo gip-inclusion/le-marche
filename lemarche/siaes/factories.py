@@ -44,8 +44,8 @@ class SiaeFactory(DjangoModelFactory):
     address = factory.Faker("street_address", locale="fr_FR")
     city = factory.Faker("city", locale="fr_FR")
     post_code = factory.Faker("postalcode")
-    department = factory.fuzzy.FuzzyChoice([key for (key, value) in Siae.DEPARTMENT_CHOICES])
-    region = factory.fuzzy.FuzzyChoice([key for (key, value) in Siae.REGION_CHOICES])
+    department = "35"
+    region = "Bretagne"
     contact_email = factory.Sequence("siae_contact_email{0}@beta.gouv.fr".format)
     contact_first_name = factory.Faker("name", locale="fr_FR")
     contact_last_name = factory.Faker("name", locale="fr_FR")
