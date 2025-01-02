@@ -51,6 +51,8 @@
                         <div class="fr-col-12">
                             {% include "tenders/_detail_siae_user_without_siae.html" %}
                         </div>
+                    {% elif siae_has_detail_contact_click_date %}
+                        {# display nothing #}
                     {% elif siae_has_detail_not_interested_click_date %}
                         <div class="fr-col-12">
                             {% include "tenders/_detail_not_interested_click_confirm.html" %}
