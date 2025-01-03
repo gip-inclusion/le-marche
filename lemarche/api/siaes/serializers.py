@@ -63,7 +63,6 @@ class SiaeDetailSerializer(serializers.ModelSerializer):
             "department",
             "region",
             "is_qpv",
-            "is_cocontracting",
             "is_active",
             "sectors",
             "networks",
