@@ -45,7 +45,6 @@ class TenderSerializer(serializers.ModelSerializer):
             "amount_exact",
             "why_amount_is_blank",
             "accept_share_amount",
-            "accept_cocontracting",
             "siae_kind",
             # contact
             "contact_first_name",
