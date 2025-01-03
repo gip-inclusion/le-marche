@@ -55,7 +55,6 @@
                                     {% url 'tenders:detail-siae-list' slug=tender.slug as TENDER_SIAE_LIST_URL %}
                                     {% url 'tenders:detail-siae-list' slug=tender.slug status="VIEWED" as TENDER_SIAE_DETAIL_CONTACT_VIEW_LIST_URL %}
                                     {% url 'tenders:detail-siae-list' slug=tender.slug status="INTERESTED" as TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL %}
-                                    {% url 'tenders:detail-siae-list' slug=tender.slug status="COCONTRACTED" as TENDER_SIAE_DETAIL_CONTACT_COCONTRACTED_LIST_URL %}
                                     <li role="presentation">
                                         <a role="button"
                                            hx-push-url="true"
@@ -93,19 +92,6 @@
                                            aria-controls="tender_siae_list_panel_INTERESTED"
                                            aria-selected="{% if request.path == TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL %}true{% else %}false{% endif %}">
                                             Prestataires intéressés
-                                        </a>
-                                    </li>
-                                    <li role="presentation">
-                                        <a role="button"
-                                           hx-push-url="true"
-                                           hx-target="#tenderSiaeList"
-                                           hx-swap="outerHTML"
-                                           class="fr-tabs__tab"
-                                           hx-get="{{ TENDER_SIAE_DETAIL_CONTACT_COCONTRACTED_LIST_URL }}?{{ current_search_query }}"
-                                           href="{{ TENDER_SIAE_DETAIL_CONTACT_COCONTRACTED_LIST_URL }}?{{ current_search_query }}"
-                                           aria-controls="tender_siae_list_panel_COCONTRACTED"
-                                           aria-selected="{% if request.path == TENDER_SIAE_DETAIL_CONTACT_COCONTRACTED_LIST_URL %}true{% else %}false{% endif %}">
-                                            Prestataires ouverts à la co-traitance
                                         </a>
                                     </li>
                                 </ul>

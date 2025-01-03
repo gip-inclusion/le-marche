@@ -417,9 +417,6 @@ class SiaeQuerySet(models.QuerySet):
                 )
             )
             qs = qs.order_by("-tendersiae__email_link_click_date")
-        elif tendersiae_status == "COCONTRACTED":
-            qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_cocontracting_click_date__isnull=False)
-            qs = qs.order_by("-tendersiae__detail_cocontracting_click_date")
         elif tendersiae_status == "ALL":
             # why need to filter more ?
             qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
@@ -442,9 +439,6 @@ class SiaeQuerySet(models.QuerySet):
                 )
             )
             qs = qs.order_by("-tendersiae__email_link_click_date")
-        elif tendersiae_status == "COCONTRACTED":
-            qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_cocontracting_click_date__isnull=False)
-            qs = qs.order_by("-tendersiae__detail_cocontracting_click_date")
         else:  # "ALL"
             qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
             qs = qs.order_by("-tendersiae__email_send_date")
