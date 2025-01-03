@@ -16,7 +16,7 @@ from lemarche.utils import constants
 from lemarche.utils.apis import api_mailjet, api_slack
 from lemarche.utils.data import date_to_string
 from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
-from lemarche.utils.urls import get_domain_url, get_object_admin_url, get_object_share_url
+from lemarche.utils.urls import get_domain_url, get_object_admin_url, get_object_share_url, get_object_update_url
 
 
 logger = logging.getLogger(__name__)
@@ -526,6 +526,82 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
             tender.survey_transactioned_send_date = timezone.now()
         else:
             email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_FEEDBACK_30D")
+
+        if not tender.contact_notifications_disabled:
+            email_template.send_transactional_email(
+                recipient_email=recipient_email,
+                recipient_name=recipient_name,
+                variables=variables,
+                recipient_content_object=tender.author,
+                parent_content_object=tender,
+            )
+
+
+def send_tender_author_modification_request(tender: Tender):
+    """
+    Send an email to the author of a Tender notifying them that their submission is invalid and requires modification.
+    """
+    recipient_list = whitelist_recipient_list([tender.author.email])
+    if len(recipient_list):
+        recipient_email = recipient_list[0]
+        recipient_name = tender.author.full_name
+
+        # Custom message if tender.changes_information is not empty
+        if tender.changes_information:
+            changes_information = f"Message complémentaire de l'administration : {tender.changes_information}"
+        else:
+            changes_information = ""
+
+        tender_update_url = f"{get_object_update_url(tender, 'tenders')}"
+        variables = {
+            "TENDER_ID": tender.id,
+            "TENDER_TITLE": tender.title,
+            "TENDER_CREATED_AT": tender.created_at.strftime("%d %B %Y"),
+            "TENDER_AUTHOR_ID": tender.author.id,
+            "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
+            "TENDER_CHANGES_INFORMATION": changes_information,
+            "TENDER_UPDATE_URL": tender_update_url,
+        }
+
+        email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_MODIFICATION_REQUEST")
+
+        if not tender.contact_notifications_disabled:
+            email_template.send_transactional_email(
+                recipient_email=recipient_email,
+                recipient_name=recipient_name,
+                variables=variables,
+                recipient_content_object=tender.author,
+                parent_content_object=tender,
+            )
+
+        # Log email sent date
+        tender.logs.append(
+            {
+                "action": "send_tender_author_modification_request",
+                "email_sent_at": timezone.now().isoformat(),
+            }
+        )
+        tender.save(update_fields=["logs"])
+
+
+def send_tender_author_reject_message(tender: Tender):
+    """
+    Send an email to the author of a Tender notifying them that their submission is rejected.
+    """
+    recipient_list = whitelist_recipient_list([tender.author.email])
+    if len(recipient_list):
+        recipient_email = recipient_list[0]
+        recipient_name = tender.author.full_name
+
+        variables = {
+            "TENDER_ID": tender.id,
+            "TENDER_TITLE": tender.title,
+            "TENDER_CREATED_AT": tender.created_at.strftime("%d %B %Y"),
+            "TENDER_AUTHOR_ID": tender.author.id,
+            "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
+        }
+
+        email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_REJECT_MESSAGE")
 
         if not tender.contact_notifications_disabled:
             email_template.send_transactional_email(
