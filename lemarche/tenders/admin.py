@@ -231,7 +231,6 @@ class TenderSiaeUserSeenButNotYetInterestedInline(TenderSiaeUserInline):
             .filter(Q(email_link_click_date__isnull=False) | Q(detail_display_date__isnull=False))
             .filter(
                 detail_contact_click_date__isnull=True,
-                detail_cocontracting_click_date__isnull=True,
                 detail_not_interested_click_date__isnull=True,
             )
         )
@@ -334,7 +333,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "siae_email_link_click_or_detail_display_count_annotated",
         "siae_email_link_click_or_detail_display_count_annotated_with_link",
         "siae_detail_contact_click_count_annotated_with_link",
-        "siae_detail_cocontracting_click_count_annotated_with_link",
         "siae_detail_not_interested_click_count_annotated_with_link",
         "siae_ai_count_annotated_with_link",
         "siae_transactioned_source",
@@ -367,7 +365,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "description",
                     "constraints",
                     "external_link",
-                    "accept_cocontracting",
                     "question_count_with_link",
                 ),
             },
@@ -451,7 +448,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "siae_email_link_click_or_detail_display_count_annotated",
                     # "siae_email_link_click_or_detail_display_count_annotated_with_link",
                     "siae_detail_contact_click_count_annotated_with_link",
-                    "siae_detail_cocontracting_click_count_annotated_with_link",
                     "siae_detail_not_interested_click_count_annotated_with_link",
                 )
             },
@@ -549,7 +545,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             "tendersiae__email_link_click_date__isnull",
             "tendersiae__detail_display_date__isnull",
             "tendersiae__detail_contact_click_date__isnull",
-            "tendersiae__detail_cocontracting_click_date__isnull",
             "tendersiae__detail_not_interested_click_date__isnull",
         ]:
             return True
@@ -736,20 +731,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     siae_detail_contact_click_count_annotated_with_link_in_list.short_description = "S. intér."
     siae_detail_contact_click_count_annotated_with_link_in_list.admin_order_field = (
         "siae_detail_contact_click_count_annotated"
-    )
-
-    def siae_detail_cocontracting_click_count_annotated_with_link(self, tender):
-        url = (
-            reverse("admin:siaes_siae_changelist")
-            + f"?tenders__in={tender.id}&tendersiae__detail_cocontracting_click_date__isnull=False"
-        )
-        return format_html(
-            f'<a href="{url}">{getattr(tender, "siae_detail_cocontracting_click_count_annotated", 0)}</a>'
-        )
-
-    siae_detail_cocontracting_click_count_annotated_with_link.short_description = "S. ouvertes à la co-traitance"
-    siae_detail_cocontracting_click_count_annotated_with_link.admin_order_field = (
-        "siae_detail_cocontracting_click_count_annotated"
     )
 
     def siae_detail_not_interested_click_count_annotated_with_link(self, tender):
