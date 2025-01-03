@@ -253,13 +253,6 @@ class TenderQuerySet(models.QuerySet):
                     output_field=IntegerField(),
                 )
             ),
-            siae_detail_cocontracting_click_count_annotated=Sum(
-                Case(
-                    When(tendersiae__detail_cocontracting_click_date__isnull=False, then=1),
-                    default=0,
-                    output_field=IntegerField(),
-                )
-            ),
             siae_detail_not_interested_click_count_annotated=Sum(
                 Case(
                     When(tendersiae__detail_not_interested_click_date__isnull=False, then=1),
@@ -335,7 +328,6 @@ class Tender(models.Model):
         "siae_detail_display_count",
         "siae_email_link_click_or_detail_display_count",
         "siae_detail_contact_click_count",
-        "siae_detail_cocontracting_click_count",
         "siae_detail_not_interested_click_count",
     ]
     FIELDS_STATS_TIMESTAMPS = [
@@ -1074,7 +1066,6 @@ class TenderSiae(models.Model):
         "email_link_click_date",
         "detail_display_date",
         "detail_contact_click_date",
-        "detail_cocontracting_click_date",
         "detail_not_interested_click_date",
         "detail_not_interested_feedback",
     ]
