@@ -1,10 +1,12 @@
 from django.conf import settings
 from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.hashers import UNUSABLE_PASSWORD_PREFIX
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.postgres.functions import RandomUUID
 from django.db import models
-from django.db.models import Count
-from django.db.models.functions import Greatest, Lower
+from django.db.models import Count, F, Value
+from django.db.models.functions import Concat, Greatest, Lower
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.forms.models import model_to_dict
@@ -59,6 +61,23 @@ class UserQueryset(models.QuerySet):
             latest_activity_at=Greatest(
                 "updated_at", "last_login", "dashboard_last_seen_date", "tender_list_last_seen_date"
             )
+        )
+
+    def anonymize_update(self):
+        """Wipe or replace personal data stored on User model only"""
+        return self.update(
+            is_active=False,  # inactive users are allowed to log in standard login views
+            is_anonymized=True,
+            email=Concat(F("id"), Value("@domain.invalid")),
+            first_name="",
+            last_name="",
+            phone="",
+            api_key=None,
+            api_key_last_updated=None,
+            # https://docs.djangoproject.com/en/5.1/ref/contrib/auth/#django.contrib.auth.models.User.set_unusable_password
+            # Imitating the method but in sql. Prevent password reset attempt
+            # Random string is to avoid chances of impersonation by admins https://code.djangoproject.com/ticket/20079
+            password=Concat(Value(UNUSABLE_PASSWORD_PREFIX), RandomUUID()),
         )
 
 

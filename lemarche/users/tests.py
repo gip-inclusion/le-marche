@@ -3,10 +3,12 @@ from io import StringIO
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
+from django.contrib.messages import get_messages
 from django.core.management import call_command
 from django.core.validators import validate_email
 from django.db.models import F
 from django.test import TestCase, override_settings
+from django.urls import reverse
 from django.utils import timezone
 
 from lemarche.companies.factories import CompanyFactory
@@ -311,3 +313,29 @@ class UserAnonymizationTestCase(TestCase):
         call_command("anonymize_old_users", dry_run=True, stdout=self.std_out)
 
         self.assertFalse(TemplateTransactionalSendLog.objects.all())
+
+
+class UserAdminTestCase(TestCase):
+    def setUp(self):
+        UserFactory(is_staff=False, is_anonymized=False)
+        super_user = UserFactory(is_staff=True, is_superuser=True)
+        self.client.force_login(super_user)
+
+    def test_anonymize_action(self):
+        """Test the anonymize_users action from the admin"""
+
+        users_ids = User.objects.values_list("id", flat=True)
+        data = {
+            "action": "anonymize_users",
+            "_selected_action": users_ids,
+        }
+        # https://docs.djangoproject.com/en/5.1/ref/contrib/admin/#reversing-admin-urls
+        change_url = reverse("admin:users_user_changelist")
+        response = self.client.post(path=change_url, data=data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, change_url)
+        self.assertTrue(User.objects.filter(is_staff=False).first().is_anonymized)
+
+        messages_strings = [str(message) for message in get_messages(response.wsgi_request)]
+        self.assertIn("L'anonymisation s'est déroulée avec succès", messages_strings)

@@ -211,6 +211,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     search_fields = ["id", "email", "first_name", "last_name"]
     search_help_text = "Cherche sur les champs : ID, E-mail, Prénom, Nom"
     ordering = ["-created_at"]
+    actions = ["anonymize_users"]
 
     autocomplete_fields = ["company", "partner_network"]
     readonly_fields = (
@@ -402,3 +403,9 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         return "-"
 
     extra_data_display.short_description = User._meta.get_field("extra_data").verbose_name
+
+    @admin.action(description="Anonymiser les utilisateurs sélectionnés")
+    def anonymize_users(self, request, queryset):
+        """Wipe personnal data of all selected users"""
+        queryset.anonymize_update()
+        self.message_user(request, "L'anonymisation s'est déroulée avec succès")
