@@ -406,6 +406,8 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
 
     @admin.action(description="Anonymiser les utilisateurs sélectionnés")
     def anonymize_users(self, request, queryset):
-        """Wipe personnal data of all selected users"""
-        queryset.anonymize_update()
+        """Wipe personal data of all selected users and unlink from SiaeUser
+        The logged user is excluded to avoid any mistakes"""
+        queryset.exclude(id=request.user.id).anonymize_update()
+        SiaeUser.objects.filter(user__is_anonymized=True).delete()
         self.message_user(request, "L'anonymisation s'est déroulée avec succès")
