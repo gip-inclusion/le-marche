@@ -383,6 +383,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
                 "queryset": queryset,
             }
             return TemplateResponse(request, "admin/anonymize_confirmation.html", context)
+
         if request.method == "POST":
             # anonymize users
             ids = request.POST.getlist("user_id")

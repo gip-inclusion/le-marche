@@ -334,9 +334,15 @@ class UserAdminTestCase(TestCase):
         response = self.client.post(path=change_url, data=data)
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, change_url)
+
+        data_confirm = {"user_id": users_ids}
+
+        # click on confirm after seeing the confirmation page
+        response_confirm = self.client.post(response.url, data=data_confirm)
+        self.assertEqual(response.status_code, 302)
+
         self.assertTrue(User.objects.filter(is_staff=False).first().is_anonymized)
         self.assertFalse(User.objects.filter(is_staff=True).first().is_anonymized)
 
-        messages_strings = [str(message) for message in get_messages(response.wsgi_request)]
+        messages_strings = [str(message) for message in get_messages(response_confirm.wsgi_request)]
         self.assertIn("L'anonymisation s'est déroulée avec succès", messages_strings)
