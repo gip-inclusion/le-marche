@@ -5,7 +5,9 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db import models
-from django.urls import reverse
+from django.http import HttpResponseRedirect
+from django.template.response import TemplateResponse
+from django.urls import path, reverse
 from django.utils.html import format_html
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
@@ -358,6 +360,41 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             queryset = queryset.is_admin_bizdev()
         return queryset, use_distinct
 
+    def get_urls(self):
+        # https://docs.djangoproject.com/en/5.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_urls
+        urls = super().get_urls()
+        my_urls = [
+            path("anonymise_users/", self.admin_site.admin_view(self.anonymize_users_view), name="anonymize_users"),
+            *urls,  # these patterns last, because they can match a lot of urls
+        ]
+        return my_urls
+
+    def anonymize_users_view(self, request):
+        """Confirmation page after selecting users to anonymize."""
+
+        if request.method == "GET":
+            # Display confirmation page
+            ids = request.GET.getlist("user_id")
+            queryset = self.model.objects.filter(id__in=ids)
+            context = {
+                # Include common variables for rendering the admin template.
+                **self.admin_site.each_context(request),
+                "opts": self.opts,
+                "queryset": queryset,
+            }
+            return TemplateResponse(request, "admin/anonymize_confirmation.html", context)
+        if request.method == "POST":
+            # anonymize users
+            ids = request.POST.getlist("user_id")
+            queryset = self.model.objects.filter(id__in=ids)
+
+            queryset.exclude(id=request.user.id).anonymize_update()
+            SiaeUser.objects.filter(user__is_anonymized=True).delete()
+
+            self.message_user(request, "L'anonymisation s'est déroulée avec succès")
+
+            return HttpResponseRedirect(reverse("admin:users_user_changelist"))
+
     def save_formset(self, request, form, formset, change):
         """
         Set Note author on create
@@ -408,6 +445,9 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     def anonymize_users(self, request, queryset):
         """Wipe personal data of all selected users and unlink from SiaeUser
         The logged user is excluded to avoid any mistakes"""
-        queryset.exclude(id=request.user.id).anonymize_update()
-        SiaeUser.objects.filter(user__is_anonymized=True).delete()
-        self.message_user(request, "L'anonymisation s'est déroulée avec succès")
+        # https://docs.djangoproject.com/en/5.1/ref/contrib/admin/actions/#actions-that-provide-intermediate-pages
+
+        selected = queryset.values_list("pk", flat=True)
+        return HttpResponseRedirect(
+            f"{reverse('admin:anonymize_users')}?{'&'.join(f'user_id={str(pk)}' for pk in selected)}"
+        )
