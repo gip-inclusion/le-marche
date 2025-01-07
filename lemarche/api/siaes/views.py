@@ -1,7 +1,7 @@
 from django.db.models import F
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
-from drf_spectacular.utils import OpenApiParameter, extend_schema
+from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, viewsets
 from rest_framework.response import Response
 
@@ -28,11 +28,6 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     @extend_schema(
         summary="Lister toutes les structures",
         tags=[Siae._meta.verbose_name_plural],
-        parameters=[
-            OpenApiParameter(
-                name="token", description="Token Utilisateur (pour compatibilité ancienne)", required=False, type=str
-            ),
-        ],
     )
     def list(self, request, format=None):
         """
@@ -54,11 +49,6 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     @extend_schema(
         summary="Détail d'une structure (par son id)",
         tags=[Siae._meta.verbose_name_plural],
-        parameters=[
-            OpenApiParameter(
-                name="token", description="Token Utilisateur (pour compatibilité ancienne)", required=False, type=str
-            ),
-        ],
         responses=SiaeDetailSerializer,
     )
     def retrieve(self, request, pk=None, format=None):
@@ -72,11 +62,6 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     @extend_schema(
         summary="Détail d'une structure (par son slug)",
         tags=[Siae._meta.verbose_name_plural],
-        parameters=[
-            OpenApiParameter(
-                name="token", description="Token Utilisateur (pour compatibilité ancienne)", required=False, type=str
-            ),
-        ],
         responses=SiaeDetailSerializer,
     )
     def retrieve_by_slug(self, request, slug=None, format=None):
@@ -91,11 +76,6 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     @extend_schema(
         summary="Détail d'une structure (par son siren)",
         tags=[Siae._meta.verbose_name_plural],
-        parameters=[
-            OpenApiParameter(
-                name="token", description="Token Utilisateur (pour compatibilité ancienne)", required=False, type=str
-            ),
-        ],
         responses=SiaeDetailSerializer,
     )
     def retrieve_by_siren(self, request, siren=None, format=None):
@@ -111,11 +91,6 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     @extend_schema(
         summary="Détail d'une structure (par son siret)",
         tags=[Siae._meta.verbose_name_plural],
-        parameters=[
-            OpenApiParameter(
-                name="token", description="Token Utilisateur (pour compatibilité ancienne)", required=False, type=str
-            ),
-        ],
         responses=SiaeDetailSerializer,
     )
     def retrieve_by_siret(self, request, siret=None, format=None):

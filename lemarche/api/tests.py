@@ -1,8 +1,7 @@
-from django.http import HttpResponse
 from django.test import RequestFactory, TestCase
 from rest_framework.exceptions import AuthenticationFailed
 
-from lemarche.api.authentication import CustomBearerAuthentication, DeprecationWarningMiddleware
+from lemarche.api.authentication import CustomBearerAuthentication
 from lemarche.api.utils import generate_random_string
 from lemarche.users.factories import UserFactory
 
@@ -117,44 +116,3 @@ class CustomBearerAuthenticationTest(TestCase):
         result = self.authentication.authenticate(request)
 
         self.assertIsNone(result)
-
-
-class DeprecationWarningMiddlewareTest(TestCase):
-    def setUp(self):
-        self.factory = RequestFactory()
-        self.middleware = DeprecationWarningMiddleware(lambda request: HttpResponse("Test response"))
-
-    def test_no_deprecation_warning(self):
-        """
-        Test that no deprecation warning is present in the response.
-
-        This test sends a GET request to a specific API endpoint and checks
-        that the response does not contain a 'Deprecation-Warning' attribute.
-        """
-        request = self.factory.get("/api/some-endpoint/")
-        response = self.middleware(request)
-
-        self.assertFalse(hasattr(response, "Deprecation-Warning"))
-
-    def test_with_deprecation_warning(self):
-        """
-        Test that a deprecation warning is included in the response when the request
-        contains the _deprecated_auth_warning marker.
-
-        This test simulates a request to an endpoint with the _deprecated_auth_warning
-        marker set to True. It then checks that the response includes a "Deprecation-Warning"
-        header with the expected deprecation message indicating that URL token authentication
-        is deprecated and will be removed by January 2025, and advises to use the Authorization
-        header with Bearer tokens instead.
-        """
-        request = self.factory.get("/api/some-endpoint/")
-        request._deprecated_auth_warning = True  # Ajouter le marqueur
-
-        response = self.middleware(request)
-
-        self.assertIn("Deprecation-Warning", response)
-        self.assertEqual(
-            response["Deprecation-Warning"],
-            "URL token authentication is deprecated and will be removed on 2025/01. "
-            "Please use Authorization header with Bearer tokens.",
-        )
