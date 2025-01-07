@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
-from django.db import IntegrityError, models, transaction
+from django.db import IntegrityError, models
 from django.db.models import (
     BooleanField,
     Case,
@@ -753,19 +753,18 @@ class Tender(models.Model):
         - update the object content_fill_dates
         - generate the slug field
         """
-        with transaction.atomic():
-            self.set_last_updated_fields()
-            try:
-                self.set_slug()
+        self.set_last_updated_fields()
+        try:
+            self.set_slug()
+            super().save(*args, **kwargs)
+        except IntegrityError as e:
+            # check that it's a slug conflict
+            # Full message expected: duplicate key value violates unique constraint "tenders_tender_slug_0f0b821f_uniq" DETAIL:  Key (slug)=(...) already exists.  # noqa
+            if "tenders_tender_slug" in str(e):
+                self.set_slug(with_uuid=True)
                 super().save(*args, **kwargs)
-            except IntegrityError as e:
-                # check that it's a slug conflict
-                # Full message expected: duplicate key value violates unique constraint "tenders_tender_slug_0f0b821f_uniq" DETAIL:  Key (slug)=(...) already exists.  # noqa
-                if "tenders_tender_slug" in str(e):
-                    self.set_slug(with_uuid=True)
-                    super().save(*args, **kwargs)
-                else:
-                    raise e
+            else:
+                raise e
 
     @cached_property
     def contact_full_name(self) -> str:
