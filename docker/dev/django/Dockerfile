@@ -1,4 +1,4 @@
-FROM python:3.11.9-slim-bookworm
+FROM python:3.11.11-slim-bookworm
 
 # Default environment: Dev
 ARG ENV=dev
