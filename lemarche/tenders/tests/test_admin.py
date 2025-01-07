@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from django.contrib.admin.sites import AdminSite
+from django.contrib.messages import get_messages
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.http import HttpResponse
@@ -25,16 +26,13 @@ class TenderAdminTestCase(TestCase):
         self.user_admin = UserFactory(is_superuser=True)  # Admin user
         self.admin = TenderAdmin(Tender, self.admin_site)
 
-    def setUpRequest(self, tender, is_followed_by_us):
-        tender.is_followed_by_us = is_followed_by_us
-        tender.save()
+    def setUpRequest(self):
         request = self.factory.post("/", data={"_validate_send_to_siaes": "1"})
         request.user = self.user_admin
 
         # Initialize and apply SessionMiddleware
         middleware = SessionMiddleware(get_response)
         middleware.process_request(request)
-        request.session.save()  # Save the session to avoid any issues
 
         # Attach a message storage system to the request
         setattr(request, "_messages", FallbackStorage(request))
@@ -45,7 +43,7 @@ class TenderAdminTestCase(TestCase):
     @patch("lemarche.tenders.admin.api_brevo.link_deal_with_contact_list")  # Mock the link_deal API call
     def test_validate_send_to_siaes_not_synch_brevo(self, mock_link_deal, mock_create_deal):
         tender = TenderFactory(is_followed_by_us=False)  # Tender object
-        request = self.setUpRequest(tender, is_followed_by_us=False)
+        request = self.setUpRequest()
 
         # Call the response_change method without the validation action enabled
         response = self.admin.response_change(request, tender)
@@ -59,7 +57,7 @@ class TenderAdminTestCase(TestCase):
         self.assertIn(".", response.url)
 
         # Verify the flash messages
-        messages = request._messages._queued_messages
+        messages = list(get_messages(request))
         self.assertEqual(len(messages), 1)  # Expecting only one message
         self.assertEqual(str(messages[0]), "Ce dépôt de besoin a été validé. Il sera envoyé en temps voulu :)")
 
@@ -67,7 +65,7 @@ class TenderAdminTestCase(TestCase):
     @patch("lemarche.tenders.admin.api_brevo.link_deal_with_contact_list")  # Mock the link_deal API call
     def test_validate_send_to_siaes_with_sync_brevo(self, mock_link_deal, mock_create_deal):
         tender = TenderFactory(is_followed_by_us=True)  # Tender object
-        request = self.setUpRequest(tender, is_followed_by_us=True)
+        request = self.setUpRequest()
 
         # Call the response_change method
         response = self.admin.response_change(request, tender)
@@ -85,7 +83,7 @@ class TenderAdminTestCase(TestCase):
         self.assertIn(".", response.url)
 
         # Verify flash messages
-        messages = request._messages._queued_messages
+        messages = list(get_messages(request))
         self.assertEqual(len(messages), 2)  # Expecting two messages
         self.assertEqual(str(messages[0]), "Ce dépôt de besoin a été synchronisé avec Brevo")
         self.assertEqual(str(messages[1]), "Ce dépôt de besoin a été validé. Il sera envoyé en temps voulu :)")
