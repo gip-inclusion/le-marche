@@ -309,6 +309,9 @@ class TemplateTransactional(models.Model):
                 return self.brevo_id
         return None
 
+    def create_send_log(self, **kwargs):
+        TemplateTransactionalSendLog.objects.create(template_transactional=self, **kwargs)
+
     def send_transactional_email(
         self,
         recipient_email,
@@ -322,9 +325,6 @@ class TemplateTransactional(models.Model):
     ):
         if self.is_active:
             args = {
-                "template_transactional": self,
-                "recipient_content_object": recipient_content_object,
-                "parent_content_object": parent_content_object,
                 "template_id": self.get_template_id,
                 "recipient_email": recipient_email,
                 "recipient_name": recipient_name,
@@ -333,6 +333,14 @@ class TemplateTransactional(models.Model):
                 "from_email": from_email,
                 "from_name": from_name,
             }
+
+            # create log
+            self.create_send_log(
+                recipient_content_object=recipient_content_object,
+                parent_content_object=parent_content_object,
+                extra_data={"source": self.source, "args": args},  # "response": result()
+            )
+
             if self.source == conversation_constants.SOURCE_MAILJET:
                 api_mailjet.send_transactional_email_with_template(**args)
             elif self.source == conversation_constants.SOURCE_BREVO:

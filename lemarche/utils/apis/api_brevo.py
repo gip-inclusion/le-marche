@@ -7,7 +7,6 @@ from django.conf import settings
 from huey.contrib.djhuey import task
 from sib_api_v3_sdk.rest import ApiException
 
-from lemarche.conversations.constants import SOURCE_BREVO
 from lemarche.tenders import constants as tender_constants
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 from lemarche.utils.data import sanitize_to_send_by_email
@@ -349,9 +348,6 @@ def get_all_users_from_list(
 
 @task()
 def send_transactional_email_with_template(
-    template_transactional,
-    recipient_content_object,
-    parent_content_object,
     template_id: int,
     recipient_email: str,
     recipient_name: str,
@@ -372,37 +368,12 @@ def send_transactional_email_with_template(
     if subject:
         data["subject"] = EMAIL_SUBJECT_PREFIX + subject
 
-    log_args = {
-        "source": SOURCE_BREVO,
-        "args": {
-            "template_id": template_id,
-            "recipient_email": recipient_email,
-            "recipient_name": recipient_name,
-            "variables": variables,
-            "subject": subject,
-            "from_email": from_email,
-            "from_name": from_name,
-        },
-    }
-
-    # create log
-    template_transactional.send_logs.create(
-        recipient_content_object=recipient_content_object,
-        parent_content_object=parent_content_object,
-        extra_data={
-            **log_args,
-            "sent": settings.BITOUBI_ENV in ENV_NOT_ALLOWED,  # considered successfully in tests and dev
-        },
-    )
-
     if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
         try:
             send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
             response = api_instance.send_transac_email(send_smtp_email)
             logger.info("Brevo: send transactional email with template")
             # {'message_id': '<202407151419.84958140835@smtp-relay.mailin.fr>', 'message_ids': None}
-            template_transactional.extra_data = {**log_args, "sent": True}
-            template_transactional.save(update_fields=["extra_data"])
             return response.to_dict()
         except ApiException as e:
             print(f"Exception when calling SMTPApi->send_transac_email: {e}")
