@@ -4,7 +4,6 @@ import requests
 from django.conf import settings
 from huey.contrib.djhuey import task
 
-from lemarche.conversations.constants import SOURCE_MAILJET
 from lemarche.users import constants as user_constants
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 
@@ -96,9 +95,6 @@ def add_to_contact_list_async(email_address, properties, contact_list_id, client
 
 @task()
 def send_transactional_email_with_template(
-    template_transactional,
-    recipient_content_object,
-    parent_content_object,
     template_id: int,
     recipient_email: str,
     recipient_name: str,
@@ -126,37 +122,12 @@ def send_transactional_email_with_template(
     if not client:
         client = get_default_client()
 
-    log_args = {
-        "source": SOURCE_MAILJET,
-        "args": {
-            "template_id": template_id,
-            "recipient_email": recipient_email,
-            "recipient_name": recipient_name,
-            "variables": variables,
-            "subject": subject,
-            "from_email": from_email,
-            "from_name": from_name,
-        },
-    }
-
-    # create log
-    template_transactional.send_logs.create(
-        recipient_content_object=recipient_content_object,
-        parent_content_object=parent_content_object,
-        extra_data={
-            **log_args,
-            "sent": settings.BITOUBI_ENV in ENV_NOT_ALLOWED,  # considered successfully in tests and dev
-        },
-    )
-
     if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
         try:
             response = client.post(SEND_URL, json=data)
             response.raise_for_status()
             logger.info("Mailjet: send transactional email with template")
             # {'Messages': [{'Status': 'success', 'CustomID': '', 'To': [{'Email': '<recipient_email>', 'MessageUUID': '<uuid>', 'MessageID': <id>, 'MessageHref': 'https://api.mailjet.com/v3/REST/message/<id>'}], 'Cc': [], 'Bcc': []}]}  # noqa
-            template_transactional.extra_data = {**log_args, "sent": True}
-            template_transactional.save(update_fields=["extra_data"])
             return response.json()
         except requests.exceptions.HTTPError as e:
             logger.error("Error while fetching `%s`: %s", e.request.url, e)
