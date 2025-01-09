@@ -465,9 +465,10 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     @admin.action(description="TEST ENVOI MAIL")
     def anonymize_users(self, request, queryset):
         email_template = TemplateTransactional.objects.get(code="USER_ANONYMIZATION_WARNING")
-        logger.error("SEND EMAIL")
+        assert email_template.is_active
 
         for user in queryset:
+            logger.error(f"SEND EMAIL TO USER {user}")
             email_template.send_transactional_email(
                 recipient_email=user.email,
                 recipient_name=user.full_name,
@@ -477,7 +478,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
                 },
                 recipient_content_object=user,
             )
-            print("MAIL SENT")
 
     def tender_count_annotated_with_link(self, user):
         url = reverse("admin:tenders_tender_changelist") + f"?author__id__exact={user.id}"
