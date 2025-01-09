@@ -392,15 +392,14 @@ def send_transactional_email_with_template(
 
     logger.error("LOG CREATED")
 
-    if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
-        try:
-            send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
-            logger.error("SEND SMTP ")
-            response = api_instance.send_transac_email(send_smtp_email)
-            logger.error("Brevo: send transactional email with template")
-            # {'message_id': '<202407151419.84958140835@smtp-relay.mailin.fr>', 'message_ids': None}
-            return response.to_dict()
-        except ApiException as e:
-            logger.error(f"ApiException: {e}")
-    else:
-        logger.error("Brevo: email not sent (DEV or TEST environment detected)")
+    try:
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
+        send_smtp_email.html_content = "gfgfdgd"
+        send_smtp_email.template_id = "59"
+        logger.error("SEND SMTP ")
+        response = api_instance.send_transac_email(send_smtp_email)
+        logger.error("Brevo: send transactional email with template")
+        # {'message_id': '<202407151419.84958140835@smtp-relay.mailin.fr>', 'message_ids': None}
+        return response.to_dict()
+    except ApiException as e:
+        logger.error(f"ApiException: {e}")
