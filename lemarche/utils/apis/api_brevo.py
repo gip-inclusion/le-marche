@@ -359,6 +359,9 @@ def get_all_users_from_list(
 
 @task()
 def send_transactional_email_with_template(
+    template_object,
+    recipient_content_object,
+    parent_content_object,
     template_id: int,
     recipient_email: str,
     recipient_name: str,
@@ -378,6 +381,12 @@ def send_transactional_email_with_template(
     # if subject empty, defaults to Brevo's template subject
     if subject:
         data["subject"] = EMAIL_SUBJECT_PREFIX + subject
+
+    template_object.create_send_log(
+        recipient_content_object=recipient_content_object,
+        parent_content_object=parent_content_object,
+        extra_data={"source": "fgfh"},  # "response": result()
+    )
 
     if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
         try:
