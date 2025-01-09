@@ -370,6 +370,7 @@ def send_transactional_email_with_template(
     from_email=settings.DEFAULT_FROM_EMAIL,
     from_name=settings.DEFAULT_FROM_NAME,
 ):
+    logger.error("TASK CALLED")
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.TransactionalEmailsApi(api_client)
     data = {
