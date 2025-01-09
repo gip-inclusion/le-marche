@@ -309,8 +309,6 @@ class TemplateTransactional(models.Model):
                 "from_name": from_name,
             }
 
-            logger.error("send_transactional_email called")
-
             # create log
             api_brevo.send_transactional_email_with_template(**args)
 

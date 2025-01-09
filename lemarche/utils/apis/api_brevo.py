@@ -395,6 +395,7 @@ def send_transactional_email_with_template(
     if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
         try:
             send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
+            logger.error("SEND SMTP ")
             response = api_instance.send_transac_email(send_smtp_email)
             logger.error("Brevo: send transactional email with template")
             # {'message_id': '<202407151419.84958140835@smtp-relay.mailin.fr>', 'message_ids': None}
