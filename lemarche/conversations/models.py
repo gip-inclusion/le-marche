@@ -293,6 +293,9 @@ class TemplateTransactional(models.Model):
                 return
 
             args = {
+                "template_object": self,
+                "recipient_content_object": recipient_content_object,
+                "parent_content_object": parent_content_object,
                 "template_id": self.get_template_id,
                 "recipient_email": recipient_email,
                 "recipient_name": recipient_name,
@@ -303,12 +306,6 @@ class TemplateTransactional(models.Model):
             }
 
             # create log
-            self.create_send_log(
-                recipient_content_object=recipient_content_object,
-                parent_content_object=parent_content_object,
-                extra_data={"source": "BREVO", "args": args},  # "response": result()
-            )
-
             api_brevo.send_transactional_email_with_template(**args)
 
 
