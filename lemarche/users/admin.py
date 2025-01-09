@@ -468,7 +468,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         assert email_template.is_active
 
         for user in queryset:
-            logger.error(f"SEND EMAIL TO USER {user}")
             email_template.send_transactional_email(
                 recipient_email=user.email,
                 recipient_name=user.full_name,
