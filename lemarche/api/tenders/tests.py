@@ -32,7 +32,6 @@ TENDER_JSON = {
     "amount_exact": 693,
     # "why_amount_is_blank": "DONT_KNOW",
     "accept_share_amount": True,
-    "accept_cocontracting": True,
     "contact_first_name": "Prénom",
     "contact_last_name": "Nom",
     "contact_email": USER_CONTACT_EMAIL,

@@ -52,9 +52,6 @@
     {% if not siae_has_detail_contact_click_date %}
         {% include "tenders/_detail_contact_click_confirm_modal.html" with siae_id=siae_id %}
     {% endif %}
-    {% if not siae_has_detail_cocontracting_click_date %}
-        <!-- no confirmation modal for cocontracting -->
-    {% endif %}
     {% if not siae_has_detail_not_interested_click_date %}
         {% include "tenders/_detail_not_interested_click_confirm_modal.html" with siae_id=siae_id %}
     {% endif %}

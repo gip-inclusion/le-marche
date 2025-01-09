@@ -3,7 +3,6 @@ from django.views.generic import RedirectView
 
 from lemarche.www.tenders.views import (
     TenderCreateMultiStepView,
-    TenderDetailCocontractingClickView,
     TenderDetailContactClickStatView,
     TenderDetailNotInterestedClickView,
     TenderDetailSiaeSurveyTransactionedView,
@@ -35,11 +34,6 @@ urlpatterns = [
     path("<str:slug>/prestataires", TenderSiaeListView.as_view(), name="detail-siae-list"),
     path(
         "<str:slug>/contact-click-stat", TenderDetailContactClickStatView.as_view(), name="detail-contact-click-stat"
-    ),
-    path(
-        "<str:slug>/cocontracting-click",
-        TenderDetailCocontractingClickView.as_view(),
-        name="detail-cocontracting-click",
     ),
     path(
         "<str:slug>/not-interested-click",

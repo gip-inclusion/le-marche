@@ -1,8 +1,0 @@
-La structure {{ SIAE_NAME|safe }} souhaite répondre en co-traitance
-
-Titre : {{ TENDER_TITLE|safe }}
-Type : {{ TENDER_KIND|safe }}
-Contact email de l'ESI: {{ SIAE_CONTACT_EMAIL|safe }}
-SIRET : {{ SIAE_SIRET|safe }}
-
-Lien dans l'admin : {{ TENDER_ADMIN_URL }}
