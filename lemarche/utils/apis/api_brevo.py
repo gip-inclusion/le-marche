@@ -377,6 +377,8 @@ def send_transactional_email_with_template(
         "to": [{"email": recipient_email, "name": recipient_name}],
         "template_id": template_id,
         "params": variables,
+        "code": "59",
+        "message": "blablla",
     }
     # # if subject empty, defaults to Brevo's template subject
     # if subject:
