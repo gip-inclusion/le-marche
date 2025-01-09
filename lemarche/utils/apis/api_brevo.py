@@ -378,9 +378,11 @@ def send_transactional_email_with_template(
         "template_id": template_id,
         "params": variables,
     }
-    # if subject empty, defaults to Brevo's template subject
-    if subject:
-        data["subject"] = EMAIL_SUBJECT_PREFIX + subject
+    # # if subject empty, defaults to Brevo's template subject
+    # if subject:
+    #     data["subject"] = EMAIL_SUBJECT_PREFIX + subject
+
+    data["subject"] = "SUBJECT" + EMAIL_SUBJECT_PREFIX
 
     template_object.create_send_log(
         recipient_content_object=recipient_content_object,
