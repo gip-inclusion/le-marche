@@ -1,3 +1,4 @@
+import logging
 from uuid import uuid4
 
 from django.conf import settings
@@ -15,6 +16,9 @@ from lemarche.conversations import constants as conversation_constants
 from lemarche.users import constants as user_constants
 from lemarche.utils.apis import api_brevo
 from lemarche.utils.data import add_validation_error
+
+
+logger = logging.getLogger(__name__)
 
 
 class ConversationQuerySet(models.QuerySet):
@@ -342,6 +346,8 @@ class TemplateTransactional(models.Model):
                 "from_email": from_email,
                 "from_name": from_name,
             }
+
+            logger.error("send_transactional_email called")
 
             # create log
             api_brevo.send_transactional_email_with_template(**args)

@@ -1,3 +1,4 @@
+import logging
 import re
 
 from ckeditor.widgets import CKEditorWidget
@@ -18,6 +19,9 @@ from lemarche.users.forms import UserChangeForm, UserCreationForm
 from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.fields import pretty_print_readonly_jsonfield
+
+
+logger = logging.getLogger(__name__)
 
 
 class HasCompanyFilter(admin.SimpleListFilter):
@@ -416,6 +420,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     @admin.action(description="TEST ENVOI MAIL")
     def anonymize_users(self, request, queryset):
         email_template = TemplateTransactional.objects.get(code="USER_ANONYMIZATION_WARNING")
+        logger.error("SEND EMAIL")
 
         for user in queryset:
             email_template.send_transactional_email(
