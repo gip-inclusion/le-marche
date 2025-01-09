@@ -253,13 +253,6 @@ class TenderQuerySet(models.QuerySet):
                     output_field=IntegerField(),
                 )
             ),
-            siae_detail_cocontracting_click_count_annotated=Sum(
-                Case(
-                    When(tendersiae__detail_cocontracting_click_date__isnull=False, then=1),
-                    default=0,
-                    output_field=IntegerField(),
-                )
-            ),
             siae_detail_not_interested_click_count_annotated=Sum(
                 Case(
                     When(tendersiae__detail_not_interested_click_date__isnull=False, then=1),
@@ -335,7 +328,6 @@ class Tender(models.Model):
         "siae_detail_display_count",
         "siae_email_link_click_or_detail_display_count",
         "siae_detail_contact_click_count",
-        "siae_detail_cocontracting_click_count",
         "siae_detail_not_interested_click_count",
     ]
     FIELDS_STATS_TIMESTAMPS = [
@@ -422,9 +414,8 @@ class Tender(models.Model):
     )
 
     response_is_anonymous = models.BooleanField(verbose_name="Je souhaite rester anonyme", blank=False, default=False)
-    accept_cocontracting = models.BooleanField(
-        verbose_name="Ouvert à la co-traitance",
-        help_text="Ce besoin peut être répondu par plusieurs prestataires (co-traitance ou sous-traitance)",
+    _accept_cocontracting = models.BooleanField(
+        verbose_name="Ouvert à la co-traitance (Archivé)",
         default=False,
     )
 
@@ -661,8 +652,8 @@ class Tender(models.Model):
     siae_detail_contact_click_count = models.IntegerField(
         "Nombre de structures intéressées", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
     )
-    siae_detail_cocontracting_click_count = models.IntegerField(
-        "Nombre de structures ouvertes à la co-traitance", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
+    _siae_detail_cocontracting_click_count = models.IntegerField(
+        "Nombre de structures ouvertes à la co-traitance (Archivé)", default=0
     )
     siae_detail_not_interested_click_count = models.IntegerField(
         "Nombre de structures pas intéressées", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
@@ -880,10 +871,6 @@ class Tender(models.Model):
         return "Accéder aux coordonnées"
 
     @property
-    def cta_cocontracting_card_button_text(self):
-        return "Répondre en co-traitance"
-
-    @property
     def cta_not_interested_card_button_text(self):
         return "Je ne suis pas intéressé"
 
@@ -938,10 +925,6 @@ class Tender(models.Model):
     @property
     def siae_detail_contact_click_date_count(self):
         return self.tendersiae_set.filter(detail_contact_click_date__isnull=False).count()
-
-    @property
-    def siae_detail_cocontracting_click_date_count(self):
-        return self.tendersiae_set.filter(detail_cocontracting_click_date__isnull=False).count()
 
     @property
     def siae_detail_not_interested_click_date_count(self):
@@ -1082,7 +1065,6 @@ class TenderSiae(models.Model):
         "email_link_click_date",
         "detail_display_date",
         "detail_contact_click_date",
-        "detail_cocontracting_click_date",
         "detail_not_interested_click_date",
         "detail_not_interested_feedback",
     ]
@@ -1123,8 +1105,8 @@ class TenderSiae(models.Model):
     detail_contact_click_date = models.DateTimeField(
         verbose_name="Date de clic sur les coordonnées du besoin", blank=True, null=True
     )
-    detail_cocontracting_click_date = models.DateTimeField(
-        verbose_name="Date de clic sur Répondre en co-traitance", blank=True, null=True
+    _detail_cocontracting_click_date = models.DateTimeField(
+        verbose_name="Date de clic sur Répondre en co-traitance (Archivé)", blank=True, null=True
     )
     detail_not_interested_click_date = models.DateTimeField(
         verbose_name="Date de clic sur Pas intéressé", blank=True, null=True

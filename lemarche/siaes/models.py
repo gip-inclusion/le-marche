@@ -417,9 +417,6 @@ class SiaeQuerySet(models.QuerySet):
                 )
             )
             qs = qs.order_by("-tendersiae__email_link_click_date")
-        elif tendersiae_status == "COCONTRACTED":
-            qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_cocontracting_click_date__isnull=False)
-            qs = qs.order_by("-tendersiae__detail_cocontracting_click_date")
         elif tendersiae_status == "ALL":
             # why need to filter more ?
             qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
@@ -442,9 +439,6 @@ class SiaeQuerySet(models.QuerySet):
                 )
             )
             qs = qs.order_by("-tendersiae__email_link_click_date")
-        elif tendersiae_status == "COCONTRACTED":
-            qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_cocontracting_click_date__isnull=False)
-            qs = qs.order_by("-tendersiae__detail_cocontracting_click_date")
         else:  # "ALL"
             qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
             qs = qs.order_by("-tendersiae__email_send_date")
@@ -703,7 +697,7 @@ class Siae(models.Model):
     logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True)
 
     is_consortium = models.BooleanField(verbose_name="Consortium", default=False)
-    is_cocontracting = models.BooleanField(verbose_name="Co-traitance", default=False)
+    _is_cocontracting = models.BooleanField(verbose_name="Co-traitance (Fonctionnalité désactivée)", default=False)
 
     asp_id = models.IntegerField(verbose_name="ID ASP", blank=True, null=True)
     is_active = models.BooleanField(

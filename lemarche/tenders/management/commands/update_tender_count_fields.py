@@ -45,7 +45,6 @@ class Command(BaseCommand):
                 tender.siae_email_link_click_or_detail_display_count_annotated
             )
             tender.siae_detail_contact_click_count = tender.siae_detail_contact_click_count_annotated
-            tender.siae_detail_cocontracting_click_count = tender.siae_detail_cocontracting_click_count_annotated
             tender.siae_detail_not_interested_click_count = tender.siae_detail_not_interested_click_count_annotated
 
             # Step 3: update count fields
