@@ -697,7 +697,7 @@ class Siae(models.Model):
     logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True)
 
     is_consortium = models.BooleanField(verbose_name="Consortium", default=False)
-    _is_cocontracting = models.BooleanField(verbose_name="Fonctionnalité désactivée", default=False)
+    _is_cocontracting = models.BooleanField(verbose_name="Co-traitance (Fonctionnalité désactivée)", default=False)
 
     asp_id = models.IntegerField(verbose_name="ID ASP", blank=True, null=True)
     is_active = models.BooleanField(

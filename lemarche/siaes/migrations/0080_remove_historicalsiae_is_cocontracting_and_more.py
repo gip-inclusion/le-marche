@@ -9,22 +9,24 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
+        migrations.RenameField(
             model_name="historicalsiae",
-            name="is_cocontracting",
+            old_name="is_cocontracting",
+            new_name="_is_cocontracting",
         ),
-        migrations.RemoveField(
+        migrations.RenameField(
             model_name="siae",
-            name="is_cocontracting",
+            old_name="is_cocontracting",
+            new_name="_is_cocontracting",
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name="historicalsiae",
             name="_is_cocontracting",
-            field=models.BooleanField(default=False, verbose_name="Fonctionnalité désactivée"),
+            field=models.BooleanField(default=False, verbose_name="Co-traitance (Fonctionnalité désactivée)"),
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name="siae",
             name="_is_cocontracting",
-            field=models.BooleanField(default=False, verbose_name="Fonctionnalité désactivée"),
+            field=models.BooleanField(default=False, verbose_name="Co-traitance (Fonctionnalité désactivée)"),
         ),
     ]
