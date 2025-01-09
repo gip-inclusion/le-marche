@@ -370,7 +370,6 @@ def send_transactional_email_with_template(
     from_email=settings.DEFAULT_FROM_EMAIL,
     from_name=settings.DEFAULT_FROM_NAME,
 ):
-    logger.error("TASK CALLED")
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.TransactionalEmailsApi(api_client)
     data = {
@@ -389,14 +388,16 @@ def send_transactional_email_with_template(
         extra_data={"source": "fgfh"},  # "response": result()
     )
 
+    logger.error("LOG CREATED")
+
     if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
         try:
             send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
             response = api_instance.send_transac_email(send_smtp_email)
-            logger.info("Brevo: send transactional email with template")
+            logger.error("Brevo: send transactional email with template")
             # {'message_id': '<202407151419.84958140835@smtp-relay.mailin.fr>', 'message_ids': None}
             return response.to_dict()
         except ApiException as e:
-            print(f"Exception when calling SMTPApi->send_transac_email: {e}")
+            logger.error(f"ApiException: {e}")
     else:
-        logger.info("Brevo: email not sent (DEV or TEST environment detected)")
+        logger.error("Brevo: email not sent (DEV or TEST environment detected)")
