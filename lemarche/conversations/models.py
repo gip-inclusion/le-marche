@@ -208,8 +208,8 @@ class EmailGroup(models.Model):
     def __str__(self):
         return f"{self.display_name} ({self.relevant_user_kind if self.relevant_user_kind else 'Tous'})"
 
-    def disabled_for_user(self, user):
-        return DisabledEmail.objects.filter(user=user, group=self).exists()
+    def disabled_for_email(self, email):
+        return DisabledEmail.objects.filter(user__email=email, group=self).exists()
 
 
 class TemplateTransactionalQuerySet(models.QuerySet):
@@ -324,27 +324,29 @@ class TemplateTransactional(models.Model):
         parent_content_object=None,
     ):
         if self.is_active:
-            args = {
-                "template_id": self.get_template_id,
-                "recipient_email": recipient_email,
-                "recipient_name": recipient_name,
-                "variables": variables,
-                "subject": subject,
-                "from_email": from_email,
-                "from_name": from_name,
-            }
+            # recipient email doesn't associated to a user or associated user doesn't disable this email group
+            if not self.group or not self.group.disabled_for_email(recipient_email):
+                args = {
+                    "template_id": self.get_template_id,
+                    "recipient_email": recipient_email,
+                    "recipient_name": recipient_name,
+                    "variables": variables,
+                    "subject": subject,
+                    "from_email": from_email,
+                    "from_name": from_name,
+                }
 
-            # create log
-            self.create_send_log(
-                recipient_content_object=recipient_content_object,
-                parent_content_object=parent_content_object,
-                extra_data={"source": self.source, "args": args},  # "response": result()
-            )
+                # create log
+                self.create_send_log(
+                    recipient_content_object=recipient_content_object,
+                    parent_content_object=parent_content_object,
+                    extra_data={"source": self.source, "args": args},  # "response": result()
+                )
 
-            if self.source == conversation_constants.SOURCE_MAILJET:
-                api_mailjet.send_transactional_email_with_template(**args)
-            elif self.source == conversation_constants.SOURCE_BREVO:
-                api_brevo.send_transactional_email_with_template(**args)
+                if self.source == conversation_constants.SOURCE_MAILJET:
+                    api_mailjet.send_transactional_email_with_template(**args)
+                elif self.source == conversation_constants.SOURCE_BREVO:
+                    api_brevo.send_transactional_email_with_template(**args)
 
 
 class TemplateTransactionalSendLog(models.Model):
