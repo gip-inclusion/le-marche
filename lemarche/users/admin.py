@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
-from lemarche.conversations.models import TemplateTransactional, TemplateTransactionalSendLog
+from lemarche.conversations.models import TemplateTransactionalSendLog
 from lemarche.notes.models import Note
 from lemarche.siaes.models import Siae, SiaeUser
 from lemarche.users.forms import UserChangeForm, UserCreationForm
@@ -211,7 +211,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     search_fields = ["id", "email", "first_name", "last_name"]
     search_help_text = "Cherche sur les champs : ID, E-mail, Prénom, Nom"
     ordering = ["-created_at"]
-    actions = ["anonymize_users"]
 
     autocomplete_fields = ["company", "partner_network"]
     readonly_fields = (
@@ -374,22 +373,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
 
     siae_count_annotated_with_link.short_description = "Nombre de structures"
     siae_count_annotated_with_link.admin_order_field = "siae_count_annotated"
-
-    @admin.action(description="TEST ENVOI MAIL")
-    def anonymize_users(self, request, queryset):
-        email_template = TemplateTransactional.objects.get(code="USER_ANONYMIZATION_WARNING")
-
-        for user in queryset:
-            email_template.send_transactional_email(
-                recipient_email=user.email,
-                recipient_name=user.full_name,
-                variables={
-                    "user_full_name": user.full_name,
-                    "anonymization_date": user.date_joined,  # natural date
-                },
-                recipient_content_object=user,
-            )
-            print("MAIL SENT")
 
     def tender_count_annotated_with_link(self, user):
         url = reverse("admin:tenders_tender_changelist") + f"?author__id__exact={user.id}"
