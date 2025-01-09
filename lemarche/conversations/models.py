@@ -13,7 +13,7 @@ from shortuuid import uuid
 
 from lemarche.conversations import constants as conversation_constants
 from lemarche.users import constants as user_constants
-from lemarche.utils.apis import api_brevo, api_mailjet
+from lemarche.utils.apis import api_brevo
 from lemarche.utils.data import add_validation_error
 
 
@@ -331,6 +331,9 @@ class TemplateTransactional(models.Model):
                 return
 
             args = {
+                "template_object": self,
+                "recipient_content_object": recipient_content_object,
+                "parent_content_object": parent_content_object,
                 "template_id": self.get_template_id,
                 "recipient_email": recipient_email,
                 "recipient_name": recipient_name,
@@ -341,16 +344,7 @@ class TemplateTransactional(models.Model):
             }
 
             # create log
-            self.create_send_log(
-                recipient_content_object=recipient_content_object,
-                parent_content_object=parent_content_object,
-                extra_data={"source": self.source, "args": args},  # "response": result()
-            )
-
-            if self.source == conversation_constants.SOURCE_MAILJET:
-                api_mailjet.send_transactional_email_with_template(**args)
-            elif self.source == conversation_constants.SOURCE_BREVO:
-                api_brevo.send_transactional_email_with_template(**args)
+            api_brevo.send_transactional_email_with_template(**args)
 
 
 class TemplateTransactionalSendLog(models.Model):
