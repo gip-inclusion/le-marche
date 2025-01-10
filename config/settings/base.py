@@ -358,8 +358,6 @@ INBOUND_PARSING_DOMAIN_EMAIL = env.str("INBOUND_PARSING_DOMAIN_EMAIL", "reply.st
 
 INBOUND_EMAIL_IS_ACTIVATED = env.bool("INBOUND_EMAIL_IS_ACTIVATED", True)
 
-BREVO_TENDERS_MIN_AMOUNT_TO_SEND = env.int("BREVO_TENDERS_MIN_AMOUNT_TO_SEND", 34998)
-
 # ip ranges here (webhook):
 # https://help.brevo.com/hc/en-us/articles/15127404548498-Brevo-IP-ranges-List-of-publicly-exposed-services
 BREVO_IP_WHITELIST_RANGE: str = env.str("BREVO_IP_WHITELIST_RANGE", "127.0.0.0/20")
