@@ -1,11 +1,7 @@
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
-from django.contrib.auth.hashers import UNUSABLE_PASSWORD_PREFIX
-from django.contrib.postgres.functions import RandomUUID
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from django.db.models import F, Value
-from django.db.models.functions import Concat
 from django.template import defaulttags
 from django.utils import timezone
 
@@ -62,20 +58,8 @@ class Command(BaseCommand):
         qs = User.objects.filter(last_login__lte=expiry_date, is_anonymized=False)
         users_to_update_count = qs.count()
 
-        qs.update(
-            is_active=False,  # inactive users are allowed to log in standard login views
-            is_anonymized=True,
-            email=Concat(F("id"), Value("@domain.invalid")),
-            first_name="",
-            last_name="",
-            phone="",
-            api_key=None,
-            api_key_last_updated=None,
-            # https://docs.djangoproject.com/en/5.1/ref/contrib/auth/#django.contrib.auth.models.User.set_unusable_password
-            # Imitating the method but in sql. Prevent password reset attempt
-            # Random string is to avoid chances of impersonation by admins https://code.djangoproject.com/ticket/20079
-            password=Concat(Value(UNUSABLE_PASSWORD_PREFIX), RandomUUID()),
-        )
+        qs.anonymize_update()
+
         # remove anonymized users in Siaes
         SiaeUser.objects.filter(user__is_anonymized=True).delete()
 
