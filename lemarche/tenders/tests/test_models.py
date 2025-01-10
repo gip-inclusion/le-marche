@@ -5,7 +5,7 @@ from random import randint
 from django.apps import apps
 from django.contrib.gis.geos import Point
 from django.forms.models import model_to_dict
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, TransactionTestCase
 from django.utils import timezone
 
 from lemarche.networks.factories import NetworkFactory
@@ -1081,9 +1081,9 @@ class TenderAdminTest(TestCase):
         self.assertTrue(tender_response.send_to_commercial_partners_only)
 
 
-class TenderUtilsTest(TestCase):
+class TenderUtilsTest(TransactionTestCase):
     @classmethod
-    def setUpTestData(cls):
+    def setUpClass(cls):
         cls.user_siae = UserFactory(kind=User.KIND_SIAE)
         cls.user_buyer = UserFactory(kind=User.KIND_BUYER)
         cls.siae_with_tender_1 = SiaeFactory(users=[cls.user_siae])
@@ -1105,6 +1105,7 @@ class TenderUtilsTest(TestCase):
         self.assertNotEqual(self.tender_with_siae.status, new_tender.status)
         self.assertEqual(self.tender_with_siae.sectors.count(), new_tender.sectors.count())
         self.assertNotEqual(self.tender_with_siae.siaes.count(), new_tender.siaes.count())
+        self.assertNotEqual(self.tender_with_siae.slug, new_tender.slug)
 
 
 class TenderUtilsFindAmountRangesTests(TestCase):
