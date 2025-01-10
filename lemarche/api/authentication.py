@@ -25,7 +25,7 @@ class CustomBearerAuthentication(BaseAuthentication):
 
         # If no token is provided
         if not token:
-            raise AuthenticationFailed("No token provided")
+            return None
 
         # Check the minimum length of the token
         if len(token) < 64:
