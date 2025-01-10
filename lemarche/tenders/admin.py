@@ -1,6 +1,5 @@
 from ckeditor.widgets import CKEditorWidget
 from django import forms
-from django.conf import settings
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.core.exceptions import ValidationError
@@ -255,6 +254,23 @@ class TenderForm(forms.ModelForm):
         model = Tender
         fields = "__all__"
 
+    is_followed_by_us = forms.BooleanField(
+        widget=forms.CheckboxInput(),
+        required=False,
+        label=Tender._meta.get_field("is_followed_by_us").verbose_name,
+    )
+    proj_resulted_in_reserved_tender = forms.BooleanField(
+        widget=forms.CheckboxInput(),
+        required=False,
+        label=Tender._meta.get_field("proj_resulted_in_reserved_tender").verbose_name,
+    )
+
+    is_reserved_tender = forms.BooleanField(
+        widget=forms.CheckboxInput(),
+        required=False,
+        label=Tender._meta.get_field("is_reserved_tender").verbose_name,
+    )
+
     def clean(self):
         """
         Add validation on form rules:
@@ -497,8 +513,8 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "admins",
                     "is_followed_by_us",
                     "proj_resulted_in_reserved_tender",
-                    "proj_link_to_tender",
                     "is_reserved_tender",
+                    "proj_link_to_tender",
                 )
             },
         ),
@@ -770,7 +786,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             return HttpResponseRedirect("./#structures")  # redirect to structures sections
         if request.POST.get("_validate_send_to_siaes"):
             obj.set_validated()
-            if obj.amount_int > settings.BREVO_TENDERS_MIN_AMOUNT_TO_SEND:
+            if obj.is_followed_by_us:
                 try:
                     api_brevo.create_deal(tender=obj, owner_email=request.user.email)
                     # we link deal(tender) with author contact
