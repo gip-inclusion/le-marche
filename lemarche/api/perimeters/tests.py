@@ -24,25 +24,24 @@ class PerimeterListFilterApiTest(TestCase):
         cls.perimeter_region = PerimeterFactory(
             name="Auvergne-Rhône-Alpes", kind=Perimeter.KIND_REGION, insee_code="R84"
         )
-        UserFactory(api_key="admin")
+        cls.token = "a" * 64
+        UserFactory(api_key=cls.token)
 
     def test_should_return_perimeter_list(self):
-        url = reverse("api:perimeters-list")  # anonymous user
-        response = self.client.get(url)
+        url = reverse("api:perimeters-list")
+        response = self.client.get(url, headers={"authorization": f"Bearer {self.token}"})
         self.assertEqual(response.data["count"], 3)
         self.assertEqual(len(response.data["results"]), 3)
 
     def test_should_filter_perimeter_list_by_kind(self):
         # single
-        url = reverse("api:perimeters-list") + f"?kind={Perimeter.KIND_CITY}"  # anonymous user
-        response = self.client.get(url)
+        url = reverse("api:perimeters-list") + f"?kind={Perimeter.KIND_CITY}"
+        response = self.client.get(url, headers={"authorization": f"Bearer {self.token}"})
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
         # multiple
-        url = (
-            reverse("api:perimeters-list") + f"?kind={Perimeter.KIND_CITY}&kind={Perimeter.KIND_DEPARTMENT}"
-        )  # anonymous user  # noqa
-        response = self.client.get(url)
+        url = reverse("api:perimeters-list") + f"?kind={Perimeter.KIND_CITY}&kind={Perimeter.KIND_DEPARTMENT}"
+        response = self.client.get(url, headers={"authorization": f"Bearer {self.token}"})
         self.assertEqual(response.data["count"], 1 + 1)
         self.assertEqual(len(response.data["results"]), 1 + 1)
 
@@ -127,8 +126,10 @@ class PerimetersAutocompleteFilterApiTest(TestCase):
 
 class PerimeterChoicesApiTest(TestCase):
     def test_should_return_perimeter_kinds_list(self):
-        url = reverse("api:perimeter-kinds-list")  # anonymous user
-        response = self.client.get(url)
+        token = "a" * 64
+        UserFactory(api_key=token)
+        url = reverse("api:perimeter-kinds-list")
+        response = self.client.get(url, headers={"authorization": f"Bearer {token}"})
         self.assertEqual(response.data["count"], 3)
         self.assertEqual(len(response.data["results"]), 3)
         self.assertTrue("id" in response.data["results"][0])
