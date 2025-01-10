@@ -225,14 +225,12 @@ class SiaeRetrieveBySirenApiTest(TestCase):
         UserFactory(api_key=cls.user_token)
 
     def test_should_return_400_if_siren_malformed(self):
-        # anonymous user
         for siren in ["123", "12312312312345"]:
             url = reverse("api:siae-retrieve-by-siren", args=[siren])
             response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
             self.assertEqual(response.status_code, 400)
 
     def test_should_return_empty_list_if_siren_unknown(self):
-        # anonymous user
         url = reverse("api:siae-retrieve-by-siren", args=["444444444"])
         response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
         self.assertEqual(response.status_code, 200)
