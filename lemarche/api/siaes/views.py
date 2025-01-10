@@ -6,7 +6,7 @@ from rest_framework import mixins, viewsets
 from rest_framework.response import Response
 
 from lemarche.api.siaes.filters import SiaeFilter
-from lemarche.api.siaes.serializers import SiaeDetailSerializer, SiaeListSerializer
+from lemarche.api.siaes.serializers import SiaeDetailSerializer
 from lemarche.api.utils import BasicChoiceSerializer, BasicChoiceWithParentSerializer
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
@@ -18,7 +18,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     """
 
     queryset = Siae.objects.api_query_set()
-    serializer_class = SiaeListSerializer
+    serializer_class = SiaeDetailSerializer
     filterset_class = SiaeFilter
 
     def get_queryset(self):
@@ -35,16 +35,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
 
         <i>Un <strong>token</strong> est nécessaire pour l'accès complet à cette ressource.</i>
         """
-        if request.user.is_authenticated:
-            # Utilisateur authentifié : accès complet
-            return super().list(request, format)
-        else:
-            # Utilisateur non authentifié : limiter à 10 résultats
-            serializer = SiaeListSerializer(
-                self.get_queryset()[:10],
-                many=True,
-            )
-            return Response(serializer.data)
+        return super().list(request, format)
 
     @extend_schema(
         summary="Détail d'une structure (par son id)",
@@ -104,29 +95,17 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         return self._list_return(request, queryset, format)
 
     def _retrieve_return(self, request, queryset, format):
-        if not request.user.is_authenticated:
-            serializer = SiaeListSerializer(
-                queryset,
-                many=False,
-            )
-        else:
-            serializer = SiaeDetailSerializer(
-                queryset,
-                many=False,
-            )
+        serializer = SiaeDetailSerializer(
+            queryset,
+            many=False,
+        )
         return Response(serializer.data)
 
     def _list_return(self, request, queryset, format):
-        if not request.user.is_authenticated:
-            serializer = SiaeListSerializer(
-                queryset,
-                many=True,
-            )
-        else:
-            serializer = SiaeDetailSerializer(
-                queryset,
-                many=True,
-            )
+        serializer = SiaeDetailSerializer(
+            queryset,
+            many=True,
+        )
         return Response(serializer.data)
 
 
