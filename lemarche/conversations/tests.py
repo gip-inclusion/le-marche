@@ -1,5 +1,4 @@
 from datetime import datetime
-from unittest import mock
 from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
@@ -157,60 +156,43 @@ class TemplateTransactionalModelTest(TestCase):
         self.assertEqual(self.tt_active_mailjet.get_template_id, self.tt_active_mailjet.mailjet_id)
         self.assertEqual(self.tt_active_brevo.get_template_id, self.tt_active_brevo.brevo_id)
 
-    def test_send_transactional_email_mailjet(self):
-        with mock.patch(
-            "lemarche.conversations.models.api_mailjet.send_transactional_email_with_template"
-        ) as mock_send_transactional_email_mailjet:
-            self.tt_active_mailjet.save()
-            self.tt_active_mailjet.send_transactional_email(
-                recipient_email="test@example.com", recipient_name="test", variables={}
-            )
+    @patch("lemarche.conversations.models.api_mailjet.send_transactional_email_with_template")
+    def test_send_transactional_email_mailjet(self, mock_send_transactional_email_mailjet):
+        self.tt_active_mailjet.save()
+        self.tt_active_mailjet.send_transactional_email(
+            recipient_email="test@example.com", recipient_name="test", variables={}
+        )
         mock_send_transactional_email_mailjet.assert_called_once()
 
-    def test_send_transactional_email_brevo(self):
-        with mock.patch(
-            "lemarche.conversations.models.api_brevo.send_transactional_email_with_template"
-        ) as mock_send_transactional_email_brevo:
-            self.tt_active_brevo.save()
-            self.tt_active_brevo.send_transactional_email(
-                recipient_email="test@example.com", recipient_name="test", variables={}
-            )
+    @patch("lemarche.conversations.models.api_brevo.send_transactional_email_with_template")
+    def test_send_transactional_email_brevo(self, mock_send_transactional_email_brevo):
+        self.tt_active_brevo.save()
+        self.tt_active_brevo.send_transactional_email(
+            recipient_email="test@example.com", recipient_name="test", variables={}
+        )
         mock_send_transactional_email_brevo.assert_called_once()
 
-    def test_send_transactional_email_inactive(self):
-        with mock.patch(
-            "lemarche.conversations.models.api_mailjet.send_transactional_email_with_template"
-        ) as mock_send_transactional_email_mailjet:
-            with mock.patch(
-                "lemarche.conversations.models.api_brevo.send_transactional_email_with_template"
-            ) as mock_send_transactional_email_brevo:
-                self.tt_inactive.save()
-                self.tt_inactive.send_transactional_email(
-                    recipient_email="test@example.com", recipient_name="test", variables={}
-                )
+    @patch("lemarche.conversations.models.api_brevo.send_transactional_email_with_template")
+    @patch("lemarche.conversations.models.api_mailjet.send_transactional_email_with_template")
+    def test_send_transactional_email_inactive(
+        self, mock_send_transactional_email_mailjet, mock_send_transactional_email_brevo
+    ):
+        self.tt_inactive.save()
+        self.tt_inactive.send_transactional_email(
+            recipient_email="test@example.com", recipient_name="test", variables={}
+        )
 
         mock_send_transactional_email_mailjet.assert_not_called()
         mock_send_transactional_email_brevo.assert_not_called()
 
-    def test_disabled_email_group(self):
+    @patch("lemarche.conversations.models.api_brevo.send_transactional_email_with_template")
+    def test_disabled_email_group(self, mock_send_transactional_email_brevo):
         email_test = "test@example.com"
         user = UserFactory(email=email_test)
-        with mock.patch(
-            "lemarche.conversations.models.api_brevo.send_transactional_email_with_template"
-        ) as mock_send_transactional_email_brevo:
-            self.tt_active_brevo.save()
-            self.tt_active_brevo.send_transactional_email(
-                recipient_email=email_test, recipient_name="test", variables={}
-            )
-        mock_send_transactional_email_brevo.assert_called_once()
-
         DisabledEmail.objects.create(user=user, group=self.email_group)
-        with mock.patch(
-            "lemarche.conversations.models.api_brevo.send_transactional_email_with_template"
-        ) as mock_send_transactional_email_brevo:
-            self.tt_active_brevo.send_transactional_email(
-                recipient_email=email_test, recipient_name="test", variables={}
-            )
+
+        self.tt_active_brevo.save()
+        self.tt_active_brevo.send_transactional_email(recipient_email=email_test, recipient_name="test", variables={})
         mock_send_transactional_email_brevo.assert_not_called()
 
 
