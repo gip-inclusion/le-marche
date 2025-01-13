@@ -26,22 +26,23 @@ class PerimeterListFilterApiTest(TestCase):
         )
         cls.token = "a" * 64
         UserFactory(api_key=cls.token)
+        cls.authenticated_client = cls.client_class(headers={"authorization": f"Bearer {cls.token}"})
 
     def test_should_return_perimeter_list(self):
         url = reverse("api:perimeters-list")
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.data["count"], 3)
         self.assertEqual(len(response.data["results"]), 3)
 
     def test_should_filter_perimeter_list_by_kind(self):
         # single
         url = reverse("api:perimeters-list") + f"?kind={Perimeter.KIND_CITY}"
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
         # multiple
         url = reverse("api:perimeters-list") + f"?kind={Perimeter.KIND_CITY}&kind={Perimeter.KIND_DEPARTMENT}"
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.data["count"], 1 + 1)
         self.assertEqual(len(response.data["results"]), 1 + 1)
 
