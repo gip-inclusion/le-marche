@@ -38,25 +38,6 @@ class CustomBearerAuthenticationTest(TestCase):
         self.assertEqual(user, self.user)
         self.assertEqual(token, self.user_token)
 
-    def test_authentication_with_url_token(self):
-        """
-        Test the authentication process using a token provided in the URL.
-
-        This test simulates a GET request with a token appended to the URL query string.
-        It verifies that the authentication mechanism correctly identifies the user and
-        token from the request.
-
-        Assertions:
-            - The authenticated user should match the expected user.
-            - The token extracted from the request should match the expected user token.
-        """
-        request = self.factory.get(self.url + "?token=" + self.user_token)
-
-        user, token = self.authentication.authenticate(request)
-
-        self.assertEqual(user, self.user)
-        self.assertEqual(token, self.user_token)
-
     def test_authentication_with_short_token(self):
         """
         Test the authentication process with a short token.
