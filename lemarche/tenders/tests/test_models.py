@@ -84,8 +84,10 @@ class TenderModelPropertyTest(TestCase):
             title="Besoin 3", perimeters=[self.grenoble_perimeter, self.chamrousse_perimeter]
         )
         self.assertEqual(len(tender_with_perimeters.perimeters_list()), 2)
-        self.assertEqual(tender_with_perimeters.perimeters_list()[0], self.grenoble_perimeter.name)
-        self.assertEqual(tender_with_perimeters.perimeters_list_string, "Grenoble, Chamrousse")
+        self.assertEqual(
+            tender_with_perimeters.perimeters_list(), [self.chamrousse_perimeter.name, self.grenoble_perimeter.name]
+        )
+        self.assertEqual(tender_with_perimeters.perimeters_list_string, "Chamrousse, Grenoble")
 
     def test_location_display_property(self):
         tender_country_area = TenderFactory(title="Besoin 1", is_country_area=True)
