@@ -11,9 +11,8 @@ from django.utils.text import slugify
 from django_extensions.db.fields import ShortUUIDField
 from shortuuid import uuid
 
-from lemarche.conversations import constants as conversation_constants
 from lemarche.users import constants as user_constants
-from lemarche.utils.apis import api_brevo, api_mailjet
+from lemarche.utils.apis import api_brevo
 from lemarche.utils.data import add_validation_error
 
 
@@ -228,35 +227,7 @@ class TemplateTransactional(models.Model):
     )
     description = models.TextField(verbose_name="Description", blank=True)
     group = models.ForeignKey("EmailGroup", on_delete=models.CASCADE, null=True)
-
-    # email_subject = models.CharField(
-    #     verbose_name="E-mail : objet",
-    #     help_text="Laisser vide pour utiliser l'objet présent dans Mailjet/Brevo",
-    #     max_length=255,
-    #     blank=True,
-    #     null=True,
-    # )
-    # email_from_email = models.EmailField(
-    #     verbose_name="E-mail : expéditeur (e-mail)",
-    #     help_text=f"Laisser vide pour utiliser l'e-mail expéditeur par défaut ({settings.DEFAULT_FROM_EMAIL})",
-    #     blank=True,
-    #     null=True,
-    # )
-    # email_from_name = models.CharField(
-    #     verbose_name="E-mail : expéditeur (nom)",
-    #     help_text=f"Laisser vide pour utiliser le nom expéditeur par défaut ({settings.DEFAULT_FROM_NAME})",
-    #     max_length=255,
-    #     blank=True,
-    #     null=True,
-    # )
-
-    mailjet_id = models.IntegerField(
-        verbose_name="Identifiant Mailjet", unique=True, db_index=True, blank=True, null=True
-    )
     brevo_id = models.IntegerField(verbose_name="Identifiant Brevo", unique=True, db_index=True, blank=True, null=True)
-    source = models.CharField(
-        verbose_name="Source", max_length=20, choices=conversation_constants.SOURCE_CHOICES, blank=True
-    )
     is_active = models.BooleanField(verbose_name="Actif", default=False)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
@@ -278,13 +249,7 @@ class TemplateTransactional(models.Model):
         validation_errors = dict()
         # validation rules
         if self.is_active:
-            if self.source == conversation_constants.SOURCE_MAILJET and not self.mailjet_id:
-                validation_errors = add_validation_error(
-                    validation_errors,
-                    "mailjet_id",
-                    "Le mailjet_id est requis pour un template actif",
-                )
-            elif self.source == conversation_constants.SOURCE_BREVO and not self.brevo_id:
+            if not self.brevo_id:
                 validation_errors = add_validation_error(
                     validation_errors,
                     "brevo_id",
@@ -304,11 +269,8 @@ class TemplateTransactional(models.Model):
 
     @property
     def get_template_id(self):
-        if self.source and self.code:
-            if self.source == conversation_constants.SOURCE_MAILJET:
-                return self.mailjet_id
-            elif self.source == conversation_constants.SOURCE_BREVO:
-                return self.brevo_id
+        if self.code:
+            return self.brevo_id
         return None
 
     def create_send_log(self, **kwargs):
@@ -344,13 +306,10 @@ class TemplateTransactional(models.Model):
             self.create_send_log(
                 recipient_content_object=recipient_content_object,
                 parent_content_object=parent_content_object,
-                extra_data={"source": self.source, "args": args},  # "response": result()
+                extra_data={"source": "BREVO", "args": args},  # "response": result()
             )
 
-            if self.source == conversation_constants.SOURCE_MAILJET:
-                api_mailjet.send_transactional_email_with_template(**args)
-            elif self.source == conversation_constants.SOURCE_BREVO:
-                api_brevo.send_transactional_email_with_template(**args)
+            api_brevo.send_transactional_email_with_template(**args)
 
 
 class TemplateTransactionalSendLog(models.Model):

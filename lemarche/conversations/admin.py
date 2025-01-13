@@ -140,21 +140,19 @@ class TemplateTransactionalAdmin(admin.ModelAdmin):
         "id",
         "name",
         "code",
-        "mailjet_id",
         "brevo_id",
-        "source",
         "is_active",
         "template_transactional_send_log_count_with_link",
         "created_at",
         "updated_at",
     ]
-    search_fields = ["id", "name", "code", "mailjet_id", "brevo_id"]
+    search_fields = ["id", "name", "code", "brevo_id"]
 
     readonly_fields = ["code", "template_transactional_send_log_count_with_link", "created_at", "updated_at"]
 
     fieldsets = (
         (None, {"fields": ("name", "code", "description", "group")}),
-        ("Paramètres d'envoi", {"fields": ("mailjet_id", "brevo_id", "source", "is_active")}),
+        ("Paramètres d'envoi", {"fields": ("brevo_id", "is_active")}),
         ("Stats", {"fields": ("template_transactional_send_log_count_with_link",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
