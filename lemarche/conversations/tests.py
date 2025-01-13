@@ -3,10 +3,8 @@ from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
-from django.db import IntegrityError
 from django.test import TestCase, TransactionTestCase, override_settings
 
-from lemarche.conversations import constants as conversation_constants
 from lemarche.conversations.constants import ATTRIBUTES_TO_NOT_ANONYMIZE_FOR_INBOUND, ATTRIBUTES_TO_SAVE_FOR_INBOUND
 from lemarche.conversations.factories import ConversationFactory, EmailGroupFactory, TemplateTransactionalFactory
 from lemarche.conversations.models import Conversation, DisabledEmail, TemplateTransactional
@@ -113,46 +111,13 @@ class ConversationAnonymizationTestCase(TestCase):
 class TemplateTransactionalModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.email_group = EmailGroupFactory()
-        cls.tt_inactive = TemplateTransactional(
-            name="Email 1",
-            code="EMAIL_1",
-            mailjet_id=10,
-            brevo_id=11,
-            source=conversation_constants.SOURCE_MAILJET,
-            is_active=False,
-            group=cls.email_group,
-        )
-        cls.tt_active_empty = TemplateTransactional(
-            name="Email 2",
-            code="EMAIL_2",
-            source=conversation_constants.SOURCE_MAILJET,
-            is_active=False,
-            group=cls.email_group,
-        )
-        cls.tt_active_mailjet = TemplateTransactional(
-            name="Email 3",
-            code="EMAIL_3",
-            mailjet_id=30,
-            brevo_id=31,
-            source=conversation_constants.SOURCE_MAILJET,
-            is_active=True,
-            group=cls.email_group,
-        )
-        cls.tt_active_brevo = TemplateTransactional(
-            name="Email 4",
-            code="EMAIL_4",
-            mailjet_id=40,
-            brevo_id=41,
-            source=conversation_constants.SOURCE_BREVO,
-            is_active=True,
-            group=cls.email_group,
-        )
+        cls.tt_inactive = TemplateTransactional(code="EMAIL_1", brevo_id=11, is_active=False)
+        cls.tt_active_empty = TemplateTransactional(code="EMAIL_2", is_active=False)
+        cls.tt_active_brevo = TemplateTransactional(code="EMAIL_3", brevo_id=41, is_active=True)
 
     def test_get_template_id(self):
         self.assertIsNone(self.tt_active_empty.get_template_id)
-        self.assertEqual(self.tt_inactive.get_template_id, self.tt_inactive.mailjet_id)
-        self.assertEqual(self.tt_active_mailjet.get_template_id, self.tt_active_mailjet.mailjet_id)
+        self.assertEqual(self.tt_inactive.get_template_id, self.tt_inactive.brevo_id)
         self.assertEqual(self.tt_active_brevo.get_template_id, self.tt_active_brevo.brevo_id)
 
     @patch("lemarche.conversations.models.api_mailjet.send_transactional_email_with_template")
@@ -196,35 +161,5 @@ class TemplateTransactionalModelTest(TestCase):
 
 
 class TemplateTransactionalModelSaveTest(TransactionTestCase):
-    reset_sequences = True
-
-    @classmethod
-    def setUpTestData(cls):
-        pass
-
-    def test_template_transactional_field_rules(self):
-        self.assertRaises(IntegrityError, TemplateTransactionalFactory, source=None)
-
     def test_template_transactional_validation_on_save(self):
-        TemplateTransactionalFactory(
-            mailjet_id=None, brevo_id=None, source=conversation_constants.SOURCE_BREVO, is_active=False
-        )
-        TemplateTransactionalFactory(
-            mailjet_id=None, brevo_id=123, source=conversation_constants.SOURCE_BREVO, is_active=True
-        )
-        self.assertRaises(
-            ValidationError,
-            TemplateTransactionalFactory,
-            mailjet_id=123,
-            brevo_id=None,
-            source=conversation_constants.SOURCE_BREVO,
-            is_active=True,
-        )
-        self.assertRaises(
-            ValidationError,
-            TemplateTransactionalFactory,
-            mailjet_id=None,
-            brevo_id=123,
-            source=conversation_constants.SOURCE_MAILJET,
-            is_active=True,
-        )
+        self.assertRaises(ValidationError, TemplateTransactionalFactory, brevo_id=None, is_active=True, group=None)
