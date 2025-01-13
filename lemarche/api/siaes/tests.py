@@ -75,13 +75,14 @@ class SiaeListFilterApiTest(TestCase):
         siae_with_network_2.networks.add(cls.network_2)
         cls.user_token = generate_random_string()
         UserFactory(api_key=cls.user_token)
+        cls.authenticated_client = cls.client_class(headers={"authorization": f"Bearer {cls.user_token}"})
 
     def test_siae_count(self):
         self.assertEqual(Siae.objects.count(), 9)
 
     def test_should_return_siae_list(self):
         url = reverse("api:siae-list")
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.data["count"], 4 + 2 + 2)
         self.assertEqual(len(response.data["results"]), 4 + 2 + 2)
 
@@ -93,30 +94,30 @@ class SiaeListFilterApiTest(TestCase):
 
     def test_should_filter_siae_list_by_is_active(self):
         url = reverse("api:siae-list") + "?is_active=false"
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
         url = reverse("api:siae-list") + "?is_active=true"
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.data["count"], 3 + 2 + 2)
         self.assertEqual(len(response.data["results"]), 3 + 2 + 2)
 
     def test_should_filter_siae_list_by_kind(self):
         # single
         url = reverse("api:siae-list") + f"?kind={siae_constants.KIND_ETTI}"
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
         # multiple
         url = reverse("api:siae-list") + f"?kind={siae_constants.KIND_ETTI}&kind={siae_constants.KIND_ACI}"
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.data["count"], 1 + 1)
         self.assertEqual(len(response.data["results"]), 1 + 1)
 
     def test_should_filter_siae_list_by_presta_type(self):
         # single
         url = reverse("api:siae-list") + f"?presta_type={siae_constants.PRESTA_BUILD}"
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
         # multiple
@@ -124,37 +125,37 @@ class SiaeListFilterApiTest(TestCase):
             reverse("api:siae-list")
             + f"?presta_type={siae_constants.PRESTA_BUILD}&presta_type={siae_constants.PRESTA_PREST}"
         )
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.data["count"], 1 + 1)
         self.assertEqual(len(response.data["results"]), 1 + 1)
 
     def test_should_filter_siae_list_by_department(self):
         url = reverse("api:siae-list") + "?department=38"
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
 
     def test_should_filter_siae_list_by_sector(self):
         # single
         url = reverse("api:siae-list") + f"?sectors={self.sector_1.slug}"
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
         # multiple
         url = reverse("api:siae-list") + f"?sectors={self.sector_1.slug}&sectors={self.sector_2.slug}"
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.data["count"], 1 + 1)
         self.assertEqual(len(response.data["results"]), 1 + 1)
 
     def test_should_filter_siae_list_by_network(self):
         # single
         url = reverse("api:siae-list") + f"?networks={self.network_1.slug}"
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
         # multiple
         url = reverse("api:siae-list") + f"?networks={self.network_1.slug}&networks={self.network_2.slug}"
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.data["count"], 1 + 1)
         self.assertEqual(len(response.data["results"]), 1 + 1)
 
@@ -165,6 +166,7 @@ class SiaeDetailApiTest(TestCase):
         cls.siae = SiaeFactory()
         cls.user_token = generate_random_string()
         UserFactory(api_key=cls.user_token)
+        cls.authenticated_client = cls.client_class(headers={"authorization": f"Bearer {cls.user_token}"})
 
     def test_should_return_4O4_if_siae_excluded(self):
         siae_opcs = SiaeFactory(kind="OPCS")
@@ -172,7 +174,7 @@ class SiaeDetailApiTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 401)
         url = reverse("api:siae-detail", args=[siae_opcs.id])
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.status_code, 404)
 
     def test_should_return_simple_siae_object_to_anonymous_users(self):
@@ -182,7 +184,7 @@ class SiaeDetailApiTest(TestCase):
 
     def test_should_return_detailed_siae_object_to_authenticated_users(self):
         url = reverse("api:siae-detail", args=[self.siae.id])
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertTrue("id" in response.data)
         self.assertTrue("name" in response.data)
         self.assertTrue("siret" in response.data)
@@ -203,10 +205,11 @@ class SiaeRetrieveBySlugApiTest(TestCase):
         cls.user_token = generate_random_string()
         SiaeFactory(name="Une structure", siret="12312312312345", department="38")
         UserFactory(api_key=cls.user_token)
+        cls.authenticated_client = cls.client_class(headers={"authorization": f"Bearer {cls.user_token}"})
 
     def test_should_return_404_if_slug_unknown(self):
         url = reverse("api:siae-retrieve-by-slug", args=["test-123"])
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.status_code, 404)
 
     def test_should_return_4O4_if_siae_excluded(self):
@@ -215,12 +218,12 @@ class SiaeRetrieveBySlugApiTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 401)
         url = reverse("api:siae-retrieve-by-slug", args=[siae_opcs.slug])
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.status_code, 404)
 
     def test_should_return_detailed_siae_object_to_authenticated_user(self):
         url = reverse("api:siae-retrieve-by-slug", args=["une-structure-38"])
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["siret"], "12312312312345")
         self.assertEqual(response.data["slug"], "une-structure-38")
@@ -235,16 +238,17 @@ class SiaeRetrieveBySirenApiTest(TestCase):
         SiaeFactory(name="Une autre structure avec le meme siret", siret="22222222233333", department="69")
         cls.user_token = generate_random_string()
         UserFactory(api_key=cls.user_token)
+        cls.authenticated_client = cls.client_class(headers={"authorization": f"Bearer {cls.user_token}"})
 
     def test_should_return_400_if_siren_malformed(self):
         for siren in ["123", "12312312312345"]:
             url = reverse("api:siae-retrieve-by-siren", args=[siren])
-            response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+            response = self.authenticated_client.get(url)
             self.assertEqual(response.status_code, 400)
 
     def test_should_return_empty_list_if_siren_unknown(self):
         url = reverse("api:siae-retrieve-by-siren", args=["444444444"])
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.status_code, 200)
         # self.assertEqual(type(response.data), list)
         self.assertEqual(len(response.data), 0)
@@ -255,12 +259,12 @@ class SiaeRetrieveBySirenApiTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 401)
         url = reverse("api:siae-retrieve-by-siren", args=[siae_opcs.siren])
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(len(response.data), 0)
 
     def test_should_return_siae_list_if_siren_known(self):
         url = reverse("api:siae-retrieve-by-siren", args=["123123123"])
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.status_code, 200)
         # self.assertEqual(type(response.data), list)
         self.assertEqual(len(response.data), 1)
@@ -268,23 +272,23 @@ class SiaeRetrieveBySirenApiTest(TestCase):
         self.assertEqual(response.data[0]["slug"], "une-structure-38")
         self.assertTrue("sectors" not in response.data)
         url = reverse("api:siae-retrieve-by-siren", args=["222222222"])
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.status_code, 200)
         # self.assertEqual(type(response.data), list)
         self.assertEqual(len(response.data), 2)
         self.assertEqual(response.data[0]["siret"], "22222222233333")
         self.assertEqual(response.data[1]["siret"], "22222222233333")
         # authenticated user
-        url = reverse("api:siae-retrieve-by-siren", args=["123123123"]) + "?token=" + self.user_token
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        url = reverse("api:siae-retrieve-by-siren", args=["123123123"])
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.status_code, 200)
         # self.assertEqual(type(response.data), list)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]["siret"], "12312312312345")
         self.assertEqual(response.data[0]["slug"], "une-structure-38")
         self.assertTrue("sectors" in response.data[0])
-        url = reverse("api:siae-retrieve-by-siren", args=["222222222"]) + "?token=" + self.user_token
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        url = reverse("api:siae-retrieve-by-siren", args=["222222222"])
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.status_code, 200)
         # self.assertEqual(type(response.data), list)
         self.assertEqual(len(response.data), 2)
@@ -301,16 +305,17 @@ class SiaeRetrieveBySiretApiTest(TestCase):
         SiaeFactory(name="Une autre structure avec le meme siret", siret="22222222233333", department="69")
         cls.user_token = generate_random_string()
         UserFactory(api_key=cls.user_token)
+        cls.authenticated_client = cls.client_class(headers={"authorization": f"Bearer {cls.user_token}"})
 
     def test_should_return_404_if_siret_malformed(self):
         for siret in ["123", "123123123123456", "123 123 123 12345"]:
             url = reverse("api:siae-retrieve-by-siret", args=[siret])
-            response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+            response = self.authenticated_client.get(url)
             self.assertEqual(response.status_code, 400)
 
     def test_should_return_empty_list_if_siret_unknown(self):
         url = reverse("api:siae-retrieve-by-siret", args=["44444444444444"])
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.status_code, 200)
         # self.assertEqual(type(response.data), list)
         self.assertEqual(len(response.data), 0)
@@ -321,35 +326,35 @@ class SiaeRetrieveBySiretApiTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 401)
         url = reverse("api:siae-retrieve-by-siret", args=[siae_opcs.siret])
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(len(response.data), 0)
 
     def test_should_return_siae_list_if_siret_known(self):
         url = reverse("api:siae-retrieve-by-siret", args=["12312312312345"])
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.status_code, 200)
         # self.assertEqual(type(response.data), list)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]["siret"], "12312312312345")
         self.assertEqual(response.data[0]["slug"], "une-structure-38")
         url = reverse("api:siae-retrieve-by-siret", args=["22222222233333"])
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.status_code, 200)
         # self.assertEqual(type(response.data), list)
         self.assertEqual(len(response.data), 2)
         self.assertEqual(response.data[0]["siret"], "22222222233333")
         self.assertEqual(response.data[1]["siret"], "22222222233333")
         # authenticated user
-        url = reverse("api:siae-retrieve-by-siret", args=["12312312312345"]) + "?token=" + self.user_token
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        url = reverse("api:siae-retrieve-by-siret", args=["12312312312345"])
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.status_code, 200)
         # self.assertEqual(type(response.data), list)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]["siret"], "12312312312345")
         self.assertEqual(response.data[0]["slug"], "une-structure-38")
         self.assertTrue("sectors" in response.data[0])
-        url = reverse("api:siae-retrieve-by-siret", args=["22222222233333"]) + "?token=" + self.user_token
-        response = self.client.get(url, headers={"authorization": f"Bearer {self.user_token}"})
+        url = reverse("api:siae-retrieve-by-siret", args=["22222222233333"])
+        response = self.authenticated_client.get(url)
         self.assertEqual(response.status_code, 200)
         # self.assertEqual(type(response.data), list)
         self.assertEqual(len(response.data), 2)
