@@ -12,7 +12,6 @@ from django.urls import reverse
 from django.utils import timezone
 
 from lemarche.companies.factories import CompanyFactory
-from lemarche.conversations.constants import SOURCE_BREVO
 from lemarche.conversations.models import TemplateTransactional, TemplateTransactionalSendLog
 from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.siaes.factories import SiaeFactory
@@ -219,7 +218,7 @@ class UserAnonymizationTestCase(TestCase):
             first_name="about_to_be_inactive",
         )
         # Set email as active to check if it's really sent
-        TemplateTransactional.objects.all().update(is_active=True, source=SOURCE_BREVO)
+        TemplateTransactional.objects.all().update(is_active=True)
 
     def test_set_inactive_user(self):
         """Select users that last logged for more than a year and flag them as inactive"""
