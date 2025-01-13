@@ -124,7 +124,8 @@ class TemplateTransactionalModelTest(TestCase):
 
     def test_get_template_id(self):
         self.assertIsNone(self.tt_active_empty.get_template_id)
-        self.assertEqual(self.tt_inactive.get_template_id, self.tt_inactive.brevo_id)
+        self.assertEqual(self.tt_inactive.get_template_id, self.tt_inactive.mailjet_id)
+        self.assertEqual(self.tt_active_mailjet.get_template_id, self.tt_active_mailjet.mailjet_id)
         self.assertEqual(self.tt_active_brevo.get_template_id, self.tt_active_brevo.brevo_id)
 
     @patch("lemarche.conversations.models.api_brevo.send_transactional_email_with_template")
