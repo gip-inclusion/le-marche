@@ -81,7 +81,7 @@ class TenderCreateApiTest(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_user_with_unknown_api_key_cannot_create_tender(self):
-        url = reverse("api:tenders-list") + "?token=test"
+        url = reverse("api:tenders-list")
         response = self.client.post(
             url, data=TENDER_JSON, content_type="application/json", headers={"authorization": "Bearer !!!!!!"}
         )
