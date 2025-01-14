@@ -9,8 +9,8 @@ from django.utils import timezone
 
 from lemarche.conversations import constants as conversation_constants
 from lemarche.conversations.constants import ATTRIBUTES_TO_NOT_ANONYMIZE_FOR_INBOUND, ATTRIBUTES_TO_SAVE_FOR_INBOUND
-from lemarche.conversations.factories import ConversationFactory, TemplateTransactionalFactory
-from lemarche.conversations.models import Conversation, DisabledEmail, EmailGroup, TemplateTransactional
+from lemarche.conversations.factories import ConversationFactory, EmailGroupFactory, TemplateTransactionalFactory
+from lemarche.conversations.models import Conversation, DisabledEmail, TemplateTransactional
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.users.factories import UserFactory
 
@@ -114,7 +114,7 @@ class ConversationAnonymizationTestCase(TestCase):
 class TemplateTransactionalModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.email_group = EmailGroup.objects.first()
+        cls.email_group = EmailGroupFactory()
         cls.tt_inactive = TemplateTransactional(
             name="Email 1",
             code="EMAIL_1",
