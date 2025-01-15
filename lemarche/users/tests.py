@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone as datetime_timezone
 from io import StringIO
 from unittest.mock import patch
 
@@ -9,7 +9,6 @@ from django.core.validators import validate_email
 from django.db.models import F
 from django.test import TestCase, override_settings
 from django.urls import reverse
-from django.utils import timezone
 
 from lemarche.companies.factories import CompanyFactory
 from lemarche.conversations.constants import SOURCE_BREVO
@@ -175,14 +174,14 @@ class UserModelSaveTest(TestCase):
 # To avoid different results when test will be run in the future, we patch
 # and froze timezone.now used in the command
 # Settings are also overriden to avoid changing settings breaking tests
-@patch("django.utils.timezone.now", lambda: datetime(year=2024, month=1, day=1, tzinfo=timezone.utc))
+@patch("django.utils.timezone.now", lambda: datetime(year=2024, month=1, day=1, tzinfo=datetime_timezone.utc))
 @override_settings(
     INACTIVE_USER_TIMEOUT_IN_MONTHS=12,
     INACTIVE_USER_WARNING_DELAY_IN_DAYS=7,
 )
 class UserAnonymizationTestCase(TestCase):
     def setUp(self):
-        frozen_now = datetime(year=2024, month=1, day=1, tzinfo=timezone.utc)
+        frozen_now = datetime(year=2024, month=1, day=1, tzinfo=datetime_timezone.utc)
         self.frozen_last_year = frozen_now - relativedelta(years=1)
         self.frozen_warning_date = self.frozen_last_year + relativedelta(days=7)
 
