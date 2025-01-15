@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.test import TestCase
 from django.urls import reverse
 
@@ -88,7 +90,8 @@ class DisabledEmailEditViewTest(TestCase):
             self.assertContains(response, group.display_name)
             self.assertContains(response, " checked>", count=2)
 
-    def test_form_submission_updates_preferences(self):
+    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.UpdateContact")
+    def test_form_submission_updates_preferences_with_marketing_disabled(self, mock_update_contact):
         self.assertEqual(self.user.disabled_emails.count(), 0)
         self.client.force_login(self.user)
         response = self.client.post(
@@ -100,6 +103,24 @@ class DisabledEmailEditViewTest(TestCase):
             follow=True,
         )
         self.assertContains(response, "Vos préférences de notifications ont été mises à jour.")
+        mock_update_contact.assert_called_once_with(self.user.email, True)
         self.user.refresh_from_db()
         self.assertEqual(self.user.disabled_emails.count(), 1)
         self.assertEqual(self.user.disabled_emails.first().group.pk, 2)
+
+    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.UpdateContact")
+    def test_form_submission_updates_preferences_with_marketing_enabled(self, mock_update_contact):
+        self.assertEqual(self.user.disabled_emails.count(), 0)
+        self.client.force_login(self.user)
+        response = self.client.post(
+            self.url,
+            {
+                "email_group_1": True,
+                "email_group_2": True,
+            },
+            follow=True,
+        )
+        self.assertContains(response, "Vos préférences de notifications ont été mises à jour.")
+        mock_update_contact.assert_called_once_with(self.user.email, False)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.disabled_emails.count(), 0)

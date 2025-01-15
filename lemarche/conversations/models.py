@@ -195,6 +195,8 @@ class Conversation(models.Model):
 
 
 class EmailGroup(models.Model):
+    COMMUNICATION_MARKETING = "Communication marketing"
+
     display_name = models.CharField(verbose_name="Nom", max_length=255, blank=True)
     description = models.TextField(verbose_name="Description", blank=True)
     relevant_user_kind = models.CharField(
