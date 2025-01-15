@@ -18,7 +18,7 @@ django-compressor = "^4.4"
 django-cors-headers = "^3.14.0"
 django-environ = "^0.9.0"
 django-extensions = "^3.2.3"
-django-fieldsets-with-inlines = { git = "https://github.com/raphodn/django-fieldsets-with-inlines.git", branch = "master" }
+django-fieldsets-with-inlines = "^0.6"
 django-filter = "^23.3"
 django-formtools = "^2.5.1"
 django-htmx = "^1.17.3"
