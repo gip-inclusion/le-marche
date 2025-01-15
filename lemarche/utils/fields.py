@@ -5,7 +5,7 @@ from operator import attrgetter
 
 from django import forms
 from django.contrib.postgres.fields import ArrayField
-from django.forms.models import ModelChoiceField, ModelChoiceIterator, ModelMultipleChoiceField
+from django.forms.models import ModelChoiceIterator, ModelMultipleChoiceField
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
@@ -43,16 +43,6 @@ class GroupedModelChoiceIterator(ModelChoiceIterator):
             yield (group, [self.choice(obj) for obj in objs])
 
 
-class GroupedModelChoiceField(ModelChoiceField):
-    def __init__(self, *args, choices_groupby, **kwargs):
-        if isinstance(choices_groupby, str):
-            choices_groupby = attrgetter(choices_groupby)
-        elif not callable(choices_groupby):
-            raise TypeError("choices_groupby must either be a str or a callable accepting a single argument")
-        self.iterator = partial(GroupedModelChoiceIterator, groupby=choices_groupby)
-        super().__init__(*args, **kwargs)
-
-
 class GroupedModelMultipleChoiceField(ModelMultipleChoiceField):
     def __init__(self, *args, choices_groupby, **kwargs):
         if isinstance(choices_groupby, str):
@@ -88,18 +78,3 @@ def pretty_print_readonly_jsonfield_to_table(jsonfield_data, id_table="id-table-
         result = mark_safe(f'<table id="{id_table}" data-data="{escape(result)}"></table>')
 
     return result
-
-
-class BooleanNotEmptyField(forms.BooleanField):
-    def to_python(self, value):
-        if isinstance(value, str) and value.lower() in ("false", "0"):
-            value = False
-        elif isinstance(value, str) and value.lower() in ("true", "1"):
-            value = True
-        else:
-            value = None
-        return value
-
-    def validate(self, value):
-        if value not in (0, 1) and self.required:
-            raise forms.ValidationError(self.error_messages["required"], code="required")
