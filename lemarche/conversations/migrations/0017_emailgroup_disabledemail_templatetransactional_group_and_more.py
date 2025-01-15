@@ -12,30 +12,35 @@ def create_email_groups(apps, schema_editor):
     # Create email groups
     email_groups = [
         {
+            "id": 1,
             "display_name": "Structure(s) intéressée(s)",
             "description": "En désactivant cette option, vous ne serez plus averti par email lorsque des fournisseurs s'intéressent à votre besoin, ce qui pourrait vous faire perdre des opportunités de collaboration rapide et efficace.",
             "relevant_user_kind": "BUYER",
             "can_be_unsubscribed": True,
         },
         {
+            "id": 2,
             "display_name": "Communication marketing",
             "description": "En désactivant cette option, vous ne recevrez plus par email nos newsletters, enquêtes, invitations à des webinaires et Open Labs, ce qui pourrait vous priver d'informations utiles et de moments d'échange exclusifs.",
             "relevant_user_kind": "BUYER",
             "can_be_unsubscribed": True,
         },
         {
+            "id": 3,
             "display_name": "Opportunités commerciales",
             "description": "En désactivant cette option, vous ne recevrez plus par email les demandes de devis et les appels d'offres spécialement adaptés à votre activité, ce qui pourrait vous faire manquer des opportunités importantes pour votre entreprise.",
             "relevant_user_kind": "SIAE",
             "can_be_unsubscribed": True,
         },
         {
+            "id": 4,
             "display_name": "Demandes de mise en relation",
             "description": "En désactivant cette option, vous ne recevrez plus par email les demandes de mise en relation de clients intéressés par votre structure, ce qui pourrait vous faire perdre des opportunités précieuses de collaboration et de développement.",
             "relevant_user_kind": "SIAE",
             "can_be_unsubscribed": True,
         },
         {
+            "id": 5,
             "display_name": "Communication marketing",
             "description": "En désactivant cette option, vous ne recevrez plus par email nos newsletters, enquêtes, invitations aux webinaires et Open Labs, ce qui pourrait vous faire passer à côté d’informations clés, de ressources utiles et d’événements exclusifs.",
             "relevant_user_kind": "SIAE",
