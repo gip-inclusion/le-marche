@@ -1,3 +1,5 @@
+import logging
+
 from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib import admin
@@ -29,6 +31,9 @@ from lemarche.www.tenders.tasks import (
     send_tender_author_modification_request,
     send_tender_author_reject_message,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 class KindFilter(MultiChoice):
@@ -282,8 +287,6 @@ class TenderForm(forms.ModelForm):
         """
         cleaned_data = super().clean()
         distance_location = cleaned_data.get("distance_location")
-        email_sent_for_modification = cleaned_data.get("email_sent_for_modification")
-        changes_information = cleaned_data.get("changes_information")
 
         if distance_location:
             location = cleaned_data.get("location")
@@ -295,11 +298,6 @@ class TenderForm(forms.ModelForm):
                 raise ValidationError(
                     {"location": "Le champ 'Distance en km' est spécifié, ce champ doit être une ville"}
                 )
-
-        if not email_sent_for_modification and changes_information:
-            raise forms.ValidationError(
-                {"changes_information": "Vous devez cocher la case 'Modifications requises' pour remplir ce champ"}
-            )
 
 
 @admin.register(Tender, site=admin_site)
@@ -314,7 +312,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "start_working_date_in_list",
         "siae_count_annotated_with_link_in_list",
         "siae_detail_contact_click_count_annotated_with_link_in_list",
-        "email_sent_for_modification",
+        "status",
         "is_validated_or_sent",
         "is_followed_by_us",
     ]
@@ -525,8 +523,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             {
                 "fields": (
                     "admins",
-                    "email_sent_for_modification",
-                    "changes_information",
                     "is_followed_by_us",
                     "proj_resulted_in_reserved_tender",
                     "is_reserved_tender",
@@ -560,28 +556,22 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     def handle_email_sent_for_modification(self, request, obj):
         """
-        Send an email to the author of the tender to request a modification, if it hasn't already been done.
-        Update the status of the tender to STATUS_DRAFT and the email_sent_for_modification field.
-        Redirect to the page for modifying the tender.
+        Send an email to the author and set some fields with 'set_modification_request'
+        Display an error message if the email can't be sent
         """
-        if obj.email_sent_for_modification:
-            try:
-                send_tender_author_modification_request(tender=obj)
-                self.message_user(request, "Une demande de modification a été envoyée à l'auteur du besoin")
-                obj.email_sent_for_modification = True
-                obj.status = tender_constants.STATUS_DRAFT
-                obj.add_log_entry("SEND_TENDER_AUTHOR_MODIFICATION_REQUEST")
-                obj.save(update_fields=["email_sent_for_modification", "status", "logs"])
-            except Exception as e:
-                # Force the email_sent_for_modification field to False
-                obj.email_sent_for_modification = False
-                obj.save(update_fields=["email_sent_for_modification"])
-                self.message_user(
-                    request,
-                    f"Erreur lors de l'envoi de la demande de modification : {str(e)}",
-                    level="error",
-                )
-        return HttpResponseRedirect(".")
+        try:
+            send_tender_author_modification_request(tender=obj)
+            obj.set_modification_request()
+            self.message_user(request, "Une demande de modification a été envoyée à l'auteur du besoin")
+        except Exception as e:
+            self.message_user(
+                request,
+                "Erreur lors de l'envoi de la demande de modification : veuillez contacter le support.",
+                level="error",
+            )
+            logger.error(f"Exception when sending mail {e}")
+        finally:
+            return HttpResponseRedirect(".")
 
     def handle_rejected_status(self, request, obj):
         """
@@ -624,26 +614,14 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             # slug cannot be changed once the tender is validated
             if obj.status == tender_constants.STATUS_VALIDATED:
                 readonly_fields.append("slug")
-            # cannot edit 'email_sent_for_modification' while tender is not published
-            if obj and obj.email_sent_for_modification and obj.status != Tender.STATUS_PUBLISHED:
-                readonly_fields.append("email_sent_for_modification")
         return readonly_fields
 
     def save_model(self, request, obj: Tender, form, change):
         """
         Set Tender author on create
-        Set 'email_sent_for_modification' and 'changes_information' on update
         """
         if not obj.id and not obj.author_id:
             obj.author = request.user
-
-        if change and obj.email_sent_for_modification:
-            fields_to_update = ["email_sent_for_modification"]
-            if obj.changes_information:
-                fields_to_update.append("changes_information")
-            obj.save(update_fields=fields_to_update)
-
-        obj.save()
 
     def save_formset(self, request, form, formset, change):
         """
@@ -862,7 +840,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             # we don't need to send it in the crm, parteners manage them
             self.message_user(request, "Ce dépôt de besoin a été validé. Il sera envoyé aux partenaires :)")
             return HttpResponseRedirect(".")
-        if obj.email_sent_for_modification and obj.status == tender_constants.STATUS_PUBLISHED:
+        if request.POST.get("_send_modification_request"):
             return self.handle_email_sent_for_modification(request, obj)
         if obj.status == tender_constants.STATUS_REJECTED:
             return self.handle_rejected_status(request, obj)
