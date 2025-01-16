@@ -36,9 +36,10 @@ No need to repeat them under fieldsets!
 {% block after_related_objects %}
     {{ block.super }}
     {% if original %}
-        {% if not original.validated_at %}
+        {% if not original.validated_at and original.status == "PUBLISHED"%}
             <div class="submit-row">
                 <input type="submit" class="button" name="_calculate_tender" value="Sauvegarder et chercher les structures correspondantes" />
+                <input type="submit" name="_send_modification_request" value="Envoyer une demande de modification"/>
             </div>
         {% endif %}
         <div class="submit-row" style="display:block">
@@ -54,7 +55,7 @@ No need to repeat them under fieldsets!
                         <p><i>Date idéale de début des prestations dépassée ({{ original.start_working_date }})</i></p>
                     {% endif %}
                 {% endif %}
-            {% else %}
+            {% elif original.status == "PUBLISHED" %}
                 <p><i>L'envoi des besoins 'validés' se fait toutes les 5 minutes, du Lundi au Vendredi, entre 9h et 17h</i></p>
                 <input type="submit" value="Valider (sauvegarder) et envoyer aux structures 🚀" data-recipient="siaes" data-title="{{ original.title }}" style="margin-right: 5px"/>
                 <input type="submit" value="Valider (sauvegarder) et envoyer aux partenaires 🚀" data-recipient="partners" data-title="{{ original.title }}"/>

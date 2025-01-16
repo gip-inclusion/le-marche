@@ -5,7 +5,7 @@ from urllib.parse import quote, urlencode
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.db.models import Model
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.utils.http import url_has_allowed_host_and_scheme
 
 
@@ -55,10 +55,6 @@ def get_safe_url(request, param_name=None, fallback_url=None, url=None):
 
 def get_object_share_url(obj: Model):
     return f"https://{get_domain_url()}{obj.get_absolute_url()}"
-
-
-def get_object_update_url(obj: Model, app: str):
-    return reverse(f"{app}:update", kwargs={"slug": obj.slug})
 
 
 def get_object_admin_url(obj: Model):
