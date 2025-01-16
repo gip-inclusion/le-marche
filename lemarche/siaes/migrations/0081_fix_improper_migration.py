@@ -66,6 +66,11 @@ class Migration(migrations.Migration):
                     models.DateTimeField(auto_now=True, verbose_name="Date de modification"),
                 ),
             ],
+            options={
+                "ordering": ["-created_at"],
+                "verbose_name": "Gestionnaire",
+                "verbose_name_plural": "Gestionnaires",
+            },
         ),
         # Create a temporary model field, linked to the temporary Through model
         migrations.AddField(
