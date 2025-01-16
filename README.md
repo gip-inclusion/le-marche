@@ -24,6 +24,7 @@ Voici un tableau explicatif de la nomenclature utilisée dans le code (par rappo
 |Groupe de secteurs d'activité|Sector group    |
 |Périmètre                    |Perimeter       |
 
+
 ## Installation
 
 Étapes d'une installation en local à des fins de développement.
