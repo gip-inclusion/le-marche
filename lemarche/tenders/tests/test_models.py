@@ -1094,41 +1094,17 @@ class TenderAdminTest(TestCase):
             self.form_data
             | {
                 "title": "New title",
-                "email_sent_for_modification": "True",
+                "_send_modification_request": "Envoyer une demande de modification",
             },
             follow=True,
         )
         tender_response = response.context_data["adminform"].form.instance
+        actions = [log["action"] for log in tender_response.logs]
 
         mock_send_email.assert_called_once_with(tender=tender_response)
+        self.assertTrue(tender_response.email_sent_for_modification)
         self.assertEqual(tender_response.status, tender_constants.STATUS_DRAFT)
-
-    @patch("lemarche.tenders.admin.send_tender_author_modification_request")
-    def test_email_not_sent_for_non_published_status(self, mock_send_email):
-        """
-        Test that when the tender status is not PUBLISHED,
-        the modification email is not sent.
-        """
-        self.client.force_login(self.user)
-
-        self.tender.status = tender_constants.STATUS_DRAFT
-        self.tender.save()
-
-        tender_update_post_url = get_admin_change_view_url(self.tender)
-
-        response = self.client.post(
-            tender_update_post_url,
-            self.form_data
-            | {
-                "title": "New title",
-                "email_sent_for_modification": "True",
-            },
-            follow=True,
-        )
-        tender_response = response.context_data["adminform"].form.instance
-
-        mock_send_email.assert_not_called()
-        self.assertEqual(tender_response.status, tender_constants.STATUS_DRAFT)
+        self.assertIn("send tender author modification request", actions)
 
     def test_email_sent_for_modification_updates_status_and_logs(self):
         """Test 'email_sent_for_modification' updates tender status and logs"""
@@ -1140,7 +1116,7 @@ class TenderAdminTest(TestCase):
             self.form_data
             | {
                 "title": "New title",
-                "email_sent_for_modification": True,
+                "_send_modification_request": "Envoyer une demande de modification",
             },
             follow=True,
         )
@@ -1151,27 +1127,8 @@ class TenderAdminTest(TestCase):
 
         # Tasks 'send_tender_autor_modification_request' logs email sent date
         log_entry = tender_response.logs[0]
-        self.assertEqual(log_entry["action"], "SEND_TENDER_AUTHOR_MODIFICATION_REQUEST")
-        self.assertIn("timestamp", log_entry)
-
-    def test_changes_information_cannot_be_edited_if_email_not_sent(self):
-        """Test changes_information cannot be edited if email not sent."""
-        self.client.force_login(self.user)
-        tender_update_post_url = get_admin_change_view_url(self.tender)
-
-        response = self.client.post(
-            tender_update_post_url,
-            self.form_data
-            | {
-                "title": "New title",
-                "changes_information": "test",
-            },
-            follow=True,
-        )
-        form = response.context_data["adminform"].form
-        tender_response = response.context_data["adminform"].form.instance
-        self.assertFalse(form.is_valid())
-        self.assertEqual(tender_response.changes_information, "")
+        self.assertEqual(log_entry["action"], "send tender author modification request")
+        self.assertIn("date", log_entry)
 
     @patch("lemarche.tenders.admin.send_tender_author_modification_request")
     def test_handle_email_sent_for_modification_failure(self, mock_send_email):
@@ -1189,7 +1146,7 @@ class TenderAdminTest(TestCase):
             self.form_data
             | {
                 "title": "New title",
-                "email_sent_for_modification": True,
+                "_send_modification_request": "Envoyer une demande de modification",
             },
             follow=True,
         )
@@ -1201,9 +1158,9 @@ class TenderAdminTest(TestCase):
 
         self.assertEqual(tender_response.status, tender_constants.STATUS_PUBLISHED)
         self.assertFalse(tender_response.email_sent_for_modification)
-        self.assertNotIn("SEND_TENDER_AUTHOR_MODIFICATION_REQUEST", actions)
+        self.assertNotIn("send tender author modification request", actions)
         self.assertIn(
-            "Erreur lors de l'envoi de la demande de modification : Simulated email sending failure", message_texts
+            "Erreur lors de l'envoi de la demande de modification : veuillez contacter le support.", message_texts
         )
         mock_send_email.assert_called_once_with(tender=tender_response)
 

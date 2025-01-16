@@ -17,8 +17,8 @@ def create_template(apps, schema_editor):
 
 def delete_template(apps, schema_editor):
     TemplateTransactional = apps.get_model("conversations", "TemplateTransactional")
-    TemplateTransactional.objects.get(code="TENDERS_AUTHOR_MODIFICATION_REQUEST").delete()
-    TemplateTransactional.objects.get(code="TENDERS_AUTHOR_REJECT_MESSAGE").delete()
+    TemplateTransactional.objects.filter(code="TENDERS_AUTHOR_MODIFICATION_REQUEST").delete()
+    TemplateTransactional.objects.filter(code="TENDERS_AUTHOR_REJECT_MESSAGE").delete()
 
 
 class Migration(migrations.Migration):

@@ -22,12 +22,12 @@ class Command(BaseCommand):
         for tender in tenders_draft:
             email_sent_at = None
             for log_entry in tender.logs:
-                if log_entry.get("action") == "send_tender_author_modification_request":
-                    email_sent_at = log_entry.get("email_sent_at")
+                if log_entry.get("action") == "send tender author modification request":
+                    email_sent_at = log_entry.get("date")
                     break
 
             if email_sent_at:
-                email_sent_at_date = timezone.now().strptime(email_sent_at, "%Y-%m-%dT%H:%M:%S.%f%z")
+                email_sent_at_date = timezone.datetime.fromisoformat(email_sent_at)
                 if email_sent_at_date <= threshold_date:
                     tenders_to_update.append(tender)
 

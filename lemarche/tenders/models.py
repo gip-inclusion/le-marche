@@ -616,7 +616,6 @@ class Tender(models.Model):
     email_sent_for_modification = models.BooleanField(
         "Modifications requises", help_text="Envoyer un e-mail pour demander des modifications", default=False
     )
-    changes_information = models.TextField("Informations complémentaires sur les modifications requises", blank=True)
     # Admin specific for proj
     proj_resulted_in_reserved_tender = models.BooleanField(
         "Abouti à un appel d’offre (uniquement sourcing)", null=True
@@ -712,34 +711,28 @@ class Tender(models.Model):
         for field_name in self.TRACK_UPDATE_FIELDS:
             setattr(self, f"__previous_{field_name}", getattr(self, field_name))
 
-    def add_log_entry(self, action, details=None):
-        """
-        Add an entry to the log list.
-
-        Args:
-            action (str): The action that was performed (e.g. status change, email sent, etc.)
-            details (dict, optional): Additional details about the action
-        """
-        log_entry = {
-            "action": action,
-            "timestamp": timezone.now().isoformat(),
-        }
-        if details:
-            log_entry["details"] = details
-
-        self.logs.append(log_entry)
-
     def reset_modification_request(self):
         """
         Reset modification request when republishing a tender.
         This method can only be called on Tender updates if status is changed to published
         """
         if self.status == self.STATUS_PUBLISHED and self.email_sent_for_modification:
-            if self.changes_information:
-                self.changes_information = ""
-                self.save(update_fields=["changes_information"])
             self.email_sent_for_modification = False
             self.save(update_fields=["email_sent_for_modification"])
+
+    def set_modification_request(self):
+        """
+        Set modification request when republishing a tender.
+        This method can only be called on Tender updates if status is changed to published
+        """
+        self.email_sent_for_modification = True
+        self.status = tender_constants.STATUS_DRAFT
+        log_item = {
+            "action": "send tender author modification request",
+            "date": timezone.now().isoformat(),
+        }
+        self.logs.append(log_item)
+        self.save(update_fields=["email_sent_for_modification", "status", "logs"])
 
     def set_slug(self, with_uuid=False):
         """
