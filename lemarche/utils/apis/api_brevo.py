@@ -106,9 +106,9 @@ def update_contact_email_blacklisted(user_identifier: str, email_blacklisted: bo
     update_contact = sib_api_v3_sdk.UpdateContact(email_blacklisted=email_blacklisted)
     try:
         api_response = api_instance.update_contact(identifier=user_identifier, update_contact=update_contact)
-        logger.info(f"Success Brevo->ContactsApi->update_contact: {api_response}")
+        logger.info(f"Success Brevo->ContactsApi->update_contact to update email_blacklisted: {api_response}")
     except ApiException as e:
-        logger.error(f"Exception when calling Brevo->ContactsApi->update_contact: {e}")
+        logger.error(f"Exception when calling Brevo->ContactsApi->update_contact to update email_blacklisted: {e}")
 
 
 def remove_contact_from_list(user, list_id: int):
