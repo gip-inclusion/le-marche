@@ -208,8 +208,8 @@ class EmailGroup(models.Model):
     def __str__(self):
         return f"{self.display_name} ({self.relevant_user_kind if self.relevant_user_kind else 'Tous'})"
 
-    def disabled_for_user(self, user):
-        return DisabledEmail.objects.filter(user=user, group=self).exists()
+    def disabled_for_email(self, email):
+        return DisabledEmail.objects.filter(user__email=email, group=self).exists()
 
 
 class TemplateTransactionalQuerySet(models.QuerySet):
@@ -324,6 +324,10 @@ class TemplateTransactional(models.Model):
         parent_content_object=None,
     ):
         if self.is_active:
+            # check if recipient email doesn't associated to a user or associated user doesn't disable email group
+            if self.group and self.group.disabled_for_email(recipient_email):
+                return
+
             args = {
                 "template_id": self.get_template_id,
                 "recipient_email": recipient_email,
