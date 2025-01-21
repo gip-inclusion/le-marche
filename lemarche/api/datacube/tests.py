@@ -46,12 +46,12 @@ class DatacubeApiTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"count": 0, "next": None, "previous": None, "results": []})
 
-        user = UserFactory(kind=User.KIND_BUYER)
+        user = UserFactory(kind=User.KIND_BUYER, email="lagarde@example.com")
         CompanyFactory(name="Lagarde et Fils", users=[user])
         TenderFactory(title="Sébastien Le Lopez", amount="0-42K", author=user, presta_type=["FANFAN", "LA", "TULIPE"])
 
         # no associated company
-        TenderFactory(title="Marc Henry", amount_exact=697)
+        TenderFactory(title="Marc Henry", amount_exact=697, author__email="henry@example.com")
 
         response = self.client.get(url, headers={"Authorization": "Token bar"})
         self.assertEqual(response.status_code, 200)
@@ -65,7 +65,7 @@ class DatacubeApiTest(TestCase):
                     {
                         "amount": "0-42K",
                         "amount_exact": None,
-                        "author_email": "email1@example.com",
+                        "author_email": "lagarde@example.com",
                         "company_name": "Lagarde et Fils",
                         "company_slug": "lagarde-et-fils",
                         "created_at": "2024-06-21T14:23:34+02:00",
@@ -80,7 +80,7 @@ class DatacubeApiTest(TestCase):
                     {
                         "amount": None,
                         "amount_exact": 697,
-                        "author_email": "email2@example.com",
+                        "author_email": "henry@example.com",
                         "created_at": "2024-06-21T14:23:34+02:00",
                         "kind": "QUOTE",
                         "presta_type": [],

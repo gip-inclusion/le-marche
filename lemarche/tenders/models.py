@@ -785,8 +785,8 @@ class Tender(models.Model):
     def sectors_full_list_string(self) -> str:
         return self.sectors_list_string(display_max=None)
 
-    def perimeters_list(self):
-        return self.perimeters.values_list("name", flat=True)
+    def perimeters_list(self) -> list:
+        return list(self.perimeters.order_by("name").values_list("name", flat=True))
 
     @cached_property
     def perimeters_list_string(self) -> str:
