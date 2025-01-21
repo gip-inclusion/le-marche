@@ -1,8 +1,8 @@
-import factory
 import logging
 import os
 from unittest.mock import patch
 
+import factory
 from django.core.management import call_command
 from django.db.models import signals
 from django.test import TransactionTestCase
@@ -328,6 +328,7 @@ class SiaeActivitiesCreateCommandTest(TransactionTestCase):
             kind=siae_constants.KIND_EA,
             presta_type=[siae_constants.PRESTA_DISP],
             geo_range=siae_constants.GEO_RANGE_DEPARTMENT,
+            department="35",
         )
         siae.sectors.set([self.sector2, self.sector3])
 
@@ -346,6 +347,7 @@ class SiaeActivitiesCreateCommandTest(TransactionTestCase):
             kind=siae_constants.KIND_EA,
             presta_type=[siae_constants.PRESTA_DISP],
             geo_range=siae_constants.GEO_RANGE_REGION,
+            region="Bretagne",
         )
         siae.sectors.set([self.sector2, self.sector3])
 
