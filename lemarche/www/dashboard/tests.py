@@ -73,6 +73,12 @@ class DisabledEmailEditViewTest(TestCase):
     def setUp(self):
         self.user = UserFactory(kind=User.KIND_BUYER)
         self.url = reverse("dashboard:notifications_edit")
+        self.email_group_1 = EmailGroup.objects.get(
+            relevant_user_kind=User.KIND_BUYER, display_name="Structure(s) intéressée(s)"
+        )
+        self.email_group_2 = EmailGroup.objects.get(
+            relevant_user_kind=User.KIND_BUYER, display_name="Communication marketing"
+        )
 
     def test_login_required(self):
         response = self.client.get(self.url)
@@ -100,8 +106,8 @@ class DisabledEmailEditViewTest(TestCase):
         response = self.client.post(
             self.url,
             {
-                "email_group_1": True,
-                "email_group_2": False,
+                f"email_group_{self.email_group_1.pk}": True,
+                f"email_group_{self.email_group_2.pk}": False,
             },
             follow=True,
         )
@@ -115,7 +121,7 @@ class DisabledEmailEditViewTest(TestCase):
         self.assertContains(response, "Vos préférences de notifications ont été mises à jour.")
         self.user.refresh_from_db()
         self.assertEqual(self.user.disabled_emails.count(), 1)
-        self.assertEqual(self.user.disabled_emails.first().group.pk, 2)
+        self.assertIsNotNone(self.user.disabled_emails.get(group=self.email_group_2))
 
     @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.ContactsApi")
     def test_form_submission_updates_preferences_with_marketing_enabled(self, mock_contacts_api):
@@ -127,8 +133,8 @@ class DisabledEmailEditViewTest(TestCase):
         response = self.client.post(
             self.url,
             {
-                "email_group_1": True,
-                "email_group_2": True,
+                f"email_group_{self.email_group_1.pk}": True,
+                f"email_group_{self.email_group_2.pk}": True,
             },
             follow=True,
         )
