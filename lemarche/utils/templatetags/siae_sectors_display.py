@@ -10,7 +10,7 @@ register = template.Library()
 def siae_sectors_display(object, display_max=5, current_search_query="", output_format="string"):
     """
     Pretty rendering of M2M fields.
-    - object can be Siae, SectorGroup, SiaeActivity...
+    - object can be SectorGroup, SiaeActivity...
     """
 
     values = []
