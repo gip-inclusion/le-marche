@@ -91,6 +91,10 @@ def add_to_contact_list(user, type: str, tender=None, source: str = user_constan
         api_mailjet.add_to_contact_list_async(user.email, properties, contact_list_id)
 
 
+def update_contact_email_blacklisted(email, email_blacklisted: bool):
+    api_brevo.update_contact_email_blacklisted(email, email_blacklisted)
+
+
 @task()
 def send_mail_async(
     email_subject,

@@ -3,6 +3,7 @@ from django import forms
 from lemarche.conversations.models import DisabledEmail, EmailGroup
 from lemarche.sectors.models import Sector
 from lemarche.users.models import User
+from lemarche.utils.emails import update_contact_email_blacklisted
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.utils.widgets import CustomSelectMultiple
 
@@ -55,14 +56,21 @@ class DisabledEmailEditForm(forms.Form):
     def save(self):
         disabled_emails = []
 
+        disabled_emails_marketing = False
+
         # add unchecked fields to disabled_emails
         for field_name, value in self.cleaned_data.items():
-            if field_name.startswith("email_group_"):
-                if not value:
-                    group = EmailGroup.objects.get(pk=int(field_name.replace("email_group_", "")))
-                    disabled_email, _ = DisabledEmail.objects.get_or_create(user=self.user, group=group)
-                    disabled_emails.append(disabled_email)
+            if field_name.startswith("email_group_") and not value:
+                group = EmailGroup.objects.get(pk=int(field_name.replace("email_group_", "")))
+                disabled_email, _ = DisabledEmail.objects.get_or_create(user=self.user, group=group)
+                disabled_emails.append(disabled_email)
+
+                if group.display_name == EmailGroup.COMMUNICATION_MARKETING:
+                    disabled_emails_marketing = True
+
         self.user.disabled_emails.set(disabled_emails)
 
         # remove old disabled_emails
         DisabledEmail.objects.exclude(pk__in=[de.pk for de in disabled_emails]).delete()
+
+        update_contact_email_blacklisted(self.user.email, disabled_emails_marketing)
