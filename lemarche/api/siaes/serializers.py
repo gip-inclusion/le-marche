@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from lemarche.api.networks.serializers import NetworkSimpleSerializer
-from lemarche.api.sectors.serializers import SectorSimpleSerializer
 from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabelOld, SiaeOffer
 
 
@@ -34,7 +33,6 @@ class SiaeLabelOldSimpleSerializer(serializers.ModelSerializer):
 
 class SiaeDetailSerializer(serializers.ModelSerializer):
     kind_parent = serializers.ReadOnlyField()
-    sectors = SectorSimpleSerializer(many=True)
     networks = NetworkSimpleSerializer(many=True)
     offers = SiaeOfferSimpleSerializer(many=True)
     client_references = SiaeClientReferenceSimpleSerializer(many=True)
@@ -64,12 +62,10 @@ class SiaeDetailSerializer(serializers.ModelSerializer):
             "region",
             "is_qpv",
             "is_active",
-            "sectors",
             "networks",
             "offers",
             "client_references",
             "labels_old",
-            # "images",
             "created_at",
             "updated_at",
         ]
