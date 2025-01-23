@@ -180,7 +180,6 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
         HasUserFilter,
         "kind",
         "super_badge",
-        "geo_range",
         "source",
         "networks",
     ]
@@ -366,16 +365,6 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
     fieldsets_with_inlines = fieldsets_with_inlines_original
 
     add_fieldsets = [
-        # (
-        #     "Affichage",
-        #     {
-        #         "fields": (
-        #             "is_active",
-        #             # "is_delisted",
-        #             # "is_first_page"
-        #         ),
-        #     },
-        # ),
         (
             "Données C1 (ou ESAT ou SEP)",
             {
@@ -389,8 +378,6 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
                     "nature",
                     "presta_type",
                     "legal_form",  # from API Entreprise mapping
-                    # "c1_id",
-                    # "asp_id",
                     "website",
                     "email",
                     "phone",
@@ -399,8 +386,6 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
                     "post_code",
                     "department",
                     "region",
-                    # "coords_display",
-                    # "coords",
                     "source",
                 )
             },
@@ -412,16 +397,6 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
                     "description",
                     "sectors",
                     "networks",
-                    # "groups",
-                )
-            },
-        ),
-        (
-            "Périmètre d'intervention",
-            {
-                "fields": (
-                    "geo_range",
-                    "geo_range_custom_distance",
                 )
             },
         ),
