@@ -22,11 +22,6 @@ class SectorFactory(DjangoModelFactory):
     group = factory.SubFactory(SectorGroupFactory)
 
     @factory.post_generation
-    def siaes(self, create, extracted, **kwargs):
-        if extracted:
-            self.siaes.add(*extracted)
-
-    @factory.post_generation
     def tenders(self, create, extracted, **kwargs):
         if extracted:
             self.tenders.add(*extracted)

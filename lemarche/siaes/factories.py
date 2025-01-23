@@ -57,11 +57,6 @@ class SiaeFactory(DjangoModelFactory):
             self.users.add(*extracted)
 
     @factory.post_generation
-    def sectors(self, create, extracted, **kwargs):
-        if extracted:
-            self.sectors.add(*extracted)
-
-    @factory.post_generation
     def networks(self, create, extracted, **kwargs):
         if extracted:
             self.networks.add(*extracted)
