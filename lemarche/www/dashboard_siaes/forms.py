@@ -66,50 +66,6 @@ class SiaeSearchAdoptConfirmForm(forms.ModelForm):
         fields = []
 
 
-class SiaeEditSearchForm(forms.ModelForm):
-    presta_type = forms.MultipleChoiceField(
-        label=Siae._meta.get_field("presta_type").verbose_name,
-        choices=siae_constants.PRESTA_CHOICES,
-        required=True,
-        widget=forms.CheckboxSelectMultiple,
-        disabled=True,
-    )
-    geo_range = forms.ChoiceField(
-        label=Siae._meta.get_field("geo_range").verbose_name,
-        choices=siae_constants.GEO_RANGE_CHOICES,
-        required=True,
-        widget=forms.RadioSelect,
-        disabled=True,
-    )
-    sectors = GroupedModelMultipleChoiceField(
-        label=Sector._meta.verbose_name_plural,
-        queryset=Sector.objects.form_filter_queryset(),
-        choices_groupby="group",
-        required=True,
-        widget=forms.CheckboxSelectMultiple,
-        disabled=True,
-    )
-
-    class Meta:
-        model = Siae
-        fields = [
-            "presta_type",
-            "geo_range",
-            "geo_range_custom_distance",
-            "sectors",
-        ]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["geo_range_custom_distance"].widget.attrs.update({"placeholder": "Distance en kilomètres"})
-
-    def save(self, *args, **kwargs):
-        """Clean geo_range_custom_distance before save."""
-        if self.cleaned_data["geo_range"] != siae_constants.GEO_RANGE_CUSTOM:
-            self.instance.geo_range_custom_distance = None
-        super().save(*args, **kwargs)
-
-
 class SiaeEditInfoForm(forms.ModelForm, DsfrBaseForm):
     class Meta:
         model = Siae
