@@ -3,6 +3,7 @@ from django import forms
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.contrib.gis import admin as gis_admin
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
@@ -113,11 +114,29 @@ class SiaeNoteInline(GenericTabularInline):
     }
 
 
+class SiaeUserFormset(forms.models.BaseInlineFormSet):
+    def clean(self):
+        """Check for duplcated m2m to avoid raising IntegrityError"""
+        user_list = []
+
+        for form in self.forms:
+            if form.cleaned_data:
+                user_list.append(form.cleaned_data["user"])
+
+        duplicated_groups = [x for x in user_list if user_list.count(x) > 1]
+        if duplicated_groups:
+            raise ValidationError(
+                "Gestionnaires dupliqués: %(duplicates)s",
+                params={"duplicates": ", ".join(group.__str__() for group in set(duplicated_groups))},
+            )
+
+
 class SiaeUserInline(admin.TabularInline):
     model = SiaeUser
     fields = ["user", "user_with_link", "created_at", "updated_at"]
     autocomplete_fields = ["user"]
     readonly_fields = ["user_with_link", "created_at", "updated_at"]
+    formset = SiaeUserFormset
     extra = 0
 
     def user_with_link(self, siae_user):
