@@ -226,6 +226,7 @@ class SiaeDetailApiTest(TestCase):
         self.assertTrue("kind" in response.data)
         self.assertTrue("kind_parent" in response.data)
         self.assertTrue("presta_type" in response.data)
+        self.assertTrue("sectors" in response.data)
         self.assertTrue("networks" in response.data)
         self.assertTrue("offers" in response.data)
         self.assertTrue("client_references" in response.data)
@@ -268,6 +269,7 @@ class SiaeRetrieveBySlugApiTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["siret"], "12312312312345")
         self.assertEqual(response.data["slug"], "une-structure-38")
+        self.assertTrue("sectors" in response.data)
 
 
 class SiaeRetrieveBySirenApiTest(TestCase):
@@ -329,6 +331,7 @@ class SiaeRetrieveBySirenApiTest(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]["siret"], "12312312312345")
         self.assertEqual(response.data[0]["slug"], "une-structure-38")
+        self.assertTrue("sectors" in response.data[0])
         url = reverse("api:siae-retrieve-by-siren", args=["222222222"]) + "?token=" + self.user_token
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -336,6 +339,7 @@ class SiaeRetrieveBySirenApiTest(TestCase):
         self.assertEqual(len(response.data), 2)
         self.assertEqual(response.data[0]["siret"], "22222222233333")
         self.assertEqual(response.data[1]["siret"], "22222222233333")
+        self.assertTrue("sectors" in response.data[0])
 
 
 class SiaeRetrieveBySiretApiTest(TestCase):
@@ -397,6 +401,7 @@ class SiaeRetrieveBySiretApiTest(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]["siret"], "12312312312345")
         self.assertEqual(response.data[0]["slug"], "une-structure-38")
+        self.assertTrue("sectors" in response.data[0])
         url = reverse("api:siae-retrieve-by-siret", args=["22222222233333"]) + "?token=" + self.user_token
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -404,6 +409,7 @@ class SiaeRetrieveBySiretApiTest(TestCase):
         self.assertEqual(len(response.data), 2)
         self.assertEqual(response.data[0]["siret"], "22222222233333")
         self.assertEqual(response.data[1]["siret"], "22222222233333")
+        self.assertTrue("sectors" in response.data[0])
 
 
 class SiaeChoicesApiTest(TestCase):
