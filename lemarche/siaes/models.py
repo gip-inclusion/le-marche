@@ -60,26 +60,6 @@ def get_simple_city_filter(perimeter):
     return Q(post_code__in=perimeter.post_codes)
 
 
-def get_city_filter(perimeter, with_country=False):
-    """
-    used in Siae geo_range_in_perimeter_list() queryset
-    - if the perimeter is a CITY, return all Siae with the city's post_code
-    - also return the Siae in the same department (if not GEO_RANGE_CUSTOM)
-    """
-    filters = get_simple_city_filter(perimeter) | (
-        ~Q(geo_range=siae_constants.GEO_RANGE_CUSTOM) & Q(department=perimeter.department_code)
-    )
-    if perimeter.coords:
-        filters |= (
-            Q(geo_range=siae_constants.GEO_RANGE_CUSTOM)
-            # why distance / 1000 ? because convert from meter to km
-            & Q(geo_range_custom_distance__gte=Distance("coords", perimeter.coords) / 1000)
-        )
-    if with_country:
-        filters |= Q(geo_range=siae_constants.GEO_RANGE_COUNTRY)
-    return filters
-
-
 def count_field(field_name, date_limit):
     """
     Helper method to construct a conditional count annotation.
@@ -300,9 +280,6 @@ class SiaeQuerySet(models.QuerySet):
                 & Q(geo_range_custom_distance__lte=Distance("coords", kwargs["city_coords"]) / 1000)
             )
 
-    def in_city_area(self, perimeter):
-        return self.filter(get_city_filter(perimeter))
-
     def address_in_perimeter_list(self, perimeters: models.QuerySet):
         """
         Simple method to filter the Siaes depending on the perimeter filter.
@@ -316,36 +293,6 @@ class SiaeQuerySet(models.QuerySet):
                 conditions |= get_department_filter(perimeter)
             if perimeter.kind == Perimeter.KIND_REGION:
                 conditions |= get_region_filter(perimeter)
-        return self.filter(conditions)
-
-    def geo_range_in_perimeter_list(self, perimeters: models.QuerySet, with_country=False, include_country_area=False):
-        """
-        Method to filter the Siaes depending on the perimeter filter.
-        We filter on the Siae's address & geo_range fields.
-        Depending on the type of Perimeter that were chosen, different cases arise:
-
-        **CITY**
-        return the Siae with the post code in perimeter.post_codes
-        OR the Siae with the same department (except geo_range=GEO_RANGE_CUSTOM)
-        OR the Siae with geo_range=GEO_RANGE_CUSTOM and a perimeter radius that overlaps with the city
-
-        **DEPARTMENT**
-        return only the Siae in this department
-
-        **REGION**
-        return only the Siae in this region
-        """
-        conditions = Q()
-        for perimeter in perimeters:
-            if perimeter.kind == Perimeter.KIND_CITY:
-                # https://stackoverflow.com/questions/20222457/django-building-a-queryset-with-q-objects
-                conditions |= get_city_filter(perimeter, with_country)
-            if perimeter.kind == Perimeter.KIND_DEPARTMENT:
-                conditions |= get_department_filter(perimeter)
-            if perimeter.kind == Perimeter.KIND_REGION:
-                conditions |= get_region_filter(perimeter)
-        if include_country_area:
-            conditions = Q(geo_range=siae_constants.GEO_RANGE_COUNTRY) | conditions
         return self.filter(conditions)
 
     def within(self, point, distance_km=0, include_country_area=False):

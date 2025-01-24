@@ -565,7 +565,6 @@ class SiaeModelPerimeterQuerysetTest(TestCase):
             department=cls.chamrousse_perimeter.department_code,
             region=cls.auvergne_rhone_alpes_perimeter.name,
             post_code=cls.chamrousse_perimeter.post_codes[0],
-            geo_range=siae_constants.GEO_RANGE_DEPARTMENT,
         )
 
     def test_address_in_perimeter_list(self):
@@ -574,14 +573,6 @@ class SiaeModelPerimeterQuerysetTest(TestCase):
         self.assertEqual(Siae.objects.address_in_perimeter_list([self.grenoble_perimeter]).count(), 1)
         self.assertEqual(
             Siae.objects.address_in_perimeter_list([self.guadeloupe_perimeter, self.finistere_perimeter]).count(), 2
-        )
-
-    def test_geo_range_in_perimeter_list(self):
-        self.assertEqual(Siae.objects.geo_range_in_perimeter_list([]).count(), 5)
-        self.assertEqual(Siae.objects.geo_range_in_perimeter_list([self.guadeloupe_perimeter]).count(), 1)
-        self.assertEqual(Siae.objects.geo_range_in_perimeter_list([self.grenoble_perimeter]).count(), 2)
-        self.assertEqual(
-            Siae.objects.geo_range_in_perimeter_list([self.guadeloupe_perimeter, self.finistere_perimeter]).count(), 2
         )
 
 
