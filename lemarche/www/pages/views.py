@@ -13,18 +13,13 @@ from wagtail.models import Site as WagtailSite
 
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
-from lemarche.siaes.models import Siae, SiaeGroup
+from lemarche.siaes.models import SiaeGroup
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderStepsData
 from lemarche.users import constants as user_constants
 from lemarche.utils.emails import add_to_contact_list
 from lemarche.utils.tracker import track
-from lemarche.www.pages.forms import (
-    CompanyReferenceCalculatorForm,
-    ContactForm,
-    ImpactCalculatorForm,
-    SocialImpactBuyersCalculatorForm,
-)
+from lemarche.www.pages.forms import ContactForm, ImpactCalculatorForm, SocialImpactBuyersCalculatorForm
 from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
 from lemarche.www.tenders.tasks import notify_admin_tender_created
 from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user_from_anonymous_content
@@ -172,45 +167,6 @@ class SocialImpactBuyersCalculatorView(FormMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
-
-
-class CompanyReferenceCalculatorView(FormMixin, ListView):
-    template_name = "pages/company-reference-calculator.html"
-    form_class = CompanyReferenceCalculatorForm
-
-    def get_queryset(self):
-        """
-        Filter results.
-        - filter using the SiaeFilterForm
-        """
-        self.filter_form = CompanyReferenceCalculatorForm(data=self.request.GET)
-        if len(self.request.GET.keys()):
-            results = self.filter_form.filter_queryset()
-            return results
-        else:  # avoid empty filtering
-            return Siae.objects.none()
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["form_has_filtered"] = False
-        if len(self.request.GET.keys()):
-            siae_search_form = (
-                self.filter_form if self.filter_form else CompanyReferenceCalculatorForm(data=self.request.GET)
-            )
-            context["form"] = self.filter_form
-            if siae_search_form.is_valid():
-                context["form_has_filtered"] = True
-                context["results"] = self.get_queryset()
-                context["current_search_query"] = self.request.GET.urlencode()
-        return context
-
-    # not needed for now
-    # def get_initial(self):
-    #     """If the user is logged in, fill the form with the user's company."""
-    #     initial = super().get_initial()
-    #     if self.request.user.is_authenticated:
-    #         initial["company_client_reference"] = self.request.user.company_name
-    #     return initial
 
 
 def csrf_failure(request, reason=""):  # noqa C901
