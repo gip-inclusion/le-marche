@@ -25,7 +25,7 @@ from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
 from lemarche.www.conversations.forms import ContactForm
-from lemarche.www.siaes.forms import SiaeDownloadForm, SiaeFavoriteForm, SiaeFilterForm, SiaeShareForm
+from lemarche.www.siaes.forms import SiaeDownloadForm, SiaeFavoriteForm, SiaeFilterForm
 
 
 CURRENT_SEARCH_QUERY_COOKIE_NAME = "current_search"
@@ -104,8 +104,6 @@ class SiaeSearchResultsView(FormMixin, ListView):
         context["position_promote_tenders"] = [5, 15]
         siae_search_form = self.get_filter_form()
         context["form"] = siae_search_form
-        context["form_download"] = SiaeDownloadForm(data=self.request.GET)
-        context["form_share"] = SiaeShareForm(data=self.request.GET, user=self.request.user)
         context["url_share_list"] = self.get_mailto_share_url()
         if len(self.request.GET.keys()):
             context["is_advanced_search"] = siae_search_form.is_advanced_search()
