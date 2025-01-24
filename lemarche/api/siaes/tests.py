@@ -5,7 +5,7 @@ from lemarche.api.utils import generate_random_string
 from lemarche.networks.factories import NetworkFactory
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.factories import SiaeFactory
+from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
 from lemarche.siaes.models import Siae
 from lemarche.users.factories import UserFactory
 
@@ -68,11 +68,11 @@ class SiaeListFilterApiTest(TestCase):
         siae_with_sector_1 = SiaeFactory(
             kind=siae_constants.KIND_EI, presta_type=[siae_constants.PRESTA_DISP], department="01"
         )
-        siae_with_sector_1.sectors.add(cls.sector_1)
+        SiaeActivityFactory(siae=siae_with_sector_1, sectors=[cls.sector_1])
         siae_with_sector_2 = SiaeFactory(
             kind=siae_constants.KIND_EI, presta_type=[siae_constants.PRESTA_DISP], department="01"
         )
-        siae_with_sector_2.sectors.add(cls.sector_2)
+        SiaeActivityFactory(siae=siae_with_sector_2, sectors=[cls.sector_2])
         cls.network_1 = NetworkFactory(name="Reseau 1")
         cls.network_2 = NetworkFactory(name="Reseau 2")
         siae_with_network_1 = SiaeFactory(
