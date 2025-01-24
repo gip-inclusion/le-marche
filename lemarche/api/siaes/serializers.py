@@ -51,7 +51,6 @@ class SiaeDetailSerializer(serializers.ModelSerializer):
             "nature",
             "kind",
             "kind_parent",
-            "presta_type",
             "contact_website",
             "contact_email",
             "contact_phone",
@@ -86,7 +85,6 @@ class SiaeListSerializer(SiaeDetailSerializer):
             "nature",
             "kind",
             "kind_parent",
-            "presta_type",
             "contact_website",
             "logo_url",
             # additional contact_ fields available in detail

@@ -29,7 +29,6 @@ class SiaeListApiTest(TestCase):
         self.assertTrue("siret" in response.data[0])
         self.assertTrue("kind" in response.data[0])
         self.assertTrue("kind_parent" in response.data[0])
-        self.assertTrue("presta_type" in response.data[0])
         self.assertTrue("department" in response.data[0])
         self.assertTrue("created_at" in response.data[0])
 
@@ -43,7 +42,6 @@ class SiaeListApiTest(TestCase):
         self.assertTrue("siret" in response.data["results"][0])
         self.assertTrue("kind" in response.data["results"][0])
         self.assertTrue("kind_parent" in response.data["results"][0])
-        self.assertTrue("presta_type" in response.data["results"][0])
         self.assertTrue("department" in response.data["results"][0])
         self.assertTrue("created_at" in response.data["results"][0])
 
@@ -209,7 +207,6 @@ class SiaeDetailApiTest(TestCase):
         self.assertTrue("slug" in response.data)
         self.assertTrue("kind" in response.data)
         self.assertTrue("kind_parent" in response.data)
-        self.assertTrue("presta_type" in response.data)
         self.assertTrue("sectors" not in response.data)
         self.assertTrue("networks" not in response.data)
         self.assertTrue("offers" not in response.data)
@@ -225,7 +222,6 @@ class SiaeDetailApiTest(TestCase):
         self.assertTrue("slug" in response.data)
         self.assertTrue("kind" in response.data)
         self.assertTrue("kind_parent" in response.data)
-        self.assertTrue("presta_type" in response.data)
         self.assertTrue("sectors" in response.data)
         self.assertTrue("networks" in response.data)
         self.assertTrue("offers" in response.data)
