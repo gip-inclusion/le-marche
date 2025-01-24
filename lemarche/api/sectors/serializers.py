@@ -22,3 +22,12 @@ class SectorSerializer(serializers.ModelSerializer):
             "slug",
             "group",
         ]
+
+
+class SectorSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sector
+        fields = [
+            "name",
+            "slug",
+        ]
