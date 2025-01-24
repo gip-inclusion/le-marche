@@ -23,9 +23,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
 
     def get_queryset(self):
         """Annotate sectors to be directly available in the serializer"""
-        qs = super().get_queryset()
-        qs = qs.annotate(sectors_annotated=F("activities__sectors"))
-        return qs
+        return super().get_queryset().annotate(sectors_annotated=F("activities__sectors"))
 
     @extend_schema(
         summary="Lister toutes les structures",
