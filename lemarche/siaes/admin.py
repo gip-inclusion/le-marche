@@ -151,7 +151,7 @@ class ConversationsInline(admin.TabularInline):
 
 
 @admin.register(Siae, site=admin_site)
-class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin):
+class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmin):
     actions = [export_as_xls]
     list_display = [
         "id",

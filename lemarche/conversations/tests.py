@@ -1,11 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timezone as datetime_timezone
 from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.db import IntegrityError
 from django.test import TestCase, TransactionTestCase, override_settings
-from django.utils import timezone
 
 from lemarche.conversations import constants as conversation_constants
 from lemarche.conversations.constants import ATTRIBUTES_TO_NOT_ANONYMIZE_FOR_INBOUND, ATTRIBUTES_TO_SAVE_FOR_INBOUND
@@ -76,7 +75,7 @@ class ConversationQuerysetTest(TestCase):
         self.assertEqual(conversation_queryset.get(id=self.conversation_with_answer.id).answer_count_annotated, 1)
 
 
-@patch("django.utils.timezone.now", lambda: datetime(year=2024, month=1, day=1, tzinfo=timezone.utc))
+@patch("django.utils.timezone.now", lambda: datetime(year=2024, month=1, day=1, tzinfo=datetime_timezone.utc))
 @override_settings(
     INACTIVE_CONVERSATION_TIMEOUT_IN_MONTHS=6,
 )
@@ -91,11 +90,11 @@ class ConversationAnonymizationTestCase(TestCase):
 
         ConversationFactory(
             title="anonymized",
-            created_at=datetime(year=2023, month=6, day=1, tzinfo=timezone.utc),
+            created_at=datetime(year=2023, month=6, day=1, tzinfo=datetime_timezone.utc),
             initial_body_message="blabla",
             data=[inbound_data, inbound_data],
         )
-        ConversationFactory(created_at=datetime(year=2023, month=8, day=1, tzinfo=timezone.utc))
+        ConversationFactory(created_at=datetime(year=2023, month=8, day=1, tzinfo=datetime_timezone.utc))
 
     def test_anonymize_command(self):
         call_command("anonymize_outdated_conversations")

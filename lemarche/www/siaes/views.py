@@ -47,7 +47,6 @@ class SiaeSearchResultsView(FormMixin, ListView):
     template_name = "siaes/search_results.html"
     form_class = SiaeFilterForm
     filter_form = None
-    # queryset = Siae.objects.all()
     context_object_name = "siaes"
     paginate_by = 20
     paginator_class = Paginator
