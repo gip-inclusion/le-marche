@@ -571,13 +571,6 @@ class Siae(models.Model):
     nature = models.CharField(
         verbose_name="Établissement", max_length=20, choices=siae_constants.NATURE_CHOICES, blank=True
     )
-    presta_type = ChoiceArrayField(
-        verbose_name="Type de prestation",
-        base_field=models.CharField(max_length=20, choices=siae_constants.PRESTA_CHOICES),
-        blank=True,
-        null=True,
-        db_index=True,
-    )
     legal_form = models.CharField(
         verbose_name="Forme juridique",
         max_length=20,

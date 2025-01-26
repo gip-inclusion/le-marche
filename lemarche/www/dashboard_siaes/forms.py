@@ -209,7 +209,7 @@ class SiaeActivitiesCreateForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple,
     )
     presta_type = forms.MultipleChoiceField(
-        label=Siae._meta.get_field("presta_type").verbose_name,
+        label=SiaeActivity._meta.get_field("presta_type").verbose_name,
         choices=siae_constants.PRESTA_CHOICES,
         required=True,
         widget=forms.CheckboxSelectMultiple,
