@@ -88,7 +88,6 @@ class SiaeFilterForm(forms.Form):
         queryset=Perimeter.objects.all(),
         to_field_name="slug",
         required=False,
-        # widget=forms.HiddenInput()  # displayed with a JS autocomplete library (see `perimeter_autocomplete_field.js`)  # noqa
     )
     kind = forms.MultipleChoiceField(
         label=Siae._meta.get_field("kind").verbose_name,
@@ -97,7 +96,7 @@ class SiaeFilterForm(forms.Form):
         widget=CustomSelectMultiple(),
     )
     presta_type = forms.MultipleChoiceField(
-        label=Siae._meta.get_field("presta_type").verbose_name,
+        label=SiaeActivity._meta.get_field("presta_type").verbose_name,
         choices=siae_constants.PRESTA_CHOICES,
         required=False,
         widget=CustomSelectMultiple(),
