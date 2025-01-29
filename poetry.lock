@@ -762,6 +762,22 @@ files = [
 django = ">=4.2"
 
 [[package]]
+name = "django-datadog-logger"
+version = "0.7.3"
+description = "Django DataDog Logger integration package."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "django_datadog_logger-0.7.3-py2.py3-none-any.whl", hash = "sha256:87838cd868f407e050831c536413de6b2ece31433b28c952c0fd90be1d66486a"},
+    {file = "django_datadog_logger-0.7.3.tar.gz", hash = "sha256:4361bb068a4b188fa14135398f9b747728464a291757e6adf8c95c9215dcd602"},
+]
+
+[package.dependencies]
+Django = "*"
+djangorestframework = "*"
+JSON-log-formatter = "*"
+
+[[package]]
 name = "django-debug-toolbar"
 version = "3.8.1"
 description = "A configurable set of panels that display various debug information about the current request/response."
@@ -1561,6 +1577,16 @@ python-versions = ">=3.7"
 files = [
     {file = "jmespath-1.0.1-py3-none-any.whl", hash = "sha256:02e2e4cc71b5bcab88332eebf907519190dd9e6e82107fa7f83b1003a6252980"},
     {file = "jmespath-1.0.1.tar.gz", hash = "sha256:90261b206d6defd58fdd5e85f478bf633a2901798906be2ad389150c5c60edbe"},
+]
+
+[[package]]
+name = "json-log-formatter"
+version = "1.1"
+description = "JSON log formatter"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "json_log_formatter-1.1.tar.gz", hash = "sha256:fe8fd801c58c1234df86211720921f60149105ef8d1e2a72966bb61da9bed584"},
 ]
 
 [[package]]
@@ -3449,4 +3475,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10.4"
-content-hash = "e682dc878d4597fa9b6ec01a8eaca693f885c2fd8e250dfc66a129f28f07e895"
+content-hash = "0256f88fd0eb44b73e5d60a6f394ccdaa439cdc08be8652ba6a07757dc730759"
