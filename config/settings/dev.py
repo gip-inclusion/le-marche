@@ -93,3 +93,6 @@ HUEY |= {
 }  # Huey implementation to use.
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# Don't use json formatter in dev
+del LOGGING["handlers"]["console"]["formatter"]  # noqa: F405
