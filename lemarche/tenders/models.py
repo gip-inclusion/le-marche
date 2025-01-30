@@ -734,6 +734,15 @@ class Tender(models.Model):
         self.logs.append(log_item)
         self.save(update_fields=["email_sent_for_modification", "status", "logs"])
 
+    def set_rejected(self):
+        self.status = tender_constants.STATUS_REJECTED
+        log_item = {
+            "action": "reject",
+            "date": timezone.now().isoformat(),
+        }
+        self.logs.append(log_item)
+        self.save(update_fields=["status", "logs"])
+
     def set_slug(self, with_uuid=False):
         """
         The slug field should be unique.

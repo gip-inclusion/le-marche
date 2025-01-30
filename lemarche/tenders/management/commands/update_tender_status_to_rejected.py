@@ -32,8 +32,7 @@ class Command(BaseCommand):
                     tenders_to_update.append(tender)
 
         for tender in tenders_to_update:
-            tender.status = tender_constants.STATUS_REJECTED
-            tender.save(update_fields=["status"])
+            tender.set_rejected()
 
         if not tenders_to_update:
             self.stdout.write("Aucun besoin rejeté")
