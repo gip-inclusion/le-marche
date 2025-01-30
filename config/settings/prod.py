@@ -45,3 +45,9 @@ STORAGES = {
 # ------------------------------------------------------------------------------
 
 sentry_init(dsn=env.str("SENTRY_DSN_PROD"))
+
+# Logging
+# ------------------------------------------------------------------------------
+
+# json formatter for Datadog
+LOGGING["handlers"]["console"]["formatter"] = "json"  # noqa: F405
