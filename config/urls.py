@@ -13,6 +13,7 @@ from lemarche.utils.admin.admin_site import admin_site
 urlpatterns = [
     path("admin/", admin_site.urls),
     path("api/", include("lemarche.api.urls")),
+    path("django_shepherd/", include("lemarche.django_shepherd.urls")),
     path("accounts/", include("lemarche.www.auth.urls")),
     path("besoins/", include("lemarche.www.tenders.urls")),
     path("prestataires/", include("lemarche.www.siaes.urls")),
