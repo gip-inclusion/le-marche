@@ -49,14 +49,6 @@ UPDATE_FIELDS_IF_EMPTY = ["brand"]
 C1_EXTRA_KEYS = ["convention_is_active", "convention_asp_id"]
 
 
-def map_siae_presta_type(siae_kind):
-    if siae_kind:
-        if siae_kind in ["ETTI", "AI"]:
-            return [siae_constants.PRESTA_DISP]
-        return [siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD]
-    return []
-
-
 def map_siae_nature(siae_source):
     if siae_source:
         if siae_source in ["ASP", "GEIQ", "EA_EATT"]:
@@ -156,7 +148,6 @@ class Command(BaseCommand):
                 c1_siae_cleaned = {
                     **c1_siae,
                     "siret_is_valid": siret.is_valid(c1_siae["siret"]),
-                    "presta_type": map_siae_presta_type(c1_siae["kind"]),
                     "nature": map_siae_nature(c1_siae["source"]),
                     "phone": re.sub("[^0-9]", "", c1_siae["phone"]),
                     "email": c1_siae["email"] or "",
