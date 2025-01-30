@@ -1,18 +1,10 @@
-import argparse
-from datetime import timedelta
-
-import requests
-from django.conf import settings
 from django.db.models import Q
-from django.utils import timezone
 
-from lemarche.siaes.models import Siae
-from lemarche.utils.apis import api_slack
+from lemarche.siaes.management.base_update_api import UpdateAPICommand
 from lemarche.utils.apis.api_zrr import IS_ZRR_KEY, ZRR_CODE_KEY, ZRR_NAME_KEY, get_default_client, is_in_zrr
-from lemarche.utils.commands import BaseCommand
 
 
-class Command(BaseCommand):
+class Command(UpdateAPICommand):
     """
     Populates API ZRR
 
@@ -24,87 +16,18 @@ class Command(BaseCommand):
     Usage: poetry run python manage.py update_api_zrr_fields --limit 100 --no-force
     """
 
-    def __init__(self, stdout=None, stderr=None, no_color=False):
-        super().__init__(stdout, stderr, no_color)
-        self.success_count = {"etablissement": 0, "etablissement_zrr": 0}
-
+    API_NAME = "ZRR"
     FIELDS_TO_BULK_UPDATE = ["is_zrr", "api_zrr_last_sync_date", "zrr_code", "zrr_name"]
+    CLIENT = get_default_client()
 
-    def add_arguments(self, parser):
-        parser.add_argument(
-            "-L", "--limit", type=int, default=None, help="Limiter le nombre de structures à processer"
-        )
-        parser.add_argument(
-            "-F",
-            "--force",
-            action=argparse.BooleanOptionalAction,
-            default=None,
-            help="Forcer l'update sans la vérification de la dernière mise à jour",
-        )
+    IS_TAGET_KEY = IS_ZRR_KEY
+    TARGET_CODE_KEY = ZRR_CODE_KEY
+    TARGET_NAME_KEY = ZRR_NAME_KEY
 
-    def get_query_set(self, **options):
-        siaes_queryset = Siae.objects.filter(Q(coords__isnull=False)).order_by("id")
+    @staticmethod
+    def get_filter_query(date_limit) -> Q:
+        return Q(api_zrr_last_sync_date__lte=date_limit) | Q(api_zrr_last_sync_date__isnull=True)
 
-        if not options["force"]:
-            since_last_date_limit = timezone.now() - timedelta(days=settings.API_QPV_RELATIVE_DAYS_TO_UPDATE)
-            siaes_queryset = siaes_queryset.filter(
-                (Q(api_zrr_last_sync_date__lte=since_last_date_limit) | Q(api_zrr_last_sync_date__isnull=True))
-            )
-
-        if options["limit"]:
-            siaes_queryset = siaes_queryset[: options["limit"]]
-        return siaes_queryset
-
-    def handle(self, *args, **options):
-        siae_list = self.get_query_set(**options)
-        self.stdout_messages_info(["Populating API ZRR...", f"Found {len(siae_list)} Siae"])
-
-        count_siae_to_update = 0
-        client = get_default_client()
-        try:
-            siaes_to_update = []
-            for siae in siae_list:
-                # update siae from API
-                siae = self.update_siae(client, siae)
-                siaes_to_update.append(siae)
-                # log progress
-                count_siae_to_update = len(siaes_to_update)
-                if (count_siae_to_update % 50) == 0:
-                    self.stdout_info(f"{count_siae_to_update}...")
-
-        except requests.exceptions.HTTPError as e:
-            status_code = e.response.status_code
-            if status_code == 429:
-                # the real exceed request error have code=10005, with the api
-                # but requests send error code 429 "Unknown Status Code"
-                self.stdout_error("exceeded the requests limit for today (5000/per day)")
-        finally:
-            client.close()
-            # we still save siaes zrr status
-            Siae.objects.bulk_update(
-                siaes_to_update, self.FIELDS_TO_BULK_UPDATE, batch_size=settings.BATCH_SIZE_BULK_UPDATE
-            )
-
-        msg_success = [
-            "----- Synchronisation API ZRR -----",
-            f"Done! Processed {len(siaes_to_update)}/{len(siae_list)} siaes",
-            f"success count: {self.success_count['etablissement']}/{len(siaes_to_update)}",
-            f"True count: {self.success_count['etablissement_zrr']}/{len(siaes_to_update)}",
-        ]
-        self.stdout_messages_success(msg_success)
-        api_slack.send_message_to_channel("\n".join(msg_success))
-
-    def update_siae(self, client, siae):
-        # call api is in zrr
-        result_is_in_zrr = is_in_zrr(siae.latitude, siae.longitude, client=client)
-        self.success_count["etablissement"] += 1
-        siae.is_zrr = result_is_in_zrr[IS_ZRR_KEY]
-        siae.api_zrr_last_sync_date = timezone.now()
-        if siae.is_zrr:
-            siae.zrr_code = result_is_in_zrr[ZRR_CODE_KEY]
-            siae.zrr_name = result_is_in_zrr[ZRR_NAME_KEY]
-            self.success_count["etablissement_zrr"] += 1
-        else:
-            siae.zrr_code = ""
-            siae.zrr_name = ""
-        return siae
+    @staticmethod
+    def is_in_target(latitude, longitude, client):
+        return is_in_zrr(latitude, longitude, client=client)
