@@ -727,7 +727,7 @@ LOGGING = {
         "json": {"()": "lemarche.utils.logging.CustomDataDogJSONFormatter"},
     },
     "handlers": {
-        "console": {"class": "logging.StreamHandler", "formatter": "json"},
+        "console": {"class": "logging.StreamHandler"},
         "null": {"class": "logging.NullHandler"},
     },
     "loggers": {
