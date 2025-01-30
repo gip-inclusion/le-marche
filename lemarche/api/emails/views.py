@@ -47,7 +47,7 @@ class BrevoWhitelistPermission(BasePermission):
 
 
 class InboundParsingEmailView(APIView):
-    permission_classes = [BrevoWhitelistPermission] + APIView.permission_classes
+    permission_classes = [BrevoWhitelistPermission]  # override the default class that requires Authentication
 
     @extend_schema(exclude=True)
     def post(self, request):
