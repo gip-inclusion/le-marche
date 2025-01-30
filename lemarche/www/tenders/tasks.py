@@ -546,7 +546,7 @@ def send_tender_author_modification_request(tender: Tender):
     recipient_email = tender.author.email
     recipient_name = tender.author.full_name
 
-    tender_update_url = reverse("tenders:update", kwargs={"slug": tender.slug})
+    tender_update_url = f"https://{get_domain_url()}" + reverse("tenders:update", kwargs={"slug": tender.slug})
     logger.debug(f"Tender Update URL: {tender_update_url}")
 
     variables = {
