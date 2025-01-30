@@ -933,6 +933,7 @@ CGU_API = env.str("CGU_API", "/cgu-api/")
 LEGAL_INFO = env.str("LEGAL_INFO", "/mentions-legales/")
 PRIVACY_POLICY = env.str("PRIVACY_POLICY", "/confidentialite/")
 RESSOURCES = env.str("RESSOURCES", "/ressources/")
+FAQ = env.str("FAQ", "/la-faq-dune-consultation/")
 
 # Increase throttling to avoid Bad request errors when saving large pages
 # https://docs.djangoproject.com/en/4.2/ref/settings/#data-upload-max-number-fields
