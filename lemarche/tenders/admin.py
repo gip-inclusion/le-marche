@@ -578,7 +578,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         If tender status is REJECTED, send an email to the author and redirect to the same page.
         """
         send_tender_author_reject_message(tender=obj)
-        self.message_user(request, "Un email a été envoyé à l'auteur du besoin")
+        self.message_user(request, "Un email de rejet a été envoyé à l'auteur du besoin")
         return HttpResponseRedirect(".")
 
     def get_queryset(self, request):
@@ -842,7 +842,8 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             return HttpResponseRedirect(".")
         if request.POST.get("_send_modification_request"):
             return self.handle_email_sent_for_modification(request, obj)
-        if obj.status == tender_constants.STATUS_REJECTED:
+        if request.POST.get("_reject_tender"):
+            obj.set_rejected()
             return self.handle_rejected_status(request, obj)
         elif request.POST.get("_restart_tender"):
             restart_send_tender_task(tender=obj)
