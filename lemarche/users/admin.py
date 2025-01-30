@@ -1,9 +1,11 @@
 import re
 
 from ckeditor.widgets import CKEditorWidget
+from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.contenttypes.admin import GenericTabularInline
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.http import HttpResponseRedirect
 from django.template.response import TemplateResponse
@@ -164,11 +166,29 @@ class UserNoteInline(GenericTabularInline):
     }
 
 
+class SiaeUserFormset(forms.models.BaseInlineFormSet):
+    def clean(self):
+        """Check for duplcated m2m to avoid raising IntegrityError"""
+        siae_list = []
+
+        for form in self.forms:
+            if form.cleaned_data:
+                siae_list.append(form.cleaned_data["siae"])
+
+        duplicated_groups = [x for x in siae_list if siae_list.count(x) > 1]
+        if duplicated_groups:
+            raise ValidationError(
+                "Gestionnaires dupliqués: %(duplicates)s",
+                params={"duplicates": ", ".join(group.__str__() for group in set(duplicated_groups))},
+            )
+
+
 class SiaeUserInline(admin.TabularInline):
     model = SiaeUser
     fields = ["siae", "siae_with_link", "created_at", "updated_at"]
     autocomplete_fields = ["siae"]
     readonly_fields = ["siae_with_link", "created_at", "updated_at"]
+    formset = SiaeUserFormset
     extra = 0
 
     def siae_with_link(self, siae_user):
