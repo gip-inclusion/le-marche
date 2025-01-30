@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender
+from lemarche.www.tenders.tasks import send_tender_author_reject_message
 
 
 class Command(BaseCommand):
@@ -33,6 +34,7 @@ class Command(BaseCommand):
 
         for tender in tenders_to_update:
             tender.set_rejected()
+            send_tender_author_reject_message(tender=tender)
 
         if not tenders_to_update:
             self.stdout.write("Aucun besoin rejeté")
