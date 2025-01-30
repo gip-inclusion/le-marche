@@ -76,7 +76,7 @@ class SiaeActivityFactory(DjangoModelFactory):
 
     sector_group = factory.SubFactory(SectorGroupFactory)
 
-    presta_type = factory.List([factory.fuzzy.FuzzyChoice([key for (key, _) in siae_constants.PRESTA_CHOICES])])
+    presta_type = [siae_constants.PRESTA_DISP]
 
     @factory.post_generation
     def sectors(self, create, extracted, **kwargs):
