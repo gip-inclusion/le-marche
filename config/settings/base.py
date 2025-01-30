@@ -189,6 +189,9 @@ WAGTAIL_APPS = [
 INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + DJANGO_DSFR_APPS + THIRD_PARTY_APPS + LOCAL_APPS + WAGTAIL_APPS
 
 MIDDLEWARE = [
+    # Generate request Id
+    "django_datadog_logger.middleware.request_id.RequestIdMiddleware",
+    # Django stack
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -206,6 +209,8 @@ MIDDLEWARE = [
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     # Custom Middlewares
     "lemarche.utils.tracker.TrackerMiddleware",
+    # Final logger
+    "django_datadog_logger.middleware.request_log.RequestLoggingMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -718,6 +723,9 @@ if CONNECTION_MODE_TASKS in ("sqlite", "redis") and CC_WORKER_ENV:
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "json": {"()": "lemarche.utils.logging.CustomDataDogJSONFormatter"},
+    },
     "handlers": {
         "console": {"class": "logging.StreamHandler"},
         "null": {"class": "logging.NullHandler"},
@@ -740,6 +748,8 @@ LOGGING = {
         },
     },
 }
+
+DJANGO_DATADOG_LOGGER_EXTRA_INCLUDE = r"django_datadog_logger\.middleware\.request_log"
 
 
 # django-ckeditor
