@@ -262,7 +262,6 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
                     "naf",
                     "kind",
                     "nature",
-                    "presta_type",
                     "c1_id",
                     "asp_id",
                     "website",
@@ -395,7 +394,6 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
                     "naf",
                     "kind",
                     "nature",
-                    "presta_type",
                     "legal_form",  # from API Entreprise mapping
                     "website",
                     "email",
