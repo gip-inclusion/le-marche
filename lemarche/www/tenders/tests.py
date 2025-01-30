@@ -297,6 +297,23 @@ class TenderCreateViewTest(TestCase):
             attributes["TYPE_VERTICALE_ACHETEUR"], "Expected TYPE_VERTICALE_ACHETEUR to be None for non-TALLY sources"
         )
 
+    def test_send_tender_author_modification_request(self):
+        """Test the tender updae url in 'send_tender_author_modification_request' function"""
+        tender, _ = self.setup_mock_user_and_tender_creation(user=self.user_buyer)
+        tender_update_url = reverse("tenders:update", kwargs={"slug": tender.slug})
+        expected_url = f"/besoins/modifier/{tender.slug}"
+
+        self.assertEqual(tender_update_url, expected_url)
+
+    def test_reset_modification_request(self):
+        """Test 'reset_modification_request' method to check tender fields updates"""
+        tender, _ = self.setup_mock_user_and_tender_creation(user=self.user_buyer)
+        tender.reset_modification_request()
+        tender.save()
+
+        self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
+        self.assertEqual(tender.email_sent_for_modification, False)
+
 
 class TenderListViewTest(TestCase):
     @classmethod

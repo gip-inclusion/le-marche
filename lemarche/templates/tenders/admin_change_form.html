@@ -1,5 +1,4 @@
-{% extends 'admin/change_form.html' %}
-
+{% extends "admin/change_form.html" %}
 {% comment %}
 Avoid conflict between fieldset_with_inlines & custom button
 --> add blocks "field_sets" & "inline_field_sets" from django-fieldsets-with-inlines
@@ -8,69 +7,98 @@ Extra info
 - https://github.com/robertkovac/django-fieldsets-with-inlines > PR #6
 - https://github.com/django/django/blob/main/django/contrib/admin/templates/admin/change_form.html
 {% endcomment %}
-
 {% block field_sets %}
-{% for fieldset in adminform %}
-    {% with fieldset_index=forloop.counter0 %}
-        {% for inline_admin_formset in inline_admin_formsets %}
-            {% if inline_admin_formset.opts.fieldset_index == fieldset_index %}
-                {% include inline_admin_formset.opts.template %}
-            {% endif %}
-        {% endfor %}
-    {% endwith %}
-
-    {% include "admin/includes/fieldset.html" %}
-{% endfor %}
-{% endblock %}
-
+    {% for fieldset in adminform %}
+        {% with fieldset_index=forloop.counter0 %}
+            {% for inline_admin_formset in inline_admin_formsets %}
+                {% if inline_admin_formset.opts.fieldset_index == fieldset_index %}
+                    {% include inline_admin_formset.opts.template %}
+                {% endif %}
+            {% endfor %}
+        {% endwith %}
+        {% include "admin/includes/fieldset.html" %}
+    {% endfor %}
+{% endblock field_sets %}
 {% block inline_field_sets %}
-{% comment %}
+    {% comment %}
 Inlines are already included.
 No need to repeat them under fieldsets!
 {% for inline_admin_formset in inline_admin_formsets %}
     {% include inline_admin_formset.opts.template %}
 {% endfor %}
-{% endcomment %}
-{% endblock %}
-
+    {% endcomment %}
+{% endblock inline_field_sets %}
 {% block after_related_objects %}
     {{ block.super }}
     {% if original %}
-        {% if not original.validated_at %}
+        {% if not original.validated_at and original.status == "PUBLISHED" %}
             <div class="submit-row">
-                <input type="submit" class="button" name="_calculate_tender" value="Sauvegarder et chercher les structures correspondantes" />
+                <input type="submit"
+                       class="button"
+                       name="_calculate_tender"
+                       value="Sauvegarder et chercher les structures correspondantes" />
+                <input type="submit"
+                       name="_send_modification_request"
+                       value="Envoyer une demande de modification ✏️" />
+                <input type="submit"
+                       name="_reject_tender"
+                       value="Rejeter le besoin d'achat 🚫" />
             </div>
         {% endif %}
         <div class="submit-row" style="display:block">
             {% if original.validated_at %}
-                <p><i>Validé le {{ original.validated_at }}.</i></p>
+                <p>
+                    <i>Validé le {{ original.validated_at }}.</i>
+                </p>
                 {% if original.first_sent_at %}
-                    <p><i>Envoyé le {{ original.first_sent_at }}.</i></p>
-                    <input type="submit" name="_restart_tender" value="Renvoyer aux structures" {% if original.deadline_date_outdated %}disabled{% endif %} />
+                    <p>
+                        <i>Envoyé le {{ original.first_sent_at }}.</i>
+                    </p>
+                    <input type="submit"
+                           name="_restart_tender"
+                           value="Renvoyer aux structures"
+                           {% if original.deadline_date_outdated %}disabled{% endif %} />
                     {% if original.deadline_date_outdated %}
-                        <p><i>Date de clôture dépassée ({{ original.deadline_date }})</i></p>
+                        <p>
+                            <i>Date de clôture dépassée ({{ original.deadline_date }})</i>
+                        </p>
                     {% endif %}
                     {% if original.start_working_date_outdated %}
-                        <p><i>Date idéale de début des prestations dépassée ({{ original.start_working_date }})</i></p>
+                        <p>
+                            <i>Date idéale de début des prestations dépassée ({{ original.start_working_date }})</i>
+                        </p>
                     {% endif %}
                 {% endif %}
-            {% else %}
-                <p><i>L'envoi des besoins 'validés' se fait toutes les 5 minutes, du Lundi au Vendredi, entre 9h et 17h</i></p>
-                <input type="submit" value="Valider (sauvegarder) et envoyer aux structures 🚀" data-recipient="siaes" data-title="{{ original.title }}" style="margin-right: 5px"/>
-                <input type="submit" value="Valider (sauvegarder) et envoyer aux partenaires 🚀" data-recipient="partners" data-title="{{ original.title }}"/>
+            {% elif original.status == "PUBLISHED" %}
+                <p>
+                    <i>L'envoi des besoins 'validés' se fait toutes les 5 minutes, du Lundi au Vendredi, entre 9h et 17h</i>
+                </p>
+                <input type="submit"
+                       value="Valider (sauvegarder) et envoyer aux structures 🚀"
+                       data-recipient="siaes"
+                       data-title="{{ original.title }}"
+                       style="margin-right: 5px" />
+                <input type="submit"
+                       value="Valider (sauvegarder) et envoyer aux partenaires 🚀"
+                       data-recipient="partners"
+                       data-title="{{ original.title }}" />
             {% endif %}
         </div>
     {% endif %}
-
     <!-- Modale de confirmation pour l'envoi d'un besoin d'achat -->
-    <div id="tender-send-confirmation-modal" class="tender-send-modal-container" style="display:none">
+    <div id="tender-send-confirmation-modal"
+         class="tender-send-modal-container"
+         style="display:none">
         <div id="tender-send-modal-content" class="tender-send-modal-content">
             <h1>Êtes-vous sûr ?</h1>
             <p id="tender-send-message"></p>
             <div id="submit-tender" class="submit-row">
-                <input type="submit" id="submit-button" class="submit-button" value="Confirmer"/>
+                <input type="submit"
+                       id="submit-button"
+                       class="submit-button"
+                       value="Confirmer" />
                 <a id="cancel-button" class="button" href="#">Annuler</a>
             </div>
         </div>
     </div>
-{% endblock %}
+{% endblock after_related_objects %}
