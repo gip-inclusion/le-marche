@@ -23,7 +23,7 @@ def delete_template(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("conversations", "0018_conversation_is_anonymized"),
+        ("conversations", "0019_recreate_email_group"),
     ]
 
     operations = [
