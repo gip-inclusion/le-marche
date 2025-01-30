@@ -88,7 +88,7 @@ def create_contact(user, list_id: int, tender=None):
         logger.error(f"Exception when calling Brevo->ContactsApi->create_contact (list_id : {list_id}): {e.body}")
 
 
-def update_contact(user_identifier: str, attributes_to_update: dict):  # FIXME: never used ?
+def update_contact(user_identifier: str, attributes_to_update: dict):
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
     update_contact = sib_api_v3_sdk.UpdateContact(attributes=attributes_to_update)
@@ -111,7 +111,7 @@ def update_contact_email_blacklisted(user_identifier: str, email_blacklisted: bo
         logger.error(f"Exception when calling Brevo->ContactsApi->update_contact to update email_blacklisted: {e}")
 
 
-def remove_contact_from_list(user, list_id: int):  # FIXME: never used ?
+def remove_contact_from_list(user, list_id: int):
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
     contact_emails = sib_api_v3_sdk.RemoveContactFromList(emails=[user.email])
