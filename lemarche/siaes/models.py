@@ -60,26 +60,6 @@ def get_simple_city_filter(perimeter):
     return Q(post_code__in=perimeter.post_codes)
 
 
-def get_city_filter(perimeter, with_country=False):
-    """
-    used in Siae geo_range_in_perimeter_list() queryset
-    - if the perimeter is a CITY, return all Siae with the city's post_code
-    - also return the Siae in the same department (if not GEO_RANGE_CUSTOM)
-    """
-    filters = get_simple_city_filter(perimeter) | (
-        ~Q(geo_range=siae_constants.GEO_RANGE_CUSTOM) & Q(department=perimeter.department_code)
-    )
-    if perimeter.coords:
-        filters |= (
-            Q(geo_range=siae_constants.GEO_RANGE_CUSTOM)
-            # why distance / 1000 ? because convert from meter to km
-            & Q(geo_range_custom_distance__gte=Distance("coords", perimeter.coords) / 1000)
-        )
-    if with_country:
-        filters |= Q(geo_range=siae_constants.GEO_RANGE_COUNTRY)
-    return filters
-
-
 def count_field(field_name, date_limit):
     """
     Helper method to construct a conditional count annotation.
@@ -220,7 +200,7 @@ class SiaeQuerySet(models.QuerySet):
         return self.filter(Q(is_active=False) | Q(is_delisted=True))
 
     def prefetch_many_to_many(self):
-        return self.prefetch_related("sectors", "networks")  # "users", "groups", "labels"
+        return self.prefetch_related("networks")  # "users", "groups", "labels"
 
     def prefetch_many_to_one(self):
         return self.prefetch_related("offers", "client_references", "labels_old", "images")
@@ -229,7 +209,7 @@ class SiaeQuerySet(models.QuerySet):
         return self.is_live().exclude(kind="OPCS").prefetch_many_to_many()
 
     def tender_matching_query_set(self):
-        return self.is_live().exclude(kind="OPCS").has_contact_email().prefetch_related("sectors")
+        return self.is_live().exclude(kind="OPCS").has_contact_email()
 
     def api_query_set(self):
         return self.exclude(kind="OPCS")
@@ -249,9 +229,6 @@ class SiaeQuerySet(models.QuerySet):
             )
         ).filter(Q(similarity__gt=0.2) | Q(siret__startswith=full_text_string))
 
-    def filter_sectors(self, sectors):
-        return self.filter(sectors__in=sectors)
-
     def filter_networks(self, networks):
         return self.filter(networks__in=networks)
 
@@ -261,10 +238,6 @@ class SiaeQuerySet(models.QuerySet):
     def has_user(self):
         """Only return siaes who have at least 1 User."""
         return self.filter(users__isnull=False).distinct()
-
-    def has_sector(self):
-        """Only return siaes who have at least 1 Sector."""
-        return self.filter(sectors__isnull=False).distinct()
 
     def has_network(self):
         """Only return siaes who have at least 1 Network."""
@@ -307,9 +280,6 @@ class SiaeQuerySet(models.QuerySet):
                 & Q(geo_range_custom_distance__lte=Distance("coords", kwargs["city_coords"]) / 1000)
             )
 
-    def in_city_area(self, perimeter):
-        return self.filter(get_city_filter(perimeter))
-
     def address_in_perimeter_list(self, perimeters: models.QuerySet):
         """
         Simple method to filter the Siaes depending on the perimeter filter.
@@ -323,36 +293,6 @@ class SiaeQuerySet(models.QuerySet):
                 conditions |= get_department_filter(perimeter)
             if perimeter.kind == Perimeter.KIND_REGION:
                 conditions |= get_region_filter(perimeter)
-        return self.filter(conditions)
-
-    def geo_range_in_perimeter_list(self, perimeters: models.QuerySet, with_country=False, include_country_area=False):
-        """
-        Method to filter the Siaes depending on the perimeter filter.
-        We filter on the Siae's address & geo_range fields.
-        Depending on the type of Perimeter that were chosen, different cases arise:
-
-        **CITY**
-        return the Siae with the post code in perimeter.post_codes
-        OR the Siae with the same department (except geo_range=GEO_RANGE_CUSTOM)
-        OR the Siae with geo_range=GEO_RANGE_CUSTOM and a perimeter radius that overlaps with the city
-
-        **DEPARTMENT**
-        return only the Siae in this department
-
-        **REGION**
-        return only the Siae in this region
-        """
-        conditions = Q()
-        for perimeter in perimeters:
-            if perimeter.kind == Perimeter.KIND_CITY:
-                # https://stackoverflow.com/questions/20222457/django-building-a-queryset-with-q-objects
-                conditions |= get_city_filter(perimeter, with_country)
-            if perimeter.kind == Perimeter.KIND_DEPARTMENT:
-                conditions |= get_department_filter(perimeter)
-            if perimeter.kind == Perimeter.KIND_REGION:
-                conditions |= get_region_filter(perimeter)
-        if include_country_area:
-            conditions = Q(geo_range=siae_constants.GEO_RANGE_COUNTRY) | conditions
         return self.filter(conditions)
 
     def within(self, point, distance_km=0, include_country_area=False):
@@ -425,7 +365,7 @@ class SiaeQuerySet(models.QuerySet):
         return qs.distinct()
 
     def filter_with_tender_tendersiae_status(self, tender, tendersiae_status=None):
-        qs = self.prefetch_related("sectors").is_live().has_contact_email()  # .filter(tendersiae__tender=tender)
+        qs = self.is_live().has_contact_email()  # .filter(tendersiae__tender=tender)
         # tender status
         if tendersiae_status == "INTERESTED":
             qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_contact_click_date__isnull=False)
@@ -631,13 +571,6 @@ class Siae(models.Model):
     nature = models.CharField(
         verbose_name="Établissement", max_length=20, choices=siae_constants.NATURE_CHOICES, blank=True
     )
-    presta_type = ChoiceArrayField(
-        verbose_name="Type de prestation",
-        base_field=models.CharField(max_length=20, choices=siae_constants.PRESTA_CHOICES),
-        blank=True,
-        null=True,
-        db_index=True,
-    )
     legal_form = models.CharField(
         verbose_name="Forme juridique",
         max_length=20,
@@ -661,16 +594,6 @@ class Siae(models.Model):
     # Latitude and longitude coordinates.
     # https://docs.djangoproject.com/en/2.2/ref/contrib/gis/model-api/#pointfield
     coords = gis_models.PointField(geography=True, blank=True, null=True)
-    geo_range = models.CharField(
-        verbose_name="Périmètre d'intervention",
-        max_length=20,
-        choices=siae_constants.GEO_RANGE_CHOICES,
-        blank=True,
-        db_index=True,
-    )
-    geo_range_custom_distance = models.IntegerField(
-        verbose_name="Distance en kilomètres (périmètre d'intervention)", blank=True, null=True
-    )
 
     contact_first_name = models.CharField(verbose_name="Prénom", max_length=150, blank=True)
     contact_last_name = models.CharField(verbose_name="Nom", max_length=150, blank=True)
@@ -740,9 +663,6 @@ class Siae(models.Model):
         verbose_name="Gestionnaires",
         related_name="siaes",
         blank=True,
-    )
-    sectors = models.ManyToManyField(
-        "sectors.Sector", verbose_name="Secteurs d'activité", related_name="siaes", blank=True
     )
     networks = models.ManyToManyField("networks.Network", verbose_name="Réseaux", related_name="siaes", blank=True)
     groups = models.ManyToManyField("siaes.SiaeGroup", verbose_name="Groupements", related_name="siaes", blank=True)
@@ -1095,32 +1015,6 @@ class Siae(models.Model):
     @property
     def contact_phone_display(self):
         return phone_number_display(self.contact_phone)
-
-    @property
-    def geo_range_pretty_display(self):
-        if self.geo_range == siae_constants.GEO_RANGE_COUNTRY:
-            return self.get_geo_range_display()
-        elif self.geo_range == siae_constants.GEO_RANGE_REGION:
-            return f"{self.get_geo_range_display().lower()} ({self.region})"
-        elif self.geo_range == siae_constants.GEO_RANGE_DEPARTMENT:
-            return f"{self.get_geo_range_display().lower()} ({self.department})"
-        elif self.geo_range == siae_constants.GEO_RANGE_CUSTOM:
-            if self.geo_range_custom_distance:
-                return f"{self.geo_range_custom_distance} km"
-        return "non disponible"
-
-    @property
-    def geo_range_pretty_title(self):
-        if self.geo_range == siae_constants.GEO_RANGE_COUNTRY:
-            return self.geo_range_pretty_display
-        elif self.geo_range == siae_constants.GEO_RANGE_REGION:
-            return self.region
-        elif self.geo_range == siae_constants.GEO_RANGE_DEPARTMENT:
-            return self.get_department_display()
-        elif self.geo_range == siae_constants.GEO_RANGE_CUSTOM:
-            if self.geo_range_custom_distance:
-                return f"{self.geo_range_pretty_display} de {self.city}"
-        return self.geo_range_pretty_display
 
     @property
     def is_missing_contact(self):

@@ -2,7 +2,6 @@ from django.urls import path
 from django.views.generic import TemplateView
 
 from lemarche.www.pages.views import (
-    CompanyReferenceCalculatorView,
     ContactView,
     ImpactCalculatorView,
     SiaeGroupListView,
@@ -26,7 +25,6 @@ urlpatterns = [
         SocialImpactBuyersCalculatorView.as_view(),
         name="buyer_social_impact_calculator",
     ),
-    path("acheteurs-reference-client/", CompanyReferenceCalculatorView.as_view(), name="company_reference_calculator"),
     # Other dynamic pages
     path("groupements/", SiaeGroupListView.as_view(), name="groupements"),
     path("stats/", StatsView.as_view(), name="stats"),

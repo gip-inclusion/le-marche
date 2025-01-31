@@ -32,12 +32,6 @@
                        title="Consulter la liste des {{ siae.etablissement_count }} établissements">{{ siae.etablissement_count }}</a>
                 </li>
             {% endif %}
-            <li title="{% get_verbose_name siae 'presta_type' %}">
-                {% if siae.presta_type %}
-                    <i class="fr-icon--sm fr-icon-briefcase-line"></i>
-                    <strong>{% array_choices_display siae 'presta_type' %}</strong>
-                {% endif %}
-            </li>
             <li>
                 <i class="fr-icon--sm fr-icon--sm fr-icon--sm fr-icon-team-fill"></i>
                 <strong>Salariés permanents :</strong>

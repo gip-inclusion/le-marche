@@ -128,28 +128,6 @@ class SiaeModelTest(TestCase):
         # nic
         self.assertEqual(siae_with_siret.nic, "12345")
 
-    def test_geo_range_pretty_display_property(self):
-        siae_country = SiaeFactory(geo_range=siae_constants.GEO_RANGE_COUNTRY)
-        self.assertEqual(siae_country.geo_range_pretty_display, "France entière")
-        siae_region = SiaeFactory(geo_range=siae_constants.GEO_RANGE_REGION, region="Guadeloupe")
-        self.assertEqual(siae_region.geo_range_pretty_display, "région (Guadeloupe)")
-        siae_department = SiaeFactory(
-            geo_range=siae_constants.GEO_RANGE_DEPARTMENT, region="Bretagne", department="29"
-        )
-        self.assertEqual(siae_department.geo_range_pretty_display, "département (29)")
-        siae_custom = SiaeFactory(
-            geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            region="Bretagne",
-            department="29",
-            city="Quimper",
-            geo_range_custom_distance=50,
-        )
-        self.assertEqual(siae_custom.geo_range_pretty_display, "50 km")
-        siae_custom_empty = SiaeFactory(
-            geo_range=siae_constants.GEO_RANGE_CUSTOM, region="Bretagne", department="29", city="Quimper"
-        )
-        self.assertEqual(siae_custom_empty.geo_range_pretty_display, "non disponible")
-
     def test_is_missing_contact_property(self):
         siae_nok = SiaeFactory(name="Ma boite", contact_email="")
         self.assertTrue(siae_nok.is_missing_contact)
@@ -587,7 +565,6 @@ class SiaeModelPerimeterQuerysetTest(TestCase):
             department=cls.chamrousse_perimeter.department_code,
             region=cls.auvergne_rhone_alpes_perimeter.name,
             post_code=cls.chamrousse_perimeter.post_codes[0],
-            geo_range=siae_constants.GEO_RANGE_DEPARTMENT,
         )
 
     def test_address_in_perimeter_list(self):
@@ -596,14 +573,6 @@ class SiaeModelPerimeterQuerysetTest(TestCase):
         self.assertEqual(Siae.objects.address_in_perimeter_list([self.grenoble_perimeter]).count(), 1)
         self.assertEqual(
             Siae.objects.address_in_perimeter_list([self.guadeloupe_perimeter, self.finistere_perimeter]).count(), 2
-        )
-
-    def test_geo_range_in_perimeter_list(self):
-        self.assertEqual(Siae.objects.geo_range_in_perimeter_list([]).count(), 5)
-        self.assertEqual(Siae.objects.geo_range_in_perimeter_list([self.guadeloupe_perimeter]).count(), 1)
-        self.assertEqual(Siae.objects.geo_range_in_perimeter_list([self.grenoble_perimeter]).count(), 2)
-        self.assertEqual(
-            Siae.objects.geo_range_in_perimeter_list([self.guadeloupe_perimeter, self.finistere_perimeter]).count(), 2
         )
 
 

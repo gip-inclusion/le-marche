@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from lemarche.api.networks.serializers import NetworkSimpleSerializer
 from lemarche.api.sectors.serializers import SectorSimpleSerializer
+from lemarche.siaes import constants
 from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabelOld, SiaeOffer
 
 
@@ -34,7 +35,8 @@ class SiaeLabelOldSimpleSerializer(serializers.ModelSerializer):
 
 class SiaeDetailSerializer(serializers.ModelSerializer):
     kind_parent = serializers.ReadOnlyField()
-    sectors = SectorSimpleSerializer(many=True)
+    sectors = SectorSimpleSerializer(many=True, source="sectors_annotated")
+    presta_types = serializers.MultipleChoiceField(choices=constants.PRESTA_CHOICES, source="presta_types_annotated")
     networks = NetworkSimpleSerializer(many=True)
     offers = SiaeOfferSimpleSerializer(many=True)
     client_references = SiaeClientReferenceSimpleSerializer(many=True)
@@ -51,7 +53,6 @@ class SiaeDetailSerializer(serializers.ModelSerializer):
             "nature",
             "kind",
             "kind_parent",
-            "presta_type",
             "contact_website",
             "contact_email",
             "contact_phone",
@@ -65,11 +66,11 @@ class SiaeDetailSerializer(serializers.ModelSerializer):
             "is_qpv",
             "is_active",
             "sectors",
+            "presta_types",
             "networks",
             "offers",
             "client_references",
             "labels_old",
-            # "images",
             "created_at",
             "updated_at",
         ]
@@ -87,7 +88,6 @@ class SiaeListSerializer(SiaeDetailSerializer):
             "nature",
             "kind",
             "kind_parent",
-            "presta_type",
             "contact_website",
             "logo_url",
             # additional contact_ fields available in detail
