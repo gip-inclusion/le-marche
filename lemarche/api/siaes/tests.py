@@ -352,14 +352,26 @@ class SiaeRetrieveBySiretApiTest(TestCase):
 
 
 class SiaeChoicesApiTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_token = "a" * 64
+        UserFactory(api_key=cls.user_token)
+        cls.authenticated_client = cls.client_class(headers={"authorization": f"Bearer {cls.user_token}"})
+
     def test_should_return_siae_kinds_list(self):
-        # anonymous user
         url = reverse("api:siae-kinds-list")
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 401)
+        response = self.authenticated_client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["count"], 10)
+        self.assertEqual(len(response.data["results"]), 10)
+        self.assertTrue("id" in response.data["results"][0])
+        self.assertTrue("name" in response.data["results"][0])
 
     def test_should_return_siae_presta_types_list(self):
-        # anonymous user
         url = reverse("api:siae-presta-types-list")
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 401)
+        response = self.authenticated_client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["count"], 3)
+        self.assertEqual(len(response.data["results"]), 3)
+        self.assertTrue("id" in response.data["results"][0])
+        self.assertTrue("name" in response.data["results"][0])
