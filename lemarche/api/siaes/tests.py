@@ -159,14 +159,11 @@ class SiaeDetailApiTest(TestCase):
 
     def test_should_return_4O4_if_siae_excluded(self):
         siae_opcs = SiaeFactory(kind="OPCS")
-        url = reverse("api:siae-detail", args=[siae_opcs.id])  # anonymous
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 401)
         url = reverse("api:siae-detail", args=[siae_opcs.id])
         response = self.authenticated_client.get(url)
         self.assertEqual(response.status_code, 404)
 
-    def test_should_return_simple_siae_object_to_anonymous_users(self):
+    def test_should_return_401_to_anonymous_users(self):
         url = reverse("api:siae-detail", args=[self.siae.id])  # anonymous user
         response = self.client.get(url)
         self.assertEqual(response.status_code, 401)
