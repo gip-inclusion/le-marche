@@ -6,6 +6,26 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2024.9.0](https://github.com/gip-inclusion/le-marche/compare/v2024.8.0...v2024.9.0) (2025-02-03)
+
+
+### Features
+
+* Action admin pour l'anonymisation des utilisateurs ([#1624](https://github.com/gip-inclusion/le-marche/issues/1624)) ([0dc2970](https://github.com/gip-inclusion/le-marche/commit/0dc2970078a56df4405e8668b91000779105c69a))
+* **Email Notifications:** Mise à jour côté Brevo du choix pour les communications Marketing ([#1639](https://github.com/gip-inclusion/le-marche/issues/1639)) ([f7b9c1a](https://github.com/gip-inclusion/le-marche/commit/f7b9c1a48259338144a30113257d45852fd3ccd5))
+* **Email Notifications:** Prise en compte de la désactivation d'un groupe d'email par un utilisateur ([#1630](https://github.com/gip-inclusion/le-marche/issues/1630)) ([3bee0e0](https://github.com/gip-inclusion/le-marche/commit/3bee0e0ce20ee69ab96f9e7137de682ae26987fe))
+* Retirer la co-traitance ([#1623](https://github.com/gip-inclusion/le-marche/issues/1623)) ([d3676d1](https://github.com/gip-inclusion/le-marche/commit/d3676d161d3972745f4024fc18e9dd0e1b36e903))
+* suppression de la synchro c2 c4 ([#1633](https://github.com/gip-inclusion/le-marche/issues/1633)) ([88c131e](https://github.com/gip-inclusion/le-marche/commit/88c131edaa8f492f226b63539042bf5518aa088b))
+
+
+### Bug Fixes
+
+* **Activités des structures:** Correction du formulaire d'édition des activités ([#1625](https://github.com/gip-inclusion/le-marche/issues/1625)) ([432d7a2](https://github.com/gip-inclusion/le-marche/commit/432d7a256646bb5d410e1750907cbb6df4d93a82))
+* Changement de conditions de synchronisation des DDB vers le crm brevo ([#1622](https://github.com/gip-inclusion/le-marche/issues/1622)) ([393f227](https://github.com/gip-inclusion/le-marche/commit/393f227e3b3f21e3615445799a2dbcebdd9258e6))
+* **Email:** Retour sur l'enregistrement du log avant envoi ([#1629](https://github.com/gip-inclusion/le-marche/issues/1629)) ([65a2fe6](https://github.com/gip-inclusion/le-marche/commit/65a2fe6653007257732df4365c1063f0726a201d))
+* Flacky test causé par un mot de passe aléatoire non valide ([#1621](https://github.com/gip-inclusion/le-marche/issues/1621)) ([561c066](https://github.com/gip-inclusion/le-marche/commit/561c06693615b5553ac48d65d666685eac7c010a))
+* **Structures:** Correction sur le contrôle d'unicité du nom commercial ([#1606](https://github.com/gip-inclusion/le-marche/issues/1606)) ([171abff](https://github.com/gip-inclusion/le-marche/commit/171abff7a5c4aaaae933356a22768842eb2a33a3))
+
 ## [2024.8.0](https://github.com/gip-inclusion/le-marche/compare/v2024.7.0...v2024.8.0) (2025-01-02)
 
 
