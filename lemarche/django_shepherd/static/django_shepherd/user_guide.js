@@ -2,6 +2,8 @@ class UserGuide {
     constructor() {
         this.tour = new Shepherd.Tour({
             useModalOverlay: true,
+            confirmCancel: true,
+            confirmCancelMessage: "Ëtes-vous sûr d'annuler ce guide des foncctionnalités ? Il ne vous sera plus proposé",
             defaultStepOptions: {
                 classes: 'shepherd-theme-arrows',
                 scrollTo: {
@@ -43,7 +45,7 @@ class UserGuide {
                             on: step.position
                         },
                         buttons: [
-                            {
+                            !isLastStep && {
                                 text: 'Ignorer',
                                 action: this.tour.cancel,
                                 classes: 'btn btn-secondary'
