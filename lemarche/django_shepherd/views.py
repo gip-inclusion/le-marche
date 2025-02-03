@@ -6,7 +6,7 @@ from .models import UserGuide
 
 class UserGuideView(View):
     def get(self, request, guide_name):
-        guide = UserGuide.objects.get(name=guide_name)
+        guide = UserGuide.objects.get(slug=guide_name)
         steps = guide.steps.all()
         steps_data = [
             {
