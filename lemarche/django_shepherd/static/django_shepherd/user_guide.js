@@ -28,7 +28,7 @@ class UserGuide {
     }
 
     startGuide(guideName) {
-        fetch(`http://localhost:8000/django_shepherd/get_guide/${guideName}/`)
+        fetch(`/django_shepherd/get_guide/${guideName}/`)
             .then(response => response.json())
             .then(data => {
                 this.tour.steps = []; // Clear previous steps
