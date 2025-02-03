@@ -5,16 +5,19 @@ from django.utils import timezone
 
 class UserGuide(models.Model):
     name = models.CharField("Nom du Guide", max_length=200, unique=True)
-    description = models.TextField("Description", blank=True, null=True)
+    description = models.TextField("Description", blank=True)
     slug = models.SlugField(
         "Slug (unique)",
         max_length=50,
         unique=True,
         help_text="Identifiant permettant d'identifier le guide en js",
-        null=True,
     )
     created_at = models.DateTimeField("Date de création", default=timezone.now)
     updated_at = models.DateTimeField("Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Guide utilisateurs"
+        verbose_name_plural = "Guides utilisateurs"
 
     def set_slug(self):
         """
@@ -33,13 +36,21 @@ class UserGuide(models.Model):
 
 
 class GuideStep(models.Model):
+    class PositionChoices(models.TextChoices):
+        TOP = "TOP", "Top"
+        BOTTOM = "BOTTOM", "Bottom"
+        LEFT = "LEFT", "Left"
+        RIGHT = "RIGHT", "Right"
+
     guide = models.ForeignKey(UserGuide, related_name="steps", on_delete=models.CASCADE)
     title = models.CharField("Titre dans la popup", max_length=200)
     text = models.TextField("Contenu text de l'étape")
-    element = models.CharField("Élément css à rattacher", max_length=200, null=True)
-    position = models.CharField(
-        max_length=50, choices=[("top", "Top"), ("bottom", "Bottom"), ("left", "Left"), ("right", "Right")], null=True
-    )
+    element = models.CharField("Élément css à rattacher", max_length=200)
+    position = models.CharField(max_length=50, choices=PositionChoices.choices)
+
+    class Meta:
+        verbose_name = "Étape du guide"
+        verbose_name_plural = "Étapes du guide"
 
     def __str__(self):
         return self.title
