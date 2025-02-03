@@ -24,6 +24,12 @@ class UserGuideAdmin(admin.ModelAdmin):
         "created_at",
     ]
 
+    fields = [
+        "name",
+        "description",
+        "created_at",
+    ]
+
     inlines = [GuideStepInline]
 
     formfield_overrides = {
