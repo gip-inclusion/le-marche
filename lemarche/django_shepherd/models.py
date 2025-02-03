@@ -37,10 +37,10 @@ class UserGuide(models.Model):
 
 class GuideStep(models.Model):
     class PositionChoices(models.TextChoices):
-        TOP = "TOP", "Top"
-        BOTTOM = "BOTTOM", "Bottom"
-        LEFT = "LEFT", "Left"
-        RIGHT = "RIGHT", "Right"
+        TOP = "top", "Top"
+        BOTTOM = "bottom", "Bottom"
+        LEFT = "left", "Left"
+        RIGHT = "right", "Right"
 
     guide = models.ForeignKey(UserGuide, related_name="steps", on_delete=models.CASCADE)
     title = models.CharField("Titre dans la popup", max_length=200)
