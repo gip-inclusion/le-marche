@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils import timezone
@@ -11,6 +12,11 @@ class UserGuide(models.Model):
         max_length=50,
         unique=True,
         help_text="Identifiant permettant d'identifier le guide en js",
+    )
+    guided_users = models.ManyToManyField(
+        verbose_name="Utilisateurs guidés",
+        to=settings.AUTH_USER_MODEL,
+        help_text="Utilisateurs qui ont déjà été guidés",
     )
     created_at = models.DateTimeField("Date de création", default=timezone.now)
     updated_at = models.DateTimeField("Date de modification", auto_now=True)
