@@ -731,8 +731,8 @@ LOGGING = {
         "null": {"class": "logging.NullHandler"},
     },
     "loggers": {
+        "": {"handlers": ["console"], "level": env.str("DEFAULT_LOG_LEVEL", "INFO")},
         "django": {
-            "handlers": ["console"],
             "level": env.str("DJANGO_LOG_LEVEL", "INFO"),
         },
         # Silence `Invalid HTTP_HOST header` errors.
@@ -743,8 +743,7 @@ LOGGING = {
             "propagate": False,
         },
         "lemarche": {
-            "handlers": ["console"],
-            "level": env.str("DJANGO_LOG_LEVEL", "DEBUG"),
+            "level": env.str("LEMARCHE_LOG_LEVEL", "INFO"),
         },
     },
 }
