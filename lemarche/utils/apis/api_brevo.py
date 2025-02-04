@@ -1,4 +1,3 @@
-import json
 import logging
 import time
 
@@ -109,22 +108,6 @@ def update_contact_email_blacklisted(user_identifier: str, email_blacklisted: bo
         logger.info(f"Success Brevo->ContactsApi->update_contact to update email_blacklisted: {api_response}")
     except ApiException as e:
         logger.error(f"Exception when calling Brevo->ContactsApi->update_contact to update email_blacklisted: {e}")
-
-
-def remove_contact_from_list(user, list_id: int):
-    api_client = get_api_client()
-    api_instance = sib_api_v3_sdk.ContactsApi(api_client)
-    contact_emails = sib_api_v3_sdk.RemoveContactFromList(emails=[user.email])
-
-    try:
-        api_response = api_instance.remove_contact_from_list(list_id=list_id, contact_emails=contact_emails)
-        logger.info(f"Success Brevo->ContactsApi->remove_contact_from_list: {api_response}")
-    except ApiException as e:
-        error_body = json.loads(e.body)
-        if error_body.get("message") == "Contact already removed from list and/or does not exist":
-            logger.info("calling Brevo->ContactsApi->remove_contact_from_list: contact doesn't exist in this list")
-        else:
-            logger.error(f"Exception when calling Brevo->ContactsApi->remove_contact_from_list: {e}")
 
 
 def create_or_update_company(siae):
