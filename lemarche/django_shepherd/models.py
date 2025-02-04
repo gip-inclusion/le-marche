@@ -7,6 +7,7 @@ from django.utils import timezone
 class UserGuide(models.Model):
     name = models.CharField("Nom du Guide", max_length=200, unique=True)
     description = models.TextField("Description", blank=True)
+    url = models.URLField(verbose_name="URL", max_length=250, unique=True, help_text="URL de la page à guider")
     slug = models.SlugField(
         "Slug (unique)",
         max_length=50,
@@ -17,6 +18,7 @@ class UserGuide(models.Model):
         verbose_name="Utilisateurs guidés",
         to=settings.AUTH_USER_MODEL,
         help_text="Utilisateurs qui ont déjà été guidés",
+        blank=True,
     )
     created_at = models.DateTimeField("Date de création", default=timezone.now)
     updated_at = models.DateTimeField("Date de modification", auto_now=True)

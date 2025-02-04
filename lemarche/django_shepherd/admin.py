@@ -25,6 +25,7 @@ class UserGuideAdmin(admin.ModelAdmin):
 
     fields = [
         "name",
+        "url",
         "description",
         "created_at",
     ]
