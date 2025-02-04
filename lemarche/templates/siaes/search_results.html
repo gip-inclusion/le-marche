@@ -326,6 +326,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <script type="text/javascript"
             src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
     <script src="{% static 'django_shepherd/user_guide.js' %}"></script>
+    {{ DISPLAY_GUIDE|json_script:"display-guide" }}
     <script type="text/javascript">
 
         const userGuide = new UserGuide();
@@ -339,7 +340,9 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         // Call this function with the name of the guide you want to start
-        triggerGuide('test');
+        if (JSON.parse(document.getElementById('display-guide').textContent)) {
+            triggerGuide('test');
+        }
 
     </script>
     {% if user.is_authenticated %}
