@@ -1,12 +1,13 @@
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views import View
+from django.views.generic.detail import BaseDetailView
 
 from .models import UserGuide
 
 
 class UserGuideView(View):
-    def get(self, request, guide_name):
-        guide = UserGuide.objects.get(slug=guide_name)
+    def get(self, request, guide_slug):
+        guide = UserGuide.objects.get(slug=guide_slug)
         steps = guide.steps.all()
         steps_data = [
             {
@@ -18,3 +19,12 @@ class UserGuideView(View):
             for step in steps
         ]
         return JsonResponse({"steps": steps_data})
+
+
+class StepViewedView(BaseDetailView):
+    queryset = UserGuide.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        """Add the current user to the list of users that seen the guide"""
+        self.get_object().guided_users.add(self.request.user)
+        return HttpResponse(status=200)

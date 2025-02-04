@@ -12,6 +12,10 @@ class UserGuide {
                 },
             }
         });
+
+        // Once cancelled or completed
+        this.tour.on("cancel", this.onTourEnd);
+        this.tour.on("complete", this.onTourEnd);
     }
 
     init() {
@@ -28,8 +32,14 @@ class UserGuide {
             }
         });
     }
+    /*Called on ending tour events. Call an url to add the user to already viewed guides*/
+    onTourEnd() {
+        // Here "this" represents "Tour" instance
+        fetch(`/django_shepherd/viewed_guide/${this.guideName}/`)
+    }
 
     startGuide(guideName) {
+        this.tour.guideName = guideName
         fetch(`/django_shepherd/get_guide/${guideName}/`)
             .then(response => response.json())
             .then(data => {
