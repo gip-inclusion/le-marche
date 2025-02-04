@@ -1,24 +1,7 @@
-from django.http import HttpResponse, JsonResponse
-from django.views import View
+from django.http import HttpResponse
 from django.views.generic.detail import BaseDetailView
 
 from lemarche.django_shepherd.models import UserGuide
-
-
-class UserGuideView(View):
-    def get(self, request, guide_slug):
-        guide = UserGuide.objects.get(slug=guide_slug)
-        steps = guide.steps.all()
-        steps_data = [
-            {
-                "title": step.title,
-                "text": step.text,
-                "element": step.element,
-                "position": step.position,
-            }
-            for step in steps
-        ]
-        return JsonResponse({"steps": steps_data})
 
 
 class StepViewedView(BaseDetailView):
