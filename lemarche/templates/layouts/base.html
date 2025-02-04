@@ -5,6 +5,15 @@
     <meta charset="utf-8" />
     <meta name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    {# Used to have parametric imports in js modules #}
+    <script type="importmap">
+        {
+            "imports": {
+              "shepherd_map": "{% static 'vendor/shepherd-14.4.0/esm/shepherd.mjs' %}",
+              "user_guide_map": "{% static 'django_shepherd/user_guide.js' %}"
+            }
+        }
+    </script>
     {% dsfr_favicon %}
     {% dsfr_css %}
     {% compress css %}
@@ -22,12 +31,25 @@
             href="{% static 'itou_marche/itou_marche.scss' %}"
             type="text/x-scss" />
     {% endcompress %}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/shepherd.js/10.0.0/js/shepherd.min.js"></script>
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/shepherd.js/10.0.0/css/shepherd.css"
-        />
-        <script src="{% static 'django_shepherd/user_guide.js' %}"></script>
+      <link
+        rel="stylesheet"
+        href="{% static 'vendor/shepherd-14.4.0/css/shepherd.css' %}"
+      />
+      {{ DISPLAY_GUIDE_FLAG|json_script:"display-guide-flag" }}
+      {{ DISPLAY_GUIDE_PAYLOAD|json_script:"display-guide-payload" }}
+      {{ DISPLAY_GUIDE_PK|json_script:"display-guide-pk" }}
+      <script type="module">
+          import startGuide from "user_guide_map";
+          
+          const displayGuide = JSON.parse(document.getElementById('display-guide-flag').textContent)
+          const displayGuidePayload = JSON.parse(document.getElementById('display-guide-payload').textContent)
+          const displayGuidePk = JSON.parse(document.getElementById('display-guide-pk').textContent)
+          
+          // Call this function with the name of the guide you want to start
+          if (displayGuide) {
+              startGuide(displayGuidePayload, displayGuidePk);
+          }
+      </script>
 
     {% block extra_css %}
     {% endblock extra_css %}
@@ -83,28 +105,6 @@
     <script type="text/javascript"
             src="{% static 'vendor/htmx-1.9.12/htmx.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/utils.js'%}"></script>
-    {{ DISPLAY_GUIDE_FLAG|json_script:"display-guide-flag" }}
-    {{ DISPLAY_GUIDE_PAYLOAD|json_script:"display-guide-payload" }}
-    {{ DISPLAY_GUIDE_PK|json_script:"display-guide-pk" }}
-    <script>
-        const userGuide = new UserGuide();
-        userGuide.init();
-        function triggerGuide(guideName) {
-            const event = new CustomEvent('startUserGuide', {
-                detail: { guideName: guideName }
-            });
-
-            document.dispatchEvent(event);
-        }
-        const displayGuide = JSON.parse(document.getElementById('display-guide-flag').textContent)
-        const displayGuidePayload = JSON.parse(document.getElementById('display-guide-payload').textContent)
-        const displayGuidePk = JSON.parse(document.getElementById('display-guide-pk').textContent)
-        // Call this function with the name of the guide you want to start
-        if (displayGuide) {
-            triggerGuide();
-        }
-
-    </script>
     {% if BITOUBI_ENV not in "dev" %}
       {% include "includes/_tracker_tarteaucitron.html" %}
       {% include "includes/_tracker_itou.html" %}
