@@ -5,9 +5,8 @@ from django.core.mail import send_mail
 from huey.contrib.djhuey import task
 
 from lemarche.users import constants as user_constants
-from lemarche.utils.apis import api_brevo, api_mailjet
+from lemarche.utils.apis import api_brevo
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
-from lemarche.utils.data import sanitize_to_send_by_email
 
 
 GENERIC_EMAIL_DOMAIN_SUFFIX_LIST = [
@@ -61,34 +60,16 @@ def add_to_contact_list(user, type: str, tender=None, source: str = user_constan
         user (User): the user how will be added in the contact list
         type (String): "signup", OR "buyer_download" or "buyer_search" else raise ValueError
     """
-    contact_list_id = None
     if type == "signup":
-        contact_list_id = api_mailjet.get_mailjet_cl_on_signup(user, source)
+        # contact_list_id = api_mailjet.get_mailjet_cl_on_signup(user, source)
         if user.kind == user.KIND_BUYER:
             api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_BUYER_ID, tender=tender)
         elif user.kind == user.KIND_SIAE:
             api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_SIAE_ID)
     elif type == "buyer_search":
-        # contact_list_id = settings.MAILJET_NL_CL_BUYER_SEARCH_SIAE_LIST_ID
         api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_BUYER_SEARCH_SIAE_LIST_ID)
-    elif type == "buyer_search_traiteur":
-        contact_list_id = settings.MAILJET_NL_CL_BUYER_SEARCH_SIAE_TRAITEUR_LIST_ID
-    elif type == "buyer_search_nettoyage":
-        contact_list_id = settings.MAILJET_NL_CL_BUYER_SEARCH_SIAE_NETTOYAGE_LIST_ID
-    elif type == "buyer_download":
-        contact_list_id = settings.MAILJET_NL_CL_BUYER_DOWNLOAD_SIAE_LIST_ID
     else:
         raise ValueError("type must be defined")
-    if contact_list_id:
-        properties = {
-            "nom": sanitize_to_send_by_email(user.last_name.capitalize()),
-            "prénom": sanitize_to_send_by_email(user.first_name.capitalize()),
-            "pays": "france",
-            "nomsiae": sanitize_to_send_by_email(user.company_name.capitalize()) if user.company_name else "",
-            "poste": sanitize_to_send_by_email(user.position.capitalize()) if user.position else "",
-        }
-
-        api_mailjet.add_to_contact_list_async(user.email, properties, contact_list_id)
 
 
 def update_contact_email_blacklisted(email, email_blacklisted: bool):
