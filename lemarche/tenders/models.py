@@ -986,6 +986,10 @@ class Tender(models.Model):
         return self.is_validated or self.is_sent
 
     @property
+    def is_rejected(self) -> bool:
+        return self.status == tender_constants.STATUS_REJECTED
+
+    @property
     def is_partner_approch(self) -> bool:
         return self.author_id == settings.PARTNER_APPROCH_USER_ID
 

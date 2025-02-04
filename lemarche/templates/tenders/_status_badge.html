@@ -10,4 +10,8 @@
     <span class="fr-badge fr-badge--sm fr-badge--success">
         <i class="ri-mail-send-line"></i>Envoyé
     </span>
+{% elif tender.is_rejected %}
+    <span class="fr-badge fr-badge--sm fr-badge--error">
+        <i class="ri-close-circle-line"></i>Rejeté
+    </span>
 {% endif %}
