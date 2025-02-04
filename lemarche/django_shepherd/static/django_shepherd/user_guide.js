@@ -34,12 +34,10 @@ class UserGuide {
     }
     /*Called on ending tour events. Call an url to add the user to already viewed guides*/
     onTourEnd() {
-        // Here "this" represents "Tour" instance
-        fetch(`/django_shepherd/viewed_guide/${this.guideName}/`)
+        fetch(`/django_shepherd/viewed_guide/${displayGuidePk}/`)
     }
 
     startGuide(guideName) {
-        this.tour.guideName = guideName
         this.tour.steps = []; // Clear previous steps
         displayGuidePayload.steps.forEach((step, index) => {
             const isFirstStep = index === 0;

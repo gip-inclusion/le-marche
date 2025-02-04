@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.db import models
-from django.template.defaultfilters import slugify
 from django.utils import timezone
 
 
@@ -8,12 +7,6 @@ class UserGuide(models.Model):
     name = models.CharField("Nom du Guide", max_length=200, unique=True)
     description = models.TextField("Description", blank=True)
     url = models.URLField(verbose_name="URL", max_length=250, unique=True, help_text="URL de la page à guider")
-    slug = models.SlugField(
-        "Slug (unique)",
-        max_length=50,
-        unique=True,
-        help_text="Identifiant permettant d'identifier le guide en js",
-    )
     guided_users = models.ManyToManyField(
         verbose_name="Utilisateurs guidés",
         to=settings.AUTH_USER_MODEL,
@@ -27,20 +20,8 @@ class UserGuide(models.Model):
         verbose_name = "Guide utilisateurs"
         verbose_name_plural = "Guides utilisateurs"
 
-    def set_slug(self):
-        """
-        The slug field should be unique.
-        """
-        if not self.slug:
-            self.slug = slugify(self.name)[:50]
-
     def __str__(self):
         return self.name
-
-    def save(self, *args, **kwargs):
-        """Generate the slug field before saving."""
-        self.set_slug()
-        super().save(*args, **kwargs)
 
 
 class GuideStep(models.Model):
