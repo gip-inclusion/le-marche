@@ -1,6 +1,6 @@
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import sib_api_v3_sdk
 from django.conf import settings
@@ -10,7 +10,6 @@ from sib_api_v3_sdk.rest import ApiException
 from lemarche.tenders import constants as tender_constants
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 from lemarche.utils.data import sanitize_to_send_by_email
-from lemarche.utils.urls import get_object_admin_url, get_object_share_url
 
 from typing import TYPE_CHECKING
 
@@ -18,6 +17,7 @@ if TYPE_CHECKING:
     from lemarche.users.models import User
     from lemarche.tenders.models import Tender
     from lemarche.siaes.models import Siae
+    from lemarche.companies.models import Company
 
 
 logger = logging.getLogger(__name__)
@@ -107,58 +107,40 @@ def update_contact_email_blacklisted(user_identifier: str, email_blacklisted: bo
         logger.error(f"Exception when calling Brevo->ContactsApi->update_contact to update email_blacklisted: {e}")
 
 
-def create_or_update_company(siae: "Siae") -> None:
+def create_company(company: Union["Siae", "Company"]) -> None:
     """
     Brevo docs
     - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CompaniesApi.md
     - API: https://developers.brevo.com/reference/post_companies
+
+    Args:
+        company: Union["Siae", "Company"] instance to create in Brevo
     """
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.CompaniesApi(api_client)
 
-    siae_brevo_company_body = sib_api_v3_sdk.Body(
-        name=siae.name,
+    # Determine if this is a SIAE
+    from lemarche.siaes.models import Siae
+
+    is_siae = isinstance(company, Siae)
+
+    company_data = sib_api_v3_sdk.Body(
+        name=company.name,
         attributes={
-            # default attributes
-            # name, owner, linked_contacts, revenue, number_of_employees, created_at, last_updated_at, next_activity_date, owner_assign_date, number_of_contacts, number_of_activities, industry  # noqa
-            "domain": siae.website,
-            "phone_number": siae.contact_phone_display,
-            # custom attributes
-            "app_id": siae.id,
-            "siae": True,
-            "active": siae.is_active,
-            "description": siae.description,
-            "kind": siae.kind,
-            "address_street": siae.address,
-            "address_post_code": siae.post_code,
-            "address_city": siae.city,
-            "contact_email": siae.contact_email,
-            "logo_url": siae.logo_url,
-            "geo_range": siae.geo_range,
-            "app_url": get_object_share_url(siae),
-            "app_admin_url": get_object_admin_url(siae),
-            "taux_de_completion": siae.extra_data.get("brevo_company_data", {}).get("completion_rate"),
-            "nombre_de_besoins_recus": siae.extra_data.get("brevo_company_data", {}).get("tender_received"),
-            "nombre_de_besoins_interesses": siae.extra_data.get("brevo_company_data", {}).get("tender_interest"),
+            "domain": company.website if hasattr(company, "website") else "",
+            "app_id": company.id,
+            "siae": is_siae,
         },
     )
 
-    if siae.brevo_company_id:  # update
+    if not company.brevo_company_id:
         try:
-            api_response = api_instance.companies_id_patch(siae.brevo_company_id, siae_brevo_company_body)
-            # logger.info(f"Success Brevo->CompaniesApi->create_or_update_company (update): {api_response}")
-            # api_response: {'attributes': None, 'id': None, 'linked_contacts_ids': None, 'linked_deals_ids': None}
+            api_response = api_instance.companies_post(company_data)
+            logger.info(f"Success Brevo->CompaniesApi->create_company (create): {api_response}")
+            company.brevo_company_id = api_response.id
+            company.save(update_fields=["brevo_company_id"])
         except ApiException as e:
-            logger.error(f"Exception when calling Brevo->CompaniesApi->create_or_update_company (update): {e}")
-    else:  # create
-        try:
-            api_response = api_instance.companies_post(siae_brevo_company_body)
-            logger.info(f"Success Brevo->CompaniesApi->create_or_update_company (create): {api_response}")
-            # api_response: {'id': '<brevo_company_id>'}
-            siae.brevo_company_id = api_response.id
-            siae.save(update_fields=["brevo_company_id"])
-        except ApiException as e:
-            logger.error(f"Exception when calling Brevo->CompaniesApi->create_or_update_company (create): {e}")
+            logger.error(f"Exception when calling Brevo->CompaniesApi->create_company (create): {e}")
 
 
 def create_deal(tender: "Tender", owner_email: str) -> None:

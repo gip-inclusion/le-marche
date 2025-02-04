@@ -3,6 +3,8 @@ from django.db.models import Count
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django_better_admin_arrayfield.models.fields import ArrayField
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from lemarche.utils.constants import ADMIN_FIELD_HELP_TEXT, RECALCULATED_FIELD_HELP_TEXT
 
@@ -52,6 +54,13 @@ class Company(models.Model):
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
+    brevo_company_id = models.IntegerField(
+        verbose_name="ID Brevo",
+        help_text="Identifiant de l'entreprise dans Brevo",
+        blank=True,
+        null=True,
+    )
+
     objects = models.Manager.from_queryset(CompanyQuerySet)()
 
     class Meta:
@@ -72,3 +81,11 @@ class Company(models.Model):
         """Generate the slug field before saving."""
         self.set_slug()
         super().save(*args, **kwargs)
+
+
+@receiver(post_save, sender=Company)
+def create_company_in_brevo(sender, instance, created, **kwargs):
+    if created:
+        from lemarche.utils.apis.api_brevo import create_company
+
+        create_company(instance)

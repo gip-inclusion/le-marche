@@ -1274,11 +1274,18 @@ class Siae(models.Model):
 
 
 @receiver(post_save, sender=Siae)
-def siae_post_save(sender, instance, **kwargs):
+def siae_post_save(sender, instance, created, **kwargs):
+    # Handle address/coords update
     field_name = "address"
     previous_field_name = f"__previous_{field_name}"
     if getattr(instance, field_name) and getattr(instance, field_name) != getattr(instance, previous_field_name):
         set_siae_coords(sender, instance)
+
+    # Handle Brevo company creation
+    if created:
+        from lemarche.utils.apis.api_brevo import create_company
+
+        create_company(instance)
 
 
 @receiver(m2m_changed, sender=Siae.users.through)
