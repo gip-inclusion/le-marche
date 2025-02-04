@@ -59,8 +59,3 @@ def expose_settings(request):
         "SIAE_HOME_PAGE": settings.SIAE_HOME_PAGE,
         "PURCHASING_IMPACT_PAGE": settings.PURCHASING_IMPACT_PAGE,
     }
-
-
-def expose_guide_context(request):
-    display_guide = True
-    return {"DISPLAY_GUIDE": display_guide}
