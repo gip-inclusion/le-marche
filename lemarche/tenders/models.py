@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta
 from uuid import uuid4
 
@@ -27,6 +28,8 @@ from django_better_admin_arrayfield.models.fields import ArrayField
 from django_extensions.db.fields import ShortUUIDField
 from phonenumber_field.modelfields import PhoneNumberField
 from shortuuid import uuid
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from lemarche.perimeters.models import Perimeter
 from lemarche.siaes import constants as siae_constants
@@ -45,6 +48,9 @@ from lemarche.utils.data import phone_number_display
 from lemarche.utils.fields import ChoiceArrayField
 from lemarche.utils.urls import get_object_admin_url
 from lemarche.utils.validators import OptionalSchemeURLValidator
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_perimeter_filter(siae):
@@ -1273,3 +1279,18 @@ class TenderStepsData(models.Model):
 
     def __str__(self):
         return f"{self.uuid} - {self.created_at}"
+
+
+@receiver(post_save, sender=Tender)
+def tender_post_save(sender, instance, created, **kwargs):
+    """
+    Create a deal in Brevo when a tender is created
+    """
+    if created:
+        from lemarche.utils.apis.api_brevo import create_deal
+
+        try:
+            create_deal(tender=instance)
+        except Exception as e:
+            # Log the error but don't prevent tender creation
+            logger.error(f"Error creating Brevo deal for tender {instance.id}: {e}")

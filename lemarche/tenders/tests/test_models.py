@@ -24,6 +24,7 @@ from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import MarcheAdminSite, get_admin_change_view_url
 from lemarche.www.tenders import utils as tender_utils
+from unittest.mock import patch
 
 
 date_today = timezone.now()
@@ -1140,3 +1141,79 @@ class TenderUtilsFindAmountRangesTests(TestCase):
         """Test when no ranges match the criteria."""
         expected_keys = [tender_constants.AMOUNT_RANGE_0_1]
         self.assertListEqual(find_amount_ranges(100, "lte"), expected_keys)
+
+
+@patch("lemarche.utils.apis.api_brevo.create_deal")
+def test_set_validated_creates_brevo_deal(self, mock_create_deal):
+    """Test that set_validated creates a Brevo deal"""
+    tender = TenderFactory(status=tender_constants.STATUS_DRAFT)
+
+    tender.set_validated()
+
+    # Verify Brevo API call
+    mock_create_deal.assert_called_once_with(tender=tender)
+
+    # Verify tender status changes
+    self.assertEqual(tender.status, tender_constants.STATUS_VALIDATED)
+    self.assertIsNotNone(tender.validated_at)
+
+    # Verify log entry
+    self.assertEqual(len(tender.logs), 1)
+    self.assertEqual(tender.logs[0]["action"], "validate")
+
+
+@patch("lemarche.utils.apis.api_brevo.create_deal")
+def test_set_validated_handles_brevo_error(self, mock_create_deal):
+    """Test that set_validated handles Brevo API errors gracefully"""
+    tender = TenderFactory(status=tender_constants.STATUS_DRAFT)
+
+    # Simulate API error
+    mock_create_deal.side_effect = Exception("API Error")
+
+    tender.set_validated()
+
+    # Verify API call
+    mock_create_deal.assert_called_once_with(tender=tender)
+
+    # Verify tender was still validated despite API error
+    self.assertEqual(tender.status, tender_constants.STATUS_VALIDATED)
+    self.assertIsNotNone(tender.validated_at)
+
+    # Verify log entry
+    self.assertEqual(len(tender.logs), 1)
+    self.assertEqual(tender.logs[0]["action"], "validate")
+
+
+@patch("lemarche.utils.apis.api_brevo.create_deal")
+def test_set_validated_only_works_on_draft(self, mock_create_deal):
+    """Test that set_validated only works on draft tenders"""
+    tender = TenderFactory(status=tender_constants.STATUS_VALIDATED)
+
+    tender.set_validated()
+
+    # Verify no API call was made
+    mock_create_deal.assert_not_called()
+
+    # Verify no changes were made
+    self.assertEqual(tender.status, tender_constants.STATUS_VALIDATED)
+
+
+@patch("lemarche.utils.apis.api_brevo.create_deal")
+def test_create_deal_on_tender_creation(self, mock_create_deal):
+    """Test that creating a new tender creates a Brevo deal"""
+    tender = TenderFactory()
+
+    # Verify create_deal was called once with the tender instance
+    mock_create_deal.assert_called_once_with(tender=tender)
+
+    # Create another tender
+    tender2 = TenderFactory()
+    self.assertEqual(mock_create_deal.call_count, 2)
+    mock_create_deal.assert_called_with(tender=tender2)
+
+    # Update existing tender
+    tender.title = "Updated Title"
+    tender.save()
+
+    # Call count should still be 2 since we only sync on creation
+    self.assertEqual(mock_create_deal.call_count, 2)

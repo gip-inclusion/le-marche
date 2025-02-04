@@ -1,6 +1,6 @@
 import logging
 import time
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 import sib_api_v3_sdk
 from django.conf import settings
@@ -143,7 +143,7 @@ def create_company(company: Union["Siae", "Company"]) -> None:
             logger.error(f"Exception when calling Brevo->CompaniesApi->create_company (create): {e}")
 
 
-def create_deal(tender: "Tender", owner_email: str) -> None:
+def create_deal(tender: "Tender") -> None:
     """
     Creates a new deal in Brevo CRM from a tender and logs the result.
 
@@ -155,26 +155,21 @@ def create_deal(tender: "Tender", owner_email: str) -> None:
     - https://developers.brevo.com/reference/post_crm-deals
 
     Args:
-        tender (Tender): Object with tender details like title, description, amount, and deadlines.
-        owner_email (str): The email address of the deal's owner.
+        tender (Tender): Object with tender details like title, description, and deadlines.
 
     Raises:
         ApiException: If the Brevo API encounters an error during deal creation.
     """
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.DealsApi(api_client)
+    attributes = {
+        "deal_description": tender.description,
+    }
+    if tender.deadline_date:
+        attributes["close_date"] = tender.deadline_date.strftime("%Y-%m-%d")
     body_deal = sib_api_v3_sdk.Body3(
         name=tender.title,
-        attributes={
-            # default attributes
-            # pipeline, deal_stage, closed_won_reason, closed_lost_reason, total_revenue, lost_reason
-            "deal_description": tender.description,
-            "deal_owner": owner_email,
-            "close_date": tender.deadline_date.strftime("%Y-%m-%d"),
-            # custom attributes
-            "amount": tender.amount_int,
-            "tender_admin_url": tender.get_admin_url(),
-        },
+        attributes=attributes,
     )
 
     try:
@@ -187,45 +182,6 @@ def create_deal(tender: "Tender", owner_email: str) -> None:
     except ApiException as e:
         logger.error("Exception when calling Brevo->DealApi->create_deal: %s\n" % e)
         raise ApiException(e)
-
-
-def link_deal_with_contact_list(tender: "Tender", contact_list: Optional[List[int]] = None) -> None:
-    """
-    Links a Brevo deal to a list of contacts. If no contact list is provided, it defaults
-    to linking the deal with the tender's author.
-
-    This function uses the tender's stored deal ID and either a provided list of contact IDs or the
-    tender author's contact ID to link contacts to the deal in the Brevo CRM.
-
-    Args:
-        tender (Tender): The tender object containing the Brevo deal ID and author's contact ID.
-        contact_list (list of int, optional): List of contact IDs to be linked with the deal. Defaults to None.
-
-    Raises:
-        ApiException: If an error occurs during the linking process in the Brevo API.
-    """
-    api_client = get_api_client()
-    api_instance = sib_api_v3_sdk.DealsApi(api_client)
-
-    if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
-        try:
-            # get brevo ids
-            brevo_crm_deal_id = tender.brevo_deal_id
-            # Default to the author's contact ID if no contact list is provided
-            if not contact_list:
-                contact_list = [tender.author.brevo_contact_id]
-
-            # cleanup
-            contact_list = [id for id in contact_list if id is not None]
-
-            # link deal with contact_list
-            if len(contact_list):
-                # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body5.md
-                body_link_deal_contact = sib_api_v3_sdk.Body5(link_contact_ids=contact_list)
-                api_instance.crm_deals_link_unlink_id_patch(brevo_crm_deal_id, body_link_deal_contact)
-
-        except ApiException as e:
-            logger.error("Exception when calling Brevo->DealApi->crm_deals_link_unlink_id_patch: %s\n" % e)
 
 
 def link_company_with_contact_list(siae: "Siae", contact_list: list = None):
