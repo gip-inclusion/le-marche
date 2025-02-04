@@ -200,8 +200,8 @@ def send_tender_email_to_partner(tender: Tender, partner: PartnerShareTender, em
             "TENDER_DEADLINE_DATE": date_to_string(tender.deadline_date),
             "TENDER_URL": get_object_share_url(tender),
         }
+        recipient_name = partner.name
         for recipient_email in recipient_list:
-            recipient_name = partner.name
             email_template.send_transactional_email(
                 recipient_email=recipient_email,
                 recipient_name=recipient_name,
