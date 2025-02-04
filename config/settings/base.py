@@ -229,6 +229,7 @@ TEMPLATES = [
                 "wagtail.contrib.settings.context_processors.settings",
                 # custom
                 "lemarche.utils.settings_context_processors.expose_settings",
+                "lemarche.utils.settings_context_processors.expose_guide_context",
             ],
         },
     },
