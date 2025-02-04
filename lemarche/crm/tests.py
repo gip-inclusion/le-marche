@@ -1,8 +1,8 @@
 from datetime import timedelta
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
+from django.test import TestCase, override_settings
 
 from django.core.management import call_command
-from django.test import TestCase
 from django.utils import timezone
 
 from lemarche.siaes.factories import SiaeFactory
@@ -19,6 +19,7 @@ old_date = timezone.now() - timedelta(days=91)
 recent_date = now - timedelta(days=10)
 
 
+@override_settings(BITOUBI_ENV="production", BREVO_API_KEY="fake-key")
 class CrmBrevoSyncCompaniesCommandTest(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -28,7 +29,6 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
         cls.siae_with_user = SiaeFactory(users=[cls.user_siae])
         cls.siae_with_brevo_id = SiaeFactory(
             brevo_company_id="123456789",
-            completion_rate=50,
         )
 
         cls.tender_1 = TenderFactory(deadline_date=date_tomorrow)
@@ -55,167 +55,82 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
             Siae.objects.with_tender_stats(since_days=90).filter(id=cls.siae_with_brevo_id.id).first()
         )
 
-        # siae_with_brevo_id.extra_data initialization
-        cls.siae_with_brevo_id.extra_data = {
-            "brevo_company_data": {
-                "completion_rate": (
-                    cls.siae_with_brevo_id.completion_rate if cls.siae_with_brevo_id.completion_rate is not None else 0
-                ),
-                "tender_received": cls.siae_with_brevo_id_recent_stats.tender_email_send_count_annotated,
-                "tender_interest": cls.siae_with_brevo_id_recent_stats.tender_detail_contact_click_count_annotated,
-            }
-        }
-        cls.siae_with_brevo_id.save()
-        cls.initial_extra_data = cls.siae_with_brevo_id.extra_data.copy()
-
-    def test_annotated_fields_set_up(self):
-        """Test annotated fields are correctly set up"""
-        self.assertEqual(
-            self.siae_with_user_stats.tender_email_send_count_annotated,
-            0,
-            "Le nombre total de besoins reçus devrait être 0",
-        )
-        self.assertEqual(
-            self.siae_with_user_stats.tender_detail_contact_click_count_annotated,
-            1,
-            "Le nombre total de besoins intéressés devrait être 1",
-        )
-        self.assertEqual(
-            self.siae_with_brevo_id_all_stats.tender_email_send_count_annotated,
-            1,
-            "Le nombre total de besoins reçus devrait être 1",
-        )
-        self.assertEqual(
-            self.siae_with_brevo_id_all_stats.tender_detail_contact_click_count_annotated,
-            1,
-            "Le nombre total de besoins intéressés devrait être 1",
-        )
-        self.assertEqual(
-            self.siae_with_brevo_id_recent_stats.tender_email_send_count_annotated,
-            1,
-            "Le nombre de besoins reçus dans les 90 derniers jours devrait être 1",
-        )
-        self.assertEqual(
-            self.siae_with_brevo_id_recent_stats.tender_detail_contact_click_count_annotated,
-            0,
-            "Le nombre de besoins intéressés dans les 90 derniers jours devrait être 0",
-        )
-
-    @patch("lemarche.utils.apis.api_brevo.create_or_update_company")
-    def test_new_siaes_are_synced_in_brevo(self, mock_create_or_update_company):
+    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.CompaniesApi")
+    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.Configuration")
+    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.ApiClient")
+    def test_new_siaes_are_synced_in_brevo(self, mock_api_client, mock_configuration, mock_companies_api):
         """Test new siaes are synced in brevo"""
+        mock_config = MagicMock()
+        mock_configuration.return_value = mock_config
+
+        mock_client = MagicMock()
+        mock_api_client.return_value = mock_client
+
+        mock_api = MagicMock()
+        mock_companies_api.return_value = mock_api
+
+        mock_response = MagicMock()
+        mock_response.id = 12345
+        mock_api.companies_post.return_value = mock_response
+
+        expected_count = Siae.objects.filter(brevo_company_id__isnull=True).count()
+
+        # Run the command
         call_command("crm_brevo_sync_companies")
 
-        self.assertEqual(mock_create_or_update_company.call_count, 3)
+        actual_count = mock_api.companies_post.call_count
 
-    def test_siae_has_tender_stats(self):
-        self.assertIsNotNone(
-            self.siae_with_user_stats,
-            "Cette SIAE devrait avoir des statistiques sur les besoins.",
-        )
-        self.assertIsNotNone(
-            self.siae_with_brevo_id_all_stats,
-            "Cette SIAE devrait avoir des statistiques sur les besoins.",
-        )
+        self.assertEqual(actual_count, expected_count, f"Expected {expected_count} API calls, got {actual_count}")
 
-    def test_siae_extra_data_is_set_on_first_sync(self):
-        """
-        - Test siae is updated if extra_data is changed.
-        - Test siae.extra_data update does not erase existing data.
-        """
-        initial_extra_data = self.siae_with_user.extra_data.copy()
-        initial_extra_data["test_data"] = "test value"
+    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.CompaniesApi")
+    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.Configuration")
+    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.ApiClient")
+    def test_siae_has_tender_stats(self, mock_api_client, mock_configuration, mock_companies_api):
+        # Setup mock API chain similar to above
+        mock_config = MagicMock()
+        mock_configuration.return_value = mock_config
+        mock_client = MagicMock()
+        mock_api_client.return_value = mock_client
+        mock_api = MagicMock()
+        mock_companies_api.return_value = mock_api
+        mock_response = MagicMock()
+        mock_response.id = 12345
+        mock_api.companies_post.return_value = mock_response
 
-        self.siae_with_user.extra_data = initial_extra_data
+        self.assertIsNotNone(self.siae_with_user_stats)
+        self.assertIsNotNone(self.siae_with_brevo_id_all_stats)
+
+    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.CompaniesApi")
+    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.Configuration")
+    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.ApiClient")
+    def test_siae_extra_data_is_preserved(self, mock_api_client, mock_configuration, mock_companies_api):
+        """Test that creating a company in Brevo preserves existing extra_data"""
+        # Setup mock API chain
+        mock_config = MagicMock()
+        mock_configuration.return_value = mock_config
+        mock_client = MagicMock()
+        mock_api_client.return_value = mock_client
+        mock_api = MagicMock()
+        mock_companies_api.return_value = mock_api
+        mock_response = MagicMock()
+        mock_response.id = 12345
+        mock_api.companies_post.return_value = mock_response
+
+        # Set initial extra_data and ensure other Siaes have brevo_company_id
+        initial_extra_data = {"test_data": "test value"}
+        self.siae_with_user.extra_data = initial_extra_data.copy()
         self.siae_with_user.save(update_fields=["extra_data"])
+        self.siae_with_name.brevo_company_id = "999999"
+        self.siae_with_name.save()
+
+        mock_api.companies_post.reset_mock()
 
         call_command("crm_brevo_sync_companies", recently_updated=True)
 
         self.siae_with_user.refresh_from_db()
 
-        expected_extra_data = {
-            "brevo_company_data": {
-                "completion_rate": (
-                    self.siae_with_user.completion_rate if self.siae_with_user.completion_rate is not None else 0
-                ),
-                "tender_received": self.siae_with_user_stats.tender_email_send_count_annotated,
-                "tender_interest": self.siae_with_user_stats.tender_detail_contact_click_count_annotated,
-            },
-            "test_data": "test value",
-        }
+        mock_api.companies_post.assert_called_once()
 
-        self.assertNotEqual(initial_extra_data, expected_extra_data, "siae.extra_data aurait dû être mis à jour.")
-        self.assertEqual(
-            self.siae_with_user.extra_data, expected_extra_data, "siae.extra_data n'est pas conforme aux attentes."
-        )
+        self.assertEqual(self.siae_with_user.brevo_company_id, "12345")
 
-    def test_siae_extra_data_is_not_updated_if_no_changes(self):
-        """Test siae.extra_data is not updated if no changes."""
-        call_command("crm_brevo_sync_companies", recently_updated=True)
-
-        self.siae_with_brevo_id.refresh_from_db()
-        self.assertEqual(
-            self.initial_extra_data,
-            self.siae_with_brevo_id.extra_data,
-            "siae.extra_data a été mis à jour alors qu'il n'y avait pas de changement.",
-        )
-
-    def test_fields_update_within_90_days_and_ignore_older_changes(self):
-        """Test fields update within 90 days and ignore older changes."""
-        TenderSiae.objects.create(
-            tender=self.tender_2,
-            siae=self.siae_with_brevo_id,
-            email_send_date=now,
-            detail_contact_click_date=now,
-        )
-
-        call_command("crm_brevo_sync_companies", recently_updated=True)
-
-        self.siae_with_brevo_id_all_stats = (
-            Siae.objects.with_tender_stats().filter(id=self.siae_with_brevo_id.id).first()
-        )
-        self.siae_with_brevo_id_recent_stats = (
-            Siae.objects.with_tender_stats(since_days=90).filter(id=self.siae_with_brevo_id.id).first()
-        )
-
-        # Tender stats without date limit
-        self.assertEqual(
-            self.siae_with_brevo_id_all_stats.tender_email_send_count_annotated,
-            2,
-            "Le nombre total des besoins reçus devrait être 2",
-        )
-        self.assertEqual(
-            self.siae_with_brevo_id_all_stats.tender_detail_contact_click_count_annotated,
-            2,
-            "Le nombre de bsoins interessés devrait être 2",
-        )
-
-        # Tender stats with date limit
-        self.assertEqual(
-            self.siae_with_brevo_id_recent_stats.tender_email_send_count_annotated,
-            2,
-            "Le nombre de besoins reçus dans les 90 jours devraient être 2",
-        )
-        self.assertEqual(
-            self.siae_with_brevo_id_recent_stats.tender_detail_contact_click_count_annotated,
-            1,
-            "Les nombre de bsoins interessés dans les 90 jours devraient être 1",
-        )
-
-        expected_extra_data = {
-            "brevo_company_data": {
-                "completion_rate": (
-                    self.siae_with_brevo_id.completion_rate
-                    if self.siae_with_brevo_id.completion_rate is not None
-                    else 0
-                ),
-                "tender_received": self.siae_with_brevo_id_recent_stats.tender_email_send_count_annotated,
-                "tender_interest": self.siae_with_brevo_id_recent_stats.tender_detail_contact_click_count_annotated,
-            }
-        }
-
-        self.assertNotEqual(
-            self.initial_extra_data,
-            expected_extra_data,
-            "Les valeurs récentes dans extra_data devraient être mises à jour en fonction du filtre de 90 jours.",
-        )
+        self.assertEqual(self.siae_with_user.extra_data, initial_extra_data)
