@@ -926,7 +926,7 @@ SHELL_PLUS_POST_IMPORTS = [
     "from lemarche.utils import constants",
     "from lemarche.siaes import constants as siae_constants",
     "from lemarche.tenders import constants as tender_constants",
-    "from lemarche.utils.apis import api_brevo, api_mailjet",
+    "from lemarche.utils.apis import api_brevo",
 ]
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
