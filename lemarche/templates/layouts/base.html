@@ -85,6 +85,7 @@
     <script type="text/javascript" src="{% static 'js/utils.js'%}"></script>
     {{ DISPLAY_GUIDE_FLAG|json_script:"display-guide-flag" }}
     {{ DISPLAY_GUIDE_PAYLOAD|json_script:"display-guide-payload" }}
+    {{ DISPLAY_GUIDE_PK|json_script:"display-guide-pk" }}
     <script>
         const userGuide = new UserGuide();
         userGuide.init();
@@ -97,9 +98,10 @@
         }
         const displayGuide = JSON.parse(document.getElementById('display-guide-flag').textContent)
         const displayGuidePayload = JSON.parse(document.getElementById('display-guide-payload').textContent)
+        const displayGuidePk = JSON.parse(document.getElementById('display-guide-pk').textContent)
         // Call this function with the name of the guide you want to start
         if (displayGuide) {
-            triggerGuide('test');
+            triggerGuide();
         }
 
     </script>
