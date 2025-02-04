@@ -2,7 +2,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views import View
 from django.views.generic.detail import BaseDetailView
 
-from .models import UserGuide
+from lemarche.django_shepherd.models import UserGuide
 
 
 class UserGuideView(View):
