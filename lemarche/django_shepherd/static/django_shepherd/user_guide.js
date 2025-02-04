@@ -40,40 +40,36 @@ class UserGuide {
 
     startGuide(guideName) {
         this.tour.guideName = guideName
-        fetch(`/django_shepherd/get_guide/${guideName}/`)
-            .then(response => response.json())
-            .then(data => {
-                this.tour.steps = []; // Clear previous steps
-                data.steps.forEach((step, index) => {
-                    const isFirstStep = index === 0;
-                    const isLastStep = index === data.steps.length - 1;
-                    this.tour.addStep({
-                        title: step.title,
-                        text: step.text,
-                        attachTo: {
-                            element: step.element,
-                            on: step.position
-                        },
-                        buttons: [
-                            !isLastStep && {
-                                text: 'Ignorer',
-                                action: this.tour.cancel,
-                                classes: 'btn btn-secondary'
-                            },
-                            !isFirstStep && {
-                                text: 'Précédent',
-                                action: this.tour.back,
-                                classes: 'btn btn-primary'
-                            },
-                            {
-                                text: isLastStep ? 'Finir' : 'Suivant',
-                                action: this.tour.next,
-                                classes: 'btn ' + (isLastStep ? 'btn-success' : 'btn-primary')
-                            }
-                        ].filter(Boolean)
-                    });
-                });
-                this.tour.start();
+        this.tour.steps = []; // Clear previous steps
+        displayGuidePayload.steps.forEach((step, index) => {
+            const isFirstStep = index === 0;
+            const isLastStep = index === displayGuidePayload.steps.length - 1;
+            this.tour.addStep({
+                title: step.title,
+                text: step.text,
+                attachTo: {
+                    element: step.element,
+                    on: step.position
+                },
+                buttons: [
+                    !isLastStep && {
+                        text: 'Ignorer',
+                        action: this.tour.cancel,
+                        classes: 'btn btn-secondary'
+                    },
+                    !isFirstStep && {
+                        text: 'Précédent',
+                        action: this.tour.back,
+                        classes: 'btn btn-primary'
+                    },
+                    {
+                        text: isLastStep ? 'Finir' : 'Suivant',
+                        action: this.tour.next,
+                        classes: 'btn ' + (isLastStep ? 'btn-success' : 'btn-primary')
+                    }
+                ].filter(Boolean)
             });
+        });
+        this.tour.start();
     }
 }

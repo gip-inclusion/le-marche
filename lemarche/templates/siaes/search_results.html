@@ -324,26 +324,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
     </script>
     <script type="text/javascript"
-            src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
-    <script src="{% static 'django_shepherd/user_guide.js' %}"></script>
-    {{ DISPLAY_GUIDE|json_script:"display-guide" }}
-    <script type="text/javascript">
-
-        const userGuide = new UserGuide();
-        userGuide.init();
-        function triggerGuide(guideName) {
-            const event = new CustomEvent('startUserGuide', {
-                detail: { guideName: guideName }
-            });
-
-            document.dispatchEvent(event);
-        }
-
-        // Call this function with the name of the guide you want to start
-        if (JSON.parse(document.getElementById('display-guide').textContent)) {
-            triggerGuide('test');
-        }
-
+            src="{% static 'js/envoi_groupe_modal_video.js' %}">
     </script>
     {% if user.is_authenticated %}
         <script type="text/javascript" src="{% static 'js/favorite_item.js' %}"></script>
