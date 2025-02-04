@@ -33,7 +33,7 @@ class GuideStep(models.Model):
 
     guide = models.ForeignKey(UserGuide, related_name="steps", on_delete=models.CASCADE)
     title = models.CharField("Titre dans la popup", max_length=200)
-    text = models.TextField("Contenu text de l'étape")
+    text = models.TextField("Contenu text de l'étape", blank=True)
     element = models.CharField("Élément css à rattacher", max_length=200)
     position = models.CharField(max_length=50, choices=PositionChoices.choices)
 
