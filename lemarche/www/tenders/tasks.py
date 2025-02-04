@@ -13,7 +13,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils import constants
-from lemarche.utils.apis import api_mailjet, api_slack
+from lemarche.utils.apis import api_slack
 from lemarche.utils.data import date_to_string
 from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url, get_object_admin_url, get_object_share_url
@@ -187,6 +187,7 @@ def send_tender_emails_to_partners(tender: Tender):
 
 
 def send_tender_email_to_partner(tender: Tender, partner: PartnerShareTender, email_subject: str):
+    email_template = TemplateTransactional.objects.get(code="TENDERS_PARTNER_PRESENTATION")
     recipient_list = whitelist_recipient_list(partner.contact_email_list)
     if recipient_list:
         variables = {
@@ -199,16 +200,14 @@ def send_tender_email_to_partner(tender: Tender, partner: PartnerShareTender, em
             "TENDER_DEADLINE_DATE": date_to_string(tender.deadline_date),
             "TENDER_URL": get_object_share_url(tender),
         }
-
-        api_mailjet.send_transactional_email_many_recipient_with_template(
-            template_id=settings.MAILJET_TENDERS_PARTNER_PRESENTATION_TEMPLATE_ID,
-            subject=email_subject,
-            recipient_email_list=recipient_list,
-            variables=variables,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            from_name=settings.DEFAULT_FROM_NAME,
-        )
-
+        for recipient_email in recipient_list:
+            recipient_name = partner.name
+            email_template.send_transactional_email(
+                recipient_email=recipient_email,
+                recipient_name=recipient_name,
+                variables=variables,
+                subject=email_subject,
+            )
         # log email
         log_item = {
             "action": "email_tender",
