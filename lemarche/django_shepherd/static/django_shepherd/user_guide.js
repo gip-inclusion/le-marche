@@ -37,7 +37,7 @@ class UserGuide {
         fetch(`/django_shepherd/viewed_guide/${displayGuidePk}/`)
     }
 
-    startGuide(guideName) {
+    startGuide() {
         this.tour.steps = []; // Clear previous steps
         displayGuidePayload.steps.forEach((step, index) => {
             const isFirstStep = index === 0;
