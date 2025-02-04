@@ -523,34 +523,6 @@ API_QPV_RELATIVE_DAYS_TO_UPDATE = env.int("API_QPV_RELATIVE_DAYS_TO_UPDATE", 60)
 
 API_GOUV_URL = "https://api.gouv.fr/les-api/api-marche-inclusion"
 
-# API Mailjet
-# We also use the master api key (with the second api key), because we separate the sending message from application
-#   and from human peoples.
-MAILJET_MASTER_API_KEY = env.str("MAILJET_MASTER_API_KEY", "")
-MAILJET_MASTER_API_SECRET = env.str("MAILJET_MASTER_API_SECRET", "")
-# ID of buyers contact list
-MAILJET_NL_CL_BUYER_ID = env.int("MAILJET_NL_CL_BUYER_ID", 2546565)
-MAILJET_NL_CL_BUYER_TENDER_ID = env.int("MAILJET_NL_CL_BUYER_TENDER_ID", 2546564)
-MAILJET_NL_CL_BUYER_TALLY_ID = env.int("MAILJET_NL_CL_BUYER_TALLY_ID", 2546566)
-MAILJET_NL_CL_SIAE_ID = env.int("MAILJET_NL_CL_SIAE_ID", 2500034)
-# contact list "Facilitateurs des clauses sociales"
-MAILJET_NL_CL_PARTNER_FACILITATORS_ID = env.int("MAILJET_NL_CL_PARTNER_FACILITATORS_ID", 2500034)
-# contact list "Réseaux IAE" et "Réseau secteur handicap"
-MAILJET_NL_CL_PARTNER_NETWORKS_IAE_HANDICAP_ID = env.int("MAILJET_NL_CL_PARTNER_NETWORKS_IAE_HANDICAP_ID", 2500034)
-# contact list "DREETS/DDETS"
-MAILJET_NL_CL_PARTNER_DREETS_ID = env.int("MAILJET_NL_CL_PARTNER_DREETS_ID", 2500034)
-# contact list "acheteurs ayant téléchargés la liste excel des structures"
-MAILJET_NL_CL_BUYER_DOWNLOAD_SIAE_LIST_ID = env.int("MAILJET_NL_CL_BUYER_DOWNLOAD_SIAE_LIST_ID", 2500034)
-# contact list "acheteurs ayant recherchés des structures"
-MAILJET_NL_CL_BUYER_SEARCH_SIAE_LIST_ID = env.int("MAILJET_NL_CL_BUYER_SEARCH_SIAE_LIST_ID", 2504377)
-# contact list "acheteurs ayant recherchés des structures 'traiteur'"
-MAILJET_NL_CL_BUYER_SEARCH_SIAE_TRAITEUR_LIST_ID = env.int("MAILJET_NL_CL_BUYER_SEARCH_SIAE_TRAITEUR_LIST_ID", 2543033)
-# contact list "acheteurs ayant recherchés des structures 'nettoyage'"
-MAILJET_NL_CL_BUYER_SEARCH_SIAE_NETTOYAGE_LIST_ID = env.int(
-    "MAILJET_NL_CL_BUYER_SEARCH_SIAE_NETTOYAGE_LIST_ID", 2543034
-)
-# contact list import c1
-MAILJET_NL_CL_IMPORT_C1_SIAE_LIST_ID = env.int("MAILJET_NL_CL_IMPORT_C1_SIAE_LIST_ID", 2502857)
 
 # API Slack
 SLACK_NOTIF_IS_ACTIVE = env.bool("SLACK_NOTIF_IS_ACTIVE", False)
