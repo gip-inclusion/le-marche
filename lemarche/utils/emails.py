@@ -61,7 +61,6 @@ def add_to_contact_list(user, type: str, tender=None, source: str = user_constan
         type (String): "signup", OR "buyer_download" or "buyer_search" else raise ValueError
     """
     if type == "signup":
-        # contact_list_id = api_mailjet.get_mailjet_cl_on_signup(user, source)
         if user.kind == user.KIND_BUYER:
             api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_BUYER_ID, tender=tender)
         elif user.kind == user.KIND_SIAE:
