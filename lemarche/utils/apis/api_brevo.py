@@ -1,5 +1,6 @@
 import logging
 import time
+from typing import Any, Dict, List, Optional
 
 import sib_api_v3_sdk
 from django.conf import settings
@@ -10,6 +11,13 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 from lemarche.utils.data import sanitize_to_send_by_email
 from lemarche.utils.urls import get_object_admin_url, get_object_share_url
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from lemarche.users.models import User
+    from lemarche.tenders.models import Tender
+    from lemarche.siaes.models import Siae
 
 
 logger = logging.getLogger(__name__)
@@ -28,7 +36,7 @@ def get_api_client():
     return sib_api_v3_sdk.ApiClient(config)
 
 
-def create_contact(user, list_id: int, tender=None):
+def create_contact(user: "User", list_id: int, tender: Optional["Tender"] = None) -> None:
     """
     Brevo docs
     - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CreateContact.md
@@ -99,7 +107,7 @@ def update_contact_email_blacklisted(user_identifier: str, email_blacklisted: bo
         logger.error(f"Exception when calling Brevo->ContactsApi->update_contact to update email_blacklisted: {e}")
 
 
-def create_or_update_company(siae):
+def create_or_update_company(siae: "Siae") -> None:
     """
     Brevo docs
     - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CompaniesApi.md
@@ -153,7 +161,7 @@ def create_or_update_company(siae):
             logger.error(f"Exception when calling Brevo->CompaniesApi->create_or_update_company (create): {e}")
 
 
-def create_deal(tender, owner_email: str):
+def create_deal(tender: "Tender", owner_email: str) -> None:
     """
     Creates a new deal in Brevo CRM from a tender and logs the result.
 
@@ -199,7 +207,7 @@ def create_deal(tender, owner_email: str):
         raise ApiException(e)
 
 
-def link_deal_with_contact_list(tender, contact_list: list = None):
+def link_deal_with_contact_list(tender: "Tender", contact_list: Optional[List[int]] = None) -> None:
     """
     Links a Brevo deal to a list of contacts. If no contact list is provided, it defaults
     to linking the deal with the tender's author.
@@ -238,7 +246,7 @@ def link_deal_with_contact_list(tender, contact_list: list = None):
             logger.error("Exception when calling Brevo->DealApi->crm_deals_link_unlink_id_patch: %s\n" % e)
 
 
-def link_company_with_contact_list(siae, contact_list: list = None):
+def link_company_with_contact_list(siae: "Siae", contact_list: list = None):
     """
     Links a Brevo company to a list of contacts. If no contact list is provided, it defaults
     to linking the company with the siae's users.
@@ -278,8 +286,12 @@ def link_company_with_contact_list(siae, contact_list: list = None):
 
 
 def get_all_users_from_list(
-    list_id: int = settings.BREVO_CL_SIGNUP_BUYER_ID, limit=500, offset=0, max_retries=3, verbose=False
-):
+    list_id: int = settings.BREVO_CL_SIGNUP_BUYER_ID,
+    limit: int = 500,
+    offset: int = 0,
+    max_retries: int = 3,
+    verbose: bool = False,
+) -> Dict[str, int]:
     """
     Fetches all users from a specified Brevo CRM list, using pagination and retry strategies.
 
@@ -335,11 +347,11 @@ def send_transactional_email_with_template(
     template_id: int,
     recipient_email: str,
     recipient_name: str,
-    variables: dict,
-    subject=None,
-    from_email=settings.DEFAULT_FROM_EMAIL,
-    from_name=settings.DEFAULT_FROM_NAME,
-):
+    variables: Dict[str, Any],
+    subject: Optional[str] = None,
+    from_email: str = settings.DEFAULT_FROM_EMAIL,
+    from_name: str = settings.DEFAULT_FROM_NAME,
+) -> Optional[Dict[str, Any]]:
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.TransactionalEmailsApi(api_client)
     data = {
