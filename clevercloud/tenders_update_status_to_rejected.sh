@@ -19,4 +19,4 @@ fi
 # $APP_HOME is set by default by clever cloud.
 cd $APP_HOME
 
-django-admin update_tender_status_to_rejected
+django-admin tenders_update_status_to_rejected

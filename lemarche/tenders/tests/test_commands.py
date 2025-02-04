@@ -189,7 +189,7 @@ class TestSendAuthorListOfSuperSiaesEmails(TestCase):
 class UpdateTenderStatusToRejectedCommandTest(TestCase):
     def test_update_tender_status_to_rejected(self):
         """
-        Test 'update_tender_status_to_rejected' command.
+        Test 'tenders_update_status_to_rejected' command.
         """
         recent_date = timezone.now() - timedelta(days=5)
         threshold_date = timezone.now() - timedelta(days=10)
@@ -210,7 +210,7 @@ class UpdateTenderStatusToRejectedCommandTest(TestCase):
 
         tender_with_no_modification_request = TenderFactory(status=tender_constants.STATUS_DRAFT)
 
-        call_command("update_tender_status_to_rejected")
+        call_command("tenders_update_status_to_rejected")
 
         tender_recent.refresh_from_db()
         tender_expired.refresh_from_db()
