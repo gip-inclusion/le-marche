@@ -2,9 +2,8 @@ from ckeditor.widgets import CKEditorWidget
 from django.contrib import admin
 from django.db import models
 
+from lemarche.django_shepherd.models import GuideStep, UserGuide
 from lemarche.utils.admin.admin_site import admin_site
-
-from .models import GuideStep, UserGuide
 
 
 class GuideStepInline(admin.TabularInline):

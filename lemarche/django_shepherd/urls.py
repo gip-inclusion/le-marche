@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import StepViewedView, UserGuideView
+from lemarche.django_shepherd.views import StepViewedView, UserGuideView
 
 
 urlpatterns = [
