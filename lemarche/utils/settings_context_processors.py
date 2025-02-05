@@ -34,6 +34,7 @@ def expose_settings(request):
         "LEGAL_INFO": settings.LEGAL_INFO,
         "PRIVACY_POLICY": settings.PRIVACY_POLICY,
         "RESSOURCES": settings.RESSOURCES,
+        "FAQ": settings.FAQ,
         "DASHBOARD_TITLE": settings.DASHBOARD_TITLE,
         "DASHBOARD_NETWORK_DETAIL_TITLE": settings.DASHBOARD_NETWORK_DETAIL_TITLE,
         "DASHBOARD_NETWORK_SIAE_LIST_TITLE": settings.DASHBOARD_NETWORK_SIAE_LIST_TITLE,
