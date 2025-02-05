@@ -1,28 +1,31 @@
-<dialog aria-labelledby="siae_user_request_confirm_modal-title" id="siae_user_request_confirm_modal" class="fr-modal" role="dialog">
+<dialog aria-labelledby="siae_user_request_confirm_modal-title"
+        id="siae_user_request_confirm_modal"
+        class="fr-modal"
+        role="dialog">
     <div class="fr-container fr-container--fluid fr-container-md">
         <div class="fr-grid-row fr-grid-row--center">
             <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                 <div class="fr-modal__body">
                     <div class="fr-modal__header">
-                        <button class="fr-btn--close fr-btn" aria-controls="siae_user_request_confirm_modal">Fermer</button>
+                        <button class="fr-btn--close fr-btn"
+                                aria-controls="siae_user_request_confirm_modal">Fermer</button>
                     </div>
                     <div class="fr-modal__content">
-                        <h3 id="siae_user_request_confirm_modal-title" class="fr-modal__title">
-                            Accepter la demande
-                        </h3>
-                        <p><span id="initiator-full-name-to-replace"></span> pourra accéder à votre structure et modifier le contenu de sa fiche commerciale.</p>
+                        <h3 id="siae_user_request_confirm_modal-title" class="fr-modal__title">Accepter la demande</h3>
+                        <p>
+                            <span id="full-name-to-replace"></span> pourra accéder à votre structure et modifier le contenu de sa fiche commerciale.
+                        </p>
                     </div>
                     <div class="fr-modal__footer">
                         <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg">
-                            <form method="post" action="{% url 'dashboard_siaes:siae_user_request_confirm' 'siae-slug-to-replace' 'siae-user-request-id-to-replace' %}">
-                                {% csrf_token %} 
-                                <button class="fr-btn fr-btn--icon-left" type="submit">
-                                    Confirmer
-                                </button>
+                            <form method="post"
+                                  data-action="{% url 'dashboard_siaes:siae_user_request_confirm' 'siae-slug-to-replace' 'siae-user-request-id-to-replace' %}">
+                                {% csrf_token %}
+                                <button class="fr-btn fr-btn--icon-left" type="submit">Confirmer</button>
                             </form>
-                            <button class="fr-btn fr-btn--icon-left fr-btn--secondary" aria-controls="siae_user_request_confirm_modal" aria-label="Fermer">
-                                Annuler
-                            </button>
+                            <button class="fr-btn fr-btn--icon-left fr-btn--secondary"
+                                    aria-controls="siae_user_request_confirm_modal"
+                                    aria-label="Fermer">Annuler</button>
                         </div>
                     </div>
                 </div>
