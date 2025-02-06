@@ -462,22 +462,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     siae_count_annotated_with_link.short_description = "Nombre de structures"
     siae_count_annotated_with_link.admin_order_field = "siae_count_annotated"
 
-    @admin.action(description="TEST ENVOI MAIL")
-    def anonymize_users(self, request, queryset):
-        email_template = TemplateTransactional.objects.get(code="USER_ANONYMIZATION_WARNING")
-        assert email_template.is_active
-
-        for user in queryset:
-            email_template.send_transactional_email(
-                recipient_email=user.email,
-                recipient_name=user.full_name,
-                variables={
-                    "user_full_name": user.full_name,
-                    "anonymization_date": user.date_joined,  # natural date
-                },
-                recipient_content_object=user,
-            )
-
     def tender_count_annotated_with_link(self, user):
         url = reverse("admin:tenders_tender_changelist") + f"?author__id__exact={user.id}"
         return format_html(f'<a href="{url}">{getattr(user, "tender_count_annotated", 0)}</a>')
@@ -529,6 +513,22 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         """Wipe personal data of all selected users and unlink from SiaeUser
         The logged user is excluded to avoid any mistakes"""
         # https://docs.djangoproject.com/en/5.1/ref/contrib/admin/actions/#actions-that-provide-intermediate-pages
+
+        # TODO this just test code
+        email_template = TemplateTransactional.objects.get(code="USER_ANONYMIZATION_WARNING")
+        assert email_template.is_active
+
+        for user in queryset:
+            email_template.send_transactional_email(
+                recipient_email=user.email,
+                recipient_name=user.full_name,
+                variables={
+                    "user_full_name": user.full_name,
+                    "anonymization_date": user.date_joined,  # natural date
+                },
+                recipient_content_object=user,
+            )
+        return  # end of test code
 
         selected = queryset.values_list("pk", flat=True)
         return HttpResponseRedirect(
