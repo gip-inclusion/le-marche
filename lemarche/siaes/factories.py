@@ -19,6 +19,7 @@ from lemarche.siaes.models import (
 class SiaeGroupFactory(DjangoModelFactory):
     class Meta:
         model = SiaeGroup
+        skip_postgeneration_save = True  # Prevents unnecessary save
 
     name = factory.Faker("company", locale="fr_FR")
     # slug auto-generated
@@ -69,6 +70,7 @@ class SiaeFactory(DjangoModelFactory):
 class SiaeActivityFactory(DjangoModelFactory):
     class Meta:
         model = SiaeActivity
+        skip_postgeneration_save = True  # Prevents unnecessary save
 
     class Params:
         with_country_perimeter = factory.Trait(geo_range=siae_constants.GEO_RANGE_COUNTRY)

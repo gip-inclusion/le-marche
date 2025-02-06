@@ -15,6 +15,7 @@ class SectorGroupFactory(DjangoModelFactory):
 class SectorFactory(DjangoModelFactory):
     class Meta:
         model = Sector
+        skip_postgeneration_save = True  # Prevents unnecessary save
 
     name = factory.Faker("name", locale="fr_FR")
     # slug auto-generated

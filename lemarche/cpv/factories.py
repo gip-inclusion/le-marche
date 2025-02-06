@@ -9,6 +9,7 @@ from lemarche.cpv.models import Code
 class CodeFactory(DjangoModelFactory):
     class Meta:
         model = Code
+        skip_postgeneration_save = True  # Prevents unnecessary save
 
     name = factory.Faker("name", locale="fr_FR")
     # slug: auto-generated
