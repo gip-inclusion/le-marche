@@ -97,7 +97,7 @@
             <div class="fr-col-12 fr-col-lg-8">
                 {% include "includes/forms/_dsfr_formset.html" with formset_title="Labels et certifications" formset=label_formset %}
                 <div id="labels_old-formset-empty-form" class="fr-hidden">
-                    <div class="formset-row-labels_old formset">{% form label_formset.empty_form %}</div>
+                    <div class="formset-row-labels_old formset">{{ label_formset.empty_form }}</div>
                 </div>
                 <button id="labels_old-formset-add-more"
                         type="button"
