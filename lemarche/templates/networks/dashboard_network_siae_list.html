@@ -1,89 +1,91 @@
 {% extends "layouts/base.html" %}
-{% load bootstrap4 dsfr_tags %}
-
-{% block page_title %}{{ DASHBOARD_NETWORK_SIAE_LIST_TITLE }}{{ block.super }}{% endblock page_title %}
-
+{% load dsfr_tags %}
+{% block page_title %}
+    {{ DASHBOARD_NETWORK_SIAE_LIST_TITLE }}{{ block.super }}
+{% endblock page_title %}
 {% block breadcrumb %}
     {% dsfr_breadcrumb %}
 {% endblock breadcrumb %}
-
 {% block content %}
-<div class="fr-container">
-    <div class="fr-grid-row">
-        <div class="fr-col-12">
-            <h1 class="h1 mb-3 mb-lg-5">
-                <strong>{{ DASHBOARD_NETWORK_SIAE_LIST_TITLE }}</strong>
-                <br />
-                <small>Statistiques : toutes les demandes de devis, appel d'offres et sourcing</small>
-            </h1>
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
+                <h1 class="h1 mb-3 mb-lg-5">
+                    <strong>{{ DASHBOARD_NETWORK_SIAE_LIST_TITLE }}</strong>
+                    <br />
+                    <small>Statistiques : toutes les demandes de devis, appel d'offres et sourcing</small>
+                </h1>
+            </div>
         </div>
-    </div>
-
-    <div class="fr-grid-row">
-        <div class="fr-col-12 fr-col-sm-6">
-            <form method="get" action="">
-                {% dsfr_form filter_form %}
-            </form>
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-sm-6">
+                <form method="get" action="">
+                    {% form filter_form %}
+                </form>
+            </div>
         </div>
-    </div>
-
-    <br />
-
-    <div class="fr-grid-row">
-        <div class="fr-col-12">
-            <div class="fr-table fr-table--bordered">
-                <div class="fr-table__wrapper">
-                    <div class="fr-table__container">
-                        <div class="fr-table__content">
-                            <table>
-                                <caption>
-                                    {{ siaes.count }} structure{{ siaes.count|pluralize }}
-                                    {% if siaes.count != network.siaes.count %}trouvée{{ siaes.count|pluralize }}{% endif %}
-                                </caption>
-                                <thead>
-                                    <tr>
-                                        <th class="fr-col-6" scope="col">Nom de la structure</th>
-                                        <th class="fr-col-2" scope="col">Demandes&nbsp;reçues</th>
-                                        <th class="fr-col-2" scope="col">vues</th>
-                                        <th class="fr-col-2" scope="col">intéressées</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for siae in siaes %}
-                                        <tr data-row-key="{{ forloop.counter }}">
-                                            <td>
-                                                <a href="{% url 'siae:detail' siae.slug %}" target="_blank">{{ siae.brand_or_name_annotated }}</a>
-                                            </td>
-                                            <td>
-                                                {% if siae.tender_email_send_count_annotated > 0 %}
-                                                    <a href="{% url 'dashboard_networks:siae_tender_list' network.slug siae.slug %}" title="Voir les demandes reçues" id="dashboard-network-siae-show-tender-email-send-list-btn">{{ siae.tender_email_send_count_annotated }}</a>
-                                                {% else %}
-                                                    0
-                                                {% endif %}
-                                            </td>
-                                            <td>
-                                                {% if siae.tender_detail_display_count_annotated > 0 %}
-                                                    <a href="{% url 'dashboard_networks:siae_tender_list' network.slug siae.slug "DISPLAY" %}" title="Voir les demandes vues" id="dashboard-network-siae-show-tender-detail-display-list-btn">{{ siae.tender_detail_display_count_annotated }}</a>
-                                                {% else %}
-                                                    0
-                                                {% endif %}
-                                            </td>
-                                            <td>
-                                                {% if siae.tender_detail_contact_click_count_annotated > 0 %}
-                                                    <a href="{% url 'dashboard_networks:siae_tender_list' network.slug siae.slug "CONTACT-CLICK" %}" title="Voir les demandes intéressées" id="dashboard-network-siae-show-tender-detail-contact-click-list-btn">{{ siae.tender_detail_contact_click_count_annotated }}</a>
-                                                {% else %}
-                                                    0
-                                                {% endif %}
-                                            </td>
+        <br />
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
+                <div class="fr-table fr-table--bordered">
+                    <div class="fr-table__wrapper">
+                        <div class="fr-table__container">
+                            <div class="fr-table__content">
+                                <table>
+                                    <caption>
+                                        {{ siaes.count }} structure{{ siaes.count|pluralize }}
+                                        {% if siaes.count != network.siaes.count %}trouvée{{ siaes.count|pluralize }}{% endif %}
+                                    </caption>
+                                    <thead>
+                                        <tr>
+                                            <th class="fr-col-6" scope="col">Nom de la structure</th>
+                                            <th class="fr-col-2" scope="col">Demandes&nbsp;reçues</th>
+                                            <th class="fr-col-2" scope="col">vues</th>
+                                            <th class="fr-col-2" scope="col">intéressées</th>
                                         </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {% for siae in siaes %}
+                                            <tr data-row-key="{{ forloop.counter }}">
+                                                <td>
+                                                    <a href="{% url 'siae:detail' siae.slug %}" target="_blank">{{ siae.brand_or_name_annotated }}</a>
+                                                </td>
+                                                <td>
+                                                    {% if siae.tender_email_send_count_annotated > 0 %}
+                                                        <a href="{% url 'dashboard_networks:siae_tender_list' network.slug siae.slug %}"
+                                                           title="Voir les demandes reçues"
+                                                           id="dashboard-network-siae-show-tender-email-send-list-btn">{{ siae.tender_email_send_count_annotated }}</a>
+                                                    {% else %}
+                                                        0
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if siae.tender_detail_display_count_annotated > 0 %}
+                                                        <a href="{% url 'dashboard_networks:siae_tender_list' network.slug siae.slug "DISPLAY" %}"
+                                                           title="Voir les demandes vues"
+                                                           id="dashboard-network-siae-show-tender-detail-display-list-btn">{{ siae.tender_detail_display_count_annotated }}</a>
+                                                    {% else %}
+                                                        0
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if siae.tender_detail_contact_click_count_annotated > 0 %}
+                                                        <a href="{% url 'dashboard_networks:siae_tender_list' network.slug siae.slug "CONTACT-CLICK" %}"
+                                                           title="Voir les demandes intéressées"
+                                                           id="dashboard-network-siae-show-tender-detail-contact-click-list-btn">{{ siae.tender_detail_contact_click_count_annotated }}</a>
+                                                    {% else %}
+                                                        0
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+{% endblock content %}
