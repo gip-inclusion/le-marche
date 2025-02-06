@@ -77,6 +77,6 @@ def siae_sector_groups_display(object, display_max=5, current_sector_groups=[]):
             values = values[:display_max_values]
         else:
             values = []
-        values.append(f"+{groups_count-display_max}")
+        values.append(f"+{groups_count - display_max}")
 
     return {"current_search_sector_groups": sorted(current_values), "sector_groups": values}
