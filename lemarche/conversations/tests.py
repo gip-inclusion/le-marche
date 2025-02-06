@@ -6,7 +6,7 @@ from django.core.management import call_command
 from django.test import TestCase, TransactionTestCase, override_settings
 
 from lemarche.conversations.constants import ATTRIBUTES_TO_NOT_ANONYMIZE_FOR_INBOUND, ATTRIBUTES_TO_SAVE_FOR_INBOUND
-from lemarche.conversations.factories import ConversationFactory, EmailGroupFactory, TemplateTransactionalFactory
+from lemarche.conversations.factories import ConversationFactory, TemplateTransactionalFactory
 from lemarche.conversations.models import Conversation, DisabledEmail, TemplateTransactional
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.users.factories import UserFactory
