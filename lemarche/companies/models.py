@@ -54,7 +54,7 @@ class Company(models.Model):
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
-    brevo_company_id = models.IntegerField(
+    brevo_company_id = models.CharField(
         verbose_name="ID Brevo",
         help_text="Identifiant de l'entreprise dans Brevo",
         blank=True,
