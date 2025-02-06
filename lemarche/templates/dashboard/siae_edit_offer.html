@@ -31,7 +31,7 @@
                     {% endfor %}
                 </div>
                 <div id="{{ offer_formset.prefix }}-formset-empty-form" class="fr-hidden">
-                    <div class="formset-row-{{ offer_formset.prefix }} formset">{{ offer_formset.empty_form }}</div>
+                    <div class="formset-row-{{ offer_formset.prefix }} formset">{% form offer_formset.empty_form %}</div>
                 </div>
                 <button id="{{ offer_formset.prefix }}-formset-add-more"
                         type="button"
