@@ -6,7 +6,7 @@ from django.core.management import call_command
 from django.test import TestCase, TransactionTestCase, override_settings
 
 from lemarche.conversations.constants import ATTRIBUTES_TO_NOT_ANONYMIZE_FOR_INBOUND, ATTRIBUTES_TO_SAVE_FOR_INBOUND
-from lemarche.conversations.factories import ConversationFactory, TemplateTransactionalFactory
+from lemarche.conversations.factories import ConversationFactory, EmailGroupFactory, TemplateTransactionalFactory
 from lemarche.conversations.models import Conversation, DisabledEmail, TemplateTransactional
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.users.factories import UserFactory
@@ -111,22 +111,21 @@ class ConversationAnonymizationTestCase(TestCase):
 class TemplateTransactionalModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.tt_inactive = TemplateTransactional(code="EMAIL_1", brevo_id=11, is_active=False)
-        cls.tt_active_empty = TemplateTransactional(code="EMAIL_2", is_active=False)
-        cls.tt_active_brevo = TemplateTransactional(code="EMAIL_3", brevo_id=41, is_active=True)
+        cls.email_group = EmailGroupFactory()
+        cls.tt_inactive = TemplateTransactional(
+            name="Email 1", code="EMAIL_1", brevo_id=11, is_active=False, group=cls.email_group
+        )
+        cls.tt_active_empty = TemplateTransactional(
+            name="Email 2", code="EMAIL_2", is_active=False, group=cls.email_group
+        )
+        cls.tt_active_brevo = TemplateTransactional(
+            name="Email 3", code="EMAIL_3", brevo_id=41, is_active=True, group=cls.email_group
+        )
 
     def test_get_template_id(self):
         self.assertIsNone(self.tt_active_empty.get_template_id)
         self.assertEqual(self.tt_inactive.get_template_id, self.tt_inactive.brevo_id)
         self.assertEqual(self.tt_active_brevo.get_template_id, self.tt_active_brevo.brevo_id)
-
-    @patch("lemarche.conversations.models.api_mailjet.send_transactional_email_with_template")
-    def test_send_transactional_email_mailjet(self, mock_send_transactional_email_mailjet):
-        self.tt_active_mailjet.save()
-        self.tt_active_mailjet.send_transactional_email(
-            recipient_email="test@example.com", recipient_name="test", variables={}
-        )
-        mock_send_transactional_email_mailjet.assert_called_once()
 
     @patch("lemarche.conversations.models.api_brevo.send_transactional_email_with_template")
     def test_send_transactional_email_brevo(self, mock_send_transactional_email_brevo):
@@ -137,16 +136,12 @@ class TemplateTransactionalModelTest(TestCase):
         mock_send_transactional_email_brevo.assert_called_once()
 
     @patch("lemarche.conversations.models.api_brevo.send_transactional_email_with_template")
-    @patch("lemarche.conversations.models.api_mailjet.send_transactional_email_with_template")
-    def test_send_transactional_email_inactive(
-        self, mock_send_transactional_email_mailjet, mock_send_transactional_email_brevo
-    ):
+    def test_send_transactional_email_inactive(self, mock_send_transactional_email_brevo):
         self.tt_inactive.save()
         self.tt_inactive.send_transactional_email(
             recipient_email="test@example.com", recipient_name="test", variables={}
         )
 
-        mock_send_transactional_email_mailjet.assert_not_called()
         mock_send_transactional_email_brevo.assert_not_called()
 
     @patch("lemarche.conversations.models.api_brevo.send_transactional_email_with_template")
