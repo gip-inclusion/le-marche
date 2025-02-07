@@ -41,7 +41,7 @@
                             {% url 'tenders:list' status=tender_constants.STATUS_DRAFT as TENDERS_DRAFT_LIST_URL %}
                             {% url 'tenders:list' status=tender_constants.STATUS_PUBLISHED as TENDERS_PUBLISHED_LIST_URL %}
                             {% url 'tenders:list' status=tender_constants.STATUS_SENT as TENDERS_SENT_LIST_URL %}
-
+                            {% url 'tenders:list' status=tender_constants.STATUS_REJECTED as TENDERS_REJECTED_LIST_URL %}
                             <li role="presentation">
                                 <button role="tab" class="fr-tabs__tab" aria-selected="{% if request.get_full_path == TENDERS_LIST_URL %}true{% else %}false{% endif %}"
                                     hx-push-url="true" hx-get="{{ TENDERS_LIST_URL }}" hx-target="#tendersList" hx-swap="outerHTML">
@@ -64,6 +64,12 @@
                                 <button role="tab" class="fr-tabs__tab" aria-selected="{% if request.get_full_path == TENDERS_SENT_LIST_URL %}true{% else %}false{% endif %}"
                                     hx-push-url="true" hx-get="{{ TENDERS_SENT_LIST_URL }}" hx-target="#tendersList" hx-swap="outerHTML">
                                     Envoyés
+                                </button>
+                            </li>
+                            <li role="presentation">
+                                <button role="tab" class="fr-tabs__tab" aria-selected="{% if request.get_full_path == TENDERS_REJECTED_LIST_URL %}true{% else %}false{% endif %}"
+                                    hx-push-url="true" hx-get="{{ TENDERS_REJECTED_LIST_URL }}" hx-target="#tendersList" hx-swap="outerHTML">
+                                    Rejetés
                                 </button>
                             </li>
                         </ul>
