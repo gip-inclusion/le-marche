@@ -20,7 +20,7 @@ class Command(UpdateAPICommand):
     FIELDS_TO_BULK_UPDATE = ["is_zrr", "api_zrr_last_sync_date", "zrr_code", "zrr_name"]
     CLIENT = get_default_client()
 
-    IS_TAGET_KEY = IS_ZRR_KEY
+    IS_TARGET_KEY = IS_ZRR_KEY
     TARGET_CODE_KEY = ZRR_CODE_KEY
     TARGET_NAME_KEY = ZRR_NAME_KEY
 

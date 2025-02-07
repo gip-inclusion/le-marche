@@ -20,7 +20,7 @@ class UpdateAPICommand(BaseCommand):
     FIELDS_TO_BULK_UPDATE = []
     CLIENT = None
 
-    IS_TAGET_KEY = None
+    IS_TARGET_KEY = None
     TARGET_CODE_KEY = None
     TARGET_NAME_KEY = None
 
@@ -101,7 +101,7 @@ class UpdateAPICommand(BaseCommand):
         # call api is in qpv
         result_is_in_qpv = self.is_in_target(siae.latitude, siae.longitude, client=self.CLIENT)
         self.success_count["etablissement"] += 1
-        siae.is_qpv = result_is_in_qpv[self.IS_TAGET_KEY]
+        siae.is_qpv = result_is_in_qpv[self.IS_TARGET_KEY]
         siae.api_qpv_last_sync_date = timezone.now()
         if siae.is_qpv:
             siae.qpv_code = result_is_in_qpv[self.TARGET_CODE_KEY]
