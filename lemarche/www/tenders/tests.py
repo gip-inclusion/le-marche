@@ -20,7 +20,6 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
 from lemarche.tenders.factories import TenderFactory, TenderQuestionFactory
 from lemarche.tenders.models import Tender, TenderSiae, TenderStepsData
-from lemarche.users import constants as user_constants
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 from lemarche.utils import constants
@@ -273,7 +272,6 @@ class TenderCreateViewTest(TestCase):
         # Check arguments like user, type, and source
         self.assertEqual(kwargs["user"], user)
         self.assertEqual(kwargs["type"], "signup")
-        self.assertEqual(kwargs["source"], user_constants.SOURCE_TENDER_FORM)
         # Verify that `tender` is an instance of Tender
         self.assertIsInstance(
             kwargs.get("tender"), Tender, "Expected an instance of Tender for the 'tender' argument."

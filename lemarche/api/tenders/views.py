@@ -81,7 +81,7 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             source=tender_source,
             import_raw_object=self.request.data,
         )
-        add_to_contact_list(user=user, type="signup", source=user_source, tender=tender)
+        add_to_contact_list(user=user, type="signup", tender=tender)
 
 
 class TenderKindViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

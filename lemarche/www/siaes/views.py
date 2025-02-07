@@ -165,10 +165,6 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
             if ((key not in ["marche_benefits", "download_source", "page", "format"]) and value)
         ]
 
-        user = self.request.user
-        if user.kind == user.KIND_BUYER:
-            add_to_contact_list(user, "buyer_download")
-
         # no search filters -> the user wants to download the whole list -> serve the generated file stored on S3
         if not len(request_params):
             file_path = f"{API_CONNECTION_DICT['endpoint_url']}/{settings.S3_STORAGE_BUCKET_NAME}/{settings.SIAE_EXPORT_FOLDER_NAME}/{filename_with_extension}"  # noqa
