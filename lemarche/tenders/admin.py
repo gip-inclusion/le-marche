@@ -10,8 +10,8 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django_admin_filters import MultiChoice
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
-from fieldsets_with_inlines import FieldsetsInlineMixin
 
+from lemarche.admin_fieldsets.mixins import FieldsetsInlineMixin
 from lemarche.conversations.models import TemplateTransactionalSendLog
 from lemarche.notes.models import Note
 from lemarche.perimeters.admin import PerimeterRegionFilter

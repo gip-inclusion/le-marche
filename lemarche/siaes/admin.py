@@ -6,9 +6,9 @@ from django.contrib.gis import admin as gis_admin
 from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
-from fieldsets_with_inlines import FieldsetsInlineMixin
 from simple_history.admin import SimpleHistoryAdmin
 
+from lemarche.admin_fieldsets.mixins import FieldsetsInlineMixin
 from lemarche.conversations.models import Conversation, TemplateTransactionalSendLog
 from lemarche.labels.models import Label
 from lemarche.networks.models import Network

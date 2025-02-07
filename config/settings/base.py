@@ -123,7 +123,6 @@ THIRD_PARTY_APPS = [
     "django_htmx",  # django-htmx
     "django_select2",  # django-select2
     "drf_spectacular",  # drf-spectacular
-    "fieldsets_with_inlines",  # django-fieldsets-with-inlines
     "formtools",  # django-formtools (Multistep and preview forms)
     "huey.contrib.djhuey",  # huey (Async tasks)
     "rest_framework",  # djangorestframework
@@ -156,6 +155,8 @@ LOCAL_APPS = [
     "lemarche.cms",
     # Brevo CRM
     "lemarche.crm",
+    # Fieldset inlines copy
+    "lemarche.admin_fieldsets",
 ]
 
 WAGTAIL_APPS = [

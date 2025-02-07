@@ -9,8 +9,8 @@ from django.http import HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
 from django.utils.html import format_html
-from fieldsets_with_inlines import FieldsetsInlineMixin
 
+from lemarche.admin_fieldsets.mixins import FieldsetsInlineMixin
 from lemarche.conversations.models import TemplateTransactionalSendLog
 from lemarche.notes.models import Note
 from lemarche.siaes.models import Siae, SiaeUser
