@@ -20,7 +20,7 @@ class Command(UpdateAPICommand):
     FIELDS_TO_BULK_UPDATE = ["is_qpv", "api_qpv_last_sync_date", "qpv_code", "qpv_name"]
     CLIENT = get_default_client()
 
-    IS_TAGET_KEY = IS_QPV_KEY
+    IS_TARGET_KEY = IS_QPV_KEY
     TARGET_CODE_KEY = QPV_CODE_KEY
     TARGET_NAME_KEY = QPV_NAME_KEY
 
