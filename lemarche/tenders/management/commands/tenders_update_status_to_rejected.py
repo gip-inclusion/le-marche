@@ -15,7 +15,7 @@ class Command(BaseCommand):
         threshold_date = timezone.now() - timedelta(days=10)
         tenders_to_update = []
 
-        tenders_draft = Tender.objects.filter(status=tender_constants.STATUS_DRAFT)
+        tenders_draft = Tender.objects.filter(status=tender_constants.STATUS_DRAFT, email_sent_for_modification=True)
         tenders_draft_count = tenders_draft.count()
 
         self.stdout.write(f"Besoin(s) à traiter : {tenders_draft_count}")
