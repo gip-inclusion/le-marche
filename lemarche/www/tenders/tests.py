@@ -93,7 +93,7 @@ class TenderCreateViewTest(TestCase):
             else:
                 self.assertEqual(response.status_code, 200)
                 current_errors = response.context_data["form"].errors
-                self.assertEquals(current_errors, {})
+                self.assertEqual(current_errors, {})
 
                 # Is the step data stored correctly ?
                 tender_step_data = TenderStepsData.objects.first()

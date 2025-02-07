@@ -151,7 +151,8 @@ class ConversationsInline(admin.TabularInline):
 
 
 @admin.register(Siae, site=admin_site)
-class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin):
+class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmin):
+    # GISModelAdmin param for coords fields
     actions = [export_as_xls]
     list_display = [
         "id",
@@ -223,7 +224,6 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin)
         ChoiceArrayField: {"widget": forms.CheckboxSelectMultiple(attrs={"class": "custom-checkbox-select-multiple"})},
     }
 
-    # OSMGeoAdmin param for coords fields
     modifiable = False
 
     fieldsets_with_inlines_original = [

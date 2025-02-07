@@ -21,7 +21,7 @@ def send_first_email_from_conversation(conv: Conversation):
     disclaimer = (
         f"\n\n{conv.sender_first_name} {conv.sender_last_name}\n"
         f"{sender_company_name}"
-        f"\n\n{'*'*80}\n\n"
+        f"\n\n{'*' * 80}\n\n"
         f"<i>Ce client vous a contacté via le Marché de l'inclusion. "
         "Pour échanger avec lui, répondez simplement à cet e-mail.</i>\n"
     ) + DISCLAIMER_ATTACHMENTS

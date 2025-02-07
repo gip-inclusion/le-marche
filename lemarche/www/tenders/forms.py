@@ -74,6 +74,14 @@ class TenderCreateStepDetailForm(forms.ModelForm):
     # fields from previous step
     kind = None
 
+    why_amount_is_blank = forms.TypedChoiceField(
+        label=Tender._meta.get_field("why_amount_is_blank").verbose_name,
+        choices=Tender._meta.get_field("why_amount_is_blank").choices,
+        widget=forms.widgets.RadioSelect,
+        required=False,
+        empty_value=None,
+    )
+
     questions_list = forms.JSONField(required=False)
 
     class Meta:
@@ -89,7 +97,6 @@ class TenderCreateStepDetailForm(forms.ModelForm):
         widgets = {
             "start_working_date": forms.widgets.DateInput(attrs={"class": "fr-input", "type": "date"}),
             "deadline_date": forms.widgets.DateInput(attrs={"class": "fr-input", "type": "date"}),
-            "why_amount_is_blank": forms.widgets.RadioSelect,
             "amount": forms.Select(attrs={"x-model": "formData.amount", "x-on:change": "getImpactMessage()"}),
         }
 
@@ -102,8 +109,6 @@ class TenderCreateStepDetailForm(forms.ModelForm):
             self.initial["deadline_date"] = self.instance.deadline_date.isoformat()
         if questions_list:
             self.initial["questions_list"] = questions_list
-        # to remove blank option
-        self.fields["why_amount_is_blank"].choices = self.fields["why_amount_is_blank"].choices[1:]
         if self.instance.start_working_date:
             self.initial["start_working_date"] = self.instance.start_working_date.isoformat()
 
@@ -300,9 +305,9 @@ class TenderSurveyTransactionedForm(forms.ModelForm):
 
     def __init__(self, tender_survey_transactioned_answer=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields[
-            "survey_transactioned_answer"
-        ].label = "Avez-vous contractualisé avec un prestataire trouvé via le Marché de l'inclusion ?"
+        self.fields["survey_transactioned_answer"].label = (
+            "Avez-vous contractualisé avec un prestataire trouvé via le Marché de l'inclusion ?"
+        )
         self.fields["survey_transactioned_amount"].label = "Quel est le montant de la transaction ? (facultatif)"
         self.fields["survey_transactioned_feedback"].label = "Partagez-nous votre retour d'expérience (facultatif)"
         self.fields["survey_transactioned_feedback"].widget.attrs.update(

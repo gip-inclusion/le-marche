@@ -307,7 +307,7 @@ SESAME_TOKEN_NAME = "token"
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/3.2/topics/i18n/
+# https://docs.djangoproject.com/en/5.1/topics/i18n/
 # ------------------------------------------------------------------------------
 
 # App is in french
@@ -317,8 +317,6 @@ LANGUAGE_CODE = "fr-fr"
 TIME_ZONE = "Europe/Paris"
 
 USE_I18N = True
-
-USE_L10N = True
 
 USE_TZ = True
 

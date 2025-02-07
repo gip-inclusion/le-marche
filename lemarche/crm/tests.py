@@ -58,9 +58,9 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
         # siae_with_brevo_id.extra_data initialization
         cls.siae_with_brevo_id.extra_data = {
             "brevo_company_data": {
-                "completion_rate": cls.siae_with_brevo_id.completion_rate
-                if cls.siae_with_brevo_id.completion_rate is not None
-                else 0,
+                "completion_rate": (
+                    cls.siae_with_brevo_id.completion_rate if cls.siae_with_brevo_id.completion_rate is not None else 0
+                ),
                 "tender_received": cls.siae_with_brevo_id_recent_stats.tender_email_send_count_annotated,
                 "tender_interest": cls.siae_with_brevo_id_recent_stats.tender_detail_contact_click_count_annotated,
             }
@@ -135,9 +135,9 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
 
         expected_extra_data = {
             "brevo_company_data": {
-                "completion_rate": self.siae_with_user.completion_rate
-                if self.siae_with_user.completion_rate is not None
-                else 0,
+                "completion_rate": (
+                    self.siae_with_user.completion_rate if self.siae_with_user.completion_rate is not None else 0
+                ),
                 "tender_received": self.siae_with_user_stats.tender_email_send_count_annotated,
                 "tender_interest": self.siae_with_user_stats.tender_detail_contact_click_count_annotated,
             },
@@ -204,9 +204,11 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
 
         expected_extra_data = {
             "brevo_company_data": {
-                "completion_rate": self.siae_with_brevo_id.completion_rate
-                if self.siae_with_brevo_id.completion_rate is not None
-                else 0,
+                "completion_rate": (
+                    self.siae_with_brevo_id.completion_rate
+                    if self.siae_with_brevo_id.completion_rate is not None
+                    else 0
+                ),
                 "tender_received": self.siae_with_brevo_id_recent_stats.tender_email_send_count_annotated,
                 "tender_interest": self.siae_with_brevo_id_recent_stats.tender_detail_contact_click_count_annotated,
             }

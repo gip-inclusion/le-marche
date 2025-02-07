@@ -7,6 +7,7 @@ from lemarche.favorites.models import FavoriteList
 class FavoriteListFactory(DjangoModelFactory):
     class Meta:
         model = FavoriteList
+        skip_postgeneration_save = True  # Prevents unnecessary save
 
     name = factory.Faker("company", locale="fr_FR")
     # slug: auto-generated

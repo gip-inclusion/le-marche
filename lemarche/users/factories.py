@@ -19,6 +19,7 @@ def default_password():
 class UserFactory(DjangoModelFactory):
     class Meta:
         model = User
+        skip_postgeneration_save = True  # Prevents unnecessary save
 
     first_name = factory.Sequence("first_name{0}".format)
     last_name = factory.Sequence("last_name{0}".format)

@@ -13,6 +13,7 @@ from lemarche.users.factories import UserFactory
 class TenderFactory(DjangoModelFactory):
     class Meta:
         model = Tender
+        skip_postgeneration_save = True  # Prevents unnecessary save
 
     title = factory.Faker("name", locale="fr_FR")
     # slug auto-generated
@@ -80,6 +81,7 @@ class TenderQuestionFactory(DjangoModelFactory):
 class PartnerShareTenderFactory(DjangoModelFactory):
     class Meta:
         model = PartnerShareTender
+        skip_postgeneration_save = True  # Prevents unnecessary save
 
     name = factory.Faker("name", locale="fr_FR")
 
