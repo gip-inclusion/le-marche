@@ -4,7 +4,6 @@ from django.conf import settings
 from django.core.mail import send_mail
 from huey.contrib.djhuey import task
 
-from lemarche.users import constants as user_constants
 from lemarche.utils.apis import api_brevo
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 
@@ -53,12 +52,12 @@ def whitelist_recipient_list(recipient_list):
     return [email for email in recipient_list if (email and email.endswith("beta.gouv.fr"))]
 
 
-def add_to_contact_list(user, type: str, tender=None, source: str = user_constants.SOURCE_SIGNUP_FORM):
+def add_to_contact_list(user, type: str, tender=None):
     """Add user to contactlist
 
     Args:
         user (User): the user how will be added in the contact list
-        type (String): "signup", OR "buyer_download" or "buyer_search" else raise ValueError
+        type (String): "signup", OR "buyer_search" else raise ValueError
     """
     if type == "signup":
         if user.kind == user.KIND_BUYER:

@@ -286,7 +286,7 @@ def csrf_failure(request, reason=""):  # noqa C901
         # create tender
         if is_adding:
             tender: Tender = create_tender_from_dict(tender_dict)
-            add_to_contact_list(user=user, type="signup", source=user_constants.SOURCE_TENDER_FORM, tender=tender)
+            add_to_contact_list(user=user, type="signup", tender=tender)
         elif is_update:
             slug = request.path.split("/")[-1]
             tender: Tender = Tender.objects.get(slug=slug)
