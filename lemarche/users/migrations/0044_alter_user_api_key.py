@@ -6,7 +6,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("users", "0039_remove_user_user_email_ci_uniqueness_and_more"),
+        ("users", "0043_user_is_anonymized"),
     ]
 
     operations = [
