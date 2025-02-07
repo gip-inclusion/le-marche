@@ -196,6 +196,7 @@ class UpdateTenderStatusToRejectedCommandTest(TestCase):
 
         tender_recent = TenderFactory(
             status=tender_constants.STATUS_DRAFT,
+            email_sent_for_modification=True,
             logs=[
                 {"action": "send tender author modification request", "date": recent_date.isoformat()},
             ],
@@ -203,6 +204,7 @@ class UpdateTenderStatusToRejectedCommandTest(TestCase):
 
         tender_expired = TenderFactory(
             status=tender_constants.STATUS_DRAFT,
+            email_sent_for_modification=True,
             logs=[
                 {"action": "send tender author modification request", "date": threshold_date.isoformat()},
             ],
