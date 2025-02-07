@@ -341,10 +341,6 @@ TEAM_CONTACT_EMAIL = env("TEAM_CONTACT_EMAIL", default="team.contact@example.com
 NOTIFY_EMAIL = env("NOTIFY_EMAIL", default="notif@example.com")
 GIP_CONTACT_EMAIL = env("GIP_CONTACT_EMAIL", default="gip.contact@example.com")
 
-# Transactional email templates
-# -- tender: siae & partners
-MAILJET_TENDERS_PARTNER_PRESENTATION_TEMPLATE_ID = env.int("MAILJET_TENDERS_PARTNER_PRESENTATION_TEMPLATE_ID", 3868179)
-
 # -- Sendinblue (Brevo)
 BREVO_CL_SIGNUP_BUYER_ID = env.int("BREVO_CL_SIGNUP_BUYER_ID", 10)
 BREVO_CL_SIGNUP_SIAE_ID = env.int("BREVO_CL_SIGNUP_SIAE_ID", 27)
