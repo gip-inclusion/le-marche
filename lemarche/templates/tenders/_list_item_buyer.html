@@ -70,6 +70,10 @@
                             {% endif %}
                         </div>
                     </div>
+                {% elif tender.email_sent_for_modification %}
+                    <i>Le besoin nécessite une modification.</i>
+                {% elif tender.is_rejected %}
+                    <i>Le besoin a été rejeté.</i>
                 {% else %}
                     <i>Le besoin n'a pas encore été envoyé.</i>
                 {% endif %}
