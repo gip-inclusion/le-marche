@@ -29,9 +29,10 @@
 			</a>
 		</li>
 		<li>
-			<a href="{% url 'auth:logout' %}" class="fr-btn fr-icon-logout-box-r-line">
-				Déconnexion
-			</a>
+            <form id="logout-form" method="post" action="{% url 'auth:logout' %}">
+              {% csrf_token %}
+              <button class="fr-btn fr-icon-logout-box-r-line" type="submit">Déconnexion</button>
+            </form>
 		</li>
 	{% else %}
 		{% if page and page.slug == "accueil-structure" %}
