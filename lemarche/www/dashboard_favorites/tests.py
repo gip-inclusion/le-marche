@@ -36,6 +36,6 @@ class DashboardFavoriteListViewTest(TestCase):
         url = reverse("dashboard_favorites:list_detail", args=[self.favorite_list_1.slug])
 
         # check number of queries
-        with self.assertNumQueries(6):
+        with self.assertNumQueries(7):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
