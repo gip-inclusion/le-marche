@@ -4,6 +4,7 @@ from django.contrib.auth.hashers import UNUSABLE_PASSWORD_PREFIX
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.postgres.functions import RandomUUID
+from django.core.validators import MinLengthValidator
 from django.db import models
 from django.db.models import Count, F, Value
 from django.db.models.functions import Concat, Greatest, Lower
@@ -249,7 +250,9 @@ class User(AbstractUser):
         max_length=20, choices=user_constants.SOURCE_CHOICES, default=user_constants.SOURCE_SIGNUP_FORM
     )
 
-    api_key = models.CharField(verbose_name="Clé API", max_length=128, unique=True, blank=True, null=True)
+    api_key = models.CharField(
+        verbose_name="Clé API", max_length=128, unique=True, blank=True, null=True, validators=[MinLengthValidator(64)]
+    )
     api_key_last_updated = models.DateTimeField(
         verbose_name="Date de dernière mise à jour de la clé API", blank=True, null=True
     )
