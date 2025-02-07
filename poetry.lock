@@ -840,17 +840,6 @@ files = [
 Django = ">=3.2"
 
 [[package]]
-name = "django-fieldsets-with-inlines"
-version = "0.6"
-description = "Mixin inlines and fieldsets in Django admin."
-optional = false
-python-versions = ">=3.4"
-files = [
-    {file = "django_fieldsets_with_inlines-0.6-py3-none-any.whl", hash = "sha256:26eb222ef96a009c6a9ef301c8c906d8314c557a9814fc8bdaaa0ac22728580d"},
-    {file = "django_fieldsets_with_inlines-0.6.tar.gz", hash = "sha256:dec73d0d91f238906c93a7b99c545167a8ab0cc98f8af202d01df0cfc32a71cb"},
-]
-
-[[package]]
 name = "django-filter"
 version = "23.5"
 description = "Django-filter is a reusable Django application for allowing users to filter querysets dynamically."
