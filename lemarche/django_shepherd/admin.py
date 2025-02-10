@@ -26,8 +26,13 @@ class UserGuideAdmin(admin.ModelAdmin):
     fields = [
         "name",
         "url",
+        "url_path",
         "description",
         "created_at",
+    ]
+
+    readonly_fields = [
+        "url_path",
     ]
 
     inlines = [GuideStepInline]

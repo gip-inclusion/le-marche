@@ -1,4 +1,7 @@
+from urllib.parse import urlparse
+
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
@@ -7,6 +10,14 @@ class UserGuide(models.Model):
     name = models.CharField("Nom du Guide", max_length=200, unique=True)
     description = models.TextField("Description", blank=True)
     url = models.URLField(verbose_name="URL", max_length=250, unique=True, help_text="URL de la page à guider")
+    url_path = models.CharField(
+        "chemin URL",
+        max_length=250,
+        unique=True,
+        null=False,
+        blank=True,
+        help_text="C'est l'identifiant unique de l'url",
+    )
     guided_users = models.ManyToManyField(
         verbose_name="Utilisateurs guidés",
         to=settings.AUTH_USER_MODEL,
@@ -22,6 +33,32 @@ class UserGuide(models.Model):
 
     def __str__(self):
         return self.name
+
+    def clean_fields(self, exclude=None):
+        """Check for unique constraint on url_path because otherwise it's skipped by validation
+        because the field is computed rather than inputed
+        """
+        qs = UserGuide.objects.exclude(pk=self.pk).filter(url_path=self.path_from_url)
+        if self.pk:
+            duplicated_guide = qs.exclude(pk=self.pk).first()
+        else:
+            duplicated_guide = qs.first()
+        if duplicated_guide:
+            raise ValidationError(
+                {"url": f"Un guide lié à la même page existe déjà ({duplicated_guide.name})"},
+            )
+        super().clean_fields(exclude=exclude)
+
+    def save(self, *args, **kwargs):
+        """Save computed url path"""
+        self.url_path = self.path_from_url
+        super().save(*args, **kwargs)
+
+    @property
+    def path_from_url(self):
+        """Keep only the path of the url, which can be used to identify without duplicates
+        an url from this website"""
+        return urlparse(self.url).path.strip("/")
 
 
 class GuideStep(models.Model):
