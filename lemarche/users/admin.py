@@ -10,13 +10,13 @@ from django.template.response import TemplateResponse
 from django.urls import path, reverse
 from django.utils.html import format_html
 
-from lemarche.admin_fieldsets.mixins import FieldsetsInlineMixin
 from lemarche.conversations.models import TemplateTransactionalSendLog
 from lemarche.notes.models import Note
 from lemarche.siaes.models import Siae, SiaeUser
 from lemarche.users.forms import UserChangeForm, UserCreationForm
 from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import admin_site
+from lemarche.utils.admin.inline_fieldset import FieldsetsInlineMixin
 from lemarche.utils.fields import pretty_print_readonly_jsonfield
 
 

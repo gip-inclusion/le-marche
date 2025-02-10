@@ -155,8 +155,6 @@ LOCAL_APPS = [
     "lemarche.cms",
     # Brevo CRM
     "lemarche.crm",
-    # Fieldset inlines copy
-    "lemarche.admin_fieldsets",
 ]
 
 WAGTAIL_APPS = [
