@@ -4,7 +4,7 @@ from django import forms
 
 
 class FieldsetsInlineMixin:
-    change_form_template = "admin/change_form.html"
+    change_form_template = "admin/inlines_change_form.html"
 
     def make_placeholder(self, index, fieldset):
         if isinstance(fieldset, forms.MediaDefiningClass):
