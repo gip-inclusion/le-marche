@@ -6,7 +6,6 @@ from django.contrib.gis import admin as gis_admin
 from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
-from fieldsets_with_inlines import FieldsetsInlineMixin
 from simple_history.admin import SimpleHistoryAdmin
 
 from lemarche.conversations.models import Conversation, TemplateTransactionalSendLog
@@ -29,6 +28,7 @@ from lemarche.siaes.models import (
 from lemarche.users.models import User
 from lemarche.utils.admin.actions import export_as_xls
 from lemarche.utils.admin.admin_site import admin_site
+from lemarche.utils.admin.inline_fieldset import FieldsetsInlineMixin
 from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
 
 

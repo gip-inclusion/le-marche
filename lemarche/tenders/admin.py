@@ -10,7 +10,6 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django_admin_filters import MultiChoice
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
-from fieldsets_with_inlines import FieldsetsInlineMixin
 
 from lemarche.conversations.models import TemplateTransactionalSendLog
 from lemarche.notes.models import Note
@@ -22,6 +21,7 @@ from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, 
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import admin_site
+from lemarche.utils.admin.inline_fieldset import FieldsetsInlineMixin
 from lemarche.utils.apis import api_brevo
 from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
 from lemarche.www.tenders.tasks import restart_send_tender_task
