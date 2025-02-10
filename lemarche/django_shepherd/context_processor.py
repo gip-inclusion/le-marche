@@ -9,9 +9,9 @@ def expose_guide_context(request):
     have not completed it yet.
     DISPLAY_GUIDE_PAYLOAD is when a guide is found the data of all the steps of the guide
     """
-    url = request.path.strip("/")
+    url_path = request.path.strip("/")
     try:
-        user_guide = UserGuide.objects.get(url__contains=url)
+        user_guide = UserGuide.objects.get(url_path=url_path)
     except ObjectDoesNotExist:  # No guide found on this url
         display_guide_flag = False
         display_guide_payload = None
