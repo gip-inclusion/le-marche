@@ -1,52 +1,33 @@
-document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById('siae_user_request_confirm_modal').addEventListener('dsfr.disclose', (event) => {
-        // Button that triggered the modal
-        var button = event.explicitOriginalTarget;
-        var siaeSlug = button.dataset["siaeSlug"];
-        var initiatorFullName = button.dataset["initiatorFullName"];
-        var siaeUserRequestId = button.dataset["siaeUserRequestId"];
+document.addEventListener('alpine:init', function () {
+    Alpine.data('siaeUserModals', () => ({
+        siaeSlug: null,
+        id: null,
+        fullName: null,
 
-        // Update the modal's content
-        // - siae user full name
-        // - edit the form action url
-        var modal = document.querySelector('#siae_user_request_confirm_modal');
-        modal.querySelector('#initiator-full-name-to-replace').textContent = initiatorFullName;
-        var modalForm = modal.querySelector('form');
-        var formActionUrl = modalForm.getAttribute('action');
-        modalForm.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', siaeSlug).replace('siae-user-request-id-to-replace', siaeUserRequestId));
-    });
-
-    document.getElementById('siae_user_request_cancel_modal').addEventListener('dsfr.disclose', (event) => {
-        // Button that triggered the modal
-        var button = event.explicitOriginalTarget;
-        var siaeSlug = button.dataset["siaeSlug"];
-        var initiatorFullName = button.dataset["initiatorFullName"];
-        var siaeUserRequestId = button.dataset["siaeUserRequestId"];
-
-        // Update the modal's content
-        // - siae user full name
-        // - edit the form action url
-        var modal = document.querySelector('#siae_user_request_cancel_modal');
-        modal.querySelector('#initiator-full-name-to-replace').textContent = initiatorFullName;
-        var modalForm = modal.querySelector('form');
-        var formActionUrl = modalForm.getAttribute('action');
-        modalForm.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', siaeSlug).replace('siae-user-request-id-to-replace', siaeUserRequestId));
-    });
-
-    document.getElementById('siae_user_delete_modal').addEventListener('dsfr.disclose', (event) => {
-        // Button that triggered the modal
-        var button = event.explicitOriginalTarget;
-        var siaeSlug = button.dataset["siaeSlug"];
-        var userFullName = button.dataset["userFullName"];
-        var siaeUserId = button.dataset["siaeUserId"];
-
-        // Update the modal's content
-        // - siae user full name
-        // - edit the form action url
-        var modal = document.querySelector('#siae_user_delete_modal');
-        modal.querySelector('#user-full-name-to-replace').textContent = userFullName;
-        var modalForm = modal.querySelector('form');
-        var formActionUrl = modalForm.getAttribute('action');
-        modalForm.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', siaeSlug).replace('siae-user-id-to-replace', siaeUserId));
-    });
+        initOptions(siaeSlug, fullName, id) {
+            this.siaeSlug = siaeSlug;
+            this.fullName = fullName;
+            this.id = id;
+        },
+        openModal(modalID, replaceIdSelector) {
+            // Update the modal's content
+            // - edit the form action url
+            // - open the modal
+            let modal = document.querySelector(`#${modalID}`);
+            let modalForm = modal.querySelector('form');
+            let formActionUrl = modalForm.getAttribute('data-action');
+            modal.querySelector('#full-name-to-replace').textContent = this.fullName;
+            modalForm.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', this.siaeSlug).replace(replaceIdSelector, this.id));
+            dsfr(modal).modal.disclose();
+        },
+        confirmUserRequest() {
+            this.openModal('siae_user_request_confirm_modal', 'siae-user-request-id-to-replace');
+        },
+        cancelUserRequest() {
+            this.openModal('siae_user_request_cancel_modal', 'siae-user-request-id-to-replace');
+        },
+        deleteUser() {
+            this.openModal('siae_user_delete_modal', 'siae-user-id-to-replace');
+        }
+    }));
 });
