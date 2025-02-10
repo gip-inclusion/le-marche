@@ -11,11 +11,9 @@ class UserGuide(models.Model):
     description = models.TextField("Description", blank=True)
     url = models.URLField(verbose_name="URL", max_length=250, unique=True, help_text="URL de la page à guider")
     url_path = models.CharField(
-        "chemin URL",
+        verbose_name="chemin URL",
         max_length=250,
         unique=True,
-        null=False,
-        blank=True,
         help_text="C'est l'identifiant unique de l'url",
     )
     guided_users = models.ManyToManyField(
