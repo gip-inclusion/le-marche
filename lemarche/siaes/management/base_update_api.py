@@ -20,10 +20,6 @@ class UpdateAPICommand(BaseCommand):
     FIELDS_TO_BULK_UPDATE = []
     CLIENT = None
 
-    IS_TARGET_KEY = None
-    TARGET_CODE_KEY = None
-    TARGET_NAME_KEY = None
-
     def __init__(self, stdout=None, stderr=None, no_color=False):
         super().__init__(stdout, stderr, no_color)
         self.success_count = {"etablissement": 0, "etablissement_target": 0}
@@ -96,18 +92,3 @@ class UpdateAPICommand(BaseCommand):
             ]
             self.stdout_messages_success(msg_success)
             api_slack.send_message_to_channel("\n".join(msg_success))
-
-    def update_siae(self, siae):
-        # call api is in qpv
-        result_is_in_qpv = self.is_in_target(siae.latitude, siae.longitude, client=self.CLIENT)
-        self.success_count["etablissement"] += 1
-        siae.is_qpv = result_is_in_qpv[self.IS_TARGET_KEY]
-        siae.api_qpv_last_sync_date = timezone.now()
-        if siae.is_qpv:
-            siae.qpv_code = result_is_in_qpv[self.TARGET_CODE_KEY]
-            siae.qpv_name = result_is_in_qpv[self.TARGET_NAME_KEY]
-            self.success_count["etablissement_target"] += 1
-        else:
-            siae.qpv_code = ""
-            siae.qpv_name = ""
-        return siae
