@@ -1,3 +1,4 @@
+import logging
 import re
 
 from ckeditor.widgets import CKEditorWidget
@@ -10,7 +11,7 @@ from django.template.response import TemplateResponse
 from django.urls import path, reverse
 from django.utils.html import format_html
 
-from lemarche.conversations.models import TemplateTransactionalSendLog
+from lemarche.conversations.models import TemplateTransactional, TemplateTransactionalSendLog
 from lemarche.notes.models import Note
 from lemarche.siaes.models import Siae, SiaeUser
 from lemarche.users.forms import UserChangeForm, UserCreationForm
@@ -18,6 +19,9 @@ from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.admin.inline_fieldset import FieldsetsInlineMixin
 from lemarche.utils.fields import pretty_print_readonly_jsonfield
+
+
+logger = logging.getLogger(__name__)
 
 
 class HasCompanyFilter(admin.SimpleListFilter):
@@ -447,6 +451,22 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         """Wipe personal data of all selected users and unlink from SiaeUser
         The logged user is excluded to avoid any mistakes"""
         # https://docs.djangoproject.com/en/5.1/ref/contrib/admin/actions/#actions-that-provide-intermediate-pages
+
+        # TODO this just test code
+        email_template = TemplateTransactional.objects.get(code="USER_ANONYMIZATION_WARNING")
+        assert email_template.is_active
+
+        for user in queryset:
+            email_template.send_transactional_email(
+                recipient_email=user.email,
+                recipient_name=user.full_name,
+                variables={
+                    "user_full_name": user.full_name,
+                    "anonymization_date": user.date_joined,  # natural date
+                },
+                recipient_content_object=user,
+            )
+        return  # end of test code
 
         selected = queryset.values_list("pk", flat=True)
         return HttpResponseRedirect(
