@@ -20,11 +20,11 @@ tour.on("complete", onTourEnd);
 /*Called on ending tour events. Call an url to add the user to already viewed guides*/
 function onTourEnd() {
     // "this" refers to a "tour" instance
-    fetch(`/django_shepherd/viewed_guide/${this.displayGuidePk}/`)
+    fetch(this.displayGuideViewedUrl)
 }
 
-function startGuide(displayGuidePayload, displayGuidePk) {
-    tour.displayGuidePk = displayGuidePk
+function startGuide(displayGuidePayload, displayGuideViewedUrl) {
+    tour.displayGuideViewedUrl = displayGuideViewedUrl
     tour.steps = []; // Clear previous steps
     displayGuidePayload.steps.forEach((step, index) => {
         const isFirstStep = index === 0;

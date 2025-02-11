@@ -1,4 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.urls import reverse
 
 from lemarche.django_shepherd.models import UserGuide
 
@@ -15,14 +16,14 @@ def expose_guide_context(request):
     except ObjectDoesNotExist:  # No guide found on this url
         display_guide_flag = False
         display_guide_payload = None
-        display_guide_pk = None
+        display_guide_viewed_url = None
     else:  # A guide has been found
         user_had_viewed = user_guide.guided_users.filter(id=request.user.id).exists()
         if request.user.is_anonymous or user_had_viewed:
             # Current user has already seen this guide, or is anonymous
             display_guide_flag = False
             display_guide_payload = None
-            display_guide_pk = None
+            display_guide_viewed_url = None
         else:  # Current user has not yet seen this guide
             display_guide_flag = not user_had_viewed
             steps = user_guide.steps.all()
@@ -36,9 +37,9 @@ def expose_guide_context(request):
                 for step in steps
             ]
             display_guide_payload = {"steps": steps_data}
-            display_guide_pk = user_guide.pk
+            display_guide_viewed_url = reverse("django_shepherd:guide_viewed_view", kwargs={"pk": user_guide.pk})
     return {
         "DISPLAY_GUIDE_FLAG": display_guide_flag,
-        "DISPLAY_GUIDE_PK": display_guide_pk,
+        "DISPLAY_GUIDE_VIEWED_URL": display_guide_viewed_url,
         "DISPLAY_GUIDE_PAYLOAD": display_guide_payload,
     }

@@ -37,17 +37,17 @@
       />
       {{ DISPLAY_GUIDE_FLAG|json_script:"display-guide-flag" }}
       {{ DISPLAY_GUIDE_PAYLOAD|json_script:"display-guide-payload" }}
-      {{ DISPLAY_GUIDE_PK|json_script:"display-guide-pk" }}
+      {{ DISPLAY_GUIDE_VIEWED_URL|json_script:"display-guide-viewed-url" }}
       <script type="module">
           import startGuide from "user_guide_map";
           
           const displayGuide = JSON.parse(document.getElementById('display-guide-flag').textContent)
           const displayGuidePayload = JSON.parse(document.getElementById('display-guide-payload').textContent)
-          const displayGuidePk = JSON.parse(document.getElementById('display-guide-pk').textContent)
+          const displayGuideViewedUrl = JSON.parse(document.getElementById('display-guide-viewed-url').textContent)
           
           // Call this function with the name of the guide you want to start
           if (displayGuide) {
-              startGuide(displayGuidePayload, displayGuidePk);
+              startGuide(displayGuidePayload, displayGuideViewedUrl);
           }
       </script>
 
