@@ -17,8 +17,9 @@ def expose_guide_context(request):
         display_guide_payload = None
         display_guide_pk = None
     else:  # A guide has been found
-        if user_had_viewed := user_guide.guided_users.filter(id=request.user.id).exists():
-            # Current user has already seen this guide
+        user_had_viewed = user_guide.guided_users.filter(id=request.user.id).exists()
+        if request.user.is_anonymous or user_had_viewed:
+            # Current user has already seen this guide, or is anonymous
             display_guide_flag = False
             display_guide_payload = None
             display_guide_pk = None
