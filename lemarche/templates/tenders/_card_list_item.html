@@ -12,7 +12,12 @@
             <span class="fr-badge fr-badge--sm fr-badge--no-icon fr-badge--info fr-ml-2w">
                 <span class="fr-icon-timer-line fr-mr-2w" aria-hidden="true"></span>En cours de validation
             </span>
+        {% elif tender.is_rejected %}
+            <span class="fr-badge fr-badge--sm fr-badge--no-icon fr-badge--error fr-ml-2w">
+                <span class="fr-icon-close-circle-line fr-mr-2w" aria-hidden="true"></span>Rejeté
+            </span>
         {% endif %}
-    </time><br />
+    </time>
+    <br />
     <a href="{% url 'tenders:detail' tender.slug %}"><strong>{{ tender.title }}</strong></a>
 </div>

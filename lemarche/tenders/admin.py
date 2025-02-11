@@ -1,3 +1,5 @@
+import logging
+
 from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib import admin
@@ -24,7 +26,14 @@ from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.admin.inline_fieldset import FieldsetsInlineMixin
 from lemarche.utils.apis import api_brevo
 from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
-from lemarche.www.tenders.tasks import restart_send_tender_task
+from lemarche.www.tenders.tasks import (
+    restart_send_tender_task,
+    send_tender_author_modification_request,
+    send_tender_author_reject_message,
+)
+
+
+logger = logging.getLogger(__name__)
 
 
 class KindFilter(MultiChoice):
@@ -278,6 +287,7 @@ class TenderForm(forms.ModelForm):
         """
         cleaned_data = super().clean()
         distance_location = cleaned_data.get("distance_location")
+
         if distance_location:
             location = cleaned_data.get("location")
             if not location:
@@ -302,6 +312,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "start_working_date_in_list",
         "siae_count_annotated_with_link_in_list",
         "siae_detail_contact_click_count_annotated_with_link_in_list",
+        "status",
         "is_validated_or_sent",
         "is_followed_by_us",
     ]
@@ -309,6 +320,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     list_filter = [
         AmountCustomFilter,
         ("kind", KindFilter),
+        "email_sent_for_modification",
         "is_followed_by_us",
         AuthorKindFilter,
         "status",
@@ -542,6 +554,33 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     class Media:
         js = ["/static/js/admin_tender_confirmation.js"]
 
+    def handle_email_sent_for_modification(self, request, obj):
+        """
+        Send an email to the author and set some fields with 'set_modification_request'
+        Display an error message if the email can't be sent
+        """
+        try:
+            send_tender_author_modification_request(tender=obj)
+            obj.set_modification_request()
+            self.message_user(request, "Une demande de modification a été envoyée à l'auteur du besoin")
+        except Exception as e:
+            self.message_user(
+                request,
+                "Erreur lors de l'envoi de la demande de modification : veuillez contacter le support.",
+                level="error",
+            )
+            logger.error(f"Exception when sending mail {e}")
+        finally:
+            return HttpResponseRedirect(".")
+
+    def handle_rejected_status(self, request, obj):
+        """
+        If tender status is REJECTED, send an email to the author and redirect to the same page.
+        """
+        send_tender_author_reject_message(tender=obj)
+        self.message_user(request, "Un email de rejet a été envoyé à l'auteur du besoin")
+        return HttpResponseRedirect(".")
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.select_related("author")
@@ -583,7 +622,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         """
         if not obj.id and not obj.author_id:
             obj.author = request.user
-        obj.save()
 
     def save_formset(self, request, form, formset, change):
         """
@@ -802,6 +840,11 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             # we don't need to send it in the crm, parteners manage them
             self.message_user(request, "Ce dépôt de besoin a été validé. Il sera envoyé aux partenaires :)")
             return HttpResponseRedirect(".")
+        if request.POST.get("_send_modification_request"):
+            return self.handle_email_sent_for_modification(request, obj)
+        if request.POST.get("_reject_tender"):
+            obj.set_rejected()
+            return self.handle_rejected_status(request, obj)
         elif request.POST.get("_restart_tender"):
             restart_send_tender_task(tender=obj)
             self.message_user(request, "Ce dépôt de besoin a été renvoyé aux structures")

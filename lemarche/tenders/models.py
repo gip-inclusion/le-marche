@@ -613,6 +613,9 @@ class Tender(models.Model):
     )
     # admins
     is_followed_by_us = models.BooleanField("Suivi par l'équipe", null=True)
+    email_sent_for_modification = models.BooleanField(
+        "Modifications requises", help_text="Envoyer un e-mail pour demander des modifications", default=False
+    )
     # Admin specific for proj
     proj_resulted_in_reserved_tender = models.BooleanField(
         "Abouti à un appel d’offre (uniquement sourcing)", null=True
@@ -707,6 +710,38 @@ class Tender(models.Model):
         super().__init__(*args, **kwargs)
         for field_name in self.TRACK_UPDATE_FIELDS:
             setattr(self, f"__previous_{field_name}", getattr(self, field_name))
+
+    def reset_modification_request(self):
+        """
+        Reset modification request when republishing a tender.
+        This method can only be called on Tender updates if status is changed to published
+        """
+        if self.status == self.STATUS_PUBLISHED and self.email_sent_for_modification:
+            self.email_sent_for_modification = False
+            self.save(update_fields=["email_sent_for_modification"])
+
+    def set_modification_request(self):
+        """
+        Set modification request when republishing a tender.
+        This method can only be called on Tender updates if status is changed to published
+        """
+        self.email_sent_for_modification = True
+        self.status = tender_constants.STATUS_DRAFT
+        log_item = {
+            "action": "send tender author modification request",
+            "date": timezone.now().isoformat(),
+        }
+        self.logs.append(log_item)
+        self.save(update_fields=["email_sent_for_modification", "status", "logs"])
+
+    def set_rejected(self):
+        self.status = tender_constants.STATUS_REJECTED
+        log_item = {
+            "action": "reject",
+            "date": timezone.now().isoformat(),
+        }
+        self.logs.append(log_item)
+        self.save(update_fields=["status", "logs"])
 
     def set_slug(self, with_uuid=False):
         """
@@ -949,6 +984,10 @@ class Tender(models.Model):
     @property
     def is_validated_or_sent(self) -> bool:
         return self.is_validated or self.is_sent
+
+    @property
+    def is_rejected(self) -> bool:
+        return self.status == tender_constants.STATUS_REJECTED
 
     @property
     def is_partner_approch(self) -> bool:
