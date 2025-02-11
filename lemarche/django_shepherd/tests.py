@@ -24,7 +24,7 @@ class GuideContextTestCase(TestCase):
             context,
             {
                 "DISPLAY_GUIDE_FLAG": False,
-                "DISPLAY_GUIDE_PK": None,
+                "DISPLAY_GUIDE_VIEWED_URL": None,
                 "DISPLAY_GUIDE_PAYLOAD": None,
             },
         )
@@ -39,7 +39,7 @@ class GuideContextTestCase(TestCase):
             context,
             {
                 "DISPLAY_GUIDE_FLAG": True,
-                "DISPLAY_GUIDE_PK": self.guide.pk,
+                "DISPLAY_GUIDE_VIEWED_URL": reverse("django_shepherd:guide_viewed_view", kwargs={"pk": self.guide.pk}),
                 "DISPLAY_GUIDE_PAYLOAD": {"steps": []},
             },
         )
@@ -53,7 +53,7 @@ class GuideContextTestCase(TestCase):
             context,
             {
                 "DISPLAY_GUIDE_FLAG": False,
-                "DISPLAY_GUIDE_PK": None,
+                "DISPLAY_GUIDE_VIEWED_URL": None,
                 "DISPLAY_GUIDE_PAYLOAD": None,
             },
         )
