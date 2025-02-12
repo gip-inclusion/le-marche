@@ -1,6 +1,6 @@
 import logging
 import time
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 import sib_api_v3_sdk
 from django.conf import settings
@@ -10,15 +10,6 @@ from sib_api_v3_sdk.rest import ApiException
 from lemarche.tenders import constants as tender_constants
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 from lemarche.utils.data import sanitize_to_send_by_email
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from lemarche.users.models import User
-    from lemarche.tenders.models import Tender
-    from lemarche.siaes.models import Siae
-    from lemarche.companies.models import Company
-
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +27,7 @@ def get_api_client():
     return sib_api_v3_sdk.ApiClient(config)
 
 
-def create_contact(user: "User", list_id: int, tender: Optional["Tender"] = None) -> None:
+def create_contact(user, list_id: int, tender=None) -> None:
     """
     Brevo docs
     - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CreateContact.md
@@ -107,14 +98,36 @@ def update_contact_email_blacklisted(user_identifier: str, email_blacklisted: bo
         logger.error(f"Exception when calling Brevo->ContactsApi->update_contact to update email_blacklisted: {e}")
 
 
-def create_company(company: Union["Siae", "Company"]) -> None:
+def create_brevo_company_from_company(company) -> None:
+    """
+    Creates a Brevo company from a Company instance.
+
+    Brevo docs
+    - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CompaniesApi.md
+    - API: https://developers.brevo.com/reference/post_companies
+    """
+    create_company(company)
+
+
+def create_brevo_company_from_siae(siae) -> None:
+    """
+    Creates a Brevo company from a Siae instance.
+
+    Brevo docs
+    - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CompaniesApi.md
+    - API: https://developers.brevo.com/reference/post_companies
+    """
+    create_company(siae)
+
+
+def create_company(company_or_siae) -> None:
     """
     Brevo docs
     - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CompaniesApi.md
     - API: https://developers.brevo.com/reference/post_companies
 
     Args:
-        company: Union["Siae", "Company"] instance to create in Brevo
+        company_or_siae: instance to create in Brevo
     """
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.CompaniesApi(api_client)
@@ -122,28 +135,28 @@ def create_company(company: Union["Siae", "Company"]) -> None:
     # Determine if this is a SIAE
     from lemarche.siaes.models import Siae
 
-    is_siae = isinstance(company, Siae)
+    is_siae = isinstance(company_or_siae, Siae)
 
     company_data = sib_api_v3_sdk.Body(
-        name=company.name,
+        name=company_or_siae.name,
         attributes={
-            "domain": company.website if hasattr(company, "website") else "",
-            "app_id": company.id,
+            "domain": company_or_siae.website if hasattr(company_or_siae, "website") else "",
+            "app_id": company_or_siae.id,
             "siae": is_siae,
         },
     )
 
-    if not company.brevo_company_id:
+    if not company_or_siae.brevo_company_id:
         try:
             api_response = api_instance.companies_post(company_data)
             logger.info(f"Success Brevo->CompaniesApi->create_company (create): {api_response}")
-            company.brevo_company_id = api_response.id
-            company.save(update_fields=["brevo_company_id"])
+            company_or_siae.brevo_company_id = api_response.id
+            company_or_siae.save(update_fields=["brevo_company_id"])
         except ApiException as e:
             logger.error(f"Exception when calling Brevo->CompaniesApi->create_company (create): {e}")
 
 
-def create_deal(tender: "Tender") -> None:
+def create_deal(tender) -> None:
     """
     Creates a new deal in Brevo CRM from a tender and logs the result.
 
@@ -184,7 +197,7 @@ def create_deal(tender: "Tender") -> None:
         raise ApiException(e)
 
 
-def link_company_with_contact_list(siae: "Siae", contact_list: list = None):
+def link_company_with_contact_list(siae, contact_list=None):
     """
     Links a Brevo company to a list of contacts. If no contact list is provided, it defaults
     to linking the company with the siae's users.

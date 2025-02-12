@@ -42,6 +42,7 @@ TENDER_JSON = {
 }
 
 
+@patch("lemarche.utils.apis.api_brevo.create_deal")
 class TenderCreateApiTest(TestCase):
     @classmethod
     def setUpTestData(cls):

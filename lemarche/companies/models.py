@@ -86,6 +86,6 @@ class Company(models.Model):
 @receiver(post_save, sender=Company)
 def create_company_in_brevo(sender, instance, created, **kwargs):
     if created:
-        from lemarche.utils.apis.api_brevo import create_company
+        from lemarche.utils.apis.api_brevo import create_brevo_company_from_company
 
-        create_company(instance)
+        create_brevo_company_from_company(instance)

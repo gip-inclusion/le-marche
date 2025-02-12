@@ -39,7 +39,7 @@ class Command(BaseCommand):
 
         # Step 2: loop on the siaes
         for index, siae in enumerate(siaes_qs):
-            api_brevo.create_company(siae)
+            api_brevo.create_brevo_company_from_siae(siae)
             if (index % 10) == 0:  # avoid API rate-limiting
                 time.sleep(1)
             if (index % 500) == 0:

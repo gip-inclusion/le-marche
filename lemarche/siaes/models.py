@@ -1283,9 +1283,9 @@ def siae_post_save(sender, instance, created, **kwargs):
 
     # Handle Brevo company creation
     if created:
-        from lemarche.utils.apis.api_brevo import create_company
+        from lemarche.utils.apis.api_brevo import create_brevo_company_from_siae
 
-        create_company(instance)
+        create_brevo_company_from_siae(instance)
 
 
 @receiver(m2m_changed, sender=Siae.users.through)

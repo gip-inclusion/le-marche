@@ -1184,36 +1184,33 @@ def test_set_validated_handles_brevo_error(self, mock_create_deal):
     self.assertEqual(tender.logs[0]["action"], "validate")
 
 
-@patch("lemarche.utils.apis.api_brevo.create_deal")
-def test_set_validated_only_works_on_draft(self, mock_create_deal):
-    """Test that set_validated only works on draft tenders"""
-    tender = TenderFactory(status=tender_constants.STATUS_VALIDATED)
+class BrevoTestCase(TestCase):
+    @patch("lemarche.utils.apis.api_brevo.create_deal")
+    def test_create_deal_on_tender_creation(self, mock_create_deal):
+        """Test that creating a new tender creates a Brevo deal"""
+        tender = TenderFactory()
 
-    tender.set_validated()
+        # Verify create_deal was called once with the tender instance
+        mock_create_deal.assert_called_once_with(tender=tender)
 
-    # Verify no API call was made
-    mock_create_deal.assert_not_called()
+        # Create another tender
+        tender2 = TenderFactory()
+        self.assertEqual(mock_create_deal.call_count, 2)
+        mock_create_deal.assert_called_with(tender=tender2)
 
-    # Verify no changes were made
-    self.assertEqual(tender.status, tender_constants.STATUS_VALIDATED)
+        # Update existing tender
+        tender.title = "Updated Title"
+        tender.save()
 
+        # Call count should still be 2 since we only sync on creation
+        self.assertEqual(mock_create_deal.call_count, 2)
 
-@patch("lemarche.utils.apis.api_brevo.create_deal")
-def test_create_deal_on_tender_creation(self, mock_create_deal):
-    """Test that creating a new tender creates a Brevo deal"""
-    tender = TenderFactory()
+    @patch("lemarche.utils.apis.api_brevo.create_deal")
+    def test_set_validated_only_works_on_draft(self, mock_create_deal):
+        """Test that set_validated only works on draft tenders"""
+        tender = TenderFactory(status=tender_constants.STATUS_VALIDATED)
 
-    # Verify create_deal was called once with the tender instance
-    mock_create_deal.assert_called_once_with(tender=tender)
+        tender.set_validated()
 
-    # Create another tender
-    tender2 = TenderFactory()
-    self.assertEqual(mock_create_deal.call_count, 2)
-    mock_create_deal.assert_called_with(tender=tender2)
-
-    # Update existing tender
-    tender.title = "Updated Title"
-    tender.save()
-
-    # Call count should still be 2 since we only sync on creation
-    self.assertEqual(mock_create_deal.call_count, 2)
+        # Verify no changes were made
+        self.assertEqual(tender.status, tender_constants.STATUS_VALIDATED)

@@ -1289,8 +1289,4 @@ def tender_post_save(sender, instance, created, **kwargs):
     if created:
         from lemarche.utils.apis.api_brevo import create_deal
 
-        try:
-            create_deal(tender=instance)
-        except Exception as e:
-            # Log the error but don't prevent tender creation
-            logger.error(f"Error creating Brevo deal for tender {instance.id}: {e}")
+        create_deal(tender=instance)

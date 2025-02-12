@@ -57,48 +57,52 @@ class UserModelTest(TestCase):
         )
 
 
+@patch("lemarche.utils.apis.api_brevo.create_deal")
+@patch("lemarche.utils.apis.api_brevo.create_contact")
+@patch("lemarche.utils.apis.api_brevo.create_company")
+@patch("lemarche.utils.apis.api_brevo.send_transactional_email_with_template")
 class UserModelQuerysetTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = UserFactory()
 
-    def test_is_admin_bizdev(self):
+    def test_is_admin_bizdev(self, mock_send_email, mock_create_company, mock_create_contact, mock_create_deal):
         UserFactory(kind=user_constants.KIND_ADMIN, is_staff=True)
         UserFactory(kind=user_constants.KIND_ADMIN, is_staff=True, position="BizDev")
         UserFactory(kind=user_constants.KIND_ADMIN, is_staff=True, position="Bizdev")
         self.assertEqual(User.objects.count(), 1 + 3)
         self.assertEqual(User.objects.is_admin_bizdev().count(), 2)
 
-    def test_has_company(self):
+    def test_has_company(self, mock_send_email, mock_create_company, mock_create_contact, mock_create_deal):
         user_2 = UserFactory()
         CompanyFactory(users=[user_2])
         self.assertEqual(User.objects.count(), 1 + 1)
         self.assertEqual(User.objects.has_company().count(), 1)
 
-    def test_has_siae(self):
+    def test_has_siae(self, mock_send_email, mock_create_company, mock_create_contact, mock_create_deal):
         user_2 = UserFactory()
         SiaeFactory(users=[user_2])
         self.assertEqual(User.objects.count(), 1 + 1)
         self.assertEqual(User.objects.has_siae().count(), 1)
 
-    def test_has_tender(self):
+    def test_has_tender(self, mock_send_email, mock_create_company, mock_create_contact, mock_create_deal):
         user_2 = UserFactory()
         TenderFactory(author=user_2)
         self.assertEqual(User.objects.count(), 1 + 1)
         self.assertEqual(User.objects.has_tender().count(), 1)
 
-    def test_has_favorite_list(self):
+    def test_has_favorite_list(self, mock_send_email, mock_create_company, mock_create_contact, mock_create_deal):
         user_2 = UserFactory()
         FavoriteListFactory(user=user_2)
         self.assertEqual(User.objects.count(), 1 + 1)
         self.assertEqual(User.objects.has_favorite_list().count(), 1)
 
-    def test_has_api_key(self):
+    def test_has_api_key(self, mock_send_email, mock_create_company, mock_create_contact, mock_create_deal):
         UserFactory(api_key="coucou")
         self.assertEqual(User.objects.count(), 1 + 1)
         self.assertEqual(User.objects.has_api_key().count(), 1)
 
-    def test_has_email_domain(self):
+    def test_has_email_domain(self, mock_send_email, mock_create_company, mock_create_contact, mock_create_deal):
         UserFactory(email="test@ain.fr")
         UserFactory(email="test@plateau-urbain.fr")
         self.assertEqual(User.objects.count(), 1 + 2)
@@ -106,21 +110,21 @@ class UserModelQuerysetTest(TestCase):
             with self.subTest(email_domain=EMAIL_DOMAIN):
                 self.assertEqual(User.objects.has_email_domain(email_domain=EMAIL_DOMAIN).count(), 1)
 
-    def test_with_siae_stats(self):
+    def test_with_siae_stats(self, mock_send_email, mock_create_company, mock_create_contact, mock_create_deal):
         user_2 = UserFactory()
         SiaeFactory(users=[user_2])
         self.assertEqual(User.objects.count(), 1 + 1)
         self.assertEqual(User.objects.with_siae_stats().filter(id=self.user.id).first().siae_count_annotated, 0)
         self.assertEqual(User.objects.with_siae_stats().filter(id=user_2.id).first().siae_count_annotated, 1)
 
-    def test_with_tender_stats(self):
+    def test_with_tender_stats(self, mock_send_email, mock_create_company, mock_create_contact, mock_create_deal):
         user_2 = UserFactory()
         TenderFactory(author=user_2)
         self.assertEqual(User.objects.count(), 1 + 1)
         self.assertEqual(User.objects.with_tender_stats().filter(id=self.user.id).first().tender_count_annotated, 0)
         self.assertEqual(User.objects.with_tender_stats().filter(id=user_2.id).first().tender_count_annotated, 1)
 
-    def test_chain_querysets(self):
+    def test_chain_querysets(self, mock_send_email, mock_create_company, mock_create_contact, mock_create_deal):
         user_2 = UserFactory(api_key="chain")
         siae = SiaeFactory()
         siae.users.add(user_2)
