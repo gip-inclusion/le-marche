@@ -1,7 +1,6 @@
 from django import forms
 from django.db.models import Case, Count, F, IntegerField, Sum, When
 
-from lemarche.siaes.models import Siae
 from lemarche.utils.constants import EMPTY_CHOICE
 from lemarche.utils.mtcaptcha import check_captcha_token
 from lemarche.www.siaes.forms import SiaeFilterForm
@@ -45,7 +44,6 @@ class ContactForm(forms.Form):
 
 class ImpactCalculatorForm(SiaeFilterForm):
     class Meta:
-        model = Siae
         fields = ["sectors", "perimeters", "presta_type"]
 
     def __init__(self, *args, **kwargs):
@@ -76,14 +74,3 @@ class ImpactCalculatorForm(SiaeFilterForm):
 
 class SocialImpactBuyersCalculatorForm(forms.Form):
     amount = forms.IntegerField(min_value=100, max_value=10e8, label="Montant de votre achat (en €)")
-
-
-class CompanyReferenceCalculatorForm(SiaeFilterForm):
-    class Meta:
-        model = Siae
-        fields = ["company_client_reference"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # required fields
-        self.fields["company_client_reference"].required = True

@@ -6,27 +6,30 @@ from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
 from lemarche.utils.templatetags.siae_sectors_display import siae_sectors_display
 
 
-class SiaeSectorDisplayTest(TestCase):
+class SiaeActivitySectorDisplayTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         siae_with_one_sector = SiaeFactory()
         siae_with_two_sectors = SiaeFactory()
         siae_with_many_sectors = SiaeFactory()
-        cls.siae_etti = SiaeFactory(kind="ETTI")
+        siae_etti = SiaeFactory(kind="ETTI")
         sector_1 = SectorFactory(name="Entretien")
         sector_2 = SectorFactory(name="Agro")
         sector_3 = SectorFactory(name="Hygiène")
         sector_4 = SectorFactory(name="Bâtiment")
         sector_5 = SectorFactory(name="Informatique")
 
-        cls.siae_activity_with_one_sector = SiaeActivityFactory(siae=siae_with_one_sector)
-        cls.siae_activity_with_one_sector.sectors.add(sector_1)
-        cls.siae_activity_with_two_sectors = SiaeActivityFactory(siae=siae_with_two_sectors)
-        cls.siae_activity_with_two_sectors.sectors.add(sector_1, sector_2)
-        cls.siae_activity_with_many_sectors = SiaeActivityFactory(siae=siae_with_many_sectors)
-        cls.siae_activity_with_many_sectors.sectors.add(sector_1, sector_2, sector_3, sector_4, sector_5)
+        cls.siae_activity_with_one_sector = SiaeActivityFactory(siae=siae_with_one_sector, sectors=[sector_1])
+        cls.siae_activity_with_two_sectors = SiaeActivityFactory(
+            siae=siae_with_two_sectors, sectors=[sector_1, sector_2]
+        )
+        cls.siae_activity_with_many_sectors = SiaeActivityFactory(
+            siae=siae_with_many_sectors, sectors=[sector_1, sector_2, sector_3, sector_4, sector_5]
+        )
 
-        cls.siae_etti.sectors.add(sector_1, sector_2, sector_3, sector_4, sector_5)
+        cls.siae_etti_activity = SiaeActivityFactory(
+            siae=siae_etti, sectors=[sector_1, sector_2, sector_3, sector_4, sector_5]
+        )
 
     def test_should_return_list_of_siae_sector_strings(self):
         self.assertEqual(siae_sectors_display(self.siae_activity_with_one_sector), "Entretien")
@@ -52,9 +55,6 @@ class SiaeSectorDisplayTest(TestCase):
             "<li>Agro</li><li>Entretien</li>",
         )
 
-    def test_should_have_different_behavior_for_etti(self):
-        self.assertEqual(siae_sectors_display(self.siae_etti), "Multisectoriel")
-
     def test_should_filter_list_on_current_search_query(self):
         self.assertEqual(
             siae_sectors_display(self.siae_activity_with_one_sector, current_search_query="sectors=agro"), ""
@@ -71,7 +71,7 @@ class SiaeSectorDisplayTest(TestCase):
         )
         # priority is on current_search (over ETTI)
         self.assertEqual(
-            siae_sectors_display(self.siae_etti, current_search_query="sectors=entretien&sectors=agro"),
+            siae_sectors_display(self.siae_etti_activity, current_search_query="sectors=entretien&sectors=agro"),
             "Agro, Entretien",
         )
 

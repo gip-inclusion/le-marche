@@ -395,7 +395,7 @@ class TenderMatchingActivitiesTest(TestCase):
         tender = TenderFactory(sectors=self.sectors, perimeters=self.perimeters)
 
         start_time = timer()
-        with self.assertNumQueries(6):
+        with self.assertNumQueries(5):
             siae_found_list = Siae.objects.filter_with_tender_through_activities(tender)
             self.assertEqual(len(siae_found_list), 100 + 3)
 
