@@ -1,65 +1,46 @@
 <ul class="fr-btns-group">
 	{% if user.is_authenticated %}
 		{% if user.kind == user.KIND_SIAE %}
-			<li>
-				<a href="{% url 'tenders:list' %}" class="fr-btn">
-					Demandes reçues{% if tender_siae_unread_count %}&nbsp;<span class="fr-badge fr-badge--sm fr-badge--green-emeraude">{{ tender_siae_unread_count }}</span>{% endif %}
-				</a>
-			</li>
+		<li>
+			<a class="fr-btn" href="{% url 'tenders:list' %}" target="_self">
+				Demandes reçues{% if tender_siae_unread_count %}&nbsp;<span class="fr-badge fr-badge--sm fr-ml-2v fr-badge--green-emeraude">{{ tender_siae_unread_count }}</span>{% endif %}
+			</a>
+		</li>
 		{% else %}
 			<li>
-				<a href="{% url 'tenders:create' %}" id="header-demande" class="fr-btn fr-icon-add-circle-line">
+				<a class="fr-btn fr-icon-add-circle-line fr-btn--icon-left" href="{% url 'tenders:create' %}" id="header-demande" target="_self">
 					<span>Publier un besoin d'achat</span>
 				</a>
 			</li>
 		{% endif %}
 		<li>
-			<a href="{% url 'dashboard:home' %}" class="fr-btn fr-icon-dashboard-3-line">
-				Tableau de bord
-			</a>
-		</li>
-		<li>
-			<a href="{% url 'dashboard_favorites:list' %}" id="header-favorites" class="fr-btn fr-icon-star-line">
-				Favoris <span class="fr-badge fr-badge--sm fr-ml-2v">{{ user.favorite_list_count }}</span>
-			</a>
-		</li>
-		<li>
-			<a href="{% url 'dashboard:profile_edit' %}" class="fr-btn fr-icon-user-line">
-				Mon profil
-			</a>
-		</li>
-		<li>
-            <form id="logout-form" method="post" action="{% url 'auth:logout' %}">
-              {% csrf_token %}
-              <button class="fr-btn fr-icon-logout-box-r-line" type="submit">Déconnexion</button>
-            </form>
+			{% include "includes/_dropdown_menu.html" %}
 		</li>
 	{% else %}
 		{% if page and page.slug == "accueil-structure" %}
-			<li>
-				<a href="{% url 'auth:signup' %}" id="header-signup-siae" class="fr-btn fr-icon-account-line">
+			<li class="fr-nav__item">
+				<a class="fr-nav__link" href="{% url 'auth:signup' %}" id="header-demande" target="_self">
 					<span>Référencer ma structure</span>
 				</a>
 			</li>
-			<li>
-				<a href="{% url 'auth:login' %}" id="h_login" class="fr-btn fr-icon-lock-line">
+			<li class="fr-nav__item">
+				<a class="fr-nav__link" href="{% url 'auth:login' %}" id="h_login" target="_self">
 					<span>Se connecter</span>
 				</a>
 			</li>
 		{% else %}
-			<li>
-				<a href="{% url 'tenders:create' %}" id="header-demande"
-					class="fr-btn fr-icon-add-circle-line {% if is_mobile %}mh-auto fr-p-0{% endif %}">
-					Publier un besoin d'achat
+			<li class="fr-nav__item">
+				<a class="fr-nav__link fr-icon-add-circle-line fr-btn--icon-left" href="{% url 'tenders:create' %}" id="header-demande" target="_self">
+					<span>Publier un besoin d'achat</span>
 				</a>
 			</li>
-			<li>
-				<a href="{% url 'auth:signup' %}" id="h_signup" class="fr-btn fr-icon-account-line">
+			<li class="fr-nav__item">
+				<a class="fr-nav__link" href="{% url 'auth:signup' %}" id="header-demande" target="_self">
 					<span>S'inscrire</span>
 				</a>
 			</li>
-			<li>
-				<a href="{% url 'auth:login' %}" id="h_login" class="fr-btn fr-icon-lock-line">
+			<li class="fr-nav__item">
+				<a class="fr-nav__link" href="{% url 'auth:login' %}" id="h_login" target="_self">
 					<span>Se connecter</span>
 				</a>
 			</li>
