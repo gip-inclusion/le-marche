@@ -1,3 +1,4 @@
+import random
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -148,3 +149,30 @@ class DisabledEmailEditViewTest(TestCase):
         self.assertContains(response, "Vos préférences de notifications ont été mises à jour.")
         self.user.refresh_from_db()
         self.assertEqual(self.user.disabled_emails.count(), 0)
+
+
+class NotificationLinkDisplayTest(TestCase):
+    """
+    Test that the notifications link is displayed only for buyers and siaes
+    """
+
+    def setUp(self):
+        user_kinds = [User.KIND_INDIVIDUAL, User.KIND_PARTNER, User.KIND_ADMIN]
+        self.user = UserFactory(kind=random.choice(user_kinds))
+        self.user_buyer = UserFactory(kind=User.KIND_BUYER)
+        self.user_siae = UserFactory(kind=User.KIND_SIAE)
+        self.url = reverse("dashboard:home")
+
+    def test_no_notifications_link_for_non_buyer_or_siae(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertNotContains(response, "Notifications")
+
+    def test_notifications_link_for_buyer_and_siae(self):
+        self.client.force_login(self.user_buyer)
+        response = self.client.get(self.url)
+        self.assertContains(response, "Notifications")
+
+        self.client.force_login(self.user_siae)
+        response = self.client.get(self.url)
+        self.assertContains(response, "Notifications")
