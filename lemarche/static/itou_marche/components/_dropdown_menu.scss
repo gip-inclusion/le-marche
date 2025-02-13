@@ -1,0 +1,22 @@
+/* dropdown-menu__menu stays hidden before JS loading */
+[x-cloak] {
+    display: none !important;
+}
+
+.dropdown-menu {
+    position: relative;
+}
+
+@media (min-width: 62em) {
+    .dropdown-menu__menu {
+        right: 0;
+    }
+}
+
+.dropdown-menu__list {
+    width: max-content;
+}
+
+.dropdown-menu__menu--hidden {
+    display: none;
+}
