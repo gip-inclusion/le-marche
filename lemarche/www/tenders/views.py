@@ -350,16 +350,21 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
         user = self.request.user
         self.siae_id = request.GET.get("siae_id", None)
         self.user_id = request.GET.get("user_id", None)
+        if self.siae_id:
+            self.siae = get_object_or_404(Siae, id=self.siae_id)
+        if self.user_id:
+            self.siae_user = get_object_or_404(User, id=self.user_id)
+
         # update 'email_link_click_date'
         if self.siae_id:
             if self.user_id:  # TODO: check if user in siae ?
-                TenderSiae.objects.filter(
-                    tender=self.object, siae_id=int(self.siae_id), email_link_click_date=None
-                ).update(user_id=int(self.user_id), email_link_click_date=timezone.now(), updated_at=timezone.now())
+                TenderSiae.objects.filter(tender=self.object, siae=self.siae, email_link_click_date=None).update(
+                    user=self.user_id, email_link_click_date=timezone.now(), updated_at=timezone.now()
+                )
             else:
-                TenderSiae.objects.filter(
-                    tender=self.object, siae_id=int(self.siae_id), email_link_click_date=None
-                ).update(email_link_click_date=timezone.now(), updated_at=timezone.now())
+                TenderSiae.objects.filter(tender=self.object, siae=self.siae, email_link_click_date=None).update(
+                    email_link_click_date=timezone.now(), updated_at=timezone.now()
+                )
         # update 'detail_display_date'
         if user.is_authenticated:
             if user.kind == User.KIND_SIAE:
