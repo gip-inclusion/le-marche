@@ -9,6 +9,7 @@ from lemarche.utils import time
 from lemarche.utils.constants import EMPTY_CHOICE, HOW_MANY_CHOICES
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.utils.password_validation import CnilCompositionPasswordValidator
+from lemarche.utils.widgets import CustomSelectMultiple
 
 
 class SignupForm(UserCreationForm, DsfrBaseForm):
@@ -60,6 +61,7 @@ class SignupForm(UserCreationForm, DsfrBaseForm):
         choices_groupby="group",
         to_field_name="slug",
         required=False,
+        widget=CustomSelectMultiple(),
     )
 
     nb_of_inclusive_provider_last_year = forms.ChoiceField(
