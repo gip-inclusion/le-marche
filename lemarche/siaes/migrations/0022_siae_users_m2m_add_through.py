@@ -52,6 +52,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
+            # This stuff has been fixed in 0081_fix_improper_migration.py
             database_operations=[
                 migrations.RunSQL(
                     sql="ALTER TABLE siaes_siae_users RENAME TO siaes_siaeuser",

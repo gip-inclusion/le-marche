@@ -1327,6 +1327,9 @@ class SiaeUser(models.Model):
         verbose_name = "Gestionnaire"
         verbose_name_plural = "Gestionnaires"
         ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint("siae", "user", name="unique_siae_user_for_siaeuser"),
+        ]
 
 
 @receiver(post_save, sender=SiaeUser)
