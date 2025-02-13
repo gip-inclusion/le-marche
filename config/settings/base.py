@@ -327,17 +327,12 @@ PHONENUMBER_DEFAULT_REGION = "FR"
 # Emails
 # ------------------------------------------------------------------------------
 
-MAILJET_API_KEY = env.str("MAILJET_API_KEY", "")
-MAILJET_API_SECRET = env.str("MAILJET_API_SECRET", "")
+BREVO_API_KEY = env.str("BREVO_API_KEY", "set-it")
 ANYMAIL = {
-    "MAILJET_API_KEY": MAILJET_API_KEY,
-    "MAILJET_SECRET_KEY": MAILJET_API_SECRET,
-    # "WEBHOOK_SECRET": env.str("MAILJET_WEBHOOK_SECRET", ""),
+    "BREVO_API_KEY": BREVO_API_KEY,
 }
 
-MAILJET_API_URL = "https://api.mailjet.com/v3.1"
-
-EMAIL_BACKEND = "anymail.backends.mailjet.EmailBackend"
+EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
 
 DEFAULT_FROM_EMAIL = "ne-pas-repondre@lemarche.inclusion.beta.gouv.fr"
 DEFAULT_FROM_NAME = "Le Marché de l'inclusion"
@@ -351,7 +346,6 @@ GIP_CONTACT_EMAIL = env("GIP_CONTACT_EMAIL", default="gip.contact@example.com")
 MAILJET_TENDERS_PARTNER_PRESENTATION_TEMPLATE_ID = env.int("MAILJET_TENDERS_PARTNER_PRESENTATION_TEMPLATE_ID", 3868179)
 
 # -- Sendinblue (Brevo)
-BREVO_API_KEY = env.str("BREVO_API_KEY", "set-it")
 BREVO_CL_SIGNUP_BUYER_ID = env.int("BREVO_CL_SIGNUP_BUYER_ID", 10)
 BREVO_CL_SIGNUP_SIAE_ID = env.int("BREVO_CL_SIGNUP_SIAE_ID", 27)
 BREVO_CL_BUYER_SEARCH_SIAE_LIST_ID = env.int("BREVO_CL_BUYER_SEARCH_SIAE_LIST_ID", 12)
