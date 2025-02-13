@@ -170,7 +170,6 @@ class TenderCreateApiTest(TestCase):
         # Check other arguments like user, type, and source
         self.assertEqual(kwargs["user"], user)
         self.assertEqual(kwargs["type"], "signup")
-        self.assertEqual(kwargs["source"], user_constants.SOURCE_TALLY_FORM)
         # Verify that `tender` is an instance of Tender
         self.assertIsInstance(
             kwargs.get("tender"), Tender, "Expected an instance of Tender for the 'tender' argument."

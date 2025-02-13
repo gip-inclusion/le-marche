@@ -11,7 +11,7 @@ from stdnum.fr import siret
 
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
-from lemarche.utils.apis import api_emplois_inclusion, api_mailjet, api_slack
+from lemarche.utils.apis import api_emplois_inclusion, api_slack
 from lemarche.utils.commands import BaseCommand
 from lemarche.utils.constants import DEPARTMENT_TO_REGION
 from lemarche.utils.data import rename_dict_key
@@ -265,24 +265,11 @@ class Command(BaseCommand):
             ):
                 siae = Siae.objects.create(**c1_siae)
 
-                self.add_siae_to_contact_list(siae)
                 self.stdout_info(f"New Siae created / {siae.id} / {siae.name} / {siae.siret}")
             else:
                 logger.error(
                     f"Brand name is already used by another SIAE: '{c1_siae['brand']}' / name: '{c1_siae['name']}'"
                 )
-
-    def add_siae_to_contact_list(self, siae: Siae):
-        if siae.kind != "OPCS" and siae.is_active:
-            properties = {
-                "pays": "france",
-                "nomsiae": siae.name,
-            }
-            mailjet_contact_list_id = settings.MAILJET_NL_CL_IMPORT_C1_SIAE_LIST_ID
-            if siae.contact_email:
-                api_mailjet.add_to_contact_list_async(siae.contact_email, properties, mailjet_contact_list_id)
-            if siae.admin_email:
-                api_mailjet.add_to_contact_list_async(siae.admin_email, properties, mailjet_contact_list_id)
 
     def c4_update_siae(self, c1_siae, c4_siae, dry_run):
         """

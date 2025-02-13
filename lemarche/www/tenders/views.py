@@ -254,7 +254,7 @@ class TenderCreateMultiStepView(SessionWizardView):
                 extra_tags="modal_message_bizdev",
             )
         tender = self.instance
-        add_to_contact_list(user=user, type="signup", source=user_constants.SOURCE_TENDER_FORM, tender=tender)
+        add_to_contact_list(user=user, type="signup", tender=tender)
         return redirect(self.get_success_url())
 
     def get_success_url(self):

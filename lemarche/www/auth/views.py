@@ -81,7 +81,7 @@ class SignupView(SuccessMessageMixin, CreateView):
         - track signup
         """
         user = form.save()
-        # add to Mailjet list (to send welcome email + automation)
+        # add to Brevo list (to send welcome email + automation)
         add_to_contact_list(user, "signup")
         # signup notification email for the team
         send_signup_notification_email(user)
