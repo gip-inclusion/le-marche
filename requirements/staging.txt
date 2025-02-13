@@ -18,7 +18,7 @@ decorator==5.1.1 ; python_full_version >= "3.10.4" and python_full_version < "4.
 defusedxml==0.7.1 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 distro==1.9.0 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 django-admin-list-filters==1.2 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
-django-anymail==8.6 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
+django-anymail==12.0 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 django-appconf==1.0.6 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 django-better-admin-arrayfield==1.4.2 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 django-bootstrap4==23.4 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
