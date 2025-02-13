@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils import timezone
+from unittest.mock import patch, MagicMock
 
 from lemarche.labels.factories import LabelFactory
 from lemarche.networks.factories import NetworkFactory
@@ -677,3 +678,23 @@ class SiaeActivitiesTest(TestCase):
         self.siae.name = "test_siae"
         self.siae.save()
         self.assertTrue(self.siae.updated_at == self.siae.latest_activity_at)
+
+
+class SiaeSignalTest(TestCase):
+    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.CompaniesApi")
+    def test_siae_creation_with_brevo_integration(self, mock_companies_api):
+        mock_response = MagicMock()
+        mock_response.id = 12345
+        mock_companies_api_instance = mock_companies_api.return_value
+        mock_companies_api_instance.companies_post.return_value = mock_response
+
+        siae = SiaeFactory(name="Test SIAE", website="https://example.com")
+
+        self.assertTrue(mock_companies_api_instance.companies_post.called)
+        args, kwargs = mock_companies_api_instance.companies_post.call_args
+        body_obj = args[0]
+
+        self.assertEqual(body_obj.name, "Test SIAE")
+        self.assertEqual(body_obj.attributes, {"domain": "https://example.com", "app_id": siae.id, "siae": True})
+
+        self.assertEqual(siae.brevo_company_id, 12345)

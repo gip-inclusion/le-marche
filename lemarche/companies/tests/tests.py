@@ -1,4 +1,5 @@
 from django.test import TestCase
+from unittest.mock import patch
 
 from lemarche.companies.factories import CompanyFactory
 from lemarche.companies.models import Company
@@ -20,7 +21,10 @@ class CompanyModelTest(TestCase):
 
 class CompanyQuerysetTest(TestCase):
     @classmethod
-    def setUpTestData(cls):
+    @patch("lemarche.utils.apis.api_brevo.create_deal")
+    def setUpTestData(cls, mock_create_deal):
+        mock_create_deal.return_value = None
+
         cls.user_1 = UserFactory()
         cls.user_2 = UserFactory()
         TenderFactory(author=cls.user_1)
