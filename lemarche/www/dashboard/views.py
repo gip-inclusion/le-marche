@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -16,9 +16,11 @@ SLUG_RESSOURCES_CAT_SIAES = "solutions"
 SLUG_RESSOURCES_CAT_BUYERS = "acheteurs"
 
 
-class DashboardHomeView(LoginRequiredMixin, DetailView):
-    # template_name = "dashboard/home.html"
+class DashboardHomeView(UserPassesTestMixin, LoginRequiredMixin, DetailView):
     context_object_name = "user"
+
+    def test_func(self):
+        return self.request.user.is_onboarded
 
     def get_object(self):
         return self.request.user
