@@ -70,7 +70,6 @@ class LoginView(auth_views.LoginView):
 class SignupView(SuccessMessageMixin, CreateView):
     template_name = "auth/signup.html"
     form_class = SignupForm
-    # success_url = reverse_lazy("wagtail_serve", args=("",))  # # doesn't work + see get_success_url() below
     success_message = "Inscription validée !"  # see get_success_message() below
 
     def form_valid(self, form):
@@ -80,6 +79,8 @@ class SignupView(SuccessMessageMixin, CreateView):
         - login the user automatically
         - track signup
         """
+        # User will be considered as onboarded when an admin will manually set it as onboarded
+        form.instance.is_onboarded = False
         user = form.save()
         # add to Brevo list (to send welcome email + automation)
         add_to_contact_list(user, "signup")

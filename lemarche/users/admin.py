@@ -314,7 +314,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         ("API", {"fields": ("api_key", "api_key_last_updated")}),
         (
             "Permissions",
-            {"classes": ["collapse"], "fields": ("is_active", "is_staff", "is_superuser", "groups")},
+            {"classes": ["collapse"], "fields": ("is_onboarded", "is_active", "is_staff", "is_superuser", "groups")},
         ),
         (
             "Stats",
