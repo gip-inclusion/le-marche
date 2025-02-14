@@ -25,9 +25,16 @@
                 </li>
             {% endif %}
             <li>
-                <a id="header-logout" class="fr-nav__link fr-icon-logout-box-r-line fr-btn--icon-left" href="{% url 'auth:logout' %}" target="_self">
-                    Déconnexion
-                </a>
+                <form id="logout-form" method="post" action="{% url 'auth:logout' %}">
+                    {% csrf_token %}
+                    <button class="fr-btn fr-icon-logout-box-r-line fr-btn--icon-left fr-btn--tertiary 
+                                   fr-py-md-0 fr-pr-md-0
+                                   fr-mr-md-1w fr-my-md-2v
+                                   lm-btn-logout"
+                            type="submit">
+                            Déconnexion
+                    </button>   
+                </form>
             </li>
         </ul>
     </div>
