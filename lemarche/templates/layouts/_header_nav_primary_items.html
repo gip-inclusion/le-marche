@@ -13,11 +13,13 @@
 				</a>
 			</li>
 		{% endif %}
+        {% if user.is_onboarded %}
 		<li>
 			<a href="{% url 'dashboard:home' %}" class="fr-btn fr-icon-dashboard-3-line">
 				Tableau de bord
 			</a>
 		</li>
+        {% endif %}
 		<li>
 			<a href="{% url 'dashboard_favorites:list' %}" id="header-favorites" class="fr-btn fr-icon-star-line">
 				Favoris <span class="fr-badge fr-badge--sm fr-ml-2v">{{ user.favorite_list_count }}</span>
