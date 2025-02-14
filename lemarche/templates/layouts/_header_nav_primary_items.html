@@ -19,12 +19,12 @@
 				Tableau de bord
 			</a>
 		</li>
-        {% endif %}
 		<li>
 			<a href="{% url 'dashboard_favorites:list' %}" id="header-favorites" class="fr-btn fr-icon-star-line">
 				Favoris <span class="fr-badge fr-badge--sm fr-ml-2v">{{ user.favorite_list_count }}</span>
 			</a>
 		</li>
+        {% endif %}
 		<li>
 			<a href="{% url 'dashboard:profile_edit' %}" class="fr-btn fr-icon-user-line">
 				Mon profil

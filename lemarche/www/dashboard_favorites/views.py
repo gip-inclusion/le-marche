@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -16,11 +16,13 @@ from lemarche.utils.mixins import FavoriteListOwnerRequiredMixin
 from lemarche.www.dashboard_favorites.forms import FavoriteListEditForm
 
 
-class DashboardFavoriteListView(LoginRequiredMixin, ListView):
-    # form_class = FavoriteListEditForm
+class DashboardFavoriteListView(UserPassesTestMixin, LoginRequiredMixin, ListView):
     template_name = "favorites/dashboard_favorite_list.html"
     queryset = FavoriteList.objects.all()
     context_object_name = "favorite_lists"
+
+    def test_func(self):
+        return self.request.user.is_onboarded
 
     def get_queryset(self):
         qs = super().get_queryset()
