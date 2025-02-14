@@ -3,7 +3,8 @@ import re
 from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import GroupAdmin, UserAdmin
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -20,6 +21,11 @@ from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.admin.inline_fieldset import FieldsetsInlineMixin
 from lemarche.utils.fields import pretty_print_readonly_jsonfield
+
+
+@admin.register(Group, site=admin_site)
+class GroupAdmin(GroupAdmin):
+    pass
 
 
 class HasCompanyFilter(admin.SimpleListFilter):
