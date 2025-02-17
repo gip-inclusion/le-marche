@@ -49,7 +49,7 @@ def whitelist_recipient_list(recipient_list):
     """
     if settings.BITOUBI_ENV == "prod":
         return recipient_list
-    return [email for email in recipient_list if (email and email.endswith("beta.gouv.fr"))]
+    return [email for email in recipient_list if (email and email.endswith("inclusion.gouv.fr"))]
 
 
 def add_to_contact_list(user, type: str, tender=None):

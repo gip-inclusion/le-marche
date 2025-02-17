@@ -295,6 +295,23 @@ class TenderCreateViewTest(TestCase):
             attributes["TYPE_VERTICALE_ACHETEUR"], "Expected TYPE_VERTICALE_ACHETEUR to be None for non-TALLY sources"
         )
 
+    def test_send_tender_author_modification_request(self):
+        """Test the tender updae url in 'send_tender_author_modification_request' function"""
+        tender, _ = self.setup_mock_user_and_tender_creation(user=self.user_buyer)
+        tender_update_url = reverse("tenders:update", kwargs={"slug": tender.slug})
+        expected_url = f"/besoins/modifier/{tender.slug}"
+
+        self.assertEqual(tender_update_url, expected_url)
+
+    def test_reset_modification_request(self):
+        """Test 'reset_modification_request' method to check tender fields updates"""
+        tender, _ = self.setup_mock_user_and_tender_creation(user=self.user_buyer)
+        tender.reset_modification_request()
+        tender.save()
+
+        self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
+        self.assertEqual(tender.email_sent_for_modification, False)
+
 
 class TenderListViewTest(TestCase):
     @classmethod
@@ -333,6 +350,12 @@ class TenderListViewTest(TestCase):
         cls.tendersiae_4_1 = TenderSiae.objects.create(
             tender=cls.tender_4, siae=cls.siae_1, email_send_date=timezone.now()
         )
+        cls.tender_5 = TenderFactory(
+            author=cls.user_buyer_1,
+            perimeters=[perimeter],
+            kind=tender_constants.KIND_TENDER,
+            status=tender_constants.STATUS_REJECTED,
+        )
 
     def test_anonymous_user_cannot_list_tenders(self):
         url = reverse("tenders:list")
@@ -366,7 +389,7 @@ class TenderListViewTest(TestCase):
         url = reverse("tenders:list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["tenders"]), 4)
+        self.assertEqual(len(response.context["tenders"]), 5)
         self.assertContains(response, "2 prestataires ciblés")  # tender_3
         self.assertContains(response, "1 prestataire intéressé")  # tender_3
         self.assertNotContains(response, "Demandes reçues")
@@ -440,6 +463,15 @@ class TenderListViewTest(TestCase):
             f"{tender_constants.KIND_TENDER_DISPLAY} (1)</option>"
         )
         self.assertContains(response, expected_option, 1, html=True)
+
+    def test_buyer_user_should_see_rejected_tenders(self):
+        self.client.force_login(self.user_buyer_1)
+        url = reverse("tenders:list")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["tenders"]), 5)
+        self.assertContains(response, self.tender_5.title)
+        self.assertContains(response, "Rejeté")
 
 
 class TenderDetailViewTest(TestCase):
@@ -549,9 +581,14 @@ class TenderDetailViewTest(TestCase):
             detail_display_date=timezone.now(),
             detail_not_interested_click_date=timezone.now(),
         )
+        cls.tender_5 = TenderFactory(
+            kind=tender_constants.KIND_TENDER,
+            author=cls.user_buyer_1,
+            status=tender_constants.STATUS_REJECTED,
+        )
 
     def test_anyone_can_view_sent_tenders(self):
-        for tender in Tender.objects.all():
+        for tender in Tender.objects.exclude(status=tender_constants.STATUS_REJECTED):
             # anonymous user
             url = reverse("tenders:detail", kwargs={"slug": tender.slug})
             response = self.client.get(url)
@@ -1081,6 +1118,12 @@ class TenderDetailViewTest(TestCase):
 
         response = self.client.get(url)
         self.assertNotContains(response, '<p class="fr-badge fr-badge--sm fr-badge--green-emeraude">Nouveau</p>')
+
+    def test_buyer_user_should_see_rejected_tender_in_detail_view(self):
+        self.client.force_login(self.user_buyer_1)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_5.slug})
+        response = self.client.get(url)
+        self.assertContains(response, " a été rejeté.")
 
 
 class TenderDetailContactClickStatViewTest(TestCase):

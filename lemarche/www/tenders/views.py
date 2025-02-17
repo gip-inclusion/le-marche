@@ -214,6 +214,9 @@ class TenderCreateMultiStepView(SessionWizardView):
                                 )
                             case _:
                                 setattr(self.instance, attribute, tender_dict.get(attribute))
+            # Check before adding logs or resetting modification request
+            if tender_status == tender_constants.STATUS_PUBLISHED:
+                self.instance.reset_modification_request()
             self.instance.save()
         else:
             tender_dict |= {"status": tender_status, "published_at": tender_published_at}

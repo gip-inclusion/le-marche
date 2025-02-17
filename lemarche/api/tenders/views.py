@@ -81,6 +81,9 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             source=tender_source,
             import_raw_object=self.request.data,
         )
+        # Check before adding logs or resetting modification request
+        tender.reset_modification_request()
+
         add_to_contact_list(user=user, type="signup", tender=tender)
 
 

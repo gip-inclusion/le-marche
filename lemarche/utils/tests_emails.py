@@ -13,5 +13,5 @@ class EmailTest(TestCase):
     def test_whitelist_recipient_list(self):
         email_list_1 = ["bob@test.com"]
         self.assertEqual(whitelist_recipient_list(email_list_1), [])
-        email_list_2 = ["bob@test.com", "prenom.nom@beta.gouv.fr"]
-        self.assertEqual(whitelist_recipient_list(email_list_2), ["prenom.nom@beta.gouv.fr"])
+        email_list_2 = ["bob@test.com", "prenom.nom@inclusion.gouv.fr"]
+        self.assertEqual(whitelist_recipient_list(email_list_2), ["prenom.nom@inclusion.gouv.fr"])
