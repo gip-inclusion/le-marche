@@ -22,7 +22,8 @@ class DashboardFavoriteListView(UserPassesTestMixin, LoginRequiredMixin, ListVie
     context_object_name = "favorite_lists"
 
     def test_func(self):
-        return self.request.user.is_onboarded
+        if self.request.user.is_authenticated:
+            return self.request.user.is_onboarded
 
     def get_queryset(self):
         qs = super().get_queryset()
