@@ -137,8 +137,18 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(User.objects.count(), 1)
         # user should be automatically logged in
         header = self.driver.find_element(By.CSS_SELECTOR, "header#header")
-        self.assertTrue("Tableau de bord" in header.text)
         self.assertTrue("Connexion" not in header.text)
+
+        menu_button = self.driver.find_element(By.ID, "my-account")
+        menu_button.click()
+
+        dashboard_link = self.driver.find_element(By.LINK_TEXT, "Tableau de bord")
+        self.assertIsNotNone(dashboard_link)
+
+        if self.SIAE or self.BUYER:
+            notifications_link = self.driver.find_element(By.LINK_TEXT, "Notifications")
+            self.assertIsNotNone(notifications_link)
+
         # should redirect to redirect_url
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{redirect_url}")
         # message should be displayed
