@@ -20,7 +20,8 @@ class DashboardHomeView(UserPassesTestMixin, LoginRequiredMixin, DetailView):
     context_object_name = "user"
 
     def test_func(self):
-        return self.request.user.is_onboarded
+        if self.request.user.is_authenticated:
+            return self.request.user.is_onboarded
 
     def get_object(self):
         return self.request.user
