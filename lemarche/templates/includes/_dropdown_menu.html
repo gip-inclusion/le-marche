@@ -1,5 +1,5 @@
-<div x-data="DropdownMenu" x-init="checkMenuState()" class="dropdown-menu">
-    <button class="fr-btn fr-btn--tertiary fr-icon-account-line fr-btn--icon-left fr-m-md-0" aria-controls="menu-profile" @click="openMenu()">Mon espace</button>
+<div x-data="DropdownMenu" class="dropdown-menu">
+    <button id="my-account" class="fr-btn fr-btn--tertiary fr-icon-account-line fr-btn--icon-left fr-m-md-0" aria-controls="menu-profile" @click="openMenu()">Mon espace</button>
     <div id="menu-profile" x-show="isOpen" @click.away="closeMenu()" x-cloak class="fr-menu dropdown-menu__menu">
         <ul class="fr-menu__list dropdown-menu__list">
             <li>
@@ -27,8 +27,9 @@
             <li>
                 <form id="logout-form" method="post" action="{% url 'auth:logout' %}">
                     {% csrf_token %}
-                    <button class="fr-btn fr-icon-logout-box-r-line fr-btn--icon-left fr-btn--tertiary 
+                    <button class="fr-btn fr-icon-logout-box-r-line fr-btn--tertiary
                                    fr-py-md-0 fr-pr-md-0
+                                   fr-ml-4v fr-ml-md-0
                                    fr-mr-md-1w fr-my-md-2v
                                    lm-btn-logout"
                             type="submit">

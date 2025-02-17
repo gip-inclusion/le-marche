@@ -17,12 +17,9 @@
     width: max-content;
 }
 
-.dropdown-menu__menu--hidden {
-    display: none;
-}
-
 @media (min-width: 62em) {
     .lm-btn-logout {
         width: 90% !important;
+        padding-left: 0.5rem !important;
     }
 }
