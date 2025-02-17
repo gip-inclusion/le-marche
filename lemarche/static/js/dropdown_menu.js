@@ -3,7 +3,6 @@ document.addEventListener('alpine:init', function() {
         isOpen: false,
 
         init() {
-            this.checkMenuState(); 
 
            // Close menu when clicking on menu links
             this.$nextTick(() => {  // Avoid transitions errors on menu close
@@ -18,21 +17,10 @@ document.addEventListener('alpine:init', function() {
         
         openMenu() {
             this.isOpen = true;
-            document.getElementById('menu-profile')?.classList.remove('dropdown-menu__menu--hidden');
-            sessionStorage.setItem('menuOpen', 'true');
         },
 
         closeMenu() {
             this.isOpen = false;
-            document.getElementById('menu-profile')?.classList.add('dropdown-menu__menu--hidden');
-            sessionStorage.setItem('menuOpen', 'false');
         },
-
-        checkMenuState() {
-            this.isOpen = sessionStorage.getItem('menuOpen') === 'true';
-            if (!this.isOpen) {
-                document.getElementById('menu-profile')?.classList.add('dropdown-menu__menu--hidden');
-            }
-        }
     }));
 });
