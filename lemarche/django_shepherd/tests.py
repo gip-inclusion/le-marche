@@ -73,3 +73,9 @@ class StepViewed(TestCase):
         response = self.client.get(reverse("django_shepherd:guide_viewed_view", kwargs={"pk": self.guide.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.guide.guided_users.count(), 1)
+
+    def test_viewed_anonymous(self):
+        self.assertEqual(self.guide.guided_users.count(), 0)
+        response = self.client.get(reverse("django_shepherd:guide_viewed_view", kwargs={"pk": self.guide.pk}))
+        self.assertEqual(response.status_code, 302)  # redirected to login page
+        self.assertEqual(self.guide.guided_users.count(), 0)
