@@ -3,7 +3,7 @@ import Shepherd from "shepherd_map";
 const tour = new Shepherd.Tour({
     useModalOverlay: true,
     confirmCancel: true,
-    confirmCancelMessage: "Ëtes-vous sûr d'annuler ce guide des foncctionnalités ? Il ne vous sera plus proposé",
+    confirmCancelMessage: "Êtes-vous sûr d'annuler ce guide des fonctionnalités ? Il ne vous sera plus proposé",
     defaultStepOptions: {
         classes: 'shepherd-theme-arrows',
         scrollTo: {
