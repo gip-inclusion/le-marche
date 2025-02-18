@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views.generic import CreateView, TemplateView
 
+from lemarche.cms.snippets import Paragraph
 from lemarche.users.models import User
 from lemarche.utils.emails import add_to_contact_list
 from lemarche.utils.urls import get_safe_url
@@ -134,3 +135,8 @@ class PasswordResetView(auth_views.PasswordResetView):
 
 class MeetingCalendarView(TemplateView):
     template_name = "auth/meeting_calendar.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["wagtail_paragraph"] = Paragraph.objects.get(slug="rdv-signup")
+        return ctx
