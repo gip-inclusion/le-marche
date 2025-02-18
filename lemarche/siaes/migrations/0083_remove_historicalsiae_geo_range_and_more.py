@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("siaes", "0080_remove_historicalsiae_is_cocontracting_and_more"),
+        ("siaes", "0082_siaeuser_unique_siae_user_for_siaeuser"),
     ]
 
     operations = [
