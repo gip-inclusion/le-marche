@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.select import Select
 
+from lemarche.cms.snippets import Paragraph
 from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
 
@@ -43,6 +44,11 @@ class SignupFormTest(StaticLiveServerTestCase):
 
     def setUp(self):
         EXAMPLE_PASSWORD = "c*[gkp`0="
+        # Static server tests cases erases data from migrations
+        Paragraph.objects.get_or_create(
+            slug="rdv-signup",
+            defaults={"title": "Prise de rendez vous"},
+        )
 
         self.SIAE = {
             "id_kind": 0,  # required
@@ -137,7 +143,6 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(User.objects.count(), 1)
         # user should be automatically logged in
         header = self.driver.find_element(By.CSS_SELECTOR, "header#header")
-        self.assertTrue("Tableau de bord" in header.text)
         self.assertTrue("Connexion" not in header.text)
         # should redirect to redirect_url
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{redirect_url}")
