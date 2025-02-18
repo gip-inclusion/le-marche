@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, views as auth_views
 from django.contrib.messages.views import SuccessMessageMixin
@@ -139,4 +140,5 @@ class MeetingCalendarView(TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["wagtail_paragraph"] = Paragraph.objects.get(slug="rdv-signup")
+        ctx["agenda_iframe_url"] = settings.GOOGLE_AGENDA_IFRAME_URL
         return ctx
