@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.select import Select
 
+from lemarche.cms.snippets import Paragraph
 from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
 
@@ -43,6 +44,11 @@ class SignupFormTest(StaticLiveServerTestCase):
 
     def setUp(self):
         EXAMPLE_PASSWORD = "c*[gkp`0="
+        # Static server tests cases erases data from migrations
+        Paragraph.objects.get_or_create(
+            slug="rdv-signup",
+            defaults={"title": "Prise de rendez vous"},
+        )
 
         self.SIAE = {
             "id_kind": 0,  # required
