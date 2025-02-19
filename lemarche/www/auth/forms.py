@@ -22,7 +22,9 @@ class SignupForm(UserCreationForm, DsfrBaseForm):
     FORM_BUYER_KIND_DETAIL_CHOICES = EMPTY_CHOICE + user_constants.BUYER_KIND_DETAIL_CHOICES
     FORM_PARTNER_KIND_CHOICES = EMPTY_CHOICE + user_constants.PARTNER_KIND_CHOICES
 
-    kind = forms.ChoiceField(label="", widget=forms.RadioSelect, choices=KIND_CHOICES_FORM, required=True)
+    kind = forms.ChoiceField(
+        label="Indiquez votre profil", widget=forms.RadioSelect, choices=KIND_CHOICES_FORM, required=True
+    )
     first_name = forms.CharField(label="Votre prénom", required=True)
     last_name = forms.CharField(label="Votre nom", required=True)
     phone = forms.CharField(
