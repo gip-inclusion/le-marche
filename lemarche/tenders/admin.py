@@ -622,6 +622,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         """
         if not obj.id and not obj.author_id:
             obj.author = request.user
+        obj.save()
 
     def save_formset(self, request, form, formset, change):
         """
