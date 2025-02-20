@@ -1,6 +1,7 @@
 from django import forms
 from django.db.models import Case, Count, F, IntegerField, Sum, When
 
+from lemarche.siaes.models import Siae
 from lemarche.utils.constants import EMPTY_CHOICE
 from lemarche.utils.mtcaptcha import check_captcha_token
 from lemarche.www.siaes.forms import SiaeFilterForm
@@ -44,6 +45,7 @@ class ContactForm(forms.Form):
 
 class ImpactCalculatorForm(SiaeFilterForm):
     class Meta:
+        model = Siae
         fields = ["sectors", "perimeters", "presta_type"]
 
     def __init__(self, *args, **kwargs):
