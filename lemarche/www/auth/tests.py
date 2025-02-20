@@ -124,7 +124,7 @@ class SignupFormTest(StaticLiveServerTestCase):
             submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
             scroll_to_and_click_element(self.driver, submit_element)
 
-    def _assert_signup_success(self, redirect_url: str) -> list:
+    def _assert_signup_success(self, redirect_url: str, user_kind=None) -> list:
         """Assert the success signup and returns the sucess messages
 
         Args:
@@ -137,8 +137,21 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(User.objects.count(), 1)
         # user should be automatically logged in
         header = self.driver.find_element(By.CSS_SELECTOR, "header#header")
-        self.assertTrue("Tableau de bord" in header.text)
         self.assertTrue("Connexion" not in header.text)
+
+        menu_button = self.driver.find_element(By.ID, "my-account")
+        menu_button.click()
+
+        dashboard_link = self.driver.find_element(By.LINK_TEXT, "Tableau de bord")
+        self.assertIsNotNone(dashboard_link)
+
+        notifications_link = self.driver.find_elements(By.LINK_TEXT, "Notifications")
+        if user_kind in [User.KIND_SIAE, User.KIND_BUYER]:
+            self.assertTrue(len(notifications_link) > 0)
+        else:
+            # find_elements returns an empty list if no element found and doesn't raise an error
+            self.assertFalse(notifications_link)
+
         # should redirect to redirect_url
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{redirect_url}")
         # message should be displayed
@@ -150,7 +163,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._complete_form(user_profile=self.SIAE, with_submit=True)
 
         # should redirect SIAE to dashboard
-        messages = self._assert_signup_success(redirect_url=reverse("dashboard:home"))
+        messages = self._assert_signup_success(redirect_url=reverse("dashboard:home"), user_kind=User.KIND_SIAE)
 
         self.assertTrue("Vous pouvez maintenant ajouter votre structure" in messages.text)
 
@@ -185,7 +198,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         scroll_to_and_click_element(self.driver, submit_element)
 
         # should redirect BUYER to search
-        self._assert_signup_success(redirect_url=reverse("siae:search_results"))
+        self._assert_signup_success(redirect_url=reverse("siae:search_results"), user_kind=User.KIND_BUYER)
 
     def test_buyer_submits_signup_form_success_extra_data(self):
         self._complete_form(user_profile=self.BUYER, with_submit=False)
@@ -267,7 +280,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
         scroll_to_and_click_element(self.driver, submit_element)
 
-        self._assert_signup_success(redirect_url=next_url)
+        self._assert_signup_success(redirect_url=next_url, user_kind=User.KIND_SIAE)
 
     @classmethod
     def tearDownClass(cls):

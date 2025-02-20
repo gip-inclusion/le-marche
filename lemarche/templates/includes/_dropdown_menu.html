@@ -1,0 +1,42 @@
+<div x-data="DropdownMenu" class="dropdown-menu">
+    <button id="my-account" class="fr-btn fr-btn--tertiary fr-icon-account-line fr-btn--icon-left fr-m-md-0" aria-controls="menu-profile" @click="openMenu()">Mon espace</button>
+    <div id="menu-profile" x-show="isOpen" @click.away="closeMenu()" x-cloak class="fr-menu dropdown-menu__menu">
+        <ul class="fr-menu__list dropdown-menu__list">
+            <li>
+                <a id="header-dashboard" class="fr-nav__link fr-icon-table-line fr-btn--icon-left" href="{% url 'dashboard:home' %}" target="_self">
+                    Tableau de bord
+                </a>
+            </li>
+            <li>
+                <a id="header-profile" class="fr-nav__link fr-icon-user-line fr-btn--icon-left" href="{% url 'dashboard:profile_edit' %}" target="_self">
+                    Mon profil
+                </a>
+            </li>
+            <li>
+                <a id="header-favorites" class="fr-nav__link fr-icon-star-line fr-btn--icon-left" href="{% url 'dashboard_favorites:list' %}" target="_self">
+                    Favoris <span class="fr-badge fr-badge--sm fr-ml-2v">{{ user.favorite_list_count }}</span>
+                </a>
+            </li>
+            {% if user.kind == user.KIND_SIAE or user.kind == user.KIND_BUYER %}
+                <li>
+                    <a id="header-notifications" class="fr-nav__link fr-icon-mail-line fr-btn--icon-left" href="{% url 'dashboard:notifications_edit' %}" target="_self">
+                        Notifications
+                    </a>
+                </li>
+            {% endif %}
+            <li>
+                <form id="logout-form" method="post" action="{% url 'auth:logout' %}">
+                    {% csrf_token %}
+                    <button class="fr-btn fr-icon-logout-box-r-line fr-btn--tertiary
+                                   fr-py-md-0 fr-pr-md-0
+                                   fr-ml-4v fr-ml-md-0
+                                   fr-mr-md-1w fr-my-md-2v
+                                   lm-btn-logout"
+                            type="submit">
+                            <span class="fr-ml-1v">Déconnexion</span>
+                    </button>   
+                </form>
+            </li>
+        </ul>
+    </div>
+</div>
