@@ -35,7 +35,7 @@ class SiaeLabelOldSimpleSerializer(serializers.ModelSerializer):
 
 class SiaeDetailSerializer(serializers.ModelSerializer):
     kind_parent = serializers.ReadOnlyField()
-    sectors = SectorSimpleSerializer(many=True, source="sectors_annotated")
+    sectors = SectorSimpleSerializer(many=True, source="get_sectors")
     presta_types = serializers.MultipleChoiceField(choices=constants.PRESTA_CHOICES, source="presta_types_annotated")
     networks = NetworkSimpleSerializer(many=True)
     offers = SiaeOfferSimpleSerializer(many=True)
