@@ -154,7 +154,6 @@ def create_or_update_company(siae):
             "address_city": siae.city,
             "contact_email": siae.contact_email,
             "logo_url": siae.logo_url,
-            "geo_range": siae.geo_range,
             "app_url": get_object_share_url(siae),
             "app_admin_url": get_object_admin_url(siae),
             "taux_de_completion": siae.extra_data.get("brevo_company_data", {}).get("completion_rate"),

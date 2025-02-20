@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from lemarche.sectors.factories import SectorFactory, SectorGroupFactory
 from lemarche.sectors.models import Sector, SectorGroup
-from lemarche.siaes.factories import SiaeFactory
+from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
 from lemarche.tenders.factories import TenderFactory
 
 
@@ -50,20 +50,21 @@ class SectorModelTest(TestCase):
 class SectorQuerysetModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.siae_1 = SiaeFactory()
-        cls.siae_2 = SiaeFactory()
-        cls.tender_1 = TenderFactory()
-        cls.tender_2 = TenderFactory()
+        siae_1 = SiaeFactory()
+        siae_2 = SiaeFactory()
+        tender_1 = TenderFactory()
+        tender_2 = TenderFactory()
         cls.sector_group_1 = SectorGroupFactory(name="Informatique")
-        cls.sector_group_2 = SectorGroupFactory(name="Bricolage")
+        sector_group_2 = SectorGroupFactory(name="Bricolage")
         cls.sector_1_1 = SectorFactory(name="Développement de logiciel", group=cls.sector_group_1)
         cls.sector_1_2 = SectorFactory(name="Dépannage informatique", group=cls.sector_group_1)
         cls.sector_1_3 = SectorFactory(name="Autre", group=cls.sector_group_1)
-        cls.sector_2_1 = SectorFactory(name="Plomberie", group=cls.sector_group_2)
-        cls.sector_2_2 = SectorFactory(name="Autre (Bricolage)", group=cls.sector_group_2)
-        cls.sector_3 = SectorFactory(
-            name="Un secteur seul", group=None, siaes=[cls.siae_1, cls.siae_2], tenders=[cls.tender_1, cls.tender_2]
-        )
+        SectorFactory(name="Plomberie", group=sector_group_2)
+        cls.sector_2_2 = SectorFactory(name="Autre (Bricolage)", group=sector_group_2)
+
+        cls.sector_3 = SectorFactory(name="Un secteur seul", group=None, tenders=[tender_1, tender_2])
+        SiaeActivityFactory(siae=siae_1, sectors=[cls.sector_3])
+        SiaeActivityFactory(siae=siae_2, sectors=[cls.sector_3])
 
     def test_form_filter_queryset(self):
         sectors = Sector.objects.form_filter_queryset()

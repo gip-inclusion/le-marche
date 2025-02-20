@@ -5,7 +5,7 @@ from lemarche.api.utils import generate_random_string
 from lemarche.networks.factories import NetworkFactory
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.factories import SiaeFactory
+from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
 from lemarche.siaes.models import Siae
 from lemarche.users.factories import UserFactory
 
@@ -29,7 +29,6 @@ class SiaeListApiTest(TestCase):
         self.assertTrue("siret" in response.data[0])
         self.assertTrue("kind" in response.data[0])
         self.assertTrue("kind_parent" in response.data[0])
-        self.assertTrue("presta_type" in response.data[0])
         self.assertTrue("department" in response.data[0])
         self.assertTrue("created_at" in response.data[0])
 
@@ -43,7 +42,6 @@ class SiaeListApiTest(TestCase):
         self.assertTrue("siret" in response.data["results"][0])
         self.assertTrue("kind" in response.data["results"][0])
         self.assertTrue("kind_parent" in response.data["results"][0])
-        self.assertTrue("presta_type" in response.data["results"][0])
         self.assertTrue("department" in response.data["results"][0])
         self.assertTrue("created_at" in response.data["results"][0])
 
@@ -56,32 +54,22 @@ class SiaeListApiTest(TestCase):
 class SiaeListFilterApiTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        SiaeFactory(
-            kind=siae_constants.KIND_EI, presta_type=[siae_constants.PRESTA_DISP], department="01", is_active=False
-        )
-        SiaeFactory(kind=siae_constants.KIND_ETTI, presta_type=[siae_constants.PRESTA_DISP], department="01")
-        SiaeFactory(kind=siae_constants.KIND_ACI, presta_type=[siae_constants.PRESTA_BUILD], department="01")
-        SiaeFactory(kind=siae_constants.KIND_EI, presta_type=[siae_constants.PRESTA_PREST], department="38")
-        SiaeFactory(kind="OPCS", presta_type=[siae_constants.PRESTA_PREST], department="38")
+        SiaeFactory(kind=siae_constants.KIND_EI, department="01", is_active=False)
+        SiaeFactory(kind=siae_constants.KIND_ETTI, department="01")
+        SiaeFactory(kind=siae_constants.KIND_ACI, department="01")
+        SiaeFactory(kind=siae_constants.KIND_EI, department="38")
+        SiaeFactory(kind="OPCS", department="38")
         cls.sector_1 = SectorFactory()
         cls.sector_2 = SectorFactory()
-        siae_with_sector_1 = SiaeFactory(
-            kind=siae_constants.KIND_EI, presta_type=[siae_constants.PRESTA_DISP], department="01"
-        )
-        siae_with_sector_1.sectors.add(cls.sector_1)
-        siae_with_sector_2 = SiaeFactory(
-            kind=siae_constants.KIND_EI, presta_type=[siae_constants.PRESTA_DISP], department="01"
-        )
-        siae_with_sector_2.sectors.add(cls.sector_2)
+        siae_with_sector_1 = SiaeFactory(kind=siae_constants.KIND_EI, department="01")
+        SiaeActivityFactory(siae=siae_with_sector_1, sectors=[cls.sector_1], presta_type=[siae_constants.PRESTA_BUILD])
+        siae_with_sector_2 = SiaeFactory(kind=siae_constants.KIND_EI, department="01")
+        SiaeActivityFactory(siae=siae_with_sector_2, sectors=[cls.sector_2], presta_type=[siae_constants.PRESTA_PREST])
         cls.network_1 = NetworkFactory(name="Reseau 1")
         cls.network_2 = NetworkFactory(name="Reseau 2")
-        siae_with_network_1 = SiaeFactory(
-            kind=siae_constants.KIND_EI, presta_type=[siae_constants.PRESTA_DISP], department="01"
-        )
+        siae_with_network_1 = SiaeFactory(kind=siae_constants.KIND_EI, department="01")
         siae_with_network_1.networks.add(cls.network_1)
-        siae_with_network_2 = SiaeFactory(
-            kind=siae_constants.KIND_EI, presta_type=[siae_constants.PRESTA_DISP], department="01"
-        )
+        siae_with_network_2 = SiaeFactory(kind=siae_constants.KIND_EI, department="01")
         siae_with_network_2.networks.add(cls.network_2)
         cls.user_token = generate_random_string()
         UserFactory(api_key=cls.user_token)
@@ -131,14 +119,14 @@ class SiaeListFilterApiTest(TestCase):
 
     def test_should_filter_siae_list_by_presta_type(self):
         # single
-        url = reverse("api:siae-list") + f"?presta_type={siae_constants.PRESTA_BUILD}&token=" + self.user_token
+        url = reverse("api:siae-list") + f"?presta_types={siae_constants.PRESTA_BUILD}&token=" + self.user_token
         response = self.client.get(url)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
         # multiple
         url = (
             reverse("api:siae-list")
-            + f"?presta_type={siae_constants.PRESTA_BUILD}&presta_type={siae_constants.PRESTA_PREST}&token="
+            + f"?presta_types={siae_constants.PRESTA_BUILD}&presta_types={siae_constants.PRESTA_PREST}&token="
             + self.user_token
         )
         response = self.client.get(url)
@@ -209,7 +197,6 @@ class SiaeDetailApiTest(TestCase):
         self.assertTrue("slug" in response.data)
         self.assertTrue("kind" in response.data)
         self.assertTrue("kind_parent" in response.data)
-        self.assertTrue("presta_type" in response.data)
         self.assertTrue("sectors" not in response.data)
         self.assertTrue("networks" not in response.data)
         self.assertTrue("offers" not in response.data)
@@ -225,7 +212,6 @@ class SiaeDetailApiTest(TestCase):
         self.assertTrue("slug" in response.data)
         self.assertTrue("kind" in response.data)
         self.assertTrue("kind_parent" in response.data)
-        self.assertTrue("presta_type" in response.data)
         self.assertTrue("sectors" in response.data)
         self.assertTrue("networks" in response.data)
         self.assertTrue("offers" in response.data)

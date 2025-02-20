@@ -1,3 +1,4 @@
+from django.db.models import F
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import OpenApiParameter, extend_schema
@@ -19,6 +20,14 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     queryset = Siae.objects.api_query_set()
     serializer_class = SiaeListSerializer
     filterset_class = SiaeFilter
+
+    def get_queryset(self):
+        """Annotate sectors to be directly available in the serializer"""
+        return (
+            super()
+            .get_queryset()
+            .annotate(sectors_annotated=F("activities__sectors"), presta_types_annotated=F("activities__presta_type"))
+        )
 
     @extend_schema(
         summary="Lister toutes les structures",
