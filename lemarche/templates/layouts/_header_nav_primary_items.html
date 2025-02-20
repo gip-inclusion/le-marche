@@ -13,6 +13,7 @@
 				</a>
 			</li>
 		{% endif %}
+        {% if user.is_onboarded %}
 		<li>
 			<a href="{% url 'dashboard:home' %}" class="fr-btn fr-icon-dashboard-3-line">
 				Tableau de bord
@@ -23,6 +24,7 @@
 				Favoris <span class="fr-badge fr-badge--sm fr-ml-2v">{{ user.favorite_list_count }}</span>
 			</a>
 		</li>
+        {% endif %}
 		<li>
 			<a href="{% url 'dashboard:profile_edit' %}" class="fr-btn fr-icon-user-line">
 				Mon profil

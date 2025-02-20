@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.select import Select
 
+from lemarche.cms.snippets import Paragraph
 from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
 
@@ -43,6 +44,11 @@ class SignupFormTest(StaticLiveServerTestCase):
 
     def setUp(self):
         EXAMPLE_PASSWORD = "c*[gkp`0="
+        # Static server tests cases erases data from migrations
+        Paragraph.objects.get_or_create(
+            slug="rdv-signup",
+            defaults={"title": "Prise de rendez vous"},
+        )
 
         self.SIAE = {
             "id_kind": 0,  # required
@@ -137,7 +143,6 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(User.objects.count(), 1)
         # user should be automatically logged in
         header = self.driver.find_element(By.CSS_SELECTOR, "header#header")
-        self.assertTrue("Tableau de bord" in header.text)
         self.assertTrue("Connexion" not in header.text)
         # should redirect to redirect_url
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{redirect_url}")
@@ -150,9 +155,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._complete_form(user_profile=self.SIAE, with_submit=True)
 
         # should redirect SIAE to dashboard
-        messages = self._assert_signup_success(redirect_url=reverse("dashboard:home"))
-
-        self.assertTrue("Vous pouvez maintenant ajouter votre structure" in messages.text)
+        self._assert_signup_success(redirect_url=reverse("auth:booking-meeting-view"))
 
     def test_siae_submits_signup_form_error(self):
         user_profile = self.SIAE
@@ -185,7 +188,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         scroll_to_and_click_element(self.driver, submit_element)
 
         # should redirect BUYER to search
-        self._assert_signup_success(redirect_url=reverse("siae:search_results"))
+        self._assert_signup_success(redirect_url=reverse("auth:booking-meeting-view"))
 
     def test_buyer_submits_signup_form_success_extra_data(self):
         self._complete_form(user_profile=self.BUYER, with_submit=False)
@@ -230,7 +233,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
         scroll_to_and_click_element(self.driver, submit_element)
 
-        self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)))
+        self._assert_signup_success(redirect_url=reverse("auth:booking-meeting-view"))
 
     def test_partner_submits_signup_form_error(self):
         user_profile = self.PARTNER

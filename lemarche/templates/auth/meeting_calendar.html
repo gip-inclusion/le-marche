@@ -1,0 +1,25 @@
+{% extends BASE_TEMPLATE %}
+{% load dsfr_tags process_dict static humanize wagtailcore_tags advert_cms %}
+{% block page_title %}
+    Prise de rendez-vous
+{% endblock page_title %}
+
+{% block breadcrumb %}
+    {% process_dict root_dir=HOME_PAGE_PATH current="Prise de rendez-vous" as breadcrumb_data %}
+    {% dsfr_breadcrumb breadcrumb_data %}
+{% endblock breadcrumb %}
+{% block content %}
+        <div class="fr-container">
+            <div class="fr-grid-row">
+                <div class="fr-col-4">
+                    {{ wagtail_paragraph.content |safe }}
+                </div>
+                <div class="fr-col-8">
+                    <h2>Prenez rendez-vous pour activer votre compte</h2>
+                    <!-- Google Calendar Appointment Scheduling begin -->
+                    <iframe src="{{ agenda_iframe_url }}" style="border: 0" width="100%" height="900" frameborder="0"></iframe>
+                    <!-- end Google Calendar Appointment Scheduling -->
+                </div>
+            </div>
+        </div>
+{% endblock content %}

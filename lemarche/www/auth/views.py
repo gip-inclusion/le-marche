@@ -1,11 +1,13 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, views as auth_views
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
-from django.views.generic import CreateView
+from django.views.generic import CreateView, TemplateView
 
+from lemarche.cms.snippets import Paragraph
 from lemarche.users.models import User
 from lemarche.utils.emails import add_to_contact_list
 from lemarche.utils.urls import get_safe_url
@@ -70,7 +72,6 @@ class LoginView(auth_views.LoginView):
 class SignupView(SuccessMessageMixin, CreateView):
     template_name = "auth/signup.html"
     form_class = SignupForm
-    # success_url = reverse_lazy("wagtail_serve", args=("",))  # # doesn't work + see get_success_url() below
     success_message = "Inscription validée !"  # see get_success_message() below
 
     def form_valid(self, form):
@@ -80,6 +81,8 @@ class SignupView(SuccessMessageMixin, CreateView):
         - login the user automatically
         - track signup
         """
+        # User will be considered as onboarded when an admin will manually set it as onboarded
+        form.instance.is_onboarded = False
         user = form.save()
         # add to Brevo list (to send welcome email + automation)
         add_to_contact_list(user, "signup")
@@ -98,17 +101,13 @@ class SignupView(SuccessMessageMixin, CreateView):
         - next_url if there is a next param
         - or dashboard if SIAE
         """
-        success_url = reverse_lazy("wagtail_serve", args=("",))
+        success_url = reverse_lazy("auth:booking-meeting-view")
         next_url = self.request.GET.get("next", None)
         # sanitize next_url
         if next_url:
             safe_url = get_safe_url(self.request, param_name="next")
             if safe_url:
                 return safe_url
-        elif self.request.POST.get("kind") == User.KIND_SIAE:
-            return reverse_lazy("dashboard:home")
-        elif self.request.POST.get("kind") == User.KIND_BUYER:
-            return reverse_lazy("siae:search_results")
         return success_url
 
     def get_success_message(self, cleaned_data):
@@ -133,3 +132,13 @@ class PasswordResetView(auth_views.PasswordResetView):
         success_url = super().get_success_url()
         user_email = self.request.POST.get("email")
         return f"{success_url}?email={user_email}"
+
+
+class MeetingCalendarView(TemplateView):
+    template_name = "auth/meeting_calendar.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["wagtail_paragraph"] = Paragraph.objects.get(slug="rdv-signup")
+        ctx["agenda_iframe_url"] = settings.GOOGLE_AGENDA_IFRAME_URL
+        return ctx
