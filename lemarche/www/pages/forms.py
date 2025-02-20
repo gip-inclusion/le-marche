@@ -76,3 +76,14 @@ class ImpactCalculatorForm(SiaeFilterForm):
 
 class SocialImpactBuyersCalculatorForm(forms.Form):
     amount = forms.IntegerField(min_value=100, max_value=10e8, label="Montant de votre achat (en €)")
+
+
+class CompanyReferenceCalculatorForm(SiaeFilterForm):
+    class Meta:
+        model = Siae
+        fields = ["company_client_reference"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # required fields
+        self.fields["company_client_reference"].required = True
