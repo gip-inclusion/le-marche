@@ -18,8 +18,9 @@
                             {{ questions_formset.management_form }}
                             {% for form in questions_formset %}
                                 <ul>
-                                    <li>{{ form.instance.question }}</li>
-                                    <li>{{ form }}</li>
+                                    <li>Siae: {{ form.instance.siae }}</li>
+                                    <li>Question: {{ form.instance.question }}</li>
+                                    <li>Réponse: {{ form }}</li>
 
                                 </ul>
                             {% endfor %}

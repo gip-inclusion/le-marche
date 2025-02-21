@@ -463,11 +463,17 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
         self.object = self.get_object()
+        self.siae_id = request.GET.get("siae_id", None)
         self.questions = self.object.questions.all()
 
         # Create empty answers to be updated in the formset
-        for question in self.questions:
-            QuestionAnswer.objects.get_or_create(question=question, siae=self.request.user.siaes.first())  # fixme
+        if self.request.user.is_authenticated:
+            for question in self.questions:
+                for siae in self.request.user.siaes.all():
+                    QuestionAnswer.objects.get_or_create(question=question, siae=siae)
+        elif self.siae_id:
+            for question in self.questions:
+                QuestionAnswer.objects.get_or_create(question=question, siae_id=self.siae_id)
 
         self.answers = QuestionAnswer.objects.filter(
             question__in=self.questions, siae__in=self.request.user.siaes.all()
@@ -475,12 +481,10 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
         self.question_formset = modelformset_factory(QuestionAnswer, fields=["answer"], extra=0)
 
     def post(self, request, *args, **kwargs):
-
         user = self.request.user
         detail_contact_click_confirm = self.request.POST.get("detail_contact_click_confirm", False) == "true"
-        siae_id = request.GET.get("siae_id", None)
         question_formset = self.question_formset(data=self.request.POST)
-        if (user.is_authenticated and user.kind == User.KIND_SIAE) or siae_id:
+        if (user.is_authenticated and user.kind == User.KIND_SIAE) or self.siae_id:
             if detail_contact_click_confirm:
                 # update detail_contact_click_date
                 if user.is_authenticated:
@@ -489,7 +493,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
                     ).update(user=user, detail_contact_click_date=timezone.now(), updated_at=timezone.now())
                 else:
                     TenderSiae.objects.filter(
-                        tender=self.object, siae_id=int(siae_id), detail_contact_click_date__isnull=True
+                        tender=self.object, siae_id=int(self.siae_id), detail_contact_click_date__isnull=True
                     ).update(detail_contact_click_date=timezone.now(), updated_at=timezone.now())
                 # notify the tender author
                 send_siae_interested_email_to_author(self.object)
@@ -499,7 +503,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
                     messages.add_message(
                         self.request, messages.ERROR, "Une erreur à eu lieu lors de la soumission du formulaire"
                     )
-                    return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm, siae_id))
+                    return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm, self.siae_id))
                 messages.add_message(
                     self.request, messages.SUCCESS, self.get_success_message(detail_contact_click_confirm)
                 )
@@ -508,7 +512,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
                     self.request, messages.WARNING, self.get_success_message(detail_contact_click_confirm)
                 )
             # redirect
-            return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm, siae_id))
+            return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm, self.siae_id))
         else:
             return HttpResponseForbidden()
 
