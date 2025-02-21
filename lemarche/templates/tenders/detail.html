@@ -51,7 +51,7 @@
 {% if user.is_authenticated or siae_id %}
     {% if not siae_has_detail_contact_click_date %}
         <div hx-trigger="load"
-             hx-get="{% url 'tenders:detail-contact-click-stat' tender.slug %}" 
+             hx-get="{% url 'tenders:detail-contact-click-stat' tender.slug %}?siae_id={{ siae_id }}" 
              hx-swap="innerHTML">
         </div>
     {% endif %}
