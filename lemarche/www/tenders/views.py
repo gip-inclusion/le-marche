@@ -459,9 +459,6 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
     model = Tender
     fields = []
 
-    def get_object(self):
-        return get_object_or_404(Tender, slug=self.kwargs.get("slug"))
-
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         user = self.request.user
