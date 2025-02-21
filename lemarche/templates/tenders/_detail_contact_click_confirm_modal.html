@@ -14,6 +14,15 @@
                     </div>
                     <form method="post" action="{% url 'tenders:detail-contact-click-stat' tender.slug %}?siae_id={{ siae_id }}">
                         {% csrf_token %}
+                        <p>Questions: </p>
+                            {{ questions_formset.management_form }}
+                            {% for form in questions_formset %}
+                                <ul>
+                                    <li>{{ form.instance.question }}</li>
+                                    <li>{{ form.answer }}</li>
+                                
+                                </ul>
+                            {% endfor %}
                         <div class="fr-modal__footer">
                             <ul class="fr-btns-group fr-btns-group--inline-sm fr-btns-group--equisized fr-btns-group--right">
                                 <li>
