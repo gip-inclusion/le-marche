@@ -495,6 +495,11 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
                 send_siae_interested_email_to_author(self.object)
                 if question_formset.is_valid():
                     question_formset.save()
+                else:
+                    messages.add_message(
+                        self.request, messages.ERROR, "Une erreur à eu lieu lors de la soumission du formulaire"
+                    )
+                    return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm, siae_id))
                 messages.add_message(
                     self.request, messages.SUCCESS, self.get_success_message(detail_contact_click_confirm)
                 )
