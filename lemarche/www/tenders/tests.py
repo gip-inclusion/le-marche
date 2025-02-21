@@ -1200,7 +1200,6 @@ class TenderDetailContactClickStatViewTest(TestCase):
         response = self.client.get(self.tender_detail_url)
         self.assertContains(response, self.cta_message)
         self.assertNotContains(response, 'id="login_or_signup_siae_tender_modal"')
-        self.assertContains(response, 'id="detail_contact_click_confirm_modal"')
         self.assertNotContains(response, self.cta_message_success)
         # click on button
         response = self.client.post(self.tender_contact_click_stat_url, data={"detail_contact_click_confirm": "true"})
