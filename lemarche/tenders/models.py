@@ -1312,3 +1312,13 @@ class TenderStepsData(models.Model):
 
     def __str__(self):
         return f"{self.uuid} - {self.created_at}"
+
+
+class QuestionAnswer(models.Model):
+    question = models.ForeignKey(TenderQuestion, on_delete=models.CASCADE)
+    siae = models.ForeignKey(Siae, on_delete=models.CASCADE)
+    answer = models.TextField()
+
+    class Meta:
+        verbose_name = "Réponse à la question"
+        verbose_name_plural = "Réponses au questions"
