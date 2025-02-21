@@ -457,6 +457,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
 
     template_name = "tenders/_detail_contact_click_confirm_modal.html"
     model = Tender
+    fields = []
 
     def get_object(self):
         return get_object_or_404(Tender, slug=self.kwargs.get("slug"))
