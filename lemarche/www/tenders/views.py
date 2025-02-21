@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
+from django.forms import modelformset_factory
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -13,7 +14,7 @@ from formtools.wizard.views import SessionWizardView
 
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.models import Tender, TenderSiae, TenderStepsData
+from lemarche.tenders.models import QuestionAnswer, Tender, TenderSiae, TenderStepsData
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.utils import constants, settings_context_processors
@@ -459,11 +460,26 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
     model = Tender
     fields = []
 
-    def post(self, request, *args, **kwargs):
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
         self.object = self.get_object()
+        self.questions = self.object.questions.all()
+
+        # Create empty answers to be updated in the formset
+        for question in self.questions:
+            QuestionAnswer.objects.get_or_create(question=question, siae=self.request.user.siaes.first())  # fixme
+
+        self.answers = QuestionAnswer.objects.filter(
+            question__in=self.questions, siae__in=self.request.user.siaes.all()
+        )
+        self.question_formset = modelformset_factory(QuestionAnswer, fields=["answer"], extra=0)
+
+    def post(self, request, *args, **kwargs):
+
         user = self.request.user
         detail_contact_click_confirm = self.request.POST.get("detail_contact_click_confirm", False) == "true"
         siae_id = request.GET.get("siae_id", None)
+        question_formset = self.question_formset(data=self.request.POST)
         if (user.is_authenticated and user.kind == User.KIND_SIAE) or siae_id:
             if detail_contact_click_confirm:
                 # update detail_contact_click_date
@@ -477,6 +493,8 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
                     ).update(detail_contact_click_date=timezone.now(), updated_at=timezone.now())
                 # notify the tender author
                 send_siae_interested_email_to_author(self.object)
+                if question_formset.is_valid():
+                    question_formset.save()
                 messages.add_message(
                     self.request, messages.SUCCESS, self.get_success_message(detail_contact_click_confirm)
                 )
@@ -509,6 +527,15 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
             f"Pour {self.object.cta_card_button_text.lower()},"
             f" vous devez accepter d'être mis en relation avec l'acheteur."
         )
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["questions"] = self.questions
+        ctx["questions_formset"] = self.question_formset(
+            queryset=self.answers,
+        )
+        ctx["siae_id"] = self.request.GET.get("siae_id", None)
+        return ctx
 
 
 class TenderDetailNotInterestedClickView(SiaeUserRequiredOrSiaeIdParamMixin, DetailView):
