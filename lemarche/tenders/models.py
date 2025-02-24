@@ -1322,3 +1322,9 @@ class QuestionAnswer(models.Model):
     class Meta:
         verbose_name = "Réponse à la question"
         verbose_name_plural = "Réponses au questions"
+        constraints = [
+            models.UniqueConstraint("question", "siae", name="unique_answer_per_siae_and_question"),
+        ]
+
+    def __str__(self):
+        return f"{self.pk}-{self.answer}"
