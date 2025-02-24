@@ -1845,10 +1845,14 @@ class TenderQuestionAnswerTestCase(TestCase):
         user = UserFactory()
         self.siae_1.users.add(user)
         self.siae_2.users.add(user)
+        non_matched_siae = SiaeFactory()
+        non_matched_siae.users.add(user)
         self.client.force_login(user)
 
         response_get = self.client.get(url)
         self.assertEqual(response_get.status_code, 200)
+        # Only the 2 matched siae are grouped in the form, not the third that didn't match
+        self.assertEqual(len(response_get.context["grouped_forms"]), 2)
 
         questions_for_siae_1 = QuestionAnswer.objects.filter(siae=self.siae_1)
         questions_for_siae_2 = QuestionAnswer.objects.filter(siae=self.siae_2)
