@@ -471,13 +471,14 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
             for question in self.questions:
                 for siae in self.request.user.siaes.all():
                     QuestionAnswer.objects.get_or_create(question=question, siae=siae)
+            self.answers = QuestionAnswer.objects.filter(
+                question__in=self.questions, siae__in=self.request.user.siaes.all()
+            )
         elif self.siae_id:
             for question in self.questions:
                 QuestionAnswer.objects.get_or_create(question=question, siae_id=self.siae_id)
+            self.answers = QuestionAnswer.objects.filter(question__in=self.questions, siae=self.siae_id)
 
-        self.answers = QuestionAnswer.objects.filter(
-            question__in=self.questions, siae__in=self.request.user.siaes.all()
-        )
         self.question_formset = modelformset_factory(QuestionAnswer, fields=["answer"], extra=0)
 
     def post(self, request, *args, **kwargs):
