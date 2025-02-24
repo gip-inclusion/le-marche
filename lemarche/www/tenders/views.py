@@ -543,9 +543,17 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["questions"] = self.questions
-        ctx["questions_formset"] = self.question_formset(
+        ctx["questions_formset"] = question_formset = self.question_formset(
             queryset=self.answers,
         )
+
+        grouped_forms = {}
+        for form in question_formset:
+            siae_name = form.instance.siae.name
+            grouped_forms.setdefault(siae_name, []).append(form)
+
+        ctx["grouped_forms"] = grouped_forms
+
         ctx["siae_id"] = self.request.GET.get("siae_id", None)
         return ctx
 
