@@ -26,6 +26,9 @@ class Migration(migrations.Migration):
             options={
                 "verbose_name": "Réponse à la question",
                 "verbose_name_plural": "Réponses au questions",
+                "constraints": [
+                    models.UniqueConstraint("question", "siae", name="unique_answer_per_siae_and_question"),
+                ],
             },
         ),
     ]
