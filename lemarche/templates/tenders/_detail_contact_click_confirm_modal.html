@@ -1,3 +1,4 @@
+{% load dsfr_tags %}
 <dialog id="detail_contact_click_confirm_modal" role="dialog" class="fr-modal" aria-labelledby="detail_contact_click_confirm_modal_title">
     <div class="fr-container fr-container--fluid fr-container-md">
         <div class="fr-grid-row fr-grid-row--center">
@@ -6,31 +7,36 @@
                     <div class="fr-modal__header">
                         <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="detail_contact_click_confirm_modal" target="_self">Fermer</button>
                     </div>
-                    <div class="fr-modal__content">
-                        <h3 id="detail_contact_click_confirm_modal_title" class="fr-modal__title">Signaler votre intérêt à l'acheteur ?</h3>
-                        <p>
-                            Pour {{ tender.cta_card_button_text | lower }}, vous devez signaler votre intérêt à l'acheteur.
-                        </p>
-                    </div>
                     <form method="post" action="{% url 'tenders:detail-contact-click-stat' tender.slug %}?siae_id={{ siae_id }}">
-                        {% csrf_token %}
-                        <p>Questions: </p>
+                        <div class="fr-modal__content">
+                            <h3 id="detail_contact_click_confirm_modal_title" class="fr-modal__title">Signaler votre intérêt à l'acheteur ?</h3>
+                            <p>
+                                Pour {{ tender.cta_card_button_text | lower }}, vous devez signaler votre intérêt à l'acheteur.
+                            </p>
+                            
+                            {% csrf_token %}
                             {{ questions_formset.management_form }}
+                        
                             {% for form in questions_formset %}
-                                <ul>
-                                    <li>Siae: {{ form.instance.siae }}</li>
-                                    <li>Question: {{ form.instance.question }}</li>
-                                    <li>Réponse: {{ form }}</li>
-
-                                </ul>
+                                <div class="fr-mt-5w">
+                                    <h2 class="fr-h4">{{ form.instance.question }}</h2>
+                                    <div class="">
+                                        <div class="fr-form-group">
+                                            {% dsfr_form_field form.answer %}
+                                        </div>
+                                    </div>
+                                </div>
                             {% endfor %}
+                        
+                        </div>
+                    
                         <div class="fr-modal__footer">
                             <ul class="fr-btns-group fr-btns-group--inline-sm fr-btns-group--equisized fr-btns-group--right">
                                 <li>
-                                    <button type="submit" class="fr-btn fr-btn--secondary" name="detail_contact_click_confirm" value="false">Non</button>
+                                    <button type="submit" class="fr-btn fr-btn--secondary" name="detail_contact_click_confirm" value="false">Annuler</button>
                                 </li>
                                 <li>
-                                    <button type="submit" class="fr-btn" name="detail_contact_click_confirm" value="true">Oui</button>
+                                    <button type="submit" class="fr-btn" name="detail_contact_click_confirm" value="true">Envoyer mes réponses</button>
                                 </li>
                             </ul>
                         </div>
