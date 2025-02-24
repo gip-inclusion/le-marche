@@ -16,12 +16,21 @@ class Migration(migrations.Migration):
             name="QuestionAnswer",
             fields=[
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
-                ("answer", models.TextField()),
+                ("answer", models.TextField(verbose_name="réponse")),
                 (
                     "question",
-                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="tenders.tenderquestion"),
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="tenders.tenderquestion",
+                        verbose_name="question",
+                    ),
                 ),
-                ("siae", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="siaes.siae")),
+                (
+                    "siae",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="siaes.siae", verbose_name="siae"
+                    ),
+                ),
             ],
             options={
                 "verbose_name": "Réponse à la question",
