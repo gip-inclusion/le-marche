@@ -1315,9 +1315,9 @@ class TenderStepsData(models.Model):
 
 
 class QuestionAnswer(models.Model):
-    question = models.ForeignKey(TenderQuestion, on_delete=models.CASCADE)
-    siae = models.ForeignKey(Siae, on_delete=models.CASCADE)
-    answer = models.TextField()
+    question = models.ForeignKey(TenderQuestion, on_delete=models.CASCADE, verbose_name="question")
+    siae = models.ForeignKey(Siae, on_delete=models.CASCADE, verbose_name="siae")
+    answer = models.TextField(verbose_name="réponse")
 
     class Meta:
         verbose_name = "Réponse à la question"
