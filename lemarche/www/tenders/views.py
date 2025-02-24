@@ -465,8 +465,10 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
         self.object = self.get_object()
         self.siae_id = request.GET.get("siae_id", None)
         self.questions = self.object.questions.all()
+        self.question_formset = modelformset_factory(QuestionAnswer, fields=["answer"], extra=0)
 
-        # Create empty answers to be updated in the formset
+    def get(self, request, *args, **kwargs):
+        """Create empty answers to be updated in the formset"""
         if self.request.user.is_authenticated:
             for question in self.questions:
                 for siae in self.request.user.siaes.all():
@@ -479,7 +481,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
                 QuestionAnswer.objects.get_or_create(question=question, siae_id=self.siae_id)
             self.answers = QuestionAnswer.objects.filter(question__in=self.questions, siae=self.siae_id)
 
-        self.question_formset = modelformset_factory(QuestionAnswer, fields=["answer"], extra=0)
+        return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
