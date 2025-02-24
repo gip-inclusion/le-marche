@@ -471,7 +471,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
         """Create empty answers to be updated in the formset"""
         if self.request.user.is_authenticated:
             for question in self.questions:
-                for siae in self.request.user.siaes.all():
+                for siae in Siae.objects.filter(users=self.request.user, tendersiae__tender=self.object):
                     QuestionAnswer.objects.get_or_create(question=question, siae=siae)
             self.answers = QuestionAnswer.objects.filter(
                 question__in=self.questions, siae__in=self.request.user.siaes.all()
