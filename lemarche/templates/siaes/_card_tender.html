@@ -59,12 +59,23 @@
             
                 <div x-show="showQuestions" class="fr-mt-4w">
                     {% for answer in siae.questionanswer_set.all %}
-                        <h2>{{ answer.question }}</h2>
+                        <h4 class="fr-mb-1w">{{ answer.question }}</h4>
                         <p>{{ answer.answer }}</p>
                     {% endfor %}
                 </div>
+            
+                <div class="fr-grid-row fr-grid-row--center fr-mt-4w">
+                    <div class="fr-col-12 fr-col-md-4">
+                        <button 
+                                @click="showQuestions = !showQuestions"
+                                class="fr-btn fr-btn--secondary fr-btn--icon-left">
+                            Afficher/Masquer le contenu
+                            <span x-show="!showQuestions" class="fr-icon-arrow-down-s-line"></span>
+                            <span x-show="showQuestions" class="fr-icon-arrow-up-s-line"></span>
+                        </button>
+                    </div>
+                </div>
                 
-                <button @click="showQuestions = !showQuestions" class="fr-btn">Afficher/Masquer le contenu</button>
             
             </div>
         </div>
