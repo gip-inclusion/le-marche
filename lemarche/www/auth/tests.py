@@ -168,7 +168,9 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._complete_form(user_profile=self.SIAE, with_submit=True)
 
         # should redirect SIAE to dashboard
-        self._assert_signup_success(redirect_url=reverse("auth:booking-meeting-view"), user_kind=User.KIND_SIAE)
+        messages = self._assert_signup_success(redirect_url=reverse("dashboard:home"), user_kind=User.KIND_SIAE)
+
+        self.assertTrue("Vous pouvez maintenant ajouter votre structure" in messages.text)
 
     def test_siae_submits_signup_form_error(self):
         user_profile = self.SIAE
@@ -246,7 +248,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
         scroll_to_and_click_element(self.driver, submit_element)
 
-        self._assert_signup_success(redirect_url=reverse("auth:booking-meeting-view"))
+        self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)))
 
     def test_partner_submits_signup_form_error(self):
         user_profile = self.PARTNER
