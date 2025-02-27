@@ -82,7 +82,8 @@ class SignupView(SuccessMessageMixin, CreateView):
         - track signup
         """
         # User will be considered as onboarded when an admin will manually set it as onboarded
-        form.instance.is_onboarded = False
+        # If no google agenda url, the functionality is disabled
+        form.instance.is_onboarded = False if settings.GOOGLE_AGENDA_IFRAME_URL else True
         user = form.save()
         # add to Brevo list (to send welcome email + automation)
         add_to_contact_list(user, "signup")
@@ -101,7 +102,10 @@ class SignupView(SuccessMessageMixin, CreateView):
         - next_url if there is a next param
         - or dashboard if SIAE
         """
-        success_url = reverse_lazy("auth:booking-meeting-view")
+        if settings.GOOGLE_AGENDA_IFRAME_URL:
+            success_url = reverse_lazy("auth:booking-meeting-view")
+        else:
+            success_url = reverse_lazy("wagtail_serve", args=("",))
         next_url = self.request.GET.get("next", None)
         # sanitize next_url
         if next_url:
