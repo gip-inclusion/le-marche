@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, views as auth_views
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
@@ -142,7 +143,7 @@ class PasswordResetView(auth_views.PasswordResetView):
         return f"{success_url}?email={user_email}"
 
 
-class MeetingCalendarView(TemplateView):
+class MeetingCalendarView(LoginRequiredMixin, TemplateView):
     template_name = "auth/meeting_calendar.html"
 
     def get_context_data(self, **kwargs):
