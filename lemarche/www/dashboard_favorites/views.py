@@ -24,9 +24,14 @@ class DashboardFavoriteListView(UserPassesTestMixin, LoginRequiredMixin, ListVie
     def test_func(self):
         if self.request.user.is_authenticated:
             return self.request.user.is_onboarded
+        else:
+            return True
 
     def handle_no_permission(self):
-        return redirect(reverse("auth:booking-meeting-view"))
+        if not self.test_func():
+            return redirect(reverse("auth:booking-meeting-view"))
+        else:
+            return super().handle_no_permission()
 
     def get_queryset(self):
         qs = super().get_queryset()
