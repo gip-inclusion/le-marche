@@ -84,7 +84,8 @@ class SignupView(SuccessMessageMixin, CreateView):
         """
         # User will be considered as onboarded when an admin will manually set it as onboarded
         # If no google agenda url, the functionality is disabled
-        form.instance.is_onboarded = False if settings.GOOGLE_AGENDA_IFRAME_URL else True
+        if form.instance.king == User.KIND_BUYER and settings.GOOGLE_AGENDA_IFRAME_URL:
+            form.instance.is_onboarded = False
         user = form.save()
         # add to Brevo list (to send welcome email + automation)
         add_to_contact_list(user, "signup")
@@ -103,7 +104,7 @@ class SignupView(SuccessMessageMixin, CreateView):
         - next_url if there is a next param
         - or dashboard if SIAE
         """
-        if settings.GOOGLE_AGENDA_IFRAME_URL:
+        if settings.GOOGLE_AGENDA_IFRAME_URL and self.request.user.kind == User.KIND_BUYER:
             success_url = reverse_lazy("auth:booking-meeting-view")
         else:
             success_url = reverse_lazy("wagtail_serve", args=("",))
@@ -119,13 +120,13 @@ class SignupView(SuccessMessageMixin, CreateView):
         """Show detailed welcome message to SIAE."""
         success_message = super().get_success_message(cleaned_data)
         if cleaned_data["kind"] == User.KIND_SIAE:
-            if settings.GOOGLE_AGENDA_IFRAME_URL:
-                success_message += mark_safe(
-                    "<br />Vous pouvez maintenant ajouter votre structure en cliquant sur "
-                    f"<a href=\"{reverse_lazy('dashboard_siaes:siae_search_by_siret')}\">Ajouter une structure</a>."
-                )
-            else:
-                success_message += "Après votre rendez-vous, un administrateur finalisera la création de votre compte"
+            success_message += mark_safe(
+                "<br />Vous pouvez maintenant ajouter votre structure en cliquant sur "
+                f"<a href=\"{reverse_lazy('dashboard_siaes:siae_search_by_siret')}\">Ajouter une structure</a>."
+            )
+
+        if cleaned_data["kind"] == User.KIND_BUYER and settings.GOOGLE_AGENDA_IFRAME_URL:
+            success_message += "Après votre rendez-vous, un administrateur finalisera la création de votre compte"
 
         return success_message
 
