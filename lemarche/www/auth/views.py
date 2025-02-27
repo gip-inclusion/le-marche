@@ -84,7 +84,7 @@ class SignupView(SuccessMessageMixin, CreateView):
         """
         # User will be considered as onboarded when an admin will manually set it as onboarded
         # If no google agenda url, the functionality is disabled
-        if form.instance.king == User.KIND_BUYER and settings.GOOGLE_AGENDA_IFRAME_URL:
+        if form.instance.kind == User.KIND_BUYER and settings.GOOGLE_AGENDA_IFRAME_URL:
             form.instance.is_onboarded = False
         user = form.save()
         # add to Brevo list (to send welcome email + automation)
