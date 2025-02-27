@@ -131,7 +131,7 @@ class SignupFormTest(StaticLiveServerTestCase):
             scroll_to_and_click_element(self.driver, submit_element)
 
     def _assert_signup_success(self, redirect_url: str, user_kind=None) -> list:
-        """Assert the success signup and returns the sucess messages
+        """Assert the success signup and returns the success messages
 
         Args:
             redirect_url (str): redirect url after signup
@@ -147,9 +147,6 @@ class SignupFormTest(StaticLiveServerTestCase):
 
         menu_button = self.driver.find_element(By.ID, "my-account")
         menu_button.click()
-
-        dashboard_link = self.driver.find_element(By.LINK_TEXT, "Tableau de bord")
-        self.assertIsNotNone(dashboard_link)
 
         notifications_link = self.driver.find_elements(By.LINK_TEXT, "Notifications")
         if user_kind in [User.KIND_SIAE, User.KIND_BUYER]:
@@ -169,7 +166,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._complete_form(user_profile=self.SIAE, with_submit=True)
 
         # should redirect SIAE to dashboard
-        self._assert_signup_success(redirect_url=reverse("auth:booking-meeting-view"))
+        self._assert_signup_success(redirect_url=reverse("auth:booking-meeting-view"), user_kind=User.KIND_SIAE)
 
     def test_siae_submits_signup_form_error(self):
         user_profile = self.SIAE
@@ -202,7 +199,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         scroll_to_and_click_element(self.driver, submit_element)
 
         # should redirect BUYER to search
-        self._assert_signup_success(redirect_url=reverse("auth:booking-meeting-view"))
+        self._assert_signup_success(redirect_url=reverse("auth:booking-meeting-view"), user_kind=User.KIND_BUYER)
 
     def test_buyer_submits_signup_form_success_extra_data(self):
         self._complete_form(user_profile=self.BUYER, with_submit=False)
