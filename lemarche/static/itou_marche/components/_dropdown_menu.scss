@@ -1,0 +1,25 @@
+/* dropdown-menu__menu stays hidden before JS loading */
+[x-cloak] {
+    display: none !important;
+}
+
+.dropdown-menu {
+    position: relative;
+}
+
+@media (min-width: 62em) {
+    .dropdown-menu__menu {
+        right: 0;
+    }
+}
+
+.dropdown-menu__list {
+    width: max-content;
+}
+
+@media (min-width: 62em) {
+    .lm-btn-logout {
+        width: 90% !important;
+        padding-left: 0.5rem !important;
+    }
+}

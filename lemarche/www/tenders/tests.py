@@ -418,7 +418,8 @@ class TenderListViewTest(TestCase):
         self.assertEqual(len(response.context["tenders"]), 2)
         # The badge in header, only one because one is outdated
         self.assertContains(
-            response, 'Demandes reçues&nbsp;<span class="fr-badge fr-badge--sm fr-badge--green-emeraude">1</span>'
+            response,
+            'Demandes reçues&nbsp;<span class="fr-badge fr-badge--sm fr-ml-2v fr-badge--green-emeraude">1</span>',
         )
         # The badge in tender list
         self.assertContains(response, '<p class="fr-badge fr-badge--sm fr-badge--green-emeraude">Nouveau</p>', 1)
