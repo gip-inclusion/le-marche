@@ -31,7 +31,6 @@ CSS_DEPENDENCIES_THEME = [
 JS_DEPENDENCIES_THEME = [
     {
         "is_external": True,
-        # "src": "https://code.jquery.com/jquery-3.5.1.slim.min.js", => could'nt work for C1
         "src": "https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js",
         "integrity": "sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=",
     },

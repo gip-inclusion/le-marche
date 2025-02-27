@@ -5,6 +5,17 @@
     <meta charset="utf-8" />
     <meta name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    {% if DISPLAY_GUIDE_FLAG %}
+    {# Used to have parametric imports in js modules #}
+    <script type="importmap">
+        {
+            "imports": {
+              "shepherd_map": "{% static 'vendor/shepherd-14.4.0/esm/shepherd.mjs' %}",
+              "user_guide_map": "{% static 'django_shepherd/user_guide.js' %}"
+            }
+        }
+    </script>
+    {% endif %}
     {% dsfr_favicon %}
     {% dsfr_css %}
     {% compress css %}
@@ -22,6 +33,23 @@
             href="{% static 'itou_marche/itou_marche.scss' %}"
             type="text/x-scss" />
     {% endcompress %}
+      <link
+        rel="stylesheet"
+        href="{% static 'vendor/shepherd-14.4.0/css/shepherd.css' %}"
+      />
+      {{ DISPLAY_GUIDE_PAYLOAD|json_script:"display-guide-payload" }}
+      {{ DISPLAY_GUIDE_VIEWED_URL|json_script:"display-guide-viewed-url" }}
+     {% if DISPLAY_GUIDE_FLAG %}
+      <script type="module">
+          import startGuide from "user_guide_map";
+          const displayGuidePayload = JSON.parse(document.getElementById('display-guide-payload').textContent)
+          const displayGuideViewedUrl = JSON.parse(document.getElementById('display-guide-viewed-url').textContent)
+          
+          // Call this function with the name of the guide you want to start
+          startGuide(displayGuidePayload, displayGuideViewedUrl);
+      </script>
+      {% endif %}
+
     {% block extra_css %}
     {% endblock extra_css %}
     {% block title %}

@@ -155,6 +155,7 @@ LOCAL_APPS = [
     "lemarche.cms",
     # Brevo CRM
     "lemarche.crm",
+    "lemarche.django_shepherd",
 ]
 
 WAGTAIL_APPS = [
@@ -228,6 +229,7 @@ TEMPLATES = [
                 "wagtail.contrib.settings.context_processors.settings",
                 # custom
                 "lemarche.utils.settings_context_processors.expose_settings",
+                "lemarche.django_shepherd.context_processor.expose_guide_context",
             ],
         },
     },
