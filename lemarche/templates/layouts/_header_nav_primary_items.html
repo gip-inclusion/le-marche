@@ -15,26 +15,6 @@
 		{% endif %}
         {% if user.is_onboarded %}
 		<li>
-			<a href="{% url 'dashboard:home' %}" class="fr-btn fr-icon-dashboard-3-line">
-				Tableau de bord
-			</a>
-		</li>
-		<li>
-			<a href="{% url 'dashboard_favorites:list' %}" id="header-favorites" class="fr-btn fr-icon-star-line">
-				Favoris <span class="fr-badge fr-badge--sm fr-ml-2v">{{ user.favorite_list_count }}</span>
-			</a>
-		</li>
-        {% endif %}
-		<li>
-			<a href="{% url 'dashboard:profile_edit' %}" class="fr-btn fr-icon-user-line">
-				Mon profil
-			</a>
-		</li>
-		<li>
-            <form id="logout-form" method="post" action="{% url 'auth:logout' %}">
-              {% csrf_token %}
-              <button class="fr-btn fr-icon-logout-box-r-line" type="submit">Déconnexion</button>
-            </form>
 			{% include "includes/_dropdown_menu.html" %}
 		</li>
 	{% else %}
