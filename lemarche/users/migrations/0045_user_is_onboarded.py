@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="user",
             name="is_onboarded",
-            field=models.BooleanField(default=True, verbose_name="L'utilisateur à suivi la prodédure d'onboarding"),
+            field=models.BooleanField(default=True, verbose_name="L'utilisateur a suivi la procédure d'onboarding"),
         ),
     ]
