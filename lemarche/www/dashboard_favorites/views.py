@@ -3,8 +3,8 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse, reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView
@@ -24,6 +24,9 @@ class DashboardFavoriteListView(UserPassesTestMixin, LoginRequiredMixin, ListVie
     def test_func(self):
         if self.request.user.is_authenticated:
             return self.request.user.is_onboarded
+
+    def handle_no_permission(self):
+        return redirect(reverse("auth:booking-meeting-view"))
 
     def get_queryset(self):
         qs = super().get_queryset()

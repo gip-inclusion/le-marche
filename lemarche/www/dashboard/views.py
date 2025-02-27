@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.urls import reverse_lazy
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import DetailView, FormView, UpdateView
 
@@ -22,6 +23,9 @@ class DashboardHomeView(UserPassesTestMixin, LoginRequiredMixin, DetailView):
     def test_func(self):
         if self.request.user.is_authenticated:
             return self.request.user.is_onboarded
+
+    def handle_no_permission(self):
+        return redirect(reverse("auth:booking-meeting-view"))
 
     def get_object(self):
         return self.request.user
