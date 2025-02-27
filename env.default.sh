@@ -13,6 +13,7 @@ export POSTGRESQL_ADDON_DB=""
 export SECRET_KEY="coucou"
 export DJANGO_SETTINGS_MODULE="config.settings.dev"
 export TRACKER_HOST="https://example.com"
+export GOOGLE_AGENDA_IFRAME_URL = ""
 
 # APIs
 export API_EMPLOIS_INCLUSION_TOKEN=""
