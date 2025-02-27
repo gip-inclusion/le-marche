@@ -1,4 +1,5 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.test import override_settings
 from django.urls import reverse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -32,6 +33,7 @@ def element_select_option(driver, element, option=""):
     field_select.select_by_visible_text(option)
 
 
+@override_settings(GOOGLE_AGENDA_IFRAME_URL="some_google_url")
 class SignupFormTest(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
