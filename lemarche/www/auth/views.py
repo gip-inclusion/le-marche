@@ -118,10 +118,14 @@ class SignupView(SuccessMessageMixin, CreateView):
         """Show detailed welcome message to SIAE."""
         success_message = super().get_success_message(cleaned_data)
         if cleaned_data["kind"] == User.KIND_SIAE:
-            success_message += mark_safe(
-                "<br />Vous pouvez maintenant ajouter votre structure en cliquant sur "
-                f"<a href=\"{reverse_lazy('dashboard_siaes:siae_search_by_siret')}\">Ajouter une structure</a>."
-            )
+            if settings.GOOGLE_AGENDA_IFRAME_URL:
+                success_message += mark_safe(
+                    "<br />Vous pouvez maintenant ajouter votre structure en cliquant sur "
+                    f"<a href=\"{reverse_lazy('dashboard_siaes:siae_search_by_siret')}\">Ajouter une structure</a>."
+                )
+            else:
+                success_message += "Après votre rendez-vous, un administrateur finalisera la création de votre compte"
+
         return success_message
 
 
