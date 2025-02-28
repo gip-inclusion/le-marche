@@ -28,6 +28,7 @@ class EmailGroupFactory(DjangoModelFactory):
 class TemplateTransactionalFactory(DjangoModelFactory):
     class Meta:
         model = TemplateTransactional
+        django_get_or_create = ("code",)
 
     name = factory.Faker("name", locale="fr_FR")
     code = factory.Faker("name", locale="fr_FR")

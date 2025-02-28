@@ -1816,6 +1816,9 @@ class TenderQuestionAnswerTestCase(TestCase):
         TenderSiaeFactory(tender=self.tender, siae=self.siae_2)
         TenderSiaeFactory(tender=other_tender, siae=other_matched_tender_siae_1)
 
+        TemplateTransactionalFactory(name="gfdg", code="TENDERS_AUTHOR_SIAE_INTERESTED_1")
+        TemplateTransactionalFactory(name="gfdg", code="TENDERS_AUTHOR_SIAE_INTERESTED_2")
+
     def test_with_authenticated_user_single_siae(self):
         url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
         user = UserFactory()
