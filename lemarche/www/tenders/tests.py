@@ -1805,12 +1805,16 @@ class TenderQuestionAnswerTestCase(TestCase):
         self.q1 = TenderQuestionFactory(tender=self.tender)
         self.q2 = TenderQuestionFactory(tender=self.tender)
 
+        other_matched_tender_siae_1 = SiaeFactory()
+        other_tender = TenderFactory()
+
+        TenderQuestionFactory(tender=other_tender)
+        TenderQuestionFactory(tender=other_tender)
+
         # Simulate matching process
         TenderSiaeFactory(tender=self.tender, siae=self.siae_1)
         TenderSiaeFactory(tender=self.tender, siae=self.siae_2)
-
-        TemplateTransactionalFactory(name="gfdg", code="TENDERS_AUTHOR_SIAE_INTERESTED_1")
-        TemplateTransactionalFactory(name="gfdg", code="TENDERS_AUTHOR_SIAE_INTERESTED_2")
+        TenderSiaeFactory(tender=other_tender, siae=other_matched_tender_siae_1)
 
     def test_with_authenticated_user_single_siae(self):
         url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
