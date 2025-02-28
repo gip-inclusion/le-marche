@@ -114,8 +114,8 @@ class SignupView(SuccessMessageMixin, CreateView):
             safe_url = get_safe_url(self.request, param_name="next")
             if safe_url:
                 return safe_url
-            elif self.request.POST.get("kind") == User.KIND_SIAE:
-                return reverse_lazy("dashboard:home")
+        elif self.request.POST.get("kind") == User.KIND_SIAE:
+            return reverse_lazy("dashboard:home")
         return success_url
 
     def get_success_message(self, cleaned_data):
