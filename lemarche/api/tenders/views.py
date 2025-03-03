@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.utils import timezone
-from drf_spectacular.utils import OpenApiParameter, extend_schema
+from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
 
@@ -23,9 +23,6 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     @extend_schema(
         summary="Déposer un besoin d'achat",
         tags=[Tender._meta.verbose_name_plural],
-        parameters=[
-            OpenApiParameter(name="token", description="Token Utilisateur", required=True, type=str),
-        ],
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, args, kwargs)

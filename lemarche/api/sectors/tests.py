@@ -10,11 +10,12 @@ class SectorApiTest(TestCase):
     def setUpTestData(cls):
         SectorFactory()
         SectorFactory()
-        UserFactory(api_key="admin")
+        cls.token = "a" * 64
+        UserFactory(api_key=cls.token)
 
     def test_should_return_sector_list(self):
-        url = reverse("api:sectors-list")  # anonymous user
-        response = self.client.get(url)
+        url = reverse("api:sectors-list")
+        response = self.client.get(url, headers={"authorization": f"Bearer {self.token}"})
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(len(response.data["results"]), 2)
         self.assertTrue("slug" in response.data["results"][0])

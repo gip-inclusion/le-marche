@@ -74,31 +74,3 @@ class SiaeDetailSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-
-
-class SiaeListSerializer(SiaeDetailSerializer):
-    class Meta:
-        model = Siae
-        fields = [
-            "id",
-            "name",
-            "brand",
-            "slug",
-            "siret",
-            "nature",
-            "kind",
-            "kind_parent",
-            "contact_website",
-            "logo_url",
-            # additional contact_ fields available in detail
-            "address",
-            "city",
-            "post_code",
-            "department",
-            "region",
-            "is_active",
-            # is_ boolean fields available in detail
-            # M2M fields available in detail
-            "created_at",
-            "updated_at",
-        ]

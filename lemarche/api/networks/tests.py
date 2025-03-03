@@ -10,11 +10,12 @@ class NetworkApiTest(TestCase):
     def setUpTestData(cls):
         NetworkFactory(name="Reseau 1")
         NetworkFactory(name="Reseau 2")
-        UserFactory(api_key="admin")
+        cls.token = "a" * 64
+        UserFactory(api_key=cls.token)
 
     def test_should_return_network_list(self):
-        url = reverse("api:networks-list")  # anonymous user
-        response = self.client.get(url)
+        url = reverse("api:networks-list")
+        response = self.client.get(url, headers={"authorization": f"Bearer {self.token}"})
         self.assertEqual(response.data["count"], 2)
         self.assertEqual(len(response.data["results"]), 2)
         self.assertTrue("slug" in response.data["results"][0])

@@ -21,6 +21,7 @@ class PerimeterAutocompleteViewSet(mixins.ListModelMixin, viewsets.GenericViewSe
     queryset = Perimeter.objects.all()
     serializer_class = PerimeterSimpleSerializer
     filterset_class = PerimeterAutocompleteFilter
+    permission_classes = []  # override default permission, this endpoint is open
     pagination_class = None
     http_method_names = ["get"]
 
