@@ -128,7 +128,7 @@ class SignupView(SuccessMessageMixin, CreateView):
             )
 
         if cleaned_data["kind"] == User.KIND_BUYER and settings.GOOGLE_AGENDA_IFRAME_URL:
-            success_message += "Après votre rendez-vous, un administrateur finalisera la création de votre compte"
+            success_message += "<br/>Après votre rendez-vous, un administrateur finalisera la création de votre compte"
 
         return success_message
 
