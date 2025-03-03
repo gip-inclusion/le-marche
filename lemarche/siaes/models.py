@@ -1445,10 +1445,9 @@ class SiaeActivity(models.Model):
     siae = models.ForeignKey(
         "siaes.Siae", verbose_name="Structure", related_name="activities", on_delete=models.CASCADE
     )
-    sectors = models.ManyToManyField(
-        "sectors.Sector", verbose_name="Activités", related_name="siae_activities", blank=True
+    sector = models.ForeignKey(
+        "sectors.Sector", verbose_name="Activité", related_name="siae_activity", on_delete=models.CASCADE
     )
-
     presta_type = ChoiceArrayField(
         verbose_name="Type de prestation",
         base_field=models.CharField(max_length=20, choices=siae_constants.PRESTA_CHOICES),

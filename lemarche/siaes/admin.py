@@ -72,7 +72,7 @@ class HasUserFilter(admin.SimpleListFilter):
 class SiaeActivityInline(admin.TabularInline):
     model = SiaeActivity
     fields = [
-        "sectors",
+        "sector",
         "presta_type",
         # "location", # FIXME: see why activity location loads all perimeters
         "geo_range",
@@ -411,7 +411,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
             {
                 "fields": (
                     "description",
-                    "sectors",
+                    "sector",
                     "networks",
                 )
             },
@@ -504,7 +504,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
     user_count_with_link.admin_order_field = "user_count"
 
     def sector_count_with_link(self, siae):
-        url = reverse("admin:sectors_sector_changelist") + f"?siaes__in={siae.id}"
+        url = reverse("admin:sector_sector_changelist") + f"?siaes__in={siae.id}"
         return format_html(f'<a href="{url}">{siae.sector_count}</a>')
 
     sector_count_with_link.short_description = "Secteurs"
@@ -714,11 +714,11 @@ class SiaeUserRequestAdmin(admin.ModelAdmin):
 @admin.register(SiaeActivity, site=admin_site)
 class SiaeActivityAdmin(admin.ModelAdmin):
     list_display = ["id", "siae_with_link", "created_at", "updated_at"]
-    list_filter = ["sectors"]
+    list_filter = ["sector"]
     search_fields = ["id", "siae__id", "siae__name"]
     search_help_text = "Cherche sur les champs : ID, Structure (ID, Nom)"
 
-    autocomplete_fields = ["siae", "sectors", "locations"]
+    autocomplete_fields = ["siae", "sector", "locations"]
     readonly_fields = ["created_at", "updated_at"]
 
     fieldsets = (
@@ -731,7 +731,7 @@ class SiaeActivityAdmin(admin.ModelAdmin):
         (
             "Prestation",
             {
-                "fields": ("sectors", "presta_type"),
+                "fields": ("sector", "presta_type"),
             },
         ),
         (
@@ -868,7 +868,7 @@ class SiaeGroupAdmin(admin.ModelAdmin):
             "Détails",
             {
                 "fields": (
-                    "sectors",
+                    "sector",
                     "year_constitution",
                     "siae_count",
                     "siae_count_last_updated",
