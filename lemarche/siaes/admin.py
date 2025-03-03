@@ -72,7 +72,6 @@ class HasUserFilter(admin.SimpleListFilter):
 class SiaeActivityInline(admin.TabularInline):
     model = SiaeActivity
     fields = [
-        "sector_group",
         "sectors",
         "presta_type",
         # "location", # FIXME: see why activity location loads all perimeters
@@ -714,7 +713,7 @@ class SiaeUserRequestAdmin(admin.ModelAdmin):
 
 @admin.register(SiaeActivity, site=admin_site)
 class SiaeActivityAdmin(admin.ModelAdmin):
-    list_display = ["id", "siae_with_link", "sector_group", "created_at", "updated_at"]
+    list_display = ["id", "siae_with_link", "created_at", "updated_at"]
     list_filter = ["sectors"]
     search_fields = ["id", "siae__id", "siae__name"]
     search_help_text = "Cherche sur les champs : ID, Structure (ID, Nom)"
@@ -732,7 +731,7 @@ class SiaeActivityAdmin(admin.ModelAdmin):
         (
             "Prestation",
             {
-                "fields": ("sector_group", "sectors", "presta_type"),
+                "fields": ("sectors", "presta_type"),
             },
         ),
         (

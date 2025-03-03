@@ -1445,17 +1445,10 @@ class SiaeActivity(models.Model):
     siae = models.ForeignKey(
         "siaes.Siae", verbose_name="Structure", related_name="activities", on_delete=models.CASCADE
     )
-
-    sector_group = models.ForeignKey(
-        "sectors.SectorGroup",
-        verbose_name="Secteur d'activité",
-        related_name="siae_activities",
-        on_delete=models.PROTECT,
-        null=True,
-    )
     sectors = models.ManyToManyField(
         "sectors.Sector", verbose_name="Activités", related_name="siae_activities", blank=True
     )
+
     presta_type = ChoiceArrayField(
         verbose_name="Type de prestation",
         base_field=models.CharField(max_length=20, choices=siae_constants.PRESTA_CHOICES),
@@ -1522,7 +1515,7 @@ class SiaeOffer(models.Model):
 @receiver(post_delete, sender=SiaeActivity)
 def siae_activity_post_save(sender, instance, **kwargs):
     """Update sector_count when SiaeActivity is created or updated."""
-    instance.siae.sector_count = instance.siae.activities.values("sector_group").distinct().count()
+    instance.siae.sector_count = instance.siae.activities.values("sectors__group").distinct().count()
     instance.siae.save()
 
 

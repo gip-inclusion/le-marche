@@ -5,7 +5,7 @@ from dsfr.forms import DsfrBaseForm
 
 from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
-from lemarche.sectors.models import Sector
+from lemarche.sectors.models import Sector, SectorGroup
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import (
     Siae,
@@ -201,6 +201,11 @@ class SiaeUserRequestForm(forms.ModelForm):
 
 
 class SiaeActivitiesCreateForm(forms.ModelForm):
+    sector_group = forms.ModelChoiceField(
+        label="Secteurs d'activités",
+        queryset=SectorGroup.objects.all(),
+        required=True,
+    )
     sectors = GroupedModelMultipleChoiceField(
         label="Activités",
         queryset=Sector.objects.form_filter_queryset(),

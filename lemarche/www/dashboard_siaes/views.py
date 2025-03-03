@@ -157,7 +157,7 @@ class SiaeEditActivitiesDeleteView(SiaeMemberRequiredMixin, SuccessMessageMixin,
         return reverse_lazy("dashboard_siaes:siae_edit_activities", args=[self.kwargs.get("slug")])
 
     def get_success_message(self, cleaned_data):
-        return mark_safe(f"Votre activité <strong>{self.object.sector_group}</strong> a été supprimée avec succès.")
+        return mark_safe("Votre activité <strong></strong> a été supprimée avec succès.")  # FIXME
 
 
 class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, CreateView):
