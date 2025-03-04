@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, views as auth_views
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
@@ -146,8 +146,14 @@ class PasswordResetView(auth_views.PasswordResetView):
         return f"{success_url}?email={user_email}"
 
 
-class MeetingCalendarView(LoginRequiredMixin, TemplateView):
+class MeetingCalendarView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = "auth/meeting_calendar.html"
+
+    def test_func(self):
+        """Do not display for already onboarded users"""
+        if self.request.user.is_onboarded:
+            return False
+        return True
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
