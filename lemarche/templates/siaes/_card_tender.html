@@ -69,8 +69,9 @@
                         <button 
                                 @click="showQuestions = !showQuestions"
                                 class="fr-btn fr-btn--secondary fr-btn--icon-left">
-                            Afficher/Masquer le contenu
+                            <span x-show="!showQuestions">Afficher les réponses aux questions</span>
                             <span x-show="!showQuestions" class="fr-icon-arrow-down-s-line"></span>
+                            <span x-show="showQuestions">Masquer les réponses aux questions</span>
                             <span x-show="showQuestions" class="fr-icon-arrow-up-s-line"></span>
                         </button>
                     </div>
