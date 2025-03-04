@@ -41,7 +41,13 @@
                                     <button type="submit" class="fr-btn fr-btn--secondary" name="detail_contact_click_confirm" value="false">Annuler</button>
                                 </li>
                                 <li>
-                                    <button type="submit" class="fr-btn" name="detail_contact_click_confirm" value="true">Envoyer mes réponses</button>
+                                    <button type="submit" class="fr-btn" name="detail_contact_click_confirm" value="true">
+                                    {% if grouped_forms %}
+                                        Envoyer mes réponses
+                                    {% else %}
+                                        Oui
+                                    {% endif %}
+                                    </button>
                                 </li>
                             </ul>
                         </div>
