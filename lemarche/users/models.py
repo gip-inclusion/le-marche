@@ -301,6 +301,7 @@ class User(AbstractUser):
 
     # is_active, is_staff, is_superuser
     is_anonymized = models.BooleanField(verbose_name="L'utilisateur à été anonymisé", default=False)
+    is_onboarded = models.BooleanField(verbose_name="L'utilisateur a suivi la procédure d'onboarding", default=True)
 
     # date_joined, last_login
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
