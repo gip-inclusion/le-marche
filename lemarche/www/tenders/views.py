@@ -465,7 +465,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
         self.object = self.get_object()
         self.siae_id = request.GET.get("siae_id", None)
         self.questions = self.object.questions.all()
-        self.question_formset = modelformset_factory(QuestionAnswer, fields=["answer"], extra=0)
+        self.question_formset_class = modelformset_factory(QuestionAnswer, fields=["answer"], extra=0)
 
     def get(self, request, *args, **kwargs):
         """Create empty answers to be updated in the formset"""
@@ -481,17 +481,19 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
                 QuestionAnswer.objects.get_or_create(question=question, siae_id=self.siae_id)
             self.answers = QuestionAnswer.objects.filter(question__in=self.questions, siae=self.siae_id)
 
+        self.question_formset = self.question_formset_class(queryset=self.answers)
+
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
         detail_contact_click_confirm = self.request.POST.get("detail_contact_click_confirm", False) == "true"
-        question_formset = self.question_formset(data=self.request.POST)
+        self.question_formset = self.question_formset_class(data=self.request.POST)
         if (user.is_authenticated and user.kind == User.KIND_SIAE) or self.siae_id:
             if detail_contact_click_confirm:
 
-                if question_formset.is_valid():
-                    question_formset.save()
+                if self.question_formset.is_valid():
+                    self.question_formset.save()
                 else:
                     messages.add_message(
                         self.request, messages.ERROR, "Une erreur à eu lieu lors de la soumission du formulaire"
@@ -545,20 +547,21 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["questions"] = self.questions
-        ctx["questions_formset"] = question_formset = self.question_formset(
-            queryset=self.answers,
-        )
+        ctx["questions_formset"] = self.question_formset
+        ctx["grouped_forms"] = self.group_formset(self.question_formset)
 
+        ctx["siae_id"] = self.request.GET.get("siae_id", None)
+        return ctx
+
+    @staticmethod
+    def group_formset(question_formset) -> dict[Siae, list]:
+        """Group forms of the formset by siae name, returning a dictionary of formsets
+        with keys as Siae and values a form list"""
         grouped_forms = {}
         for form in question_formset:
             siae_name = form.instance.siae.name
             grouped_forms.setdefault(siae_name, []).append(form)
-
-        ctx["grouped_forms"] = grouped_forms
-
-        ctx["siae_id"] = self.request.GET.get("siae_id", None)
-        return ctx
+        return grouped_forms
 
 
 class TenderDetailNotInterestedClickView(SiaeUserRequiredOrSiaeIdParamMixin, DetailView):
