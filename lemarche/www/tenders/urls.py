@@ -33,7 +33,7 @@ urlpatterns = [
     path("<str:slug>/prestataires/statut/<status>", TenderSiaeListView.as_view(), name="detail-siae-list"),
     path("<str:slug>/prestataires", TenderSiaeListView.as_view(), name="detail-siae-list"),
     path(
-        "<str:slug>/contact-click-stat", TenderDetailContactClickStatView.as_view(), name="detail-contact-click-stat"
+        "<slug:slug>/contact-click-stat", TenderDetailContactClickStatView.as_view(), name="detail-contact-click-stat"
     ),
     path(
         "<str:slug>/not-interested-click",
