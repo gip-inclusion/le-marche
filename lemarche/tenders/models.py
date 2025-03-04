@@ -1321,7 +1321,7 @@ class QuestionAnswer(models.Model):
 
     class Meta:
         verbose_name = "Réponse à la question"
-        verbose_name_plural = "Réponses au questions"
+        verbose_name_plural = "Réponses aux questions"
         constraints = [
             models.UniqueConstraint("question", "siae", name="unique_answer_per_siae_and_question"),
         ]
