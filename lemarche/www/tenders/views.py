@@ -489,6 +489,15 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
         question_formset = self.question_formset(data=self.request.POST)
         if (user.is_authenticated and user.kind == User.KIND_SIAE) or self.siae_id:
             if detail_contact_click_confirm:
+
+                if question_formset.is_valid():
+                    question_formset.save()
+                else:
+                    messages.add_message(
+                        self.request, messages.ERROR, "Une erreur à eu lieu lors de la soumission du formulaire"
+                    )
+                    return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm, self.siae_id))
+
                 # update detail_contact_click_date
                 if user.is_authenticated:
                     TenderSiae.objects.filter(
@@ -498,15 +507,9 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
                     TenderSiae.objects.filter(
                         tender=self.object, siae_id=int(self.siae_id), detail_contact_click_date__isnull=True
                     ).update(detail_contact_click_date=timezone.now(), updated_at=timezone.now())
+
                 # notify the tender author
                 send_siae_interested_email_to_author(self.object)
-                if question_formset.is_valid():
-                    question_formset.save()
-                else:
-                    messages.add_message(
-                        self.request, messages.ERROR, "Une erreur à eu lieu lors de la soumission du formulaire"
-                    )
-                    return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm, self.siae_id))
                 messages.add_message(
                     self.request, messages.SUCCESS, self.get_success_message(detail_contact_click_confirm)
                 )
