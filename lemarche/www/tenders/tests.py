@@ -1202,7 +1202,17 @@ class TenderDetailContactClickStatViewTest(TestCase):
         self.assertNotContains(response, 'id="login_or_signup_siae_tender_modal"')
         self.assertNotContains(response, self.cta_message_success)
         # click on button
-        response = self.client.post(self.tender_contact_click_stat_url, data={"detail_contact_click_confirm": "true"})
+        response = self.client.post(
+            self.tender_contact_click_stat_url,
+            data={
+                "detail_contact_click_confirm": "true",
+                # No questions from buyer
+                "form-TOTAL_FORMS": 0,
+                "form-INITIAL_FORMS": 0,
+                "form-MIN_NUM_FORMS": 0,
+                "form-MAX_NUM_FORMS": 1000,
+            },
+        )
         self.assertEqual(response.status_code, 302)
         siae_2_detail_contact_click_date = self.tender.tendersiae_set.first().detail_contact_click_date
         self.assertIsNotNone(siae_2_detail_contact_click_date)
@@ -1235,7 +1245,15 @@ class TenderDetailContactClickStatViewTest(TestCase):
         self.assertNotContains(response, self.cta_message_success)
         # click on button
         response = self.client.post(
-            f"{self.tender_contact_click_stat_url}?siae_id={siae_2.id}", data={"detail_contact_click_confirm": "true"}
+            f"{self.tender_contact_click_stat_url}?siae_id={siae_2.id}",
+            data={
+                "detail_contact_click_confirm": "true",
+                # No questions from buyer
+                "form-TOTAL_FORMS": 0,
+                "form-INITIAL_FORMS": 0,
+                "form-MIN_NUM_FORMS": 0,
+                "form-MAX_NUM_FORMS": 1000,
+            },
         )
         self.assertEqual(response.status_code, 302)
         siae_2_detail_contact_click_date = self.tender.tendersiae_set.first().detail_contact_click_date
