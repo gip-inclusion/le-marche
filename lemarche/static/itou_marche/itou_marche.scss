@@ -236,9 +236,21 @@ p.fr-tag--green-emeraude {
     background: linear-gradient(to bottom, #fc5455 50%, transparent 50%);
 }
 
+.fr-background-alt--white {
+    background:  #ffffff;
+}
+
 .rounded-iframe {
     width: 100%;
     height: 650px;
     border: none;
     border-radius: 15px;
+}
+
+.text-white {
+    color: #ffffff;
+}
+
+.text-white * {
+    color: inherit;
 }
