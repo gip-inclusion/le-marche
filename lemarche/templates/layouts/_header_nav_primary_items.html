@@ -12,6 +12,12 @@
                 <span>Publier un besoin d'achat</span>
             </a>
         </li>
+        {% else %}
+        <li>
+            <a class="fr-btn fr-btn--icon-left" href="{% url 'auth:booking-meeting-view' %}" id="header-meeting">
+                <span>Activer mon compte</span>
+            </a>
+        </li>
 		{% endif %}
 		<li>
 			{% include "includes/_dropdown_menu.html" %}
