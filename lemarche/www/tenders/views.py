@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.forms import modelformset_factory
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -492,40 +492,37 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
         user = self.request.user
         detail_contact_click_confirm = self.request.POST.get("detail_contact_click_confirm", False) == "true"
         self.answers_formset = self.answers_formset_class(data=self.request.POST)
-        if (user.is_authenticated and user.kind == User.KIND_SIAE) or self.siae_id:
-            if detail_contact_click_confirm:
+        if detail_contact_click_confirm:
 
-                if self.answers_formset.is_valid():
-                    self.answers_formset.save()
-                else:
-                    messages.add_message(
-                        self.request, messages.ERROR, "Une erreur à eu lieu lors de la soumission du formulaire"
-                    )
-                    return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm, self.siae_id))
-
-                # update detail_contact_click_date
-                if user.is_authenticated:
-                    TenderSiae.objects.filter(
-                        tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=True
-                    ).update(user=user, detail_contact_click_date=timezone.now(), updated_at=timezone.now())
-                else:
-                    TenderSiae.objects.filter(
-                        tender=self.object, siae_id=int(self.siae_id), detail_contact_click_date__isnull=True
-                    ).update(detail_contact_click_date=timezone.now(), updated_at=timezone.now())
-
-                # notify the tender author
-                send_siae_interested_email_to_author(self.object)
-                messages.add_message(
-                    self.request, messages.SUCCESS, self.get_success_message(detail_contact_click_confirm)
-                )
+            if self.answers_formset.is_valid():
+                self.answers_formset.save()
             else:
                 messages.add_message(
-                    self.request, messages.WARNING, self.get_success_message(detail_contact_click_confirm)
+                    self.request, messages.ERROR, "Une erreur à eu lieu lors de la soumission du formulaire"
                 )
-            # redirect
-            return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm, self.siae_id))
+                return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm, self.siae_id))
+
+            # update detail_contact_click_date
+            if user.is_authenticated:
+                TenderSiae.objects.filter(
+                    tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=True
+                ).update(user=user, detail_contact_click_date=timezone.now(), updated_at=timezone.now())
+            else:
+                TenderSiae.objects.filter(
+                    tender=self.object, siae_id=int(self.siae_id), detail_contact_click_date__isnull=True
+                ).update(detail_contact_click_date=timezone.now(), updated_at=timezone.now())
+
+            # notify the tender author
+            send_siae_interested_email_to_author(self.object)
+            messages.add_message(
+                self.request, messages.SUCCESS, self.get_success_message(detail_contact_click_confirm)
+            )
         else:
-            return HttpResponseForbidden()
+            messages.add_message(
+                self.request, messages.WARNING, self.get_success_message(detail_contact_click_confirm)
+            )
+        # redirect
+        return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm, self.siae_id))
 
     def get_success_url(self, detail_contact_click_confirm, siae_id=None):
         success_url = reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
@@ -582,28 +579,26 @@ class TenderDetailNotInterestedClickView(SiaeUserRequiredOrSiaeIdParamMixin, Det
         self.object = self.get_object()
         user = self.request.user
         siae_id = request.GET.get("siae_id", None)
-        if (user.is_authenticated and user.kind == User.KIND_SIAE) or siae_id:
-            if user.is_authenticated:
-                TenderSiae.objects.filter(
-                    tender=self.object, siae__in=user.siaes.all(), detail_not_interested_click_date__isnull=True
-                ).update(
-                    user=user,
-                    detail_not_interested_feedback=self.request.POST.get("detail_not_interested_feedback", ""),
-                    detail_not_interested_click_date=timezone.now(),
-                    updated_at=timezone.now(),
-                )
-            else:
-                TenderSiae.objects.filter(
-                    tender=self.object, siae_id=int(siae_id), detail_not_interested_click_date__isnull=True
-                ).update(
-                    detail_not_interested_feedback=self.request.POST.get("detail_not_interested_feedback", ""),
-                    detail_not_interested_click_date=timezone.now(),
-                    updated_at=timezone.now(),
-                )
-            # redirect
-            return HttpResponseRedirect(self.get_success_url(siae_id))
+
+        if user.is_authenticated:
+            TenderSiae.objects.filter(
+                tender=self.object, siae__in=user.siaes.all(), detail_not_interested_click_date__isnull=True
+            ).update(
+                user=user,
+                detail_not_interested_feedback=self.request.POST.get("detail_not_interested_feedback", ""),
+                detail_not_interested_click_date=timezone.now(),
+                updated_at=timezone.now(),
+            )
         else:
-            return HttpResponseForbidden()
+            TenderSiae.objects.filter(
+                tender=self.object, siae_id=int(siae_id), detail_not_interested_click_date__isnull=True
+            ).update(
+                detail_not_interested_feedback=self.request.POST.get("detail_not_interested_feedback", ""),
+                detail_not_interested_click_date=timezone.now(),
+                updated_at=timezone.now(),
+            )
+        # redirect
+        return HttpResponseRedirect(self.get_success_url(siae_id))
 
     def get_success_url(self, siae_id=None):
         success_url = reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
