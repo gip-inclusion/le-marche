@@ -1926,9 +1926,9 @@ class TenderQuestionAnswerTestCase(TestCase):
             "form-MIN_NUM_FORMS": "0",
             "form-MAX_NUM_FORMS": "1000",
             "form-0-answer": "SOMETHING",
-            "form-0-question": self.q1,
+            "form-0-question": self.q1.id,
             "form-1-answer": "ELSE",
-            "form-1-question": self.q2,
+            "form-1-question": self.q2.id,
         }
         response_post = self.client.post(url, data=payload)
 
