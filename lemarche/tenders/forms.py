@@ -1,7 +1,7 @@
 from django import forms
 
 from lemarche.siaes.models import Siae
-from lemarche.tenders.models import QuestionAnswer, Tender
+from lemarche.tenders.models import Tender, TenderQuestion
 
 
 class TenderAdminForm(forms.ModelForm):
@@ -14,14 +14,11 @@ class TenderAdminForm(forms.ModelForm):
         fields = "__all__"
 
 
-class QuestionAnswerForm(forms.ModelForm):
-    class Meta:
-        model = QuestionAnswer
-        fields = ["answer"]
-        widgets = {
-            # client side validation
-            "answer": forms.Textarea(attrs={"required": "required"}),
-        }
+class QuestionAnswerForm(forms.Form):
+    answer = forms.CharField(label="Réponse", widget=forms.Textarea(attrs={"required": "required"}))
+    question = forms.ModelChoiceField(
+        label="Question", queryset=TenderQuestion.objects.all(), widget=forms.HiddenInput()
+    )
 
 
 class SiaeSelectionForm(forms.Form):

@@ -1847,25 +1847,27 @@ class TenderQuestionAnswerTestCase(TestCase):
         self.assertEqual(response_get.status_code, 200)
 
         payload = {
+            "detail_contact_click_confirm": "true",
             "form-TOTAL_FORMS": "2",
             "form-INITIAL_FORMS": "2",
             "form-MIN_NUM_FORMS": "0",
             "form-MAX_NUM_FORMS": "1000",
             "form-0-answer": "SOMETHING",
-            "form-0-id": str(QuestionAnswer.objects.first().id),
+            "form-0-question": self.q1.id,
             "form-1-answer": "ELSE",
-            "form-1-id": str(QuestionAnswer.objects.last().id),
-            "detail_contact_click_confirm": "true",
+            "form-1-question": self.q2.id,
         }
         response_post = self.client.post(url, data=payload)
 
         self.assertEqual(response_post.status_code, 302)
-        self.assertEqual(QuestionAnswer.objects.first().answer, "SOMETHING")
-        self.assertEqual(QuestionAnswer.objects.last().answer, "ELSE")
+
+        self.assertEqual(QuestionAnswer.objects.all().count(), 2)
+
+        self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_1, question=self.q1).answer, "SOMETHING")
+        self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_1, question=self.q2).answer, "ELSE")
 
     def test_with_authenticated_user_multiple_siae(self):
-        """A user has 2 Siae that matched the same tender.
-        It has to answer the tender questions for the 2 siaes"""
+        """A user has 2 Siae that matched the same tender."""
         url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
 
         user = UserFactory()
@@ -1878,36 +1880,31 @@ class TenderQuestionAnswerTestCase(TestCase):
         response_get = self.client.get(url)
         self.assertEqual(response_get.status_code, 200)
         # Only the 2 matched siae are grouped in the form, not the third that didn't match
-        self.assertEqual(len(response_get.context["grouped_forms"]), 2)
-
-        questions_for_siae_1 = QuestionAnswer.objects.filter(siae=self.siae_1)
-        questions_for_siae_2 = QuestionAnswer.objects.filter(siae=self.siae_2)
+        self.assertEqual(len(response_get.context["questions_formset"]), 2)
 
         payload = {
-            "form-TOTAL_FORMS": "4",
-            "form-INITIAL_FORMS": "4",
+            "siae": [self.siae_1.id, self.siae_2.id],
+            "detail_contact_click_confirm": "true",
+            "form-TOTAL_FORMS": "2",
+            "form-INITIAL_FORMS": "2",
             "form-MIN_NUM_FORMS": "0",
             "form-MAX_NUM_FORMS": "1000",
-            # Answers for the first Siae
+            # Answers for all selected Siaes
             "form-0-answer": "SOMETHING",
-            "form-0-id": str(questions_for_siae_1.first().id),
+            "form-0-question": self.q1.id,
             "form-1-answer": "ELSE",
-            "form-1-id": str(questions_for_siae_1.last().id),
-            # Answers for the second Siae
-            "form-2-answer": "SOMETHING MORE",
-            "form-2-id": str(questions_for_siae_2.first().id),
-            "form-3-answer": "ELSE WHERE",
-            "form-3-id": str(questions_for_siae_2.last().id),
-            "detail_contact_click_confirm": "true",
+            "form-1-question": self.q2.id,
         }
         response_post = self.client.post(url, data=payload)
 
         self.assertEqual(response_post.status_code, 302)
 
-        self.assertEqual(questions_for_siae_1.first().answer, "SOMETHING")
-        self.assertEqual(questions_for_siae_1.last().answer, "ELSE")
-        self.assertEqual(questions_for_siae_2.first().answer, "SOMETHING MORE")
-        self.assertEqual(questions_for_siae_2.last().answer, "ELSE WHERE")
+        self.assertEqual(QuestionAnswer.objects.all().count(), 4)
+
+        self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_1, question=self.q1).answer, "SOMETHING")
+        self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_1, question=self.q2).answer, "ELSE")
+        self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_2, question=self.q1).answer, "SOMETHING")
+        self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_2, question=self.q2).answer, "ELSE")
 
     def test_with_anonymous_user_single_siae(self):
         """Unauthenticated users should also be granted the right to answers questions"""
@@ -1923,18 +1920,20 @@ class TenderQuestionAnswerTestCase(TestCase):
         self.assertEqual(response_get.status_code, 200)
 
         payload = {
+            "detail_contact_click_confirm": "true",
             "form-TOTAL_FORMS": "2",
             "form-INITIAL_FORMS": "2",
             "form-MIN_NUM_FORMS": "0",
             "form-MAX_NUM_FORMS": "1000",
             "form-0-answer": "SOMETHING",
-            "form-0-id": str(QuestionAnswer.objects.first().id),
+            "form-0-question": self.q1,
             "form-1-answer": "ELSE",
-            "form-1-id": str(QuestionAnswer.objects.last().id),
-            "detail_contact_click_confirm": "true",
+            "form-1-question": self.q2,
         }
         response_post = self.client.post(url, data=payload)
 
         self.assertEqual(response_post.status_code, 302)
+
+        self.assertEqual(QuestionAnswer.objects.all().count(), 2)
         self.assertEqual(QuestionAnswer.objects.first().answer, "SOMETHING")
         self.assertEqual(QuestionAnswer.objects.last().answer, "ELSE")
