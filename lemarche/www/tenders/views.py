@@ -560,21 +560,10 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["questions_formset"] = self.answers_formset
-        ctx["grouped_forms"] = self.group_formset(self.answers_formset)
         if self.siae_select_form:
             ctx["siae_select_form"] = self.siae_select_form
         ctx["siae_id"] = self.request.GET.get("siae_id", None)
         return ctx
-
-    @staticmethod
-    def group_formset(question_formset) -> dict[Siae, list]:
-        """Group forms of the formset by siae name, returning a dictionary of formsets
-        with keys as Siae and values a form list"""
-        grouped_forms = {}
-        for form in question_formset:
-            siae_name = form.instance.siae.name
-            grouped_forms.setdefault(siae_name, []).append(form)
-        return grouped_forms
 
 
 class TenderDetailNotInterestedClickView(SiaeUserRequiredOrSiaeIdParamMixin, DetailView):
