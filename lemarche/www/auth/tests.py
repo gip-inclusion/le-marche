@@ -1,10 +1,12 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.test import override_settings
 from django.urls import reverse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.select import Select
 
+from lemarche.cms.snippets import Paragraph
 from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
 
@@ -31,6 +33,7 @@ def element_select_option(driver, element, option=""):
     field_select.select_by_visible_text(option)
 
 
+@override_settings(GOOGLE_AGENDA_IFRAME_URL="some_google_url")
 class SignupFormTest(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
@@ -43,6 +46,11 @@ class SignupFormTest(StaticLiveServerTestCase):
 
     def setUp(self):
         EXAMPLE_PASSWORD = "c*[gkp`0="
+        # Static server tests cases erases data from migrations
+        Paragraph.objects.get_or_create(
+            slug="rdv-signup",
+            defaults={"title": "Prise de rendez vous"},
+        )
 
         self.SIAE = {
             "id_kind": 0,  # required
@@ -125,7 +133,7 @@ class SignupFormTest(StaticLiveServerTestCase):
             scroll_to_and_click_element(self.driver, submit_element)
 
     def _assert_signup_success(self, redirect_url: str, user_kind=None) -> list:
-        """Assert the success signup and returns the sucess messages
+        """Assert the success signup and returns the success messages
 
         Args:
             redirect_url (str): redirect url after signup
@@ -141,9 +149,6 @@ class SignupFormTest(StaticLiveServerTestCase):
 
         menu_button = self.driver.find_element(By.ID, "my-account")
         menu_button.click()
-
-        dashboard_link = self.driver.find_element(By.LINK_TEXT, "Tableau de bord")
-        self.assertIsNotNone(dashboard_link)
 
         notifications_link = self.driver.find_elements(By.LINK_TEXT, "Notifications")
         if user_kind in [User.KIND_SIAE, User.KIND_BUYER]:
@@ -198,7 +203,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         scroll_to_and_click_element(self.driver, submit_element)
 
         # should redirect BUYER to search
-        self._assert_signup_success(redirect_url=reverse("siae:search_results"), user_kind=User.KIND_BUYER)
+        self._assert_signup_success(redirect_url=reverse("auth:booking-meeting-view"), user_kind=User.KIND_BUYER)
 
     def test_buyer_submits_signup_form_success_extra_data(self):
         self._complete_form(user_profile=self.BUYER, with_submit=False)

@@ -6,12 +6,18 @@
 				Demandes reçues{% if tender_siae_unread_count %}&nbsp;<span class="fr-badge fr-badge--sm fr-ml-2v fr-badge--green-emeraude">{{ tender_siae_unread_count }}</span>{% endif %}
 			</a>
 		</li>
-		{% else %}
-			<li>
-				<a class="fr-btn fr-icon-add-circle-line fr-btn--icon-left" href="{% url 'tenders:create' %}" id="header-demande" target="_self">
-					<span>Publier un besoin d'achat</span>
-				</a>
-			</li>
+		{% elif user.is_onboarded %}
+        <li>
+            <a class="fr-btn fr-icon-add-circle-line fr-btn--icon-left" href="{% url 'tenders:create' %}" id="header-demande" target="_self">
+                <span>Publier un besoin d'achat</span>
+            </a>
+        </li>
+        {% else %}
+        <li>
+            <a class="fr-btn fr-btn--icon-left" href="{% url 'auth:booking-meeting-view' %}" id="header-meeting">
+                <span>Activer mon compte</span>
+            </a>
+        </li>
 		{% endif %}
 		<li>
 			{% include "includes/_dropdown_menu.html" %}
