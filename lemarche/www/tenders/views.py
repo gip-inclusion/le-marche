@@ -1,6 +1,9 @@
+import os
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
 from django.db.models import Prefetch
 from django.forms import formset_factory
@@ -88,6 +91,9 @@ class TenderCreateMultiStepView(SessionWizardView):
         (STEP_CONFIRMATION, TenderCreateStepConfirmationForm),
     ]
 
+    # Add file storage configuration
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, "temp_uploads"))
+
     def get_template_names(self):
         return [self.TEMPLATES[self.steps.current]]
 
@@ -149,6 +155,22 @@ class TenderCreateMultiStepView(SessionWizardView):
                 if tender_dict["accept_share_amount"]
                 else tender_constants.ACCEPT_SHARE_AMOUNT_FALSE
             )
+            tender_dict["attachments"] = []
+            if tender_dict["attachment_one"]:
+                tender_dict["attachments"].append(tender_dict["attachment_one"])
+            elif self.instance.attachment_one:
+                if not tender_dict["attachment_one_delete"]:
+                    tender_dict["attachments"].append(self.instance.attachment_one)
+            if tender_dict["attachment_two"]:
+                tender_dict["attachments"].append(tender_dict["attachment_two"])
+            elif self.instance.attachment_two:
+                if not tender_dict["attachment_two_delete"]:
+                    tender_dict["attachments"].append(self.instance.attachment_two)
+            if tender_dict["attachment_three"]:
+                tender_dict["attachments"].append(tender_dict["attachment_three"])
+            elif self.instance.attachment_three:
+                if not tender_dict["attachment_three_delete"]:
+                    tender_dict["attachments"].append(self.instance.attachment_three)
             context.update({"tender": tender_dict})
 
         context["breadcrumb_links"] = []
@@ -165,6 +187,9 @@ class TenderCreateMultiStepView(SessionWizardView):
         """
         data = form.data.copy()
         data["timestamp"] = timezone.now().isoformat()
+
+        if self.request.FILES:
+            data["files"] = str(self.request.FILES)
 
         uuid = self.request.session.get("tender_steps_data_uuid", None)
         if uuid:
@@ -212,6 +237,12 @@ class TenderCreateMultiStepView(SessionWizardView):
                                 update_or_create_questions_list(
                                     tender=self.instance, questions_list=tender_dict.get("questions_list")
                                 )
+                            case "attachment_one_delete":
+                                self.instance.attachment_one = None
+                            case "attachment_two_delete":
+                                self.instance.attachment_two = None
+                            case "attachment_three_delete":
+                                self.instance.attachment_three = None
                             case _:
                                 setattr(self.instance, attribute, tender_dict.get(attribute))
             # Check before adding logs or resetting modification request
