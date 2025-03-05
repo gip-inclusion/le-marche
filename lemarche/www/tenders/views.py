@@ -525,11 +525,11 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
             # update detail_contact_click_date
             if user.is_authenticated:
                 TenderSiae.objects.filter(
-                    tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=True
+                    tender=self.object, siae__in=siae_qs, detail_contact_click_date__isnull=True
                 ).update(user=user, detail_contact_click_date=timezone.now(), updated_at=timezone.now())
             else:
                 TenderSiae.objects.filter(
-                    tender=self.object, siae_id=int(self.siae_id), detail_contact_click_date__isnull=True
+                    tender=self.object, siae__in=siae_qs, detail_contact_click_date__isnull=True
                 ).update(detail_contact_click_date=timezone.now(), updated_at=timezone.now())
 
             # notify the tender author
