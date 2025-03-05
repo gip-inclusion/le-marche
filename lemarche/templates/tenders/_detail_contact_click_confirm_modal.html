@@ -15,8 +15,10 @@
                             </p>
                             
                             {% csrf_token %}
-                            {% dsfr_form_field siae_select_form.siae %}
-
+                            {% if siae_select_form %}
+                                {% dsfr_form_field siae_select_form.siae %}
+                            {% endif %}
+                        
                             {{ questions_formset.management_form }}
                         
                             {% for siae_name, forms in grouped_forms.items %}
