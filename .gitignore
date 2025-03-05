@@ -97,6 +97,7 @@ ENV/
 # Editors
 .tm_properties
 /.vscode/
+.cursor*
 
 # Jetbrains / Pycharm
 *.iml
