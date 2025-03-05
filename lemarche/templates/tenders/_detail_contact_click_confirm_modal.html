@@ -21,19 +21,14 @@
                         
                             {{ questions_formset.management_form }}
                         
-                            {% for siae_name, forms in grouped_forms.items %}
-                                <div class="fr_card fr-mt-5w">
-                                    <h2>{{ siae_name }}</h2>
-                                {% for form in forms %}
-                                    <div class="fr-mt-5w">
-                                        <h2 class="fr-h4">{{ form.instance.question }}</h2>
-                                        <div class="">
-                                            <div class="fr-form-group">
-                                                {% dsfr_form form %}
-                                            </div>
+                            {% for form in questions_formset %}
+                                <div class="fr-mt-5w">
+                                    <h2 class="fr-h4">{{ form.instance.question }}</h2>
+                                    <div class="">
+                                        <div class="fr-form-group">
+                                            {% dsfr_form form %}
                                         </div>
                                     </div>
-                                {% endfor %}
                                 </div>
                             {% endfor %}
                         
