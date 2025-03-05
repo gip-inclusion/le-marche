@@ -1,6 +1,6 @@
 from django import forms
 
-from lemarche.tenders.models import Tender
+from lemarche.tenders.models import QuestionAnswer, Tender
 
 
 class TenderAdminForm(forms.ModelForm):
@@ -11,3 +11,13 @@ class TenderAdminForm(forms.ModelForm):
     class Meta:
         model = Tender
         fields = "__all__"
+
+
+class QuestionAnswerForm(forms.ModelForm):
+    class Meta:
+        model = QuestionAnswer
+        fields = ["answer"]
+        widgets = {
+            # client side validation
+            "answer": forms.Textarea(attrs={"required": "required"}),
+        }
