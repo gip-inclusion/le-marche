@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.forms import modelformset_factory
+from django.forms import formset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -466,9 +466,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
         self.object = self.get_object()
         self.siae_id = request.GET.get("siae_id", None)
         self.questions = self.object.questions.all()
-        self.answers_formset_class = modelformset_factory(
-            form=QuestionAnswerForm, model=QuestionAnswer, fields=["answer"], extra=0
-        )
+        self.answers_formset_class = formset_factory(form=QuestionAnswerForm, extra=0)
         self.siae_select_form_class = SiaeSelectionForm
 
     def get(self, request, *args, **kwargs):
@@ -476,20 +474,17 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
         if self.request.user.is_authenticated:
             siae_qs = Siae.objects.filter(users=self.request.user, tendersiae__tender=self.object)
 
-            for question in self.questions:
-                for siae in siae_qs:
-                    QuestionAnswer.objects.get_or_create(question=question, siae=siae)
-            self.answers = QuestionAnswer.objects.filter(
-                question__in=self.questions, siae__in=self.request.user.siaes.all()
-            )
         else:  # has siae_id
             siae_qs = Siae.objects.filter(id=self.siae_id)
 
-            for question in self.questions:
-                QuestionAnswer.objects.get_or_create(question=question, siae_id=self.siae_id)
-            self.answers = QuestionAnswer.objects.filter(question__in=self.questions, siae=self.siae_id)
+        initial_data = [
+            {
+                "question": question,
+            }
+            for question in self.questions
+        ]
 
-        self.answers_formset = self.answers_formset_class(queryset=self.answers)
+        self.answers_formset = self.answers_formset_class(initial=initial_data)
 
         if siae_qs.count() > 1:
             self.siae_select_form = self.siae_select_form_class(
@@ -504,10 +499,23 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
         user = self.request.user
         detail_contact_click_confirm = self.request.POST.get("detail_contact_click_confirm", False) == "true"
         self.answers_formset = self.answers_formset_class(data=self.request.POST)
-        if detail_contact_click_confirm:
+        if user.is_authenticated:
+            if siae_list := self.request.POST.getlist("siae"):
+                siae_qs = Siae.objects.filter(id__in=siae_list)
+            else:  # No siae select, mean only one matched siae
+                siae_qs = Siae.objects.filter(users=self.request.user, tendersiae__tender=self.object)
+        else:
+            siae_qs = Siae.objects.filter(id=self.siae_id)
 
+        if detail_contact_click_confirm:
             if self.answers_formset.is_valid():
-                self.answers_formset.save()
+                for answer_form in self.answers_formset:
+                    for siae in siae_qs:  # We copy the answer for each selected siae
+                        QuestionAnswer.objects.create(
+                            question=answer_form.cleaned_data["question"],
+                            answer=answer_form.cleaned_data["answer"],
+                            siae=siae,
+                        )
             else:
                 messages.add_message(
                     self.request, messages.ERROR, "Une erreur à eu lieu lors de la soumission du formulaire"
