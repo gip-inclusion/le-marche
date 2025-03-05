@@ -490,9 +490,13 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
             self.answers = QuestionAnswer.objects.filter(question__in=self.questions, siae=self.siae_id)
 
         self.answers_formset = self.answers_formset_class(queryset=self.answers)
-        self.siae_select_form = self.siae_select_form_class(
-            queryset=siae_qs,
-        )
+
+        if siae_qs.count() > 1:
+            self.siae_select_form = self.siae_select_form_class(
+                queryset=siae_qs,
+            )
+        else:
+            self.siae_select_form = None
 
         return super().get(request, *args, **kwargs)
 
@@ -557,8 +561,8 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
         ctx = super().get_context_data(**kwargs)
         ctx["questions_formset"] = self.answers_formset
         ctx["grouped_forms"] = self.group_formset(self.answers_formset)
-
-        ctx["siae_select_form"] = self.siae_select_form
+        if self.siae_select_form:
+            ctx["siae_select_form"] = self.siae_select_form
         ctx["siae_id"] = self.request.GET.get("siae_id", None)
         return ctx
 
