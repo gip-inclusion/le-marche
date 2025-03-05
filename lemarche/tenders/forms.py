@@ -1,5 +1,6 @@
 from django import forms
 
+from lemarche.siaes.models import Siae
 from lemarche.tenders.models import QuestionAnswer, Tender
 
 
@@ -21,3 +22,13 @@ class QuestionAnswerForm(forms.ModelForm):
             # client side validation
             "answer": forms.Textarea(attrs={"required": "required"}),
         }
+
+
+class SiaeSelectionForm(forms.Form):
+    siae = forms.ModelMultipleChoiceField(
+        queryset=Siae.objects.none(),
+    )
+
+    def __init__(self, queryset, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["siae"].queryset = queryset

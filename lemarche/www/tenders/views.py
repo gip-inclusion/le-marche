@@ -14,7 +14,7 @@ from formtools.wizard.views import SessionWizardView
 
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.forms import QuestionAnswerForm
+from lemarche.tenders.forms import QuestionAnswerForm, SiaeSelectionForm
 from lemarche.tenders.models import QuestionAnswer, Tender, TenderSiae, TenderStepsData
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
@@ -469,22 +469,30 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
         self.answers_formset_class = modelformset_factory(
             form=QuestionAnswerForm, model=QuestionAnswer, fields=["answer"], extra=0
         )
+        self.siae_select_form_class = SiaeSelectionForm
 
     def get(self, request, *args, **kwargs):
         """Create empty answers to be updated in the formset"""
         if self.request.user.is_authenticated:
+            siae_qs = Siae.objects.filter(users=self.request.user, tendersiae__tender=self.object)
+
             for question in self.questions:
-                for siae in Siae.objects.filter(users=self.request.user, tendersiae__tender=self.object):
+                for siae in siae_qs:
                     QuestionAnswer.objects.get_or_create(question=question, siae=siae)
             self.answers = QuestionAnswer.objects.filter(
                 question__in=self.questions, siae__in=self.request.user.siaes.all()
             )
-        elif self.siae_id:
+        else:  # has siae_id
+            siae_qs = Siae.objects.filter(id=self.siae_id)
+
             for question in self.questions:
                 QuestionAnswer.objects.get_or_create(question=question, siae_id=self.siae_id)
             self.answers = QuestionAnswer.objects.filter(question__in=self.questions, siae=self.siae_id)
 
         self.answers_formset = self.answers_formset_class(queryset=self.answers)
+        self.siae_select_form = self.siae_select_form_class(
+            queryset=siae_qs,
+        )
 
         return super().get(request, *args, **kwargs)
 
@@ -550,6 +558,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
         ctx["questions_formset"] = self.answers_formset
         ctx["grouped_forms"] = self.group_formset(self.answers_formset)
 
+        ctx["siae_select_form"] = self.siae_select_form
         ctx["siae_id"] = self.request.GET.get("siae_id", None)
         return ctx
 
