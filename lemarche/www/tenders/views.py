@@ -14,6 +14,7 @@ from formtools.wizard.views import SessionWizardView
 
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
+from lemarche.tenders.forms import QuestionAnswerForm
 from lemarche.tenders.models import QuestionAnswer, Tender, TenderSiae, TenderStepsData
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
@@ -465,7 +466,9 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
         self.object = self.get_object()
         self.siae_id = request.GET.get("siae_id", None)
         self.questions = self.object.questions.all()
-        self.question_formset_class = modelformset_factory(QuestionAnswer, fields=["answer"], extra=0)
+        self.answers_formset_class = modelformset_factory(
+            form=QuestionAnswerForm, model=QuestionAnswer, fields=["answer"], extra=0
+        )
 
     def get(self, request, *args, **kwargs):
         """Create empty answers to be updated in the formset"""
@@ -481,19 +484,19 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
                 QuestionAnswer.objects.get_or_create(question=question, siae_id=self.siae_id)
             self.answers = QuestionAnswer.objects.filter(question__in=self.questions, siae=self.siae_id)
 
-        self.question_formset = self.question_formset_class(queryset=self.answers)
+        self.answers_formset = self.answers_formset_class(queryset=self.answers)
 
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
         detail_contact_click_confirm = self.request.POST.get("detail_contact_click_confirm", False) == "true"
-        self.question_formset = self.question_formset_class(data=self.request.POST)
+        self.answers_formset = self.answers_formset_class(data=self.request.POST)
         if (user.is_authenticated and user.kind == User.KIND_SIAE) or self.siae_id:
             if detail_contact_click_confirm:
 
-                if self.question_formset.is_valid():
-                    self.question_formset.save()
+                if self.answers_formset.is_valid():
+                    self.answers_formset.save()
                 else:
                     messages.add_message(
                         self.request, messages.ERROR, "Une erreur à eu lieu lors de la soumission du formulaire"
@@ -547,8 +550,8 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["questions_formset"] = self.question_formset
-        ctx["grouped_forms"] = self.group_formset(self.question_formset)
+        ctx["questions_formset"] = self.answers_formset
+        ctx["grouped_forms"] = self.group_formset(self.answers_formset)
 
         ctx["siae_id"] = self.request.GET.get("siae_id", None)
         return ctx
