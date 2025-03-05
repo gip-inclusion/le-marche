@@ -61,6 +61,9 @@
                         <div class="fr-col-12">
                             {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True %}
                         </div>
+                        <div class="fr-col-12">
+                            {% include "tenders/_detail_cta_not_interested.html" with tender=tender user_can_click=True %}
+                        </div>
                     {% endif %}
                 {% endif %}
             <!-- anonymous user but siae_id in url -->
@@ -72,6 +75,9 @@
                 {% else %}
                     <div class="fr-col-12">
                         {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True siae_id=siae_id %}
+                    </div>
+                    <div class="fr-col-12">
+                        {% include "tenders/_detail_cta_not_interested.html" with tender=tender user_can_click=True siae_id=siae_id %}
                     </div>
                 {% endif %}
             {% endif %}
@@ -94,6 +100,9 @@
                     <div class="fr-col-12">
                         {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True siae_id=siae_id tender_response_is_anonymous=True %}
                     </div>
+                    <div class="fr-col-12">
+                        {% include "tenders/_detail_cta_not_interested.html" with tender=tender user_can_click=True siae_id=siae_id %}
+                    </div>
                 {% endif %}
             {% endif %}
         {% endif %}
@@ -101,6 +110,9 @@
         {% if not user.is_authenticated and not siae_id %}
             <div class="fr-col-12">
                 {% include "tenders/_detail_cta.html" with tender=tender user_can_click=False %}
+            </div>
+            <div class="fr-col-12">
+                {% include "tenders/_detail_cta_not_interested.html" with tender=tender user_can_click=False %}
             </div>
         {% endif %}
     {% endif %}
