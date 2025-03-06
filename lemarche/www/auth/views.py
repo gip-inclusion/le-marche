@@ -95,7 +95,10 @@ class SignupView(SuccessMessageMixin, CreateView):
         user = authenticate(username=form.cleaned_data["email"], password=form.cleaned_data["password1"])
         login(self.request, user)
         # response
-        messages.add_message(self.request, messages.SUCCESS, self.get_success_message(form.cleaned_data))
+        if form.cleaned_data["kind"] == User.KIND_BUYER and settings.GOOGLE_AGENDA_IFRAME_URL:
+            pass  # Do not add message for BUYER that need meeting
+        else:
+            messages.add_message(self.request, messages.SUCCESS, self.get_success_message(form.cleaned_data))
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
