@@ -5,18 +5,21 @@
 {% endblock page_title %}
 
 {% block breadcrumb %}
-    <div class="background-container text-white">
-    <div class="fr-background-alt--orange"></div>
-    {% process_dict root_dir=HOME_PAGE_PATH current="Prise de rendez-vous" as breadcrumb_data %}
-    {% dsfr_breadcrumb breadcrumb_data %}
+    <div class="text-white">
+        {% process_dict root_dir=HOME_PAGE_PATH current="Prise de rendez-vous" as breadcrumb_data %}
+        {% dsfr_breadcrumb breadcrumb_data %}
+    </div>
 {% endblock breadcrumb %}
+
 {% block content %}
+    <div class="background-container text-white">
+        <div class="fr-background-alt--orange"></div>
         <div class="fr-container">
             <div class="fr-grid-row">
-                <div class="fr-col-4 fr-mt-2w">
+                <div class="fr-col-4">
                     {{ wagtail_paragraph.content | safe }}
                 </div>
-                <div class="fr-col-8 fr-mt-2w">
+                <div class="fr-col-8">
                     <h2>Prenez rendez-vous pour activer votre compte</h2>
                     <!-- Google Calendar Appointment Scheduling begin -->
                     <iframe
@@ -28,6 +31,5 @@
                 </div>
             </div>
         </div>
+    </div>
 {% endblock content %}
-
-</div>
