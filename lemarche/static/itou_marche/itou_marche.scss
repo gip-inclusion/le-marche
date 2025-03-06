@@ -250,11 +250,16 @@ p.fr-tag--green-emeraude {
     height: 700px;
     border: none;
     border-radius: 15px;
+    position: relative;
 }
 
 .iframe-container {
-    width: 100%;
+    width: 90%;
     height: 100%;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
 }
 
 .text-white {
