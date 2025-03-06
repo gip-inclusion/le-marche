@@ -247,9 +247,14 @@ p.fr-tag--green-emeraude {
 
 .rounded-iframe {
     width: 100%;
-    height: 650px;
+    height: 700px;
     border: none;
     border-radius: 15px;
+}
+
+.iframe-container {
+    width: 100%;
+    height: 100%;
 }
 
 .text-white {
@@ -267,4 +272,10 @@ p.fr-tag--green-emeraude {
 .background-container {
     position: relative;
     overflow: visible;
+}
+
+.center-text {
+  //height: 100vh;
+  line-height: 1vh;
+  text-align: center;
 }
