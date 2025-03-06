@@ -127,9 +127,6 @@ class SignupView(SuccessMessageMixin, CreateView):
                 f"<a href=\"{reverse_lazy('dashboard_siaes:siae_search_by_siret')}\">Ajouter une structure</a>."
             )
 
-        if cleaned_data["kind"] == User.KIND_BUYER and settings.GOOGLE_AGENDA_IFRAME_URL:
-            success_message += "<br/>Après votre rendez-vous, un administrateur finalisera la création de votre compte"
-
         return success_message
 
 
