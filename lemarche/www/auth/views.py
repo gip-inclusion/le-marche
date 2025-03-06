@@ -158,5 +158,6 @@ class MeetingCalendarView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["wagtail_paragraph"] = Paragraph.objects.get(slug="rdv-signup")
+        ctx["wagtail_contact"] = Paragraph.objects.get(slug="rdv-contact")
         ctx["agenda_iframe_url"] = settings.GOOGLE_AGENDA_IFRAME_URL
         return ctx
