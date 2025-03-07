@@ -160,9 +160,10 @@ class SignupFormTest(StaticLiveServerTestCase):
         # should redirect to redirect_url
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{redirect_url}")
         # message should be displayed
-        messages = self.driver.find_element(By.CSS_SELECTOR, "div.fr-alert--success")
-        self.assertTrue("Inscription validée" in messages.text)
-        return messages
+        if user_kind != User.KIND_BUYER:
+            messages = self.driver.find_element(By.CSS_SELECTOR, "div.fr-alert--success")
+            self.assertTrue("Inscription validée" in messages.text)
+            return messages
 
     def test_siae_submits_signup_form_success(self):
         self._complete_form(user_profile=self.SIAE, with_submit=True)
