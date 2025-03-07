@@ -51,6 +51,10 @@ class SignupFormTest(StaticLiveServerTestCase):
             slug="rdv-signup",
             defaults={"title": "Prise de rendez vous"},
         )
+        Paragraph.objects.get_or_create(
+            slug="rdv-contact",
+            defaults={"title": "Numéro tel"},
+        )
 
         self.SIAE = {
             "id_kind": 0,  # required
