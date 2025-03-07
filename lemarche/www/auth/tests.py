@@ -301,12 +301,10 @@ class SignupFormTest(StaticLiveServerTestCase):
 @override_settings(GOOGLE_AGENDA_IFRAME_URL="some_google_url")
 class SignupMeetingTestCase(TestCase):
 
-    def test_magic_link_test_case(self):
-        """View should not redirect to meeting if the User is signing up
-        with the magic link"""
-        self.assertEqual(User.objects.count(), 0)
-
-        data = {
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.form_data = {
             "kind": User.KIND_BUYER,
             "accept_rgpd": True,
             "first_name": "Prenom",
@@ -319,9 +317,32 @@ class SignupMeetingTestCase(TestCase):
             "password2": "+j2fABqwRGS4j4w",
         }
 
-        post_response = self.client.post(path=f"{reverse('auth:signup')}?skip_meeting=true", data=data)
+        Paragraph.objects.get_or_create(
+            slug="rdv-signup",
+            defaults={"title": "Prise de rendez vous"},
+        )
+        Paragraph.objects.get_or_create(
+            slug="rdv-contact",
+            defaults={"title": "Numéro tel"},
+        )
+
+    def test_magic_link_test_case(self):
+        """View should not redirect to meeting if the User is signing up
+        with the magic link"""
+        self.assertEqual(User.objects.count(), 0)
+
+        post_response = self.client.post(path=f"{reverse('auth:signup')}?skip_meeting=true", data=self.form_data)
         self.assertEqual(post_response.status_code, 302)
         self.assertTrue(User.objects.get().is_onboarded)
+
+    def test_meeting_redirect(self):
+        """View should redirect to meeting"""
+        self.assertEqual(User.objects.count(), 0)
+
+        post_response = self.client.post(path=reverse("auth:signup"), data=self.form_data)
+        self.assertEqual(post_response.status_code, 302)
+        self.assertFalse(User.objects.get().is_onboarded)
+        self.assertRedirects(post_response, reverse("auth:booking-meeting-view"))
 
 
 class LoginFormTest(StaticLiveServerTestCase):
