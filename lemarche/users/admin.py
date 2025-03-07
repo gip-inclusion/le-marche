@@ -434,8 +434,9 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
 
     def onboard_user_view(self, request, pk):
         user = self.model.objects.get(id=pk)
-        print(user)
+        user.set_onboarded_and_send_email()
 
+        self.message_user(request, "L'onboarding a été finalisé avec succès")
         # refresh page after submit
         return redirect("admin:users_user_change", pk)
 
@@ -490,8 +491,9 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             return format_html('<img src="/static/admin/img/icon-yes.svg" alt="True">')
         else:
             return format_html(
-                "<a class='button' href='{}'>Finaliser l'onboarding</a>",
-                reverse("admin:onboard_user", args=[user.pk]),
+                f"<a class='button'"
+                f" href='{reverse('admin:onboard_user', args=[user.pk])}'>"
+                f"Finaliser l'onboarding</a>"
             )
 
     onboard_user_button.short_description = "L'utilisateur a suivi la procédure d'onboarding"
