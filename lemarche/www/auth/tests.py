@@ -1,5 +1,5 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.test import override_settings
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -296,6 +296,32 @@ class SignupFormTest(StaticLiveServerTestCase):
     def tearDownClass(cls):
         cls.driver.close()
         super().tearDownClass()
+
+
+@override_settings(GOOGLE_AGENDA_IFRAME_URL="some_google_url")
+class SignupMeetingTestCase(TestCase):
+
+    def test_magic_link_test_case(self):
+        """View should not redirect to meeting if the User is signing up
+        with the magic link"""
+        self.assertEqual(User.objects.count(), 0)
+
+        data = {
+            "kind": User.KIND_BUYER,
+            "accept_rgpd": True,
+            "first_name": "Prenom",
+            "last_name": "Nom",
+            "phone": "0123456789",
+            "company_name": "Ma boite",
+            "position": "Role important",
+            "email": "buyer@example.com",
+            "password1": "+j2fABqwRGS4j4w",
+            "password2": "+j2fABqwRGS4j4w",
+        }
+
+        post_response = self.client.post(path=f"{reverse('auth:signup')}?skip_meeting=true", data=data)
+        self.assertEqual(post_response.status_code, 302)
+        self.assertTrue(User.objects.get().is_onboarded)
 
 
 class LoginFormTest(StaticLiveServerTestCase):

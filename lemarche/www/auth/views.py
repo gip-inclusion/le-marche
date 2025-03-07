@@ -75,6 +75,10 @@ class SignupView(SuccessMessageMixin, CreateView):
     form_class = SignupForm
     success_message = "Inscription validée !"  # see get_success_message() below
 
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.skip_meeting = self.request.GET.get("skip_meeting", None)
+
     def form_valid(self, form):
         """
         - send a welcome email to the user
@@ -84,7 +88,7 @@ class SignupView(SuccessMessageMixin, CreateView):
         """
         # User will be considered as onboarded when an admin will manually set it as onboarded
         # If no google agenda url, the functionality is disabled
-        if form.instance.kind == User.KIND_BUYER and settings.GOOGLE_AGENDA_IFRAME_URL:
+        if form.instance.kind == User.KIND_BUYER and settings.GOOGLE_AGENDA_IFRAME_URL and not self.skip_meeting:
             form.instance.is_onboarded = False
         user = form.save()
         # add to Brevo list (to send welcome email + automation)
@@ -107,7 +111,7 @@ class SignupView(SuccessMessageMixin, CreateView):
         - next_url if there is a next param
         - or dashboard if SIAE
         """
-        if settings.GOOGLE_AGENDA_IFRAME_URL and self.request.user.kind == User.KIND_BUYER:
+        if settings.GOOGLE_AGENDA_IFRAME_URL and self.request.user.kind == User.KIND_BUYER and not self.skip_meeting:
             success_url = reverse_lazy("auth:booking-meeting-view")
         else:
             success_url = reverse_lazy("wagtail_serve", args=("",))
