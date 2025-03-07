@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.generic import CreateView, TemplateView
 
@@ -78,6 +79,8 @@ class SignupView(SuccessMessageMixin, CreateView):
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
         self.skip_meeting = self.request.GET.get("skip_meeting", None)
+        if timezone.now().date().weekday() == 4:  # It's Friday, nobody works
+            self.skip_meeting = True
 
     def form_valid(self, form):
         """

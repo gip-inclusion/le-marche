@@ -1,6 +1,7 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from freezegun import freeze_time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
@@ -298,6 +299,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         super().tearDownClass()
 
 
+@freeze_time("2025-03-05")
 @override_settings(GOOGLE_AGENDA_IFRAME_URL="some_google_url")
 class SignupMeetingTestCase(TestCase):
 
@@ -332,6 +334,15 @@ class SignupMeetingTestCase(TestCase):
         self.assertEqual(User.objects.count(), 0)
 
         post_response = self.client.post(path=f"{reverse('auth:signup')}?skip_meeting=true", data=self.form_data)
+        self.assertEqual(post_response.status_code, 302)
+        self.assertTrue(User.objects.get().is_onboarded)
+
+    @freeze_time("2025-03-07")
+    def test_friday_disabled(self):
+        """Meeting appointment are disabled on Friday"""
+        self.assertEqual(User.objects.count(), 0)
+
+        post_response = self.client.post(path=reverse("auth:signup"), data=self.form_data)
         self.assertEqual(post_response.status_code, 302)
         self.assertTrue(User.objects.get().is_onboarded)
 
