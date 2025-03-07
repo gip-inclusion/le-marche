@@ -16,6 +16,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 from lemarche.stats.models import StatsUser
 from lemarche.users import constants as user_constants
+from lemarche.users.tasks import notify_user_onboarded
 from lemarche.utils.data import phone_number_display
 from lemarche.utils.emails import anonymize_email
 
@@ -349,6 +350,12 @@ class User(AbstractUser):
         """
         self.set_last_updated_fields()
         super().save(*args, **kwargs)
+
+    def set_onboarded_and_send_email(self):
+        """Set is_onboarded and send email"""
+        self.is_onboarded = True
+        self.save()
+        notify_user_onboarded(self)
 
     @property
     def full_name(self):
