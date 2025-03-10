@@ -199,6 +199,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         alerts = self.driver.find_element(By.CSS_SELECTOR, "form")
         self.assertTrue("Cette adresse e-mail est déjà utilisée." in alerts.text)
 
+    @freeze_time("2025-03-05")
     def test_buyer_submits_signup_form_success(self):
         self._complete_form(user_profile=self.BUYER, with_submit=False)
 
