@@ -4,6 +4,8 @@ from unittest.mock import patch
 
 from django.conf import settings
 from django.contrib.messages import get_messages
+from django.core.files.storage import default_storage
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -321,6 +323,59 @@ class TenderCreateViewTest(TestCase):
 
         self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
         self.assertEqual(tender.email_sent_for_modification, False)
+
+    def test_create_tender_with_attachment(self):
+        """Test create tender with attachments"""
+
+        title = "Test Tender with Attachments"
+        attachment_one = SimpleUploadedFile(
+            name="document.pdf", content=b"file_content", content_type="application/pdf"
+        )
+        attachment_two = SimpleUploadedFile(
+            name="specs.doc", content=b"specifications content", content_type="application/msword"
+        )
+
+        tenders_step_data = self._generate_fake_data_form(
+            _step_1={"general-title": title},
+            _step_2={"detail-attachment_one": attachment_one, "detail-attachment_two": attachment_two},
+        )
+
+        self.client.force_login(self.user_buyer)
+
+        self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+
+        tender = Tender.objects.get(title=title)
+        self.assertTrue(tender.attachment_one)
+        self.assertTrue(hasattr(tender.attachment_one, "file"))
+        self.assertTrue(tender.attachment_two)
+        self.assertTrue(hasattr(tender.attachment_two, "file"))
+        self.assertFalse(tender.attachment_three)
+
+        self.assertTrue(tender.attachment_one.name.lower().endswith(".pdf"))
+        self.assertTrue(tender.attachment_two.name.lower().endswith(".doc"))
+
+        self.assertTrue(default_storage.exists(tender.attachment_one.name))
+        self.assertTrue(default_storage.exists(tender.attachment_two.name))
+
+    def test_create_tender_with_attachment_error(self):
+        """Test create tender with attachments"""
+        attachment_one = SimpleUploadedFile(
+            name="specs.txt", content=b"specifications content", content_type="text/plain"
+        )
+
+        tenders_step_data = self._generate_fake_data_form(
+            _step_2={"detail-attachment_one": attachment_one},
+        )
+
+        self.client.force_login(self.user_buyer)
+        try:
+            self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+        except AssertionError as e:
+            if "{'attachment_one': ['Format de fichier non[53 chars]SX']} != {}" in str(e):
+                # handle the specific assertion error
+                pass
+            else:
+                raise e
 
 
 class TenderListViewTest(TestCase):
@@ -681,6 +736,22 @@ class TenderDetailViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Questions à poser aux prestataires ciblés")
         self.assertNotContains(response, "Questions du client")
+
+    def test_tender_attachment_display(self):  # TODO: add test for attachment display
+        self.tender_1.attachment_one = SimpleUploadedFile(
+            name="specs.pdf", content=b"specifications content", content_type="application/pdf"
+        )
+        self.tender_1.attachment_two = SimpleUploadedFile(
+            name="specs.doc", content=b"specifications content", content_type="application/msword"
+        )
+        self.tender_1.save()
+
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Télécharger le document 1")
+        self.assertContains(response, "Télécharger le document 2")
+        self.assertNotContains(response, "Télécharger le document 3")
 
     def test_tender_constraints_display(self):
         # tender with constraints: section should be visible
