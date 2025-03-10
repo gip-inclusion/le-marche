@@ -156,21 +156,12 @@ class TenderCreateMultiStepView(SessionWizardView):
                 else tender_constants.ACCEPT_SHARE_AMOUNT_FALSE
             )
             tender_dict["attachments"] = []
-            if tender_dict["attachment_one"]:
-                tender_dict["attachments"].append(tender_dict["attachment_one"])
-            elif self.instance.attachment_one:
-                if not tender_dict["attachment_one_delete"]:
-                    tender_dict["attachments"].append(self.instance.attachment_one)
-            if tender_dict["attachment_two"]:
-                tender_dict["attachments"].append(tender_dict["attachment_two"])
-            elif self.instance.attachment_two:
-                if not tender_dict["attachment_two_delete"]:
-                    tender_dict["attachments"].append(self.instance.attachment_two)
-            if tender_dict["attachment_three"]:
-                tender_dict["attachments"].append(tender_dict["attachment_three"])
-            elif self.instance.attachment_three:
-                if not tender_dict["attachment_three_delete"]:
-                    tender_dict["attachments"].append(self.instance.attachment_three)
+            for attachment_key in ["attachment_one", "attachment_two", "attachment_three"]:
+                if tender_dict.get(attachment_key):
+                    tender_dict["attachments"].append(tender_dict[attachment_key])
+                elif getattr(self.instance, attachment_key):
+                    if not tender_dict.get(f"{attachment_key}_delete"):
+                        tender_dict["attachments"].append(getattr(self.instance, attachment_key))
             context.update({"tender": tender_dict})
 
         context["breadcrumb_links"] = []
