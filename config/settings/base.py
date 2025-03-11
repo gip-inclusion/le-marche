@@ -211,6 +211,8 @@ MIDDLEWARE = [
     "lemarche.utils.tracker.TrackerMiddleware",
     # Final logger
     "django_datadog_logger.middleware.request_log.RequestLoggingMiddleware",
+    # Onboarded user middleware
+    "lemarche.users.middleware.NonOnboardedRedirectMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
