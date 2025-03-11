@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import formset_factory
 from django.forms.models import inlineformset_factory
 from django_select2.forms import ModelSelect2MultipleWidget
 from dsfr.forms import DsfrBaseForm
@@ -206,6 +207,13 @@ class SiaeActivitiesCreateForm(forms.ModelForm):
         queryset=SectorGroup.objects.all(),
         required=True,
     )
+
+    class Meta:
+        model = SectorGroup
+        fields = ["sector_group"]
+
+
+class SiaeActivitySectorForm(forms.ModelForm):
     sectors = GroupedModelMultipleChoiceField(
         label="Activités",
         queryset=Sector.objects.form_filter_queryset(),
@@ -213,6 +221,13 @@ class SiaeActivitiesCreateForm(forms.ModelForm):
         required=True,
         widget=forms.CheckboxSelectMultiple,
     )
+
+    class Meta:
+        model = SiaeActivity
+        fields = ["sectors"]
+
+
+class SiaeActivityPrestaForm(forms.ModelForm):
     presta_type = forms.MultipleChoiceField(
         label=SiaeActivity._meta.get_field("presta_type").verbose_name,
         choices=siae_constants.PRESTA_CHOICES,
@@ -251,6 +266,10 @@ class SiaeActivitiesCreateForm(forms.ModelForm):
         # these fields are autocompletes
         self.fields["locations"].choices = []
 
+        if self.instance and self.instance.pk:
+            self.fields["sector_group"].initial = self.instance.sector.group
+            self.fields["sectors"].initial = self.instance.sector
+
     def clean(self):
         cleaned_data = super().clean()
         geo_range = cleaned_data.get("geo_range")
@@ -269,9 +288,11 @@ class SiaeActivitiesCreateForm(forms.ModelForm):
     class Meta:
         model = SiaeActivity
         fields = [
-            "sector",
             "presta_type",
             "geo_range",
             "geo_range_custom_distance",
             "locations",
         ]
+
+
+SiaeActivityPrestaFormSet = formset_factory(form=SiaeActivityPrestaForm, extra=1)
