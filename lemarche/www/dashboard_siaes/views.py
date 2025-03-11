@@ -9,6 +9,7 @@ from django.utils.safestring import mark_safe
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
+from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae, SiaeActivity, SiaeUser, SiaeUserRequest
 from lemarche.utils import settings_context_processors
 from lemarche.utils.apis import api_brevo
@@ -16,6 +17,8 @@ from lemarche.utils.mixins import SiaeMemberRequiredMixin, SiaeUserAndNotMemberR
 from lemarche.utils.s3 import S3Upload
 from lemarche.www.dashboard_siaes.forms import (
     SiaeActivitiesCreateForm,
+    SiaeActivityPrestaFormSet,
+    SiaeActivitySectorForm,
     SiaeClientReferenceFormSet,
     SiaeEditContactForm,
     SiaeEditInfoForm,
@@ -141,6 +144,37 @@ class SiaeEditActivitiesView(SiaeMemberRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
         context["breadcrumb_current"] = f"{self.object.name_display} : modifier"
+
+        siae_activities = SiaeActivity.objects.filter(siae=self.object).select_related("sector", "sector__group")
+        grouped_activities = {}
+        grouped_prestations = {}
+        grouped_locations = {}
+
+        for activity in siae_activities:
+            group = activity.sector.group
+            sector = activity.sector
+
+            if group not in grouped_activities:
+                grouped_activities[group] = {}
+                grouped_prestations[group] = {}
+                grouped_locations[group] = {}
+
+            if sector not in grouped_activities[group]:
+                grouped_activities[group][sector] = []
+                grouped_prestations[group][sector] = set()
+                grouped_locations[group][sector] = set()
+
+            grouped_prestations[group][sector].update(activity.presta_type_display)
+
+            # Ajout des activités
+            grouped_activities[group][sector].append(activity)
+
+            # Ajout des localisations sans doublons
+            grouped_locations[group][sector].update(activity.locations.values_list("name", flat=True))
+
+        context["grouped_activities"] = grouped_activities
+        context["grouped_prestations"] = grouped_prestations
+        context["grouped_locations"] = grouped_locations
         return context
 
 
@@ -176,6 +210,12 @@ class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, CreateView):
     def form_valid(self, form):
         siae_activity = form.save(commit=False)
         siae_activity.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
+
+        selected_sectors = self.request.POST.getlist("sectors")
+        for sector_id in selected_sectors:
+            sector = Sector.objects.get(id=sector_id)
+            SiaeActivity.objects.get_or_create(siae=siae_activity.siae, sector=sector)
+
         siae_activity.save()
         form.save_m2m()
 
@@ -201,6 +241,19 @@ class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, CreateView):
             ],
             "current": context["page_title"],
         }
+
+        if self.request.POST:
+            context["sector_form"] = SiaeActivitySectorForm(self.request.POST)
+        else:
+            context["sector_form"] = SiaeActivitySectorForm()
+
+        context["presta_formsets"] = {
+            sector.id: SiaeActivityPrestaFormSet(
+                self.request.POST if self.request.POST else None, prefix=f"presta_{sector.id}"
+            )
+            for sector in Sector.objects.all()
+        }
+
         return context
 
     def get_success_url(self):
@@ -221,6 +274,10 @@ class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, SuccessMessageMixin, U
 
     def post(self, request, *args, **kwargs):
         self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
+        selected_sectors = request.POST.getlist("sectors")
+        for sector_id in selected_sectors:
+            sector = Sector.objects.get(id=sector_id)
+            SiaeActivity.objects.create(siae=self.siae, sector=sector)
         return super().post(request, *args, **kwargs)
 
     def get_object(self):
