@@ -1906,6 +1906,50 @@ class TenderQuestionAnswerTestCase(TestCase):
         self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_2, question=self.q1).answer, "SOMETHING")
         self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_2, question=self.q2).answer, "ELSE")
 
+        self.assertTrue(TenderSiae.objects.get(tender=self.tender, siae=self.siae_1).detail_contact_click_date)
+        self.assertTrue(TenderSiae.objects.get(tender=self.tender, siae=self.siae_2).detail_contact_click_date)
+
+    def test_with_authenticated_user_multiple_siae_only_one_selected(self):
+        """A user has 2 Siae that matched the same tender, but choose to answer for only one of them
+        with selecting only one in the siae select"""
+        url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
+
+        user = UserFactory()
+        self.siae_1.users.add(user)
+        self.siae_2.users.add(user)
+        self.client.force_login(user)
+
+        response_get = self.client.get(url)
+        self.assertEqual(response_get.status_code, 200)
+        # Only the 2 matched siae are grouped in the form, not the third that didn't match
+        self.assertEqual(len(response_get.context["questions_formset"]), 2)
+
+        payload = {
+            "siae": [self.siae_1.id],
+            "detail_contact_click_confirm": "true",
+            "form-TOTAL_FORMS": "2",
+            "form-INITIAL_FORMS": "2",
+            "form-MIN_NUM_FORMS": "0",
+            "form-MAX_NUM_FORMS": "1000",
+            # Answers for all selected Siaes
+            "form-0-answer": "SOMETHING",
+            "form-0-question": self.q1.id,
+            "form-1-answer": "ELSE",
+            "form-1-question": self.q2.id,
+        }
+        response_post = self.client.post(url, data=payload)
+
+        self.assertEqual(response_post.status_code, 302)
+
+        self.assertEqual(QuestionAnswer.objects.all().count(), 2)
+
+        self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_1, question=self.q1).answer, "SOMETHING")
+        self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_1, question=self.q2).answer, "ELSE")
+
+        # Only the selected Siae have a detail_contact_click_date
+        self.assertTrue(TenderSiae.objects.get(tender=self.tender, siae=self.siae_1).detail_contact_click_date)
+        self.assertFalse(TenderSiae.objects.get(tender=self.tender, siae=self.siae_2).detail_contact_click_date)
+
     def test_with_anonymous_user_single_siae(self):
         """Unauthenticated users should also be granted the right to answers questions"""
         url = (
