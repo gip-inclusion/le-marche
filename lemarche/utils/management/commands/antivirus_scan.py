@@ -39,12 +39,13 @@ class Command(BaseCommand):
                             self.stdout_messages_info(result)
                             virus_detected_count += 1
                             default_storage.delete(attachment.file.name)
-                            if tender.attachment_one == attachment:
-                                tender.attachment_one = None
-                            elif tender.attachment_two == attachment:
-                                tender.attachment_two = None
-                            elif tender.attachment_three == attachment:
-                                tender.attachment_three = None
+                            match attachment:
+                                case tender.attachment_one:
+                                    tender.attachment_one = None
+                                case tender.attachment_two:
+                                    tender.attachment_two = None
+                                case tender.attachment_three:
+                                    tender.attachment_three = None
                             tender.save()
                             self.stdout_error(f"Attachment {attachment} deleted")
                             # TODO: send slack notification to admin
