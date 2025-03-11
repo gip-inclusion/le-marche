@@ -1514,7 +1514,7 @@ class SiaeOffer(models.Model):
 @receiver(post_delete, sender=SiaeActivity)
 def siae_activity_post_save(sender, instance, **kwargs):
     """Update sector_count when SiaeActivity is created or updated."""
-    instance.siae.sector_count = instance.siae.activities.values("sectors__group").distinct().count()
+    instance.siae.sector_count = instance.siae.activities.values("sector__group").distinct().count()
     instance.siae.save()
 
 
