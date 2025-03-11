@@ -7,7 +7,11 @@ from django.db import migrations, models
 def paragraph_migration(apps, schema_editor):
     Paragraph = apps.get_model("cms", "Paragraph")
     Paragraph.objects.create(
-        title="Prise de rendez vous", slug="rdv-signup", content="Prenez un rendez vous s'il vous plaît"
+        title="Prise de rendez vous",
+        slug="rdv-signup",
+        content='<h2 data-block-key="bafwd">Bienvenue !</h2><p data-block-key="qrk4">Prenez RDV avec nos experts pour activer votre compte et accéder à '
+        'l\'ensemble des fonctionnalités du Marché de l\'inclusion</p><p data-block-key="c66kr"><b>✓ 2500 fournisseurs labélisés Handicap (EA &amp; ESAT)</b></p><p data-block-key="f4v3j">'
+        '<b>✓ 4000 fournisseurs labélisés insertion par l\'activité économiques (IAE)</b></p><p data-block-key="bicu4"><b>✓ Réduisez le temps consacré à vos sourcing achat inclusif</b></p>',
     )
 
 
