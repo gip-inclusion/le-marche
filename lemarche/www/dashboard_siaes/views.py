@@ -6,10 +6,10 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
-from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
-from lemarche.sectors.models import Sector
+from lemarche.sectors.models import Sector, SectorGroup
 from lemarche.siaes.models import Siae, SiaeActivity, SiaeUser, SiaeUserRequest
 from lemarche.utils import settings_context_processors
 from lemarche.utils.apis import api_brevo
@@ -241,6 +241,7 @@ class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, CreateView):
             ],
             "current": context["page_title"],
         }
+        context["sector_groups"] = SectorGroup.objects.all()
 
         if self.request.POST:
             context["sector_form"] = SiaeActivitySectorForm(self.request.POST)
@@ -304,6 +305,19 @@ class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, SuccessMessageMixin, U
 
     def get_success_url(self):
         return reverse_lazy("dashboard_siaes:siae_edit_activities", args=[self.kwargs.get("slug")])
+
+
+class SiaeActivitySectorFormView(FormView):
+    template_name = "dashboard/_siae_edit_activities_create_form.html"
+    form_class = SiaeActivitySectorForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sector_group_id = self.request.GET.get("sector_group_id")
+        if sector_group_id:
+            sector_group = get_object_or_404(SectorGroup, id=sector_group_id)
+            context["activities"] = Sector.objects.filter(group=sector_group)
+        return context
 
 
 class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
