@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
+from django.db.models import Prefetch
 from django.forms import formset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
@@ -638,6 +639,14 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
         # then filter with the form
         self.filter_form = SiaeFilterForm(data=self.request.GET)
         qs = self.filter_form.filter_queryset(qs)
+        # Display only questions related to the current tender
+        qs = qs.prefetch_related(
+            Prefetch(
+                "questionanswer_set",
+                queryset=QuestionAnswer.objects.filter(question__tender=self.tender),
+                to_attr="questions_for_tender",
+            )
+        )
         return qs
 
     def get(self, request, status=None, *args, **kwargs):
