@@ -365,7 +365,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
 
         # update 'email_link_click_date'
         if self.siae_id:
-            if self.user_id:  # TODO: check if user in siae ?
+            if self.user_id:
                 TenderSiae.objects.filter(tender=self.object, siae=self.siae, email_link_click_date=None).update(
                     user=self.user_id, email_link_click_date=timezone.now(), updated_at=timezone.now()
                 )
@@ -429,18 +429,17 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
             )
 
             if user.kind == User.KIND_SIAE:
+                # Hide only if all saie are already interested
                 context["siae_has_detail_contact_click_date"] = (
-                    getattr(context, "siae_has_detail_contact_click_date", None)
-                    or TenderSiae.objects.filter(
+                    TenderSiae.objects.filter(
                         tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False
-                    ).exists()
+                    ).count()
+                    == TenderSiae.objects.filter(tender=self.object, siae__in=user.siaes.all()).count()
                 )
-                context["siae_has_detail_not_interested_click_date"] = (
-                    getattr(context, "siae_has_detail_not_interested_click_date", None)
-                    or TenderSiae.objects.filter(
-                        tender=self.object, siae__in=user.siaes.all(), detail_not_interested_click_date__isnull=False
-                    ).exists()
-                )
+
+                context["siae_has_detail_not_interested_click_date"] = TenderSiae.objects.filter(
+                    tender=self.object, siae__in=user.siaes.all(), detail_not_interested_click_date__isnull=False
+                ).exists()
                 context["is_new_for_siaes"] = self.is_new_for_siaes
                 if show_nps:
                     context["nps_form_id"] = settings.TALLY_SIAE_NPS_FORM_ID
@@ -470,9 +469,12 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
         self.siae_select_form_class = SiaeSelectionForm
 
     def get(self, request, *args, **kwargs):
-        """Create empty answers to be updated in the formset"""
         if self.request.user.is_authenticated:
-            siae_qs = Siae.objects.filter(users=self.request.user, tendersiae__tender=self.object)
+            siae_qs = Siae.objects.filter(
+                users=self.request.user,
+                tendersiae__tender=self.object,
+                tendersiae__detail_contact_click_date__isnull=True,
+            )
 
         else:  # has siae_id
             siae_qs = Siae.objects.filter(id=self.siae_id)
@@ -486,6 +488,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
 
         self.answers_formset = self.answers_formset_class(initial=initial_data)
 
+        # Do not display siae select if the user have only one siae
         if siae_qs.count() > 1:
             self.siae_select_form = self.siae_select_form_class(
                 queryset=siae_qs,
