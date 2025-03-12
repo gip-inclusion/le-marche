@@ -58,7 +58,7 @@
                 </div>
             
                 <div x-show="showQuestions" class="fr-mt-4w">
-                    {% for answer in siae.questionanswer_set.all %}
+                    {% for answer in siae.questions_for_tender %}
                         <h4 class="fr-mb-1w">{{ answer.question }}</h4>
                         <p>{{ answer.answer }}</p>
                     {% endfor %}
