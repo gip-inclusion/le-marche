@@ -78,7 +78,6 @@ class Command(BaseCommand):
                 ["clamdscan", "--no-summary", "--infected", path],
                 capture_output=True,
                 text=True,
-                check=True,  # Raises CalledProcessError if return code is non-zero
             )
         except FileNotFoundError:
             raise Exception("Command 'clamdscan' not found.")
