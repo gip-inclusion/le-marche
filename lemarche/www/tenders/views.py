@@ -436,10 +436,13 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
                     ).count()
                     == TenderSiae.objects.filter(tender=self.object, siae__in=user.siaes.all()).count()
                 )
+                if context["siae_has_detail_contact_click_date"]:
+                    context["siae_has_detail_not_interested_click_date"] = False
+                else:
+                    context["siae_has_detail_not_interested_click_date"] = TenderSiae.objects.filter(
+                        tender=self.object, siae__in=user.siaes.all(), detail_not_interested_click_date__isnull=False
+                    ).exists()
 
-                context["siae_has_detail_not_interested_click_date"] = TenderSiae.objects.filter(
-                    tender=self.object, siae__in=user.siaes.all(), detail_not_interested_click_date__isnull=False
-                ).exists()
                 context["is_new_for_siaes"] = self.is_new_for_siaes
                 if show_nps:
                     context["nps_form_id"] = settings.TALLY_SIAE_NPS_FORM_ID
