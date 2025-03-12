@@ -19,6 +19,8 @@ class Command(BaseCommand):
         self.stdout_info("Scanning S3 files attachments for viruses...")
         temp_dir = tempfile.mkdtemp()
         shutil.chown(temp_dir, group="clamav")
+        os.chmod(temp_dir, stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP)
+
         attachments_count = 0
         attachments_not_found_count = 0
         virus_detected_count = 0
