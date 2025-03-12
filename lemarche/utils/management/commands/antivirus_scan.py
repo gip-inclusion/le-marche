@@ -1,4 +1,6 @@
+import os
 import shutil
+import stat
 import subprocess
 import tempfile
 
@@ -16,6 +18,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout_info("Scanning S3 files attachments for viruses...")
         temp_dir = tempfile.mkdtemp()
+        shutil.chown(temp_dir, group="clamav")
         attachments_count = 0
         attachments_not_found_count = 0
         virus_detected_count = 0
@@ -32,6 +35,9 @@ class Command(BaseCommand):
                         with default_storage.open(attachment.file.name) as remote_file:
                             with open(local_file_path, "wb") as local_file:
                                 local_file.write(remote_file.read())
+
+                        shutil.chown(local_file_path, group="clamav")
+                        os.chmod(local_file_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP)
 
                         result = self.scan(local_file_path)
                         if result is not None:
