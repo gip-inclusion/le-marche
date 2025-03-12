@@ -24,7 +24,26 @@
                     </div>
                     <div class="fr-grid-row fr-grid-row--gutters">
                         <div class="fr-col-12 fr-col-lg-8">
-                            {% dsfr_form_field form.sector %}
+                            <div class="fr-input-group">
+                                <label class="fr-label" for="id_sector_group">Secteurs d'activités*</label>
+                                <select
+                                    hx-get="{% url 'dashboard_siaes:siae_activities_sector_form' siae.slug %}" + this.value
+                                    hx-trigger="change"
+                                    hx-target="#response-container"
+                                    id="id_sector_group"
+                                    class="fr-select"
+                                    name="sector_group_id"
+                                    required="">
+                                    <option value="" selected="">----- Sélectionnez un secteur -----</option>
+                                    {% for value in sector_groups %}
+                                        <option value="{{ value.pk }}">{{ value.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div id="response-container">
+
+                            </div>
                         </div>
                         <div class="fr-col-12 fr-col-lg-4">
                             <div class="fr-callout fr-p-4v">
@@ -37,54 +56,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="fr-grid-row fr-grid-row--gutters">
-                        <div class="fr-col-12 fr-col-lg-8">{% dsfr_form_field form.presta_type %}</div>
-                        <div class="fr-col-12 fr-col-lg-4">
-                            <div class="fr-callout fr-p-4v">
-                                <h3 class="fr-callout__title fr-text--sm">
-                                    <span class="fr-icon-information-line" aria-hidden="true"></span> Type de prestation
-                                </h3>
-                                <p class="fr-callout__text fr-text--sm fr-pl-7v">
-                                    Vous pourrez ensuite détailler vos prestations dans la section <i>offre commerciale</i>.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="fr-grid-row fr-grid-row--gutters">
-                        <div class="fr-col-12 fr-col-lg-8">
-                            {% dsfr_form_field form.geo_range %}
-                            <div id="geo_range_custom_distance_wrapper">{% dsfr_form_field form.geo_range_custom_distance %}</div>
-                            <div id="geo_range_locations_wrapper" class="fr-input-group">
-                                {{ form.locations }}
-                                {{ current_locations|json_script:"current-locations" }}
-                            </div>
-                        </div>
-                        <div class="fr-col-12 fr-col-lg-4">
-                            <div class="fr-callout fr-p-4v">
-                                <h3 class="fr-callout__title fr-text--sm">
-                                    <span class="fr-icon-information-line" aria-hidden="true"></span> Périmètre d'intervention
-                                </h3>
-                                <p class="fr-callout__text fr-text--sm fr-pl-7v">
-                                    Le périmètre d'intervention est un critère essentiel dans le choix des acheteurs. Il est nécessaire de bien le renseigner.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="fr-grid-row fr-grid-row--gutters fr-mt-3v fr-mt-lg-5v">
-                        <div class="fr-col-12 fr-col-lg-8">
-                            <ul class="fr-mt-2v fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-sm fr-btns-group--icon-left">
-                                <li>
-                                    <button type="submit" class="fr-btn">Enregistrer</button>
-                                </li>
-                                <li>
-                                    <a class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-go-back-line"
-                                       href="{% url 'dashboard_siaes:siae_edit_activities' siae.slug %}">
-                                        <span>Annuler</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+
                 </form>
             </div>
         </div>
@@ -95,6 +67,52 @@
             src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
+            // -------------------------------------------------------------------
+            // dynamic sector display based on sector group selection
+            let sectorGroupSelect = document.getElementById('id_sector_group');
+            let sectorGroupSelectOptions = sectorGroupSelect.children;
+            let sectorRadios = document.querySelectorAll('#checkboxes-id_sectors input[type="checkbox"][name="sectors"]');
+            let sectorGroupLabels = Array.from(document.querySelectorAll('#checkboxes-id_sectors label[class="form-check-label"]')).filter(label => !label.htmlFor);
+            let sectorLabels = Array.from(document.querySelectorAll('#checkboxes-id_sectors label[class="fr-label"]')).filter(label => label.htmlFor);
+
+            // hide all sector group titles
+            sectorGroupLabels.forEach(label => label.style.display = 'none');
+
+            function hideAllSectors() {
+                sectorLabels.forEach(label => label.style.display = 'none');
+            }
+
+            function showSectorsOfSelectedSectorGroup(selectedSectorGroupValue) {
+                let selectedSectorGroupName = Array.from(sectorGroupSelectOptions).filter(option => option.value === selectedSectorGroupValue)[0].innerText;
+                let selectedSectorGroupLabel = sectorGroupLabels.find(label => label.innerText === selectedSectorGroupName);
+                Array.from(selectedSectorGroupLabel.parentNode.children).forEach(child => {
+                    if (child.lastElementChild && child.lastElementChild.htmlFor) {
+                        let selectedSectorGroupLabelSectorLabel = sectorLabels.find(label => label.htmlFor === child.lastElementChild.htmlFor);
+                        selectedSectorGroupLabelSectorLabel.style.display = 'block';
+                    }
+                });
+            }
+
+            if (sectorGroupSelect.value) {
+                hideAllSectors();
+                showSectorsOfSelectedSectorGroup(sectorGroupSelect.value);
+            } else {
+                // init: hide all sector checkboxes
+                sectorLabels.forEach(label => label.style.display = 'none');
+            }
+
+            // on sector group change
+            sectorGroupSelect.addEventListener('change', (event) => {
+                // unselect all sectors + hide them
+                sectorRadios.forEach(checkbox => checkbox.checked = false);
+                hideAllSectors();
+                // show only sectors of selected sector group
+                if (event.target.value) {
+                    showSectorsOfSelectedSectorGroup(event.target.value);
+                }
+            })
+            // -------------------------------------------------------------------
+
 
             // -------------------------------------------------------------------
             // init locations autocomplete form fields
