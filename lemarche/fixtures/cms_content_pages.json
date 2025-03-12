@@ -32,6 +32,6 @@
     {
       "slug": "onboarding-en-cours",
       "title": "Onboarding en cours",
-      "body": "[{'id': 'd4918c70-f807-444b-b283-1be2487d404e',\n  'type': 'paragraph',\n  'value': '<h2 data-block-key=\"uhlwf\">Votre rendez-vous avec l’un de nos experts en achats inclusifs est confirmé !</h2><p data-block-key=\"1sdje\">Il se chargera d’activer votre compte et de vous guider dans votre découverte du Marché de l’Inclusion. Lors de cet échange, vous explorerez toutes les fonctionnalités de la plateforme et apprendrez comment maximiser votre impact grâce aux achats inclusifs.</p>'}]"
+      "body": "[{\"id\": \"d4918c70-f807-444b-b283-1be2487d404e\", \"type\": \"paragraph\", \"value\": \"<h2 data-block-key=\\\"uhlwf\\\">Votre rendez-vous avec l\\u2019un de nos experts en achats inclusifs est confirm\\u00e9 !</h2><p data-block-key=\\\"1sdje\\\">Il se chargera d\\u2019activer votre compte et de vous guider dans votre d\\u00e9couverte du March\\u00e9 de l\\u2019Inclusion. Lors de cet \\u00e9change, vous explorerez toutes les fonctionnalit\\u00e9s de la plateforme et apprendrez comment maximiser votre impact gr\\u00e2ce aux achats inclusifs.</p>\"}]"
     }
 ]
