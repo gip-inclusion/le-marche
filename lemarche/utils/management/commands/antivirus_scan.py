@@ -21,7 +21,7 @@ class Command(BaseCommand):
         parser.add_argument("--dry-run", action="store_true", help="Dry run (no changes to the DB)")
         parser.add_argument("--minutes-since", type=int, help="Scan since X minutes")
 
-    def handle(self, dry_run=False, minutes_since=None, *args, **options):
+    def handle(self, dry_run=False, minutes_since=None, *args, **options):  # noqa: max-complexity=12
         self.stdout_info("Scanning S3 files attachments for viruses...")
         temp_dir = tempfile.mkdtemp()
         shutil.chown(temp_dir, group="clamav")
