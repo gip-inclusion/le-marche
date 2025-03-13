@@ -152,10 +152,16 @@ class SiaeListFilterApiTest(TestCase):
 class SiaeDetailApiTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.siae = SiaeFactory()
         cls.user_token = generate_random_string()
         UserFactory(api_key=cls.user_token)
         cls.authenticated_client = cls.client_class(headers={"authorization": f"Bearer {cls.user_token}"})
+
+    def setUp(self):
+        self.siae = SiaeFactory()
+        SiaeActivityFactory(siae=self.siae, presta_type=[siae_constants.PRESTA_BUILD])
+        # Duplicated to see if there is no duplicates in presta_types serialized value
+        SiaeActivityFactory(siae=self.siae, presta_type=[siae_constants.PRESTA_BUILD, siae_constants.PRESTA_DISP])
+        SiaeActivityFactory(siae=self.siae, presta_type=[siae_constants.PRESTA_DISP])
 
     def test_should_return_4O4_if_siae_excluded(self):
         siae_opcs = SiaeFactory(kind="OPCS")
@@ -170,7 +176,8 @@ class SiaeDetailApiTest(TestCase):
 
     def test_should_return_detailed_siae_object_to_authenticated_users(self):
         url = reverse("api:siae-detail", args=[self.siae.id])
-        response = self.authenticated_client.get(url)
+        with self.assertNumQueries(9):
+            response = self.authenticated_client.get(url)
         self.assertTrue("id" in response.data)
         self.assertTrue("name" in response.data)
         self.assertTrue("siret" in response.data)
@@ -182,6 +189,9 @@ class SiaeDetailApiTest(TestCase):
         self.assertTrue("offers" in response.data)
         self.assertTrue("client_references" in response.data)
         self.assertTrue("labels_old" in response.data)
+        self.assertQuerySetEqual(
+            response.data["presta_types"], [siae_constants.PRESTA_BUILD, siae_constants.PRESTA_DISP], ordered=False
+        )
 
 
 class SiaeRetrieveBySlugApiTest(TestCase):
