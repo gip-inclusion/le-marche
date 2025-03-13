@@ -1135,7 +1135,8 @@ class Siae(models.Model):
         return get_object_admin_url(self)
 
     def get_sectors(self):
-        return Sector.objects.filter(siae_activities__siae=self)
+        """Used in the api to get all distinct related sectors"""
+        return Sector.objects.filter(siae_activities__siae=self).distinct()
 
     def set_super_badge(self):
         update_fields_list = ["super_badge"]

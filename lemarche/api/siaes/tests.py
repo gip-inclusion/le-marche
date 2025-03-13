@@ -160,8 +160,14 @@ class SiaeDetailApiTest(TestCase):
         self.siae = SiaeFactory()
         SiaeActivityFactory(siae=self.siae, presta_type=[siae_constants.PRESTA_BUILD])
         # Duplicated to see if there is no duplicates in presta_types serialized value
-        SiaeActivityFactory(siae=self.siae, presta_type=[siae_constants.PRESTA_BUILD, siae_constants.PRESTA_DISP])
-        SiaeActivityFactory(siae=self.siae, presta_type=[siae_constants.PRESTA_DISP])
+        sector_1 = SectorFactory()
+        sector_2 = SectorFactory()
+        SiaeActivityFactory(
+            siae=self.siae,
+            sectors=[sector_1, sector_2],
+            presta_type=[siae_constants.PRESTA_BUILD, siae_constants.PRESTA_DISP],
+        )
+        SiaeActivityFactory(siae=self.siae, sectors=[sector_1], presta_type=[siae_constants.PRESTA_DISP])
 
     def test_should_return_4O4_if_siae_excluded(self):
         siae_opcs = SiaeFactory(kind="OPCS")
@@ -192,6 +198,7 @@ class SiaeDetailApiTest(TestCase):
         self.assertQuerySetEqual(
             response.data["presta_types"], [siae_constants.PRESTA_BUILD, siae_constants.PRESTA_DISP], ordered=False
         )
+        self.assertEqual(len(response.data["sectors"]), 2)
 
 
 class SiaeRetrieveBySlugApiTest(TestCase):
