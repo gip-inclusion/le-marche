@@ -525,7 +525,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
                         )
             else:
                 messages.add_message(
-                    self.request, messages.ERROR, "Une erreur à eu lieu lors de la soumission du formulaire"
+                    self.request, messages.ERROR, "Une erreur a eu lieu lors de la soumission du formulaire"
                 )
                 return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm, self.siae_id))
 
