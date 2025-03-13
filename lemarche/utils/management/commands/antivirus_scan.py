@@ -3,10 +3,12 @@ import shutil
 import stat
 import subprocess
 import tempfile
+from datetime import timedelta
 
 from django.core.files.storage import default_storage
 from django.core.management.base import CommandError
 from django.db.models import Q
+from django.utils import timezone
 
 from lemarche.tenders.models import Tender
 from lemarche.utils.commands import BaseCommand
@@ -15,7 +17,11 @@ from lemarche.utils.commands import BaseCommand
 class Command(BaseCommand):
     help = "Scan S3 files uploaded in tender form for viruses"
 
-    def handle(self, *args, **options):
+    def add_arguments(self, parser):
+        parser.add_argument("--dry-run", action="store_true", help="Dry run (no changes to the DB)")
+        parser.add_argument("--minutes-since", type=int, help="Scan since X minutes")
+
+    def handle(self, dry_run=False, minutes_since=None, *args, **options):
         self.stdout_info("Scanning S3 files attachments for viruses...")
         temp_dir = tempfile.mkdtemp()
         shutil.chown(temp_dir, group="clamav")
@@ -24,9 +30,15 @@ class Command(BaseCommand):
         attachments_count = 0
         attachments_not_found_count = 0
         virus_detected_count = 0
-        for tender in Tender.objects.filter(
+
+        qs = Tender.objects.filter(
             Q(attachment_one__isnull=False) | Q(attachment_two__isnull=False) | Q(attachment_three__isnull=False)
-        ):
+        )
+
+        if minutes_since:
+            qs = qs.filter(updated_at__gte=timezone.now() - timedelta(minutes=minutes_since))
+
+        for tender in qs:
             self.stdout_info(f"Tender {tender.id} has {len(tender.attachments)} attachments")
             for attachment in tender.attachments:
                 try:
@@ -46,17 +58,18 @@ class Command(BaseCommand):
                             self.stdout_error(f"Virus detected in {attachment}")
                             self.stdout_messages_info(result)
                             virus_detected_count += 1
-                            default_storage.delete(attachment.file.name)
-                            match attachment:
-                                case tender.attachment_one:
-                                    tender.attachment_one = None
-                                case tender.attachment_two:
-                                    tender.attachment_two = None
-                                case tender.attachment_three:
-                                    tender.attachment_three = None
-                            tender.save()
-                            self.stdout_error(f"Attachment {attachment} deleted")
-                            # TODO: send slack notification to admin
+                            if not dry_run:
+                                default_storage.delete(attachment.file.name)
+                                match attachment:
+                                    case tender.attachment_one:
+                                        tender.attachment_one = None
+                                    case tender.attachment_two:
+                                        tender.attachment_two = None
+                                    case tender.attachment_three:
+                                        tender.attachment_three = None
+                                tender.save()
+                                self.stdout_error(f"Attachment {attachment} deleted")
+                                # TODO: send slack notification to admin
 
                 except FileNotFoundError:
                     self.stdout_error("File not found!")
