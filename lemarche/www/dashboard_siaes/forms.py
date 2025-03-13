@@ -226,12 +226,6 @@ class SiaeActivitySectorForm(forms.ModelForm):
         model = SiaeActivity
         fields = ["sectors"]
 
-    class Media:
-        css = {
-            "all": ["css/_hidden_label.css"],
-        }
-        js = ("js/siae_activity_form.js",)
-
     def __init__(self, *args, sector_group_id=None, **kwargs):
         super().__init__(*args, **kwargs)
 
