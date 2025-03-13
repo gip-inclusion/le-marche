@@ -311,13 +311,11 @@ class SiaeActivitySectorFormView(FormView):
     template_name = "dashboard/_siae_edit_activities_create_form.html"
     form_class = SiaeActivitySectorForm
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
         sector_group_id = self.request.GET.get("sector_group_id")
-        if sector_group_id:
-            sector_group = get_object_or_404(SectorGroup, id=sector_group_id)
-            context["activities"] = Sector.objects.filter(group=sector_group)
-        return context
+        kwargs["sector_group_id"] = sector_group_id
+        return kwargs
 
 
 class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
