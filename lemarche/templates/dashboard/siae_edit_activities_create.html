@@ -1,5 +1,8 @@
 {% extends "layouts/base.html" %}
 {% load static dsfr_tags %}
+{% block extra_css %}
+    {{ sector_form.media.css }}
+{% endblock extra_css %}
 {% block page_title %}
     {{ page_title }}{{ block.super }}
 {% endblock page_title %}
@@ -42,7 +45,7 @@
                             </div>
 
                             <div id="response-container">
-                                <!-- form.sectors is loaded from '_siae_edit_activities_create_form.html'-->
+                                <!-- Sectors form -->
                             </div>
                         </div>
                         <div class="fr-col-12 fr-col-lg-4">
@@ -63,6 +66,7 @@
     </div>
 {% endblock content %}
 {% block extra_js %}
+    {{ sector_form.media.js }}
     <script type="text/javascript"
             src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
     <script type="text/javascript">
