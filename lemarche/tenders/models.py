@@ -311,7 +311,7 @@ class TenderQuerySet(models.QuerySet):
 
 def tender_attachment_directory_path(instance, filename):
     filename = f"{str(uuid4())}.{filename.split('.')[-1]}"
-    return f"tenders/attachments/{instance.id}/{filename}"
+    return f"tenders/attachments/{filename}"
 
 
 class Tender(models.Model):
