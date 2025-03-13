@@ -11,6 +11,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 from lemarche.tenders.models import Tender
+from lemarche.utils.apis import api_slack
 from lemarche.utils.commands import BaseCommand
 
 
@@ -55,8 +56,12 @@ class Command(BaseCommand):
 
                         result = self.scan(local_file_path)
                         if result is not None:
-                            self.stdout_error(f"Virus detected in {attachment}")
-                            self.stdout_messages_info(result)
+                            msg_error = [
+                                "----- Virus detected in tender attachment -----",
+                                f"Tender: {tender.id}",
+                                f"Attachment: {attachment}",
+                                f"Result: {result}",
+                            ]
                             virus_detected_count += 1
                             if not dry_run:
                                 default_storage.delete(attachment.file.name)
@@ -68,8 +73,10 @@ class Command(BaseCommand):
                                     case tender.attachment_three:
                                         tender.attachment_three = None
                                 tender.save()
-                                self.stdout_error(f"Attachment {attachment} deleted")
-                                # TODO: send slack notification to admin
+                                msg_error.append(f"Attachment {attachment} deleted")
+
+                            self.stdout_messages_error(msg_error)
+                            api_slack.send_message_to_channel("\n".join(msg_error))
 
                 except FileNotFoundError:
                     self.stdout_error("File not found!")
