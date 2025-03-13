@@ -1,3 +1,21 @@
 {% load static dsfr_tags %}
 
-{% dsfr_form_field form.sectors %}
+
+<legend id="id_sectors-legend" class="fr-fieldset__legend fr-text--regular">
+    <label>Activités :</label>
+        *
+</legend>
+<div class="fr-fieldset__content">
+    <div class="fr-checkbox-group">
+        <div>
+            {% for sector in form.fields.sectors.queryset %}
+                <div class="fr-checkbox-group">
+                    <input id="id_sectors_0_{{ forloop.counter0 }}" type="checkbox" name="sectors" value="{{ sector.id }}" dsfr="dsfr" data-fr-js-checkbox-input="true">
+                    <label class="fr-label" for="id_sectors_0_{{ forloop.counter0 }}">
+                        {{ sector }}
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

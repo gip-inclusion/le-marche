@@ -32,7 +32,7 @@
                                 <select
                                     hx-get="{% url 'dashboard_siaes:siae_activities_sector_form' siae.slug %}" + this.value
                                     hx-trigger="change"
-                                    hx-target="#response-container"
+                                    hx-target="#checkboxes-id_sectors"
                                     id="id_sector_group"
                                     class="fr-select"
                                     name="sector_group_id"
@@ -44,9 +44,9 @@
                                 </select>
                             </div>
 
-                            <div id="response-container">
+                            <fieldset id="checkboxes-id_sectors" class="fr-fieldset" aria-labelledby="id_sectors-legend">
                                 <!-- Sectors form -->
-                            </div>
+                            </fieldset>
                         </div>
                         <div class="fr-col-12 fr-col-lg-4">
                             <div class="fr-callout fr-p-4v">
