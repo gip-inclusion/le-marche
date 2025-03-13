@@ -226,6 +226,14 @@ class SiaeActivitySectorForm(forms.ModelForm):
         model = SiaeActivity
         fields = ["sectors"]
 
+    def __init__(self, *args, sector_group_id=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if sector_group_id:
+            self.fields["sectors"].queryset = Sector.objects.filter(group=sector_group_id)
+        else:
+            self.fields["sectors"].queryset = Sector.objects.none()
+
 
 class SiaeActivityPrestaForm(forms.ModelForm):
     presta_type = forms.MultipleChoiceField(
