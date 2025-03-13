@@ -42,7 +42,7 @@
                             </div>
 
                             <div id="response-container">
-
+                                <!-- form.sectors is loaded from '_siae_edit_activities_create_form.html'-->
                             </div>
                         </div>
                         <div class="fr-col-12 fr-col-lg-4">
@@ -67,53 +67,6 @@
             src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
-            // -------------------------------------------------------------------
-            // dynamic sector display based on sector group selection
-            let sectorGroupSelect = document.getElementById('id_sector_group');
-            let sectorGroupSelectOptions = sectorGroupSelect.children;
-            let sectorRadios = document.querySelectorAll('#checkboxes-id_sectors input[type="checkbox"][name="sectors"]');
-            let sectorGroupLabels = Array.from(document.querySelectorAll('#checkboxes-id_sectors label[class="form-check-label"]')).filter(label => !label.htmlFor);
-            let sectorLabels = Array.from(document.querySelectorAll('#checkboxes-id_sectors label[class="fr-label"]')).filter(label => label.htmlFor);
-
-            // hide all sector group titles
-            sectorGroupLabels.forEach(label => label.style.display = 'none');
-
-            function hideAllSectors() {
-                sectorLabels.forEach(label => label.style.display = 'none');
-            }
-
-            function showSectorsOfSelectedSectorGroup(selectedSectorGroupValue) {
-                let selectedSectorGroupName = Array.from(sectorGroupSelectOptions).filter(option => option.value === selectedSectorGroupValue)[0].innerText;
-                let selectedSectorGroupLabel = sectorGroupLabels.find(label => label.innerText === selectedSectorGroupName);
-                Array.from(selectedSectorGroupLabel.parentNode.children).forEach(child => {
-                    if (child.lastElementChild && child.lastElementChild.htmlFor) {
-                        let selectedSectorGroupLabelSectorLabel = sectorLabels.find(label => label.htmlFor === child.lastElementChild.htmlFor);
-                        selectedSectorGroupLabelSectorLabel.style.display = 'block';
-                    }
-                });
-            }
-
-            if (sectorGroupSelect.value) {
-                hideAllSectors();
-                showSectorsOfSelectedSectorGroup(sectorGroupSelect.value);
-            } else {
-                // init: hide all sector checkboxes
-                sectorLabels.forEach(label => label.style.display = 'none');
-            }
-
-            // on sector group change
-            sectorGroupSelect.addEventListener('change', (event) => {
-                // unselect all sectors + hide them
-                sectorRadios.forEach(checkbox => checkbox.checked = false);
-                hideAllSectors();
-                // show only sectors of selected sector group
-                if (event.target.value) {
-                    showSectorsOfSelectedSectorGroup(event.target.value);
-                }
-            })
-            // -------------------------------------------------------------------
-
-
             // -------------------------------------------------------------------
             // init locations autocomplete form fields
             const LOCATION_AUTOCOMPLETE_ID = 'id_locations';
