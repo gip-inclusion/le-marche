@@ -34,7 +34,7 @@ class SiaeLabelOldSimpleSerializer(serializers.ModelSerializer):
 
 class SiaeDetailSerializer(serializers.ModelSerializer):
     kind_parent = serializers.ReadOnlyField()
-    sectors = SectorSimpleSerializer(many=True, source="get_sectors")
+    sectors = serializers.SerializerMethodField()
     presta_types = serializers.SerializerMethodField()
     networks = NetworkSimpleSerializer(many=True)
     offers = SiaeOfferSimpleSerializer(many=True)
@@ -77,3 +77,8 @@ class SiaeDetailSerializer(serializers.ModelSerializer):
     def get_presta_types(self, obj) -> list:
         """Return a list of distinct presta types found in the activities of an Siae"""
         return list(set(presta for activity in obj.activities.all() for presta in activity.presta_type))
+
+    def get_sectors(self, obj) -> list:
+        """Return unique list of serialized sectors"""
+        sectors = set(sector for activity in obj.activities.all() for sector in activity.sectors.all())
+        return [SectorSimpleSerializer(sector).data for sector in sectors]

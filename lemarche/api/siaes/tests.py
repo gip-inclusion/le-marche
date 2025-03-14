@@ -158,10 +158,17 @@ class SiaeDetailApiTest(TestCase):
 
     def setUp(self):
         self.siae = SiaeFactory()
+        siae2 = SiaeFactory()
         SiaeActivityFactory(siae=self.siae, presta_type=[siae_constants.PRESTA_BUILD])
         # Duplicated to see if there is no duplicates in presta_types serialized value
-        sector_1 = SectorFactory()
-        sector_2 = SectorFactory()
+        sector_1 = SectorFactory(name="sector1")
+        sector_2 = SectorFactory(name="sector2")
+        sector_3 = SectorFactory(name="sector3")
+        SiaeActivityFactory(
+            siae=siae2,
+            sectors=[sector_3],
+        )
+
         SiaeActivityFactory(
             siae=self.siae,
             sectors=[sector_1, sector_2],
@@ -190,7 +197,6 @@ class SiaeDetailApiTest(TestCase):
         self.assertTrue("slug" in response.data)
         self.assertTrue("kind" in response.data)
         self.assertTrue("kind_parent" in response.data)
-        self.assertTrue("sectors" in response.data)
         self.assertTrue("networks" in response.data)
         self.assertTrue("offers" in response.data)
         self.assertTrue("client_references" in response.data)
@@ -198,7 +204,10 @@ class SiaeDetailApiTest(TestCase):
         self.assertQuerySetEqual(
             response.data["presta_types"], [siae_constants.PRESTA_BUILD, siae_constants.PRESTA_DISP], ordered=False
         )
-        self.assertEqual(len(response.data["sectors"]), 2)
+        self.assertEqual(
+            response.data["sectors"],
+            [{"name": "sector1", "slug": "sector1"}, {"name": "sector2", "slug": "sector2"}],
+        )
 
 
 class SiaeRetrieveBySlugApiTest(TestCase):
