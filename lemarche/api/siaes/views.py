@@ -21,7 +21,11 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     filterset_class = SiaeFilter
 
     def get_queryset(self):
-        return super().get_queryset().prefetch_related("activities")
+        return (
+            super()
+            .get_queryset()
+            .prefetch_related("activities", "networks", "offers", "client_references", "labels_old")
+        )
 
     @extend_schema(
         summary="Lister toutes les structures",
