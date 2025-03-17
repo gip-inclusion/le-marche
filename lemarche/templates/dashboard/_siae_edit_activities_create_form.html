@@ -7,13 +7,30 @@
 </legend>
 <div class="fr-fieldset__content">
     <div class="fr-checkbox-group">
-        <div>
+        <div x-data="{ selectedSectors: [] }">
             {% for sector in form.fields.sectors.queryset %}
                 <div class="fr-checkbox-group">
-                    <input id="id_sectors_0_{{ forloop.counter0 }}" type="checkbox" name="sectors" value="{{ sector.id }}" dsfr="dsfr" data-fr-js-checkbox-input="true">
+                    <input
+                    type="checkbox"
+                        name="sector_id"
+                        id="id_sectors_0_{{ forloop.counter0 }}"
+                        value="{{ sector.id }}"
+                        dsfr="dsfr"
+                        data-fr-js-checkbox-input="true"
+                        
+                        hx-get="{% url 'dashboard_siaes:siae_activities_presta_form' siae.slug %}"
+                        hx-trigger="change"
+                        hx-target="#prestaForm_{{ sector.id }}"
+                        
+                        x-model="selectedSectors"
+                        @change="$refs['prestaForm_{{ sector.id }}'].innerHTML = selectedSectors.includes('{{ sector.id }}') ? $refs['prestaForm_{{ sector.id }}'].innerHTML : '';"
+                    >
                     <label class="fr-label" for="id_sectors_0_{{ forloop.counter0 }}">
                         {{ sector }}
                     </label>
+                </div>
+                <div id="prestaForm_{{ sector.id }}" x-ref="prestaForm_{{ sector.id }}">
+
                 </div>
             {% endfor %}
         </div>
