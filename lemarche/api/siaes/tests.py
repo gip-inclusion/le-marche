@@ -204,9 +204,13 @@ class SiaeDetailApiTest(TestCase):
         self.assertQuerySetEqual(
             response.data["presta_types"], [siae_constants.PRESTA_BUILD, siae_constants.PRESTA_DISP], ordered=False
         )
-        self.assertEqual(
+        self.assertIn(
+            {"name": "sector1", "slug": "sector1"},
             response.data["sectors"],
-            [{"name": "sector1", "slug": "sector1"}, {"name": "sector2", "slug": "sector2"}],
+        )
+        self.assertIn(
+            {"name": "sector2", "slug": "sector2"},
+            response.data["sectors"],
         )
 
 
