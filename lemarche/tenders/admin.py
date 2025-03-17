@@ -358,6 +358,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         # slug
         # status
         "question_count_with_link",
+        "answer_count_with_link",
         "author_kind_detail",
         "is_partner_approch",
         "partner_approch_id",
@@ -401,6 +402,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "constraints",
                     "external_link",
                     "question_count_with_link",
+                    "answer_count_with_link",
                 ),
             },
         ),
@@ -652,6 +654,15 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         return format_html(f'<a href="{url}">{tender.questions.count()}</a>')
 
     question_count_with_link.short_description = TenderQuestion._meta.verbose_name_plural
+
+    def answer_count_with_link(self, tender):
+        answers = QuestionAnswer.objects.filter(question__in=tender.questions.all())
+        id_list = [str(answer.id) for answer in answers]
+        id_string = ",".join(id_list)
+        url = reverse("admin:tenders_questionanswer_changelist") + f"?id__in={id_string}"
+        return format_html(f'<a href="{url}">{answers.count()}</a>')
+
+    answer_count_with_link.short_description = QuestionAnswer._meta.verbose_name_plural
 
     def title_with_link(self, tender):
         url = reverse("admin:tenders_tender_change", args=[tender.id])
