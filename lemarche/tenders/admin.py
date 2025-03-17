@@ -19,7 +19,14 @@ from lemarche.perimeters.admin import PerimeterRegionFilter
 from lemarche.perimeters.models import Perimeter
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.forms import TenderAdminForm
-from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderSiae, TenderStepsData
+from lemarche.tenders.models import (
+    PartnerShareTender,
+    QuestionAnswer,
+    Tender,
+    TenderQuestion,
+    TenderSiae,
+    TenderStepsData,
+)
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import admin_site
@@ -882,6 +889,12 @@ class TenderQuestionAdmin(admin.ModelAdmin):
 
     tender_with_link.short_description = "Besoin d'achat"
     tender_with_link.admin_order_field = "tender"
+
+
+@admin.register(QuestionAnswer, site=admin_site)
+class QuestionAnswerAdmin(admin.ModelAdmin):
+    list_display = ["id", "answer", "question", "siae"]
+    search_fields = ["id", "answer", "question", "siae"]
 
 
 class PartnerShareTenderNoteInline(GenericTabularInline):
