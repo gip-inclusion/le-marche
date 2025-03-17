@@ -1,0 +1,28 @@
+{% load static dsfr_tags %}
+
+<div class="formset-{{ presta_formset.prefix }} formset-group">
+    {{ presta_formset.management_form }}
+    {% if presta_formset.errors %}
+        <div class="fr-input-group fr-input-group--error">{{ presta_formset.errors }}</div>
+    {% endif %}
+    {% for form_formset in presta_formset %}
+      <div class="{% cycle 'row1' 'row2' %} formset-row-{{ presta_formset.prefix }} formset fr-mb-8v">
+        {% for hidden in form_formset.hidden_fields %}
+          {{ hidden }}
+        {% endfor %}
+        {% for field in form_formset.visible_fields %}
+          {% include "dsfr/form_field_snippets/field_snippet.html" %}
+        {% endfor %}
+      </div>
+    {% endfor %}
+</div>
+<div id="{{ presta_formset.prefix }}-formset-empty-form" class="fr-hidden">
+    <div class="formset-row-{{ presta_formset.prefix }} formset">
+        {% dsfr_form presta_formset.empty_form %}
+    </div>
+</div>
+<button id="{{ presta_formset.prefix }}-formset-add-more" 
+    type="button"
+    class="fr-btn fr-btn--secondary fr-fi-add-circle-line fr-btn--icon-right fr-mt-1w">
+    Ajouter une nouvelle prestation
+</button>
