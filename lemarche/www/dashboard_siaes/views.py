@@ -17,6 +17,7 @@ from lemarche.utils.mixins import SiaeMemberRequiredMixin, SiaeUserAndNotMemberR
 from lemarche.utils.s3 import S3Upload
 from lemarche.www.dashboard_siaes.forms import (
     SiaeActivitiesCreateForm,
+    SiaeActivityPrestaForm,
     SiaeActivityPrestaFormSet,
     SiaeActivitySectorForm,
     SiaeClientReferenceFormSet,
@@ -248,13 +249,6 @@ class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, CreateView):
         else:
             context["sector_form"] = SiaeActivitySectorForm()
 
-        context["presta_formsets"] = {
-            sector.id: SiaeActivityPrestaFormSet(
-                self.request.POST if self.request.POST else None, prefix=f"presta_{sector.id}"
-            )
-            for sector in Sector.objects.all()
-        }
-
         return context
 
     def get_success_url(self):
@@ -311,11 +305,37 @@ class SiaeActivitySectorFormView(FormView):
     template_name = "dashboard/_siae_edit_activities_create_form.html"
     form_class = SiaeActivitySectorForm
 
+    def get(self, request, *args, **kwargs):
+        self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
+        return super().get(request, *args, **kwargs)
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         sector_group_id = self.request.GET.get("sector_group_id")
         kwargs["sector_group_id"] = sector_group_id
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["siae"] = self.siae
+        return context
+
+
+class SiaeActivityPrestaFormView(FormView):
+    template_name = "dashboard/_siae_edit_activities_create_formset.html"
+    form_class = SiaeActivityPrestaForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sector_id = self.request.GET.get("sector_id")
+        if sector_id:
+            context["sector_id"] = sector_id
+
+        if self.request.POST:
+            context["presta_formset"] = SiaeActivityPrestaFormSet(self.request.POST)
+        else:
+            context["presta_formset"] = SiaeActivityPrestaFormSet()
+        return context
 
 
 class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
