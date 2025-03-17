@@ -29,8 +29,8 @@
                         <div class="fr-col-12 fr-col-lg-8">
                             <div class="fr-input-group">
                                 <label class="fr-label" for="id_sector_group">Secteurs d'activités*</label>
-                                <select
-                                    hx-get="{% url 'dashboard_siaes:siae_activities_sector_form' siae.slug %}" + this.value
+                                <select 
+                                    hx-get="{% url 'dashboard_siaes:siae_activities_sector_form' siae.slug %}"
                                     hx-trigger="change"
                                     hx-target="#checkboxes-id_sectors"
                                     id="id_sector_group"
