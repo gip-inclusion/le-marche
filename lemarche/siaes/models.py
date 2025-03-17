@@ -34,7 +34,6 @@ from phonenumber_field.modelfields import PhoneNumberField
 from simple_history.models import HistoricalRecords
 
 from lemarche.perimeters.models import Perimeter
-from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.tasks import set_siae_coords
 from lemarche.stats.models import Tracker
@@ -1133,9 +1132,6 @@ class Siae(models.Model):
 
     def get_admin_url(self):
         return get_object_admin_url(self)
-
-    def get_sectors(self):
-        return Sector.objects.filter(siae_activities__siae=self)
 
     def set_super_badge(self):
         update_fields_list = ["super_badge"]
