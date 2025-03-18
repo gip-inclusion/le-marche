@@ -656,7 +656,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     question_count_with_link.short_description = TenderQuestion._meta.verbose_name_plural
 
     def answer_count_with_link(self, tender):
-        answers = QuestionAnswer.objects.filter(question__in=tender.questions.all())
+        answers = QuestionAnswer.objects.filter(question__tender=tender)
         id_list = [str(answer.id) for answer in answers]
         id_string = ",".join(id_list)
         url = reverse("admin:tenders_questionanswer_changelist") + f"?id__in={id_string}"
