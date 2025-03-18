@@ -430,7 +430,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
             )
 
             if user.kind == User.KIND_SIAE:
-                # Hide only if all saie are already interested
+                # Hide only if all siae are already interested
                 context["siae_has_detail_contact_click_date"] = (
                     TenderSiae.objects.filter(
                         tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False
