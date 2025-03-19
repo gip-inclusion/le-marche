@@ -483,9 +483,11 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
                 tendersiae__tender=self.object,
                 tendersiae__detail_contact_click_date__isnull=True,
             )
+            siae_total_count = Siae.objects.filter(users=self.request.user, tendersiae__tender=self.object)
 
         else:  # has siae_id
             siae_qs = Siae.objects.filter(id=self.siae_id)
+            siae_total_count = 1
 
         initial_data = [
             {
@@ -496,9 +498,8 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
 
         self.answers_formset = self.answers_formset_class(initial=initial_data)
 
-        all_siaes = Siae.objects.filter(users=self.request.user, tendersiae__tender=self.object)
         # Display select form only for accounts that have multiple siaes
-        if all_siaes.count() > 1:
+        if siae_total_count > 1:
             self.siae_select_form = self.siae_select_form_class(
                 queryset=siae_qs,
             )
