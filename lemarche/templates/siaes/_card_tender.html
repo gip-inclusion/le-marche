@@ -56,17 +56,18 @@
                         </a>
                     </div>
                 </div>
-            
+
+                {% if siae.questions_for_tender %}
                 <div x-show="showQuestions" class="fr-mt-4w">
                     {% for answer in siae.questions_for_tender %}
                         <h4 class="fr-mb-1w">{{ answer.question }}</h4>
                         <p>{{ answer.answer }}</p>
                     {% endfor %}
                 </div>
-            
+
                 <div class="fr-grid-row fr-grid-row--center fr-mt-4w">
                     <div class="fr-col-12 fr-col-md-4">
-                        <button 
+                        <button
                                 @click="showQuestions = !showQuestions"
                                 class="fr-btn fr-btn--secondary fr-btn--icon-left">
                             <span x-show="!showQuestions">Afficher les réponses aux questions</span>
@@ -76,7 +77,7 @@
                         </button>
                     </div>
                 </div>
-                
+              {% endif %}
             
             </div>
         </div>
