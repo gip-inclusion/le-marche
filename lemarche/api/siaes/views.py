@@ -50,9 +50,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         """
         <i>Un <strong>token</strong> est nécessaire pour l'accès complet à cette ressource.</i>
         """
-        queryset = self.get_queryset().prefetch_many_to_many().prefetch_many_to_one()
-        queryset_or_404 = get_object_or_404(queryset, pk=pk)
-        return self._retrieve_return(request, queryset_or_404, format)
+        return super().retrieve(request, pk, format)
 
     @extend_schema(
         summary="Détail d'une structure (par son slug)",

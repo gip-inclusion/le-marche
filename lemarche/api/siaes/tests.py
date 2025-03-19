@@ -187,9 +187,14 @@ class SiaeDetailApiTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 401)
 
+    def test_handle_wrong_type_id(self):
+        url = reverse("api:siae-detail", args=["very_wrong"])
+        response = self.authenticated_client.get(url)
+        self.assertEqual(response.status_code, 404)
+
     def test_should_return_detailed_siae_object_to_authenticated_users(self):
         url = reverse("api:siae-detail", args=[self.siae.id])
-        with self.assertNumQueries(9):
+        with self.assertNumQueries(8):
             response = self.authenticated_client.get(url)
         self.assertTrue("id" in response.data)
         self.assertTrue("name" in response.data)
