@@ -34,7 +34,7 @@ def create_template(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("conversations", "0021_add_templatetransactional_tender_author_modification_request_and_reject_message"),
+        ("conversations", "0022_template_onboard_users"),
     ]
 
     operations = [
