@@ -12,7 +12,7 @@
     <div class="fr-container">
         <!-- Contact details above + help -->
         {% if not tender.deadline_date_outdated and not tender.response_is_anonymous %}
-            {% if siae_has_detail_contact_click_date %}
+            {% if display_buyer_contact %}
                 <div class="fr-grid-row fr-grid-row--gutters">
                     <div class="fr-col-12 fr-col-lg-8">
                         <div class="fr-alert fr-alert--info" role="status">

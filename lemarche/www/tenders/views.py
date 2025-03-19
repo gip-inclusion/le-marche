@@ -412,6 +412,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
             context["siae_has_detail_contact_click_date"] = TenderSiae.objects.filter(
                 tender=self.object, siae_id=int(self.siae_id), detail_contact_click_date__isnull=False
             ).exists()
+            context["display_buyer_contact"] = context["siae_has_detail_contact_click_date"]
             context["siae_has_detail_not_interested_click_date"] = TenderSiae.objects.filter(
                 tender=self.object, siae_id=int(self.siae_id), detail_not_interested_click_date__isnull=False
             ).exists()
@@ -430,13 +431,16 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
             )
 
             if user.kind == User.KIND_SIAE:
+                # Interested Siae count
+                interested_count = TenderSiae.objects.filter(
+                    tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False
+                ).count()
                 # Hide only if all siae are already interested
                 context["siae_has_detail_contact_click_date"] = (
-                    TenderSiae.objects.filter(
-                        tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False
-                    ).count()
+                    interested_count
                     == TenderSiae.objects.filter(tender=self.object, siae__in=user.siaes.all()).count()
                 )
+                context["display_buyer_contact"] = interested_count
                 if context["siae_has_detail_contact_click_date"]:
                     context["siae_has_detail_not_interested_click_date"] = False
                 else:
