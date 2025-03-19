@@ -62,8 +62,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         Note : le slug est un champ unique.<br /><br />
         <i>Un <strong>token</strong> est nécessaire pour l'accès complet à cette ressource.</i>
         """
-        queryset = self.get_queryset().prefetch_many_to_many().prefetch_many_to_one()
-        queryset_or_404 = get_object_or_404(queryset, slug=slug)
+        queryset_or_404 = get_object_or_404(self.get_queryset(), slug=slug)
         return self._retrieve_return(request, queryset_or_404, format)
 
     @extend_schema(
@@ -78,7 +77,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         """
         if len(siren) != 9:
             return HttpResponseBadRequest("siren must be 9 caracters long")
-        queryset = self.get_queryset().prefetch_many_to_many().prefetch_many_to_one().filter(siret__startswith=siren)
+        queryset = self.get_queryset().filter(siret__startswith=siren)
         return self._list_return(request, queryset, format)
 
     @extend_schema(
@@ -93,7 +92,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         """
         if len(siret) != 14:
             return HttpResponseBadRequest("siret must be 14 caracters long")
-        queryset = self.get_queryset().prefetch_many_to_many().prefetch_many_to_one().filter(siret=siret)
+        queryset = self.get_queryset().filter(siret=siret)
         return self._list_return(request, queryset, format)
 
     def _retrieve_return(self, request, queryset, format):
