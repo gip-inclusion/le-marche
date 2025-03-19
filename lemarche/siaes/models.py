@@ -1435,8 +1435,6 @@ class SiaeActivity(models.Model):
     presta_type = ChoiceArrayField(
         verbose_name="Type de prestation",
         base_field=models.CharField(max_length=20, choices=siae_constants.PRESTA_CHOICES),
-        blank=True,
-        null=True,
         db_index=True,
     )
     locations = models.ManyToManyField(
