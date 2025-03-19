@@ -483,7 +483,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
                 tendersiae__tender=self.object,
                 tendersiae__detail_contact_click_date__isnull=True,
             )
-            siae_total_count = Siae.objects.filter(users=self.request.user, tendersiae__tender=self.object)
+            siae_total_count = Siae.objects.filter(users=self.request.user, tendersiae__tender=self.object).count()
 
         else:  # has siae_id
             siae_qs = Siae.objects.filter(id=self.siae_id)
