@@ -1,5 +1,6 @@
 import logging
 import os
+from datetime import datetime
 from unittest.mock import patch
 
 import factory
@@ -375,3 +376,71 @@ class SiaeUpdateCountFieldsCommandTest(TransactionTestCase):
         siae_not_updated.refresh_from_db()
         self.assertEqual(siae_not_updated.user_count, 0)
         self.assertEqual(siae_not_updated.sector_count, 0)
+
+
+class SiaeUpdateApiEntrepriseFieldsCommandTest(TransactionTestCase):
+
+    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
+    def test_update_api_entreprise_fields(self, mock_requests_get):
+        """
+        Create a siae and check that the field is updated correctly
+        """
+        siae = SiaeFactory()
+
+        mock_requests_get.return_value.status_code = 200
+        mock_requests_get.return_value.json.return_value = {
+            "results": [
+                {
+                    "nom_complet": "SIAE (IAE)",
+                    "nom_raison_sociale": "SIAE",
+                    "activite_principale": "81.21Z",
+                    "date_creation": "2000-01-01",
+                    "date_fermeture": "null",
+                    "etat_administratif": "A",
+                    "nature_juridique": "5710",
+                    "section_activite_principale": "N",
+                    "tranche_effectif_salarie": "32",
+                    "annee_tranche_effectif_salarie": "2022",
+                    "matching_etablissements": [
+                        {
+                            "siret": siae.siret,
+                            "activite_principale": "81.22Z",
+                            "annee_tranche_effectif_salarie": "2024",
+                            "date_creation": "2023-06-01",
+                            "tranche_effectif_salarie": "32",
+                            "est_siege": False,
+                            "etat_administratif": "A",
+                        }
+                    ],
+                    "finances": {"2023": {"ca": 9726858, "resultat_net": -782299}},
+                }
+            ],
+            "total_results": 1,
+            "page": 1,
+            "per_page": 10,
+            "total_pages": 1,
+        }
+
+        # Dry run
+        call_command("update_api_entreprise_fields")
+        siae.refresh_from_db()
+        self.assertEqual(siae.api_entreprise_employees, "")
+        self.assertEqual(siae.api_entreprise_employees_year_reference, "")
+        self.assertIsNone(siae.api_entreprise_date_constitution)
+        self.assertIsNone(siae.api_entreprise_ca)
+        self.assertIsNone(siae.api_entreprise_etablissement_last_sync_date)
+        self.assertIsNone(siae.api_entreprise_entreprise_last_sync_date)
+        self.assertIsNone(siae.api_entreprise_exercice_last_sync_date)
+
+        # Wet run
+        call_command("update_api_entreprise_fields", wet_run=True)
+        siae.refresh_from_db()
+        self.assertEqual(siae.api_entreprise_employees, "250 à 499 salariés")
+        self.assertEqual(siae.api_entreprise_employees_year_reference, "2024")
+        self.assertIsNotNone(siae.api_entreprise_etablissement_last_sync_date)
+        self.assertEqual(siae.api_entreprise_date_constitution, datetime.strptime("2023-06-01", "%Y-%m-%d").date())
+        self.assertEqual(siae.api_entreprise_forme_juridique, "SAS")
+        self.assertEqual(siae.api_entreprise_forme_juridique_code, "5710")
+        self.assertIsNotNone(siae.api_entreprise_entreprise_last_sync_date)
+        self.assertEqual(siae.api_entreprise_ca, 9726858)
+        self.assertIsNotNone(siae.api_entreprise_exercice_last_sync_date)
