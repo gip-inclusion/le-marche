@@ -1,6 +1,7 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.test import override_settings
+from django.test import TestCase, override_settings
 from django.urls import reverse
+from freezegun import freeze_time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
@@ -50,6 +51,10 @@ class SignupFormTest(StaticLiveServerTestCase):
         Paragraph.objects.get_or_create(
             slug="rdv-signup",
             defaults={"title": "Prise de rendez vous"},
+        )
+        Paragraph.objects.get_or_create(
+            slug="rdv-contact",
+            defaults={"title": "Numéro tel"},
         )
 
         self.SIAE = {
@@ -160,9 +165,10 @@ class SignupFormTest(StaticLiveServerTestCase):
         # should redirect to redirect_url
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{redirect_url}")
         # message should be displayed
-        messages = self.driver.find_element(By.CSS_SELECTOR, "div.fr-alert--success")
-        self.assertTrue("Inscription validée" in messages.text)
-        return messages
+        if user_kind != User.KIND_BUYER:
+            messages = self.driver.find_element(By.CSS_SELECTOR, "div.fr-alert--success")
+            self.assertTrue("Inscription validée" in messages.text)
+            return messages
 
     def test_siae_submits_signup_form_success(self):
         self._complete_form(user_profile=self.SIAE, with_submit=True)
@@ -193,6 +199,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         alerts = self.driver.find_element(By.CSS_SELECTOR, "form")
         self.assertTrue("Cette adresse e-mail est déjà utilisée." in alerts.text)
 
+    @freeze_time("2025-03-05")
     def test_buyer_submits_signup_form_success(self):
         self._complete_form(user_profile=self.BUYER, with_submit=False)
 
@@ -291,6 +298,63 @@ class SignupFormTest(StaticLiveServerTestCase):
     def tearDownClass(cls):
         cls.driver.close()
         super().tearDownClass()
+
+
+@freeze_time("2025-03-05")
+@override_settings(GOOGLE_AGENDA_IFRAME_URL="some_google_url")
+class SignupMeetingTestCase(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.form_data = {
+            "kind": User.KIND_BUYER,
+            "accept_rgpd": True,
+            "first_name": "Prenom",
+            "last_name": "Nom",
+            "phone": "0123456789",
+            "company_name": "Ma boite",
+            "position": "Role important",
+            "email": "buyer@example.com",
+            "password1": "+j2fABqwRGS4j4w",
+            "password2": "+j2fABqwRGS4j4w",
+        }
+
+        Paragraph.objects.get_or_create(
+            slug="rdv-signup",
+            defaults={"title": "Prise de rendez vous"},
+        )
+        Paragraph.objects.get_or_create(
+            slug="rdv-contact",
+            defaults={"title": "Numéro tel"},
+        )
+
+    def test_magic_link_test_case(self):
+        """View should not redirect to meeting if the User is signing up
+        with the magic link"""
+        self.assertEqual(User.objects.count(), 0)
+
+        post_response = self.client.post(path=f"{reverse('auth:signup')}?skip_meeting=true", data=self.form_data)
+        self.assertEqual(post_response.status_code, 302)
+        self.assertTrue(User.objects.get().is_onboarded)
+
+    @freeze_time("2025-03-07")
+    def test_friday_disabled(self):
+        """Meeting appointment are disabled on Friday"""
+        self.assertEqual(User.objects.count(), 0)
+
+        post_response = self.client.post(path=reverse("auth:signup"), data=self.form_data)
+        self.assertEqual(post_response.status_code, 302)
+        self.assertTrue(User.objects.get().is_onboarded)
+
+    def test_meeting_redirect(self):
+        """View should redirect to meeting"""
+        self.assertEqual(User.objects.count(), 0)
+
+        post_response = self.client.post(path=reverse("auth:signup"), data=self.form_data)
+        self.assertEqual(post_response.status_code, 302)
+        self.assertFalse(User.objects.get().is_onboarded)
+        self.assertRedirects(post_response, reverse("auth:booking-meeting-view"))
 
 
 class LoginFormTest(StaticLiveServerTestCase):

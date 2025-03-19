@@ -9,6 +9,7 @@ from django.contrib.contenttypes.admin import GenericTabularInline
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
 from django.utils.html import format_html
@@ -252,6 +253,8 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             "recipient_transactional_send_logs_count_with_link",
             "brevo_contact_id",
             "extra_data_display",
+            "onboard_user_button",
+            "display_signup_magic_link",
         ]
     )
 
@@ -262,6 +265,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
                 "fields": (
                     "email",
                     "password",
+                    "display_signup_magic_link",
                 )
             },
         ),
@@ -314,7 +318,10 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         ("API", {"fields": ("api_key", "api_key_last_updated")}),
         (
             "Permissions",
-            {"classes": ["collapse"], "fields": ("is_onboarded", "is_active", "is_staff", "is_superuser", "groups")},
+            {
+                "classes": ["collapse"],
+                "fields": ("onboard_user_button", "is_active", "is_staff", "is_superuser", "groups"),
+            },
         ),
         (
             "Stats",
@@ -391,6 +398,11 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         urls = super().get_urls()
         my_urls = [
             path("anonymise_users/", self.admin_site.admin_view(self.anonymize_users_view), name="anonymize_users"),
+            path(
+                "<int:pk>/onboard_user/",
+                self.admin_site.admin_view(self.onboard_user_view),
+                name="onboard_user",
+            ),
             *urls,  # these patterns last, because they can match a lot of urls
         ]
         return my_urls
@@ -421,6 +433,14 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             self.message_user(request, "L'anonymisation s'est déroulée avec succès")
 
             return HttpResponseRedirect(reverse("admin:users_user_changelist"))
+
+    def onboard_user_view(self, request, pk):
+        user = self.model.objects.get(id=pk)
+        user.set_onboarded_and_send_email()
+
+        self.message_user(request, "L'onboarding a été finalisé avec succès")
+        # refresh page after submit
+        return redirect("admin:users_user_change", pk)
 
     def save_formset(self, request, form, formset, change):
         """
@@ -467,6 +487,23 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         return "-"
 
     extra_data_display.short_description = User._meta.get_field("extra_data").verbose_name
+
+    def onboard_user_button(self, user):
+        if user.is_onboarded:
+            return format_html('<img src="/static/admin/img/icon-yes.svg" alt="True">')
+        else:
+            return format_html(
+                f"<a class='button'"
+                f" href='{reverse('admin:onboard_user', args=[user.pk])}'>"
+                f"Finaliser l'onboarding</a>"
+            )
+
+    onboard_user_button.short_description = "L'utilisateur a suivi la procédure d'onboarding"
+
+    def display_signup_magic_link(self, user):
+        return format_html(f"<a target='_blank' href='{reverse('auth:signup')}?skip_meeting=true'>Lien magique</a>")
+
+    display_signup_magic_link.short_description = "Lien magic pour l'inscription"
 
     @admin.action(description="Anonymiser les utilisateurs sélectionnés")
     def anonymize_users(self, request, queryset):

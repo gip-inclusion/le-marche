@@ -1,24 +1,43 @@
-{% extends BASE_TEMPLATE %}
+{% extends 'layouts/base.html' %}
 {% load dsfr_tags process_dict static humanize wagtailcore_tags advert_cms %}
 {% block page_title %}
     Prise de rendez-vous
 {% endblock page_title %}
 
 {% block breadcrumb %}
-    {% process_dict root_dir=HOME_PAGE_PATH current="Prise de rendez-vous" as breadcrumb_data %}
-    {% dsfr_breadcrumb breadcrumb_data %}
+    <div class="text-white">
+        {% process_dict root_dir=HOME_PAGE_PATH current="Prise de rendez-vous" as breadcrumb_data %}
+        {% dsfr_breadcrumb breadcrumb_data %}
+    </div>
 {% endblock breadcrumb %}
+
 {% block content %}
-        <div class="fr-container fr-background-alt--orange fr-card--shadow">
-            <div class="fr-grid-row text-white">
-                <div class="fr-col-4 fr-mt-2w">
-                    {{ wagtail_paragraph.content | safe }}
+    <div class="background-container">
+        <div class="fr-background-alt--orange"></div>
+        <div class="fr-container">
+            <div class="fr-grid-row">
+                
+                <div class="fr-col-5">
+                    <div class="text-white">{{ wagtail_paragraph.content | safe }}</div>
+                    <div class="fr-grid-row fr-mt-16w">
+                        <div class="fr-col-3">
+                            <img 
+                                    src="{% static 'img/crayon_appel.png' %}"
+                                    style="width: 100px; height: 130px"
+                                    alt="téléphone"
+                            >
+                        </div>
+                        <div class="fr-col-9">{{ wagtail_contact.content | safe }}</div>
+                    </div>
                 </div>
-                <div class="fr-col-8 fr-mt-2w">
-                    <h2>Prenez rendez-vous pour activer votre compte</h2>
+                
+                <div class="fr-col-7 fr-background-alt--white rounded-iframe fr-mb-2w non-standard-card-shadow">
+                    <div class="fr-mt-4w"></div>
+                    <h2 class="center-text ">Prenez rendez-vous pour </h2>
+                    <h2 class="center-text">activer votre compte</h2>
                     <!-- Google Calendar Appointment Scheduling begin -->
                     <iframe
-                            class="fr-background-alt--white rounded-iframe fr-mb-2w"
+                            class="iframe-container"
                             src="{{ agenda_iframe_url }}"
                     >
                     </iframe>
@@ -26,4 +45,5 @@
                 </div>
             </div>
         </div>
+    </div>
 {% endblock content %}
