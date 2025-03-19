@@ -496,8 +496,9 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
 
         self.answers_formset = self.answers_formset_class(initial=initial_data)
 
-        # Do not display siae select if the user have only one siae
-        if siae_qs.count() > 1:
+        all_siaes = Siae.objects.filter(users=self.request.user, tendersiae__tender=self.object)
+        # Display select form only for accounts that have multiple siaes
+        if all_siaes.count() > 1:
             self.siae_select_form = self.siae_select_form_class(
                 queryset=siae_qs,
             )
