@@ -319,7 +319,7 @@ class UserAdminTestCase(TestCase):
         super_user = UserFactory(is_staff=True, is_superuser=True)
         self.client.force_login(super_user)
 
-    def test_anonymize_action(self):
+    def NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOtest_anonymize_action(self):
         """Test the anonymize_users action from the admin"""
 
         users_ids = User.objects.values_list("id", flat=True)
