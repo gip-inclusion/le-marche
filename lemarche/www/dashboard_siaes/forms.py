@@ -1,5 +1,4 @@
 from django import forms
-from django.forms import formset_factory
 from django.forms.models import inlineformset_factory
 from django_select2.forms import ModelSelect2MultipleWidget
 from dsfr.forms import DsfrBaseForm
@@ -213,29 +212,15 @@ class SiaeActivitiesCreateForm(forms.ModelForm):
         fields = ["sector_group"]
 
 
-class SiaeActivitySectorForm(forms.ModelForm):
+class SiaeActivityForm(forms.ModelForm):
     sectors = GroupedModelMultipleChoiceField(
         label="Activités",
-        queryset=Sector.objects.form_filter_queryset(),
+        queryset=Sector.objects.all(),
         choices_groupby="group",
         required=True,
         widget=forms.CheckboxSelectMultiple,
     )
 
-    class Meta:
-        model = SiaeActivity
-        fields = ["sectors"]
-
-    def __init__(self, *args, sector_group_id=None, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        if sector_group_id:
-            self.fields["sectors"].queryset = Sector.objects.filter(group=sector_group_id)
-        else:
-            self.fields["sectors"].queryset = Sector.objects.none()
-
-
-class SiaeActivityPrestaForm(forms.ModelForm):
     presta_type = forms.MultipleChoiceField(
         label=SiaeActivity._meta.get_field("presta_type").verbose_name,
         choices=siae_constants.PRESTA_CHOICES,
@@ -268,7 +253,7 @@ class SiaeActivityPrestaForm(forms.ModelForm):
         # FIXME: help_text not displayed
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, sector_group_id=None, **kwargs):
         super().__init__(*args, **kwargs)
 
         # these fields are autocompletes
@@ -277,6 +262,9 @@ class SiaeActivityPrestaForm(forms.ModelForm):
         if self.instance and self.instance.pk:
             self.fields["sector_group"].initial = self.instance.sector.group
             self.fields["sectors"].initial = self.instance.sector
+
+        # make sure sectors are sorted by group
+        self.fields["sectors"].queryset = Sector.objects.form_filter_queryset(sector_group_id=sector_group_id)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -296,11 +284,9 @@ class SiaeActivityPrestaForm(forms.ModelForm):
     class Meta:
         model = SiaeActivity
         fields = [
+            "sectors",
             "presta_type",
             "geo_range",
             "geo_range_custom_distance",
             "locations",
         ]
-
-
-SiaeActivityPrestaFormSet = formset_factory(form=SiaeActivityPrestaForm, extra=1)
