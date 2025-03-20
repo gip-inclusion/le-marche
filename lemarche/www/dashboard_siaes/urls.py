@@ -2,7 +2,7 @@ from django.urls import include, path
 from django.views.generic.base import RedirectView
 
 from lemarche.www.dashboard_siaes.views import (
-    SiaeActivityPrestaFormView,
+    SiaeActivityPrestaGeoFormView,
     SiaeActivitySectorFormView,
     SiaeEditActivitiesCreateView,
     SiaeEditActivitiesDeleteView,
@@ -51,7 +51,7 @@ urlpatterns = [
                 ),
                 path(
                     "activites/creer/sectorgroup/sector/",
-                    SiaeActivityPrestaFormView.as_view(),
+                    SiaeActivityPrestaGeoFormView.as_view(),
                     name="siae_activities_presta_form",
                 ),
                 path(
