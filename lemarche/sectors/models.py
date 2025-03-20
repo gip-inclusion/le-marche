@@ -41,16 +41,23 @@ class SectorGroup(models.Model):
 
 
 class SectorQuerySet(models.QuerySet):
-    def form_filter_queryset(self):
+    def form_filter_queryset(self, sector_group_id=None):
         """
         In our filter forms, we want to display the sectors by group.
+        args:
+            sector_group_id: the id of the sector group stored in form url
         """
-        return (
+        queryset = (
             self.select_related("group")
             .exclude(group=None)  # sector must have a group!
             .annotate(sector_is_autre=NullIf(Left("name", 5), Value("Autre")))  # bring "Autre" to the bottom
             .order_by("group__id", "sector_is_autre")
         )
+
+        if sector_group_id:
+            queryset = queryset.filter(group_id=sector_group_id)
+
+        return queryset
 
     def with_siae_stats(self):
         return self.annotate(siae_count_annotated=Count("siae_activity__siae", distinct=True))
