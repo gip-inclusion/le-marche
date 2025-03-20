@@ -5,6 +5,7 @@ from dsfr.forms import DsfrBaseForm
 from lemarche.sectors.models import Sector
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
+from lemarche.users.validators import professional_email_validator
 from lemarche.utils import time
 from lemarche.utils.constants import EMPTY_CHOICE, HOW_MANY_CHOICES
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
@@ -130,6 +131,9 @@ class SignupForm(UserCreationForm, DsfrBaseForm):
 
     def clean_email(self):
         email = self.cleaned_data["email"]
+        if self.cleaned_data["kind"] == User.KIND_BUYER:
+            professional_email_validator(email)
+
         return email.lower()
 
     def save(self, commit=True):
