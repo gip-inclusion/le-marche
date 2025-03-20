@@ -5,8 +5,9 @@ import factory.fuzzy
 from django.utils import timezone
 from factory.django import DjangoModelFactory
 
+from lemarche.siaes.factories import SiaeFactory
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion
+from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderSiae
 from lemarche.users.factories import UserFactory
 
 
@@ -24,11 +25,6 @@ class TenderFactory(DjangoModelFactory):
             factory.fuzzy.FuzzyChoice([key for (key, _) in tender_constants.RESPONSE_KIND_CHOICES]),
         ]
     )
-    # presta_type = factory.List(
-    #     [
-    #         factory.fuzzy.FuzzyChoice([key for (key, _) in siae_constants.PRESTA_CHOICES]),
-    #     ]
-    # )
     description = factory.Faker("paragraph", nb_sentences=5, locale="fr_FR")
     constraints = factory.Faker("paragraph", nb_sentences=5, locale="fr_FR")
     deadline_date = date.today() + timedelta(days=10)
@@ -94,3 +90,11 @@ class PartnerShareTenderFactory(DjangoModelFactory):
         if extracted:
             # Add the iterable of groups using bulk addition
             self.perimeters.add(*extracted)
+
+
+class TenderSiaeFactory(DjangoModelFactory):
+    class Meta:
+        model = TenderSiae
+
+    tender = factory.SubFactory(TenderFactory)
+    siae = factory.SubFactory(SiaeFactory)
