@@ -10,6 +10,7 @@ from selenium.webdriver.support.select import Select
 from lemarche.cms.snippets import Paragraph
 from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
+from lemarche.www.auth.forms import SignupForm
 
 
 def scroll_to_and_click_element(driver, element, click=True):
@@ -298,6 +299,47 @@ class SignupFormTest(StaticLiveServerTestCase):
     def tearDownClass(cls):
         cls.driver.close()
         super().tearDownClass()
+
+
+class SignupSimpleTestcase(TestCase):
+    """Without integration testing"""
+
+    def setUp(self):
+        EXAMPLE_PASSWORD = "c*[gkp`0="
+        self.form_data = {
+            "accept_rgpd": True,
+            "first_name": "Prenom",
+            "last_name": "Nom",
+            "phone": "0123456789",
+            "company_name": "Ma boite",
+            "position": "Role important",
+            "password1": EXAMPLE_PASSWORD,
+            "password2": EXAMPLE_PASSWORD,
+        }
+
+    def test_personal_email_buyer(self):
+        self.form_data["kind"] = User.KIND_BUYER
+        self.form_data["email"] = "buyer@gmail.com"
+
+        form = SignupForm(data=self.form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("email", form.errors)
+
+    def test_personnal_email_individual(self):
+        """For individuals, or other kind except BUYER, address should not be necessary professional"""
+        self.form_data["kind"] = User.KIND_INDIVIDUAL
+        self.form_data["email"] = "buyer@gmail.com"
+
+        form = SignupForm(data=self.form_data)
+        self.assertTrue(form.is_valid())
+
+    def test_professional_email_buyer(self):
+        """This email is a professional one, it should pass"""
+        self.form_data["kind"] = User.KIND_INDIVIDUAL
+        self.form_data["email"] = "buyer@veryprofessional.com"
+
+        form = SignupForm(data=self.form_data)
+        self.assertTrue(form.is_valid())
 
 
 @override_settings(GOOGLE_AGENDA_IFRAME_URL="some_google_url")
