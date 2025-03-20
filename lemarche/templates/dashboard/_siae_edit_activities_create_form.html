@@ -1,6 +1,5 @@
 {% load static dsfr_tags %}
 
-
 <legend id="id_sectors-legend" class="fr-fieldset__legend fr-text--regular">
     <label>Activités :</label>
         *
@@ -11,8 +10,8 @@
             {% for sector in form.fields.sectors.queryset %}
                 <div class="fr-checkbox-group">
                     <input
-                    type="checkbox"
-                        name="sector_id"
+                        type="checkbox"
+                        name="sectors"
                         id="id_sectors_0_{{ forloop.counter0 }}"
                         value="{{ sector.id }}"
                         dsfr="dsfr"
@@ -21,16 +20,20 @@
                         hx-get="{% url 'dashboard_siaes:siae_activities_presta_form' siae.slug %}"
                         hx-trigger="change"
                         hx-target="#prestaForm_{{ sector.id }}"
-                        
+
                         x-model="selectedSectors"
-                        @change="$refs['prestaForm_{{ sector.id }}'].innerHTML = selectedSectors.includes('{{ sector.id }}') ? $refs['prestaForm_{{ sector.id }}'].innerHTML : '';"
                     >
                     <label class="fr-label" for="id_sectors_0_{{ forloop.counter0 }}">
                         {{ sector }}
                     </label>
                 </div>
-                <div id="prestaForm_{{ sector.id }}" x-ref="prestaForm_{{ sector.id }}">
-
+                <div 
+                    id="prestaForm_{{ sector.id }}"
+                    x-data="{ selectedGeoRange: '', ready: false }"
+                    x-init="ready = true"
+                    x-show="selectedSectors.includes('{{ sector.id }}')"
+                >
+                    <!-- Presta and Geo form -->
                 </div>
             {% endfor %}
         </div>
