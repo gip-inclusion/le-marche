@@ -737,7 +737,7 @@ class TenderDetailViewTest(TestCase):
         self.assertNotContains(response, "Questions à poser aux prestataires ciblés")
         self.assertNotContains(response, "Questions du client")
 
-    def test_tender_attachment_display(self):  # TODO: add test for attachment display
+    def test_tender_attachment_display(self):
         self.tender_1.attachment_one = SimpleUploadedFile(
             name="specs.pdf", content=b"specifications content", content_type="application/pdf"
         )
