@@ -173,8 +173,10 @@ class TenderCreateStepDetailForm(forms.ModelForm):
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "application/vnd.oasis.opendocument.spreadsheet",
         ]
-
-        if attachment.content_type not in allowed_types:
+        # Merge the content type and extension checks into a single validation
+        if attachment.content_type not in allowed_types or not attachment.name.endswith(
+            (".pdf", ".doc", ".docx", ".odt", ".xls", ".xlsx", ".ods")
+        ):
             raise forms.ValidationError(
                 "Format de fichier non autorisé. Formats acceptés : PDF, DOC, DOCX, ODT, XLS, XLSX, ODS"
             )
