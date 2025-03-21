@@ -11,14 +11,12 @@ Ressources :
 
 ### Features
 
+* **Ajout d'un module django de guide pas à pas des utilisateurs** ([#1315](https://github.com/gip-inclusion/le-marche/issues/1315)) ([227f455](https://github.com/gip-inclusion/le-marche/commit/227f455451e9a1ce4f589143c9f51a4f00f5620f))
+* **Authentification obligatoire sur l'API** ([#1628](https://github.com/gip-inclusion/le-marche/issues/1628)) ([7ac41ff](https://github.com/gip-inclusion/le-marche/commit/7ac41ffe6ae3432a309eaced23de52c4e1352fe6))
+* **Prise de rendez vous à l'inscription** ([#1663](https://github.com/gip-inclusion/le-marche/issues/1663)) ([38c4219](https://github.com/gip-inclusion/le-marche/commit/38c421915f10c4b8af3a23eedad6db443f9ebbe3))
 * **Admin des Besoins:** Demande de modification ou clôture d'un besoin  ([#1596](https://github.com/gip-inclusion/le-marche/issues/1596)) ([e4bc06b](https://github.com/gip-inclusion/le-marche/commit/e4bc06b6caae8505089270645f189f480ede70e2))
-* Ajout d'un module django de guide pas à pas des utilisateurs ([#1315](https://github.com/gip-inclusion/le-marche/issues/1315)) ([227f455](https://github.com/gip-inclusion/le-marche/commit/227f455451e9a1ce4f589143c9f51a4f00f5620f))
-* Ajout de la page FAQ dans le footer ([#1649](https://github.com/gip-inclusion/le-marche/issues/1649)) ([cda59af](https://github.com/gip-inclusion/le-marche/commit/cda59af8995bca7d39b8662adb5875e16cdffe28))
-* Authentification obligatoire sur l'API ([#1628](https://github.com/gip-inclusion/le-marche/issues/1628)) ([7ac41ff](https://github.com/gip-inclusion/le-marche/commit/7ac41ffe6ae3432a309eaced23de52c4e1352fe6))
-* factorisation d'un copié-collé ([#1640](https://github.com/gip-inclusion/le-marche/issues/1640)) ([c9de2f2](https://github.com/gip-inclusion/le-marche/commit/c9de2f29106655b3ea43d21562349c47348c037d))
 * Menu déroulant "Mon espace" dans le header ([#1662](https://github.com/gip-inclusion/le-marche/issues/1662)) ([e38f8a0](https://github.com/gip-inclusion/le-marche/commit/e38f8a0340c170377312cc7ecc5374c3c83a4fb8))
-* Prise de rendez vous à l'inscription ([#1663](https://github.com/gip-inclusion/le-marche/issues/1663)) ([38c4219](https://github.com/gip-inclusion/le-marche/commit/38c421915f10c4b8af3a23eedad6db443f9ebbe3))
-* Supprimer mailjet ([#1632](https://github.com/gip-inclusion/le-marche/issues/1632)) ([cdc6634](https://github.com/gip-inclusion/le-marche/commit/cdc6634366f90c0eccb7db2ce450899ad9fb8853))
+* Ajout de la page FAQ dans le footer ([#1649](https://github.com/gip-inclusion/le-marche/issues/1649)) ([cda59af](https://github.com/gip-inclusion/le-marche/commit/cda59af8995bca7d39b8662adb5875e16cdffe28))
 
 
 ### Bug Fixes
@@ -27,7 +25,7 @@ Ressources :
 * Ajout d'un label pour le type d'utilisateur ([#1667](https://github.com/gip-inclusion/le-marche/issues/1667)) ([6f89c29](https://github.com/gip-inclusion/le-marche/commit/6f89c290c553cc8e149b6a2b3d92b9c3878cfb6e))
 * bug sur les gestionnaires sur Admin ([#1638](https://github.com/gip-inclusion/le-marche/issues/1638)) ([55cac40](https://github.com/gip-inclusion/le-marche/commit/55cac40569c36b82268e63af96cf625e7d0172dc))
 * bug sur les secteurs dans l'API des SIAE ([#1669](https://github.com/gip-inclusion/le-marche/issues/1669)) ([afd1a1b](https://github.com/gip-inclusion/le-marche/commit/afd1a1b34d864b92bdd9f5e895177b145e6b5fb5))
-* **Collaborateurs:** Correction du rattachement des collaborateurs sur certains navigateurs ([#1655](https://github.com/gip-inclusion/le-marche/issues/1655)) ([9a019bd](https://github.com/gip-inclusion/le-marche/commit/9a019bd0ddac723e40d433f61b396103c640fad2))
+* collaborateurs: Correction du rattachement des collaborateurs sur certains navigateurs ([#1655](https://github.com/gip-inclusion/le-marche/issues/1655)) ([9a019bd](https://github.com/gip-inclusion/le-marche/commit/9a019bd0ddac723e40d433f61b396103c640fad2))
 * Copie de django-fieldsets-with-inlines ([#1657](https://github.com/gip-inclusion/le-marche/issues/1657)) ([92ce844](https://github.com/gip-inclusion/le-marche/commit/92ce8443741b1bb10f159c9a2773545ae9465e3b))
 * doubles imports alpineJs ([#1670](https://github.com/gip-inclusion/le-marche/issues/1670)) ([2023316](https://github.com/gip-inclusion/le-marche/commit/20233161b6cd4afc6a0076beec6052501cdb7cb4))
 * duplication des siae dans l'API ([#1674](https://github.com/gip-inclusion/le-marche/issues/1674)) ([5236a55](https://github.com/gip-inclusion/le-marche/commit/5236a5570b4ac9bddabca7b98ebcedaafdec31fa))
@@ -36,10 +34,14 @@ Ressources :
 * Methode save() supprimée de l'admin des besoins ([#1665](https://github.com/gip-inclusion/le-marche/issues/1665)) ([b48b680](https://github.com/gip-inclusion/le-marche/commit/b48b6802674b3fa9b56a0ab5c01b1454d5679bdf))
 * Migrer les presta_type vide des activités ([#1676](https://github.com/gip-inclusion/le-marche/issues/1676)) ([7718fd3](https://github.com/gip-inclusion/le-marche/commit/7718fd3f3f3a6dbd8e6945ec9f5d878e21cb09d9))
 * Prise en charge des ids malformés dans l'API des siae ([#1675](https://github.com/gip-inclusion/le-marche/issues/1675)) ([c414da4](https://github.com/gip-inclusion/le-marche/commit/c414da40736cecdc7b1e77c95cc7b5c0c9ff54c0))
-* **S3:** Correction de l'erreur d'envoi d'image dans l'admin Wagtail ([#1664](https://github.com/gip-inclusion/le-marche/issues/1664)) ([a0b9b61](https://github.com/gip-inclusion/le-marche/commit/a0b9b61a99224c6f92538ce834f43bb80389bedd))
+* S3: Correction de l'erreur d'envoi d'image dans l'admin Wagtail ([#1664](https://github.com/gip-inclusion/le-marche/issues/1664)) ([a0b9b61](https://github.com/gip-inclusion/le-marche/commit/a0b9b61a99224c6f92538ce834f43bb80389bedd))
 * value error recherche prestataire =&gt; passage django 4.2 => 5.1 ([#1635](https://github.com/gip-inclusion/le-marche/issues/1635)) ([f1196c7](https://github.com/gip-inclusion/le-marche/commit/f1196c722f0dd20decfb982537d9ba6f1d61f242))
 * Widget de secteurs d'activité buggé dans la page de signup ([#1660](https://github.com/gip-inclusion/le-marche/issues/1660)) ([a776105](https://github.com/gip-inclusion/le-marche/commit/a776105755b6ab22d7a52876175aaf856a1b7ec9))
 * wrong GET ids ([#1636](https://github.com/gip-inclusion/le-marche/issues/1636)) ([3047b38](https://github.com/gip-inclusion/le-marche/commit/3047b38ed243ce9e60ab93a586314352a3e05ffd))
+
+### Refactor
+* factorisation d'un copié-collé ([#1640](https://github.com/gip-inclusion/le-marche/issues/1640)) ([c9de2f2](https://github.com/gip-inclusion/le-marche/commit/c9de2f29106655b3ea43d21562349c47348c037d))
+* Supprimer mailjet ([#1632](https://github.com/gip-inclusion/le-marche/issues/1632)) ([cdc6634](https://github.com/gip-inclusion/le-marche/commit/cdc6634366f90c0eccb7db2ce450899ad9fb8853))
 
 ## [2024.9.0](https://github.com/gip-inclusion/le-marche/compare/v2024.8.0...v2024.9.0) (2025-02-03)
 
