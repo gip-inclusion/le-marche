@@ -371,7 +371,7 @@ class TenderCreateViewTest(TestCase):
         try:
             self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
         except AssertionError as e:
-            if "{'attachment_one': ['Format de fichier non[53 chars]SX']} != {}" in str(e):
+            if "{'attachment_one': ['Format de fichier non[63 chars]DS']} != {}" in str(e):
                 # handle the specific assertion error
                 pass
             else:
