@@ -88,19 +88,19 @@ class TenderCreateStepDetailForm(forms.ModelForm):
     attachment_one = forms.FileField(
         label="Importer un document à la fois (cahier des charges, grille tarifaire, projet de contrat…)",
         required=False,
-        help_text='Indication : taille maximale : 10 Mo. Formats supportés : PDF, DOC, DOCX, XLS, XLSX"',
+        help_text="Indication : taille maximale : 10 Mo. Formats supportés : PDF, DOC, DOCX, ODT, XLS, XLSX, ODS",
     )
     attachment_one_delete = forms.BooleanField(label="Supprimer le document", required=False)
     attachment_two = forms.FileField(
         label="",
         required=False,
-        help_text='Indication : taille maximale : 10 Mo. Formats supportés : PDF, DOC, DOCX, XLS, XLSX"',
+        help_text="Indication : taille maximale : 10 Mo. Formats supportés : PDF, DOC, DOCX, ODT, XLS, XLSX, ODS",
     )
     attachment_two_delete = forms.BooleanField(label="Supprimer le document", required=False)
     attachment_three = forms.FileField(
         label="",
         required=False,
-        help_text='Indication : taille maximale : 10 Mo. Formats supportés : PDF, DOC, DOCX, XLS, XLSX"',
+        help_text="Indication : taille maximale : 10 Mo. Formats supportés : PDF, DOC, DOCX, ODT, XLS, XLSX, ODS",
     )
     attachment_three_delete = forms.BooleanField(label="Supprimer le document", required=False)
 
@@ -168,12 +168,16 @@ class TenderCreateStepDetailForm(forms.ModelForm):
             "application/pdf",
             "application/msword",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.oasis.opendocument.text",
             "application/vnd.ms-excel",
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/vnd.oasis.opendocument.spreadsheet",
         ]
 
         if attachment.content_type not in allowed_types:
-            raise forms.ValidationError("Format de fichier non autorisé. Formats acceptés : PDF, DOC, DOCX, XLS, XLSX")
+            raise forms.ValidationError(
+                "Format de fichier non autorisé. Formats acceptés : PDF, DOC, DOCX, ODT, XLS, XLSX, ODS"
+            )
 
         max_size = 10 * 1024 * 1024  # 10Mo
         if attachment.size > max_size:
