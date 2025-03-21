@@ -54,7 +54,6 @@
             </p>
         {% endif %}
         <p>{{ tender.description|safe }}</p>
-
         {% if tender.attachments and not tender.deadline_date_outdated %}
             <div class="fr-mt-4w">
                 <h4 class="fr-h4">Documents</h4>
@@ -62,10 +61,13 @@
                     {% for attachment in tender.attachments %}
                         <li>
                             {% if attachment.url %}
-                                <a class="fr-link fr-link--download" download="true" href="{{ attachment.url }}" target="_blank">
+                                <a class="fr-link fr-link--download"
+                                   download="true"
+                                   href="{{ attachment.url }}"
+                                   target="_blank">
                                     Télécharger le document {{ forloop.counter }} mis à disposition par l'acheteur ({{ attachment.file.size|filesizeformat }})
                                     {% if forloop.last %}
-                                        <span class="fr-link__detail">Retrouver les documents comme le cahier des charges, la grille tarifaire, le projet de contrat...</span>
+                                        <span class="fr-link__detail">Retrouvez les documents comme le cahier des charges, la grille tarifaire, le projet de contrat...</span>
                                     {% endif %}
                                 </a>
                             {% else %}
@@ -76,7 +78,6 @@
                 </ul>
             </div>
         {% endif %}
-
         <!-- tender questions -->
         {% if source_form or not source_form and tender.questions_list|length %}
             <hr>
