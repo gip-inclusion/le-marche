@@ -15,8 +15,8 @@
     </div>
     <div class="fr-grid-row fr-mb-4w" x-data="TenderQuestionForm">
         <div class="fr-col-12 fr-col-lg-7">
-            <h4>Questions à poser aux prestataires ciblés</h4>
-            <div x-show="questions.length > 0" x-cloak>
+            <label for="id_detail-questions_list" class="fr-label">Questions à poser aux prestataires ciblés</label>
+            <div class="fr-mt-2v" x-show="questions.length > 0" x-cloak>
                 <template x-for="(question, index) in questions" :key="index">
                     <div class="fr-grid-row fr-mb-2w">
                         <div class="fr-col-11">
@@ -43,6 +43,45 @@
                        value="form.questions_list">
             </div>
             <button type="button" class="fr-btn fr-btn--tertiary" x-on:click="addNewQuestion()">Ajouter une question</button>
+        </div>
+    </div>
+    <div class="fr-grid-row fr-mb-4w">
+        <div class="fr-col-12 fr-col-lg-7">
+            {% dsfr_form_field form.attachment_one %}
+            {% if form.instance.attachment_one %}
+                <div class="fr-grid-row fr-mb-4w">
+                    <div class="fr-col-6">
+                        <a href="{{ form.instance.attachment_one.url }}" target="_blank">Document déjà téléversé</a>
+                    </div>
+                    <div class="fr-col-6">
+                        {% dsfr_form_field form.attachment_one_delete %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            {% dsfr_form_field form.attachment_two %}
+            {% if form.instance.attachment_two %}
+                <div class="fr-grid-row fr-mb-4w">
+                    <div class="fr-col-6">
+                        <a href="{{ form.instance.attachment_two.url }}" target="_blank">Document déjà téléversé</a>
+                    </div>
+                    <div class="fr-col-6">
+                        {% dsfr_form_field form.attachment_two_delete %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% dsfr_form_field form.attachment_three %}
+            {% if form.instance.attachment_three %}
+                <div class="fr-grid-row fr-mb-4w">
+                    <div class="fr-col-6">
+                        <a href="{{ form.instance.attachment_three.url }}" target="_blank">Document déjà téléversé</a>
+                    </div>
+                    <div class="fr-col-6">
+                        {% dsfr_form_field form.attachment_three_delete %}
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
     <div class="fr-grid-row">
@@ -164,6 +203,22 @@
         selectDetailAmount.addEventListener("change", function () {
             toggleRadioSelectElement(divWhyIsBlank, this.value);
         });
+    });
+
+    // Disable attachment_two as long as attachment_one is not uploaded and attachment_three as long as attachment_two is not uploaded
+    attachment_one = document.getElementById("id_detail-attachment_one");
+    attachment_two = document.getElementById("id_detail-attachment_two");
+    attachment_three = document.getElementById("id_detail-attachment_three");
+    attachment_two.disabled = true;
+    attachment_three.disabled = true;
+    attachment_one.addEventListener("change", function() {
+        attachment_two.disabled = !this.files.length;
+        if (!this.files.length) {
+            attachment_three.disabled = true; // Reset file3 if file1 is cleared
+        }
+    });
+    attachment_two.addEventListener("change", function() {
+        attachment_three.disabled = !this.files.length;
     });
     </script>
 {% endblock extra_js %}
