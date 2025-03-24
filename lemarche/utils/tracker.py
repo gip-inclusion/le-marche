@@ -62,7 +62,14 @@ def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
         user_kind = meta.get("user_kind") if meta.get("user_kind", "") else ""
         siae_id = meta.get("siae_id", None)
         if siae_id:
-            siae_id = int(siae_id[0]) if (type(siae_id) is list) else int(siae_id)
+            if type(siae_id) is list:
+                if siae_id[0]:
+                    siae_id = int(siae_id[0])
+                else:
+                    siae_id = None
+            else:
+                siae_id = int(siae_id)
+
         siae_kind = meta.get("siae_kind") if meta.get("siae_kind", "") else ""
         siae_contact_email = meta.get("siae_contact_email") if meta.get("siae_contact_email", "") else ""
 
