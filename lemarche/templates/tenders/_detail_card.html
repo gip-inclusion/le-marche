@@ -71,7 +71,7 @@
                                     {% endif %}
                                 </a>
                             {% else %}
-                                <span class="fr-link__detail">Document {{ forloop.counter }} ({{ attachment.file.size|filesizeformat }})</span>
+                                <span class="fr-link__detail">{{ attachment.name }} ({{ attachment.file.size|filesizeformat }})</span>
                             {% endif %}
                         </li>
                     {% endfor %}

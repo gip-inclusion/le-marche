@@ -44,6 +44,12 @@ def create_tender_from_dict(tender_dict: dict) -> Tender:
         "attachment_two_delete",
         "attachment_three_delete",
     ]
+    if tender_dict.get("attachment_one_delete"):
+        keys_to_pop.append("attachment_one")
+    if tender_dict.get("attachment_two_delete"):
+        keys_to_pop.append("attachment_two")
+    if tender_dict.get("attachment_three_delete"):
+        keys_to_pop.append("attachment_three")
     for key in keys_to_pop:
         tender_dict.pop(key, None)
     location = tender_dict.get("location")

@@ -118,7 +118,8 @@ class TenderCreateMultiStepView(SessionWizardView):
                 kwargs["questions_list"] = list(self.instance.questions_list())
         if step == self.STEP_CONTACT:
             kwargs["kind"] = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("kind")
-            kwargs["external_link"] = self.get_cleaned_data_for_step(self.STEP_DETAIL).get("external_link")
+            detail_data = self.get_cleaned_data_for_step(self.STEP_DETAIL)
+            kwargs["external_link"] = detail_data.get("external_link") if detail_data else None
             kwargs["user"] = self.request.user
         return kwargs
 
@@ -157,12 +158,24 @@ class TenderCreateMultiStepView(SessionWizardView):
             )
             tender_dict["attachments"] = []
             for attachment_key in ["attachment_one", "attachment_two", "attachment_three"]:
-                if tender_dict.get(attachment_key):
-                    tender_dict["attachments"].append(tender_dict[attachment_key])
-                elif getattr(self.instance, attachment_key):
-                    if not tender_dict.get(f"{attachment_key}_delete"):
+                if not tender_dict.get(f"{attachment_key}_delete"):
+                    if tender_dict.get(attachment_key):
+                        tender_dict["attachments"].append(tender_dict[attachment_key])
+                    elif getattr(self.instance, attachment_key):
                         tender_dict["attachments"].append(getattr(self.instance, attachment_key))
             context.update({"tender": tender_dict})
+        elif self.steps.current == self.STEP_DETAIL:
+            tender_dict = self.get_all_cleaned_data()
+            for attachment_key in ["attachment_one", "attachment_two", "attachment_three"]:
+                if tender_dict.get(attachment_key):
+                    context.update(
+                        {
+                            attachment_key: {
+                                "name": os.path.basename(tender_dict.get(attachment_key).name),
+                                "size": tender_dict.get(attachment_key).size,
+                            }
+                        }
+                    )
 
         context["breadcrumb_links"] = []
         if self.request.user.is_authenticated:
