@@ -174,8 +174,13 @@ class TenderAuthorOrAdminRequiredIfNotSentMixin(UserPassesTestMixin):
 
 class SiaeUserRequiredOrSiaeIdParamMixin(UserPassesTestMixin):
     def test_func(self):
+        """Authorize authenticated SIAE or numeric siae id"""
         siae_id = self.request.GET.get("siae_id", None)
-        return SiaeUserRequiredMixin.test_func(self) or (siae_id and siae_id.isnumeric())
+
+        if (self.request.user.is_authenticated and self.request.user.kind == User.KIND_SIAE) or (
+            siae_id and siae_id.isnumeric()
+        ):
+            return True
 
     def handle_no_permission(self):
         return HttpResponseForbidden()

@@ -1312,3 +1312,19 @@ class TenderStepsData(models.Model):
 
     def __str__(self):
         return f"{self.uuid} - {self.created_at}"
+
+
+class QuestionAnswer(models.Model):
+    question = models.ForeignKey(TenderQuestion, on_delete=models.CASCADE, verbose_name="question")
+    siae = models.ForeignKey(Siae, on_delete=models.CASCADE, verbose_name="siae")
+    answer = models.TextField(verbose_name="réponse")
+
+    class Meta:
+        verbose_name = "Réponse à la question"
+        verbose_name_plural = "Réponses aux questions"
+        constraints = [
+            models.UniqueConstraint("question", "siae", name="unique_answer_per_siae_and_question"),
+        ]
+
+    def __str__(self):
+        return f"{self.pk}-{self.answer}"

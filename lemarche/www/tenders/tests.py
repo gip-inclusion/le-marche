@@ -15,11 +15,11 @@ from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.factories import SiaeFactory
+from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
-from lemarche.tenders.factories import TenderFactory, TenderQuestionFactory
-from lemarche.tenders.models import Tender, TenderSiae, TenderStepsData
+from lemarche.tenders.factories import TenderFactory, TenderQuestionFactory, TenderSiaeFactory
+from lemarche.tenders.models import QuestionAnswer, Tender, TenderSiae, TenderStepsData
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 from lemarche.utils import constants
@@ -1200,10 +1200,19 @@ class TenderDetailContactClickStatViewTest(TestCase):
         response = self.client.get(self.tender_detail_url)
         self.assertContains(response, self.cta_message)
         self.assertNotContains(response, 'id="login_or_signup_siae_tender_modal"')
-        self.assertContains(response, 'id="detail_contact_click_confirm_modal"')
         self.assertNotContains(response, self.cta_message_success)
         # click on button
-        response = self.client.post(self.tender_contact_click_stat_url, data={"detail_contact_click_confirm": "true"})
+        response = self.client.post(
+            self.tender_contact_click_stat_url,
+            data={
+                "detail_contact_click_confirm": "true",
+                # No questions from buyer
+                "form-TOTAL_FORMS": 0,
+                "form-INITIAL_FORMS": 0,
+                "form-MIN_NUM_FORMS": 0,
+                "form-MAX_NUM_FORMS": 1000,
+            },
+        )
         self.assertEqual(response.status_code, 302)
         siae_2_detail_contact_click_date = self.tender.tendersiae_set.first().detail_contact_click_date
         self.assertIsNotNone(siae_2_detail_contact_click_date)
@@ -1236,7 +1245,15 @@ class TenderDetailContactClickStatViewTest(TestCase):
         self.assertNotContains(response, self.cta_message_success)
         # click on button
         response = self.client.post(
-            f"{self.tender_contact_click_stat_url}?siae_id={siae_2.id}", data={"detail_contact_click_confirm": "true"}
+            f"{self.tender_contact_click_stat_url}?siae_id={siae_2.id}",
+            data={
+                "detail_contact_click_confirm": "true",
+                # No questions from buyer
+                "form-TOTAL_FORMS": 0,
+                "form-INITIAL_FORMS": 0,
+                "form-MIN_NUM_FORMS": 0,
+                "form-MAX_NUM_FORMS": 1000,
+            },
         )
         self.assertEqual(response.status_code, 302)
         siae_2_detail_contact_click_date = self.tender.tendersiae_set.first().detail_contact_click_date
@@ -1788,3 +1805,179 @@ class TenderDetailSiaeSurveyTransactionedViewTest(TestCase):
         self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
         self.assertContains(response, "Votre réponse a déjà été prise en compte")
         self.assertFalse(TenderSiae.objects.get(tender=self.tender, siae=self.siae).survey_transactioned_answer)
+
+
+class TenderQuestionAnswerTestCase(TestCase):
+    """Tests for different kind of siaes answering questions made by the creator of a tender that matched the siaes"""
+
+    def setUp(self):
+        sector = SectorFactory()
+        perimeter = PerimeterFactory()
+
+        self.siae_1 = SiaeFactory()
+        self.siae_2 = SiaeFactory()
+        SiaeActivityFactory(siae=self.siae_1, sectors=[sector], locations=[perimeter])
+        SiaeActivityFactory(siae=self.siae_2, sectors=[sector], locations=[perimeter])
+
+        self.tender = TenderFactory(sectors=[sector], perimeters=[perimeter])
+        self.q1 = TenderQuestionFactory(tender=self.tender)
+        self.q2 = TenderQuestionFactory(tender=self.tender)
+
+        other_matched_tender_siae_1 = SiaeFactory()
+        other_tender = TenderFactory()
+
+        TenderQuestionFactory(tender=other_tender)
+        TenderQuestionFactory(tender=other_tender)
+
+        # Simulate matching process
+        TenderSiaeFactory(tender=self.tender, siae=self.siae_1)
+        TenderSiaeFactory(tender=self.tender, siae=self.siae_2)
+        TenderSiaeFactory(tender=other_tender, siae=other_matched_tender_siae_1)
+
+        TemplateTransactionalFactory(name="gfdg", code="TENDERS_AUTHOR_SIAE_INTERESTED_1")
+        TemplateTransactionalFactory(name="gfdg", code="TENDERS_AUTHOR_SIAE_INTERESTED_2")
+
+    def test_with_authenticated_user_single_siae(self):
+        url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
+        user = UserFactory()
+        self.siae_1.users.add(user)
+        self.client.force_login(user)
+
+        response_get = self.client.get(url)
+        self.assertEqual(response_get.status_code, 200)
+
+        payload = {
+            "detail_contact_click_confirm": "true",
+            "form-TOTAL_FORMS": "2",
+            "form-INITIAL_FORMS": "2",
+            "form-MIN_NUM_FORMS": "0",
+            "form-MAX_NUM_FORMS": "1000",
+            "form-0-answer": "SOMETHING",
+            "form-0-question": self.q1.id,
+            "form-1-answer": "ELSE",
+            "form-1-question": self.q2.id,
+        }
+        response_post = self.client.post(url, data=payload)
+
+        self.assertEqual(response_post.status_code, 302)
+
+        self.assertEqual(QuestionAnswer.objects.all().count(), 2)
+
+        self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_1, question=self.q1).answer, "SOMETHING")
+        self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_1, question=self.q2).answer, "ELSE")
+
+    def test_with_authenticated_user_multiple_siae(self):
+        """A user has 2 Siae that matched the same tender."""
+        url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
+
+        user = UserFactory()
+        self.siae_1.users.add(user)
+        self.siae_2.users.add(user)
+        non_matched_siae = SiaeFactory()
+        non_matched_siae.users.add(user)
+        self.client.force_login(user)
+
+        response_get = self.client.get(url)
+        self.assertEqual(response_get.status_code, 200)
+        # Only the 2 matched siae are grouped in the form, not the third that didn't match
+        self.assertEqual(len(response_get.context["questions_formset"]), 2)
+
+        payload = {
+            "siae": [self.siae_1.id, self.siae_2.id],
+            "detail_contact_click_confirm": "true",
+            "form-TOTAL_FORMS": "2",
+            "form-INITIAL_FORMS": "2",
+            "form-MIN_NUM_FORMS": "0",
+            "form-MAX_NUM_FORMS": "1000",
+            # Answers for all selected Siaes
+            "form-0-answer": "SOMETHING",
+            "form-0-question": self.q1.id,
+            "form-1-answer": "ELSE",
+            "form-1-question": self.q2.id,
+        }
+        response_post = self.client.post(url, data=payload)
+
+        self.assertEqual(response_post.status_code, 302)
+
+        self.assertEqual(QuestionAnswer.objects.all().count(), 4)
+
+        self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_1, question=self.q1).answer, "SOMETHING")
+        self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_1, question=self.q2).answer, "ELSE")
+        self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_2, question=self.q1).answer, "SOMETHING")
+        self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_2, question=self.q2).answer, "ELSE")
+
+        self.assertTrue(TenderSiae.objects.get(tender=self.tender, siae=self.siae_1).detail_contact_click_date)
+        self.assertTrue(TenderSiae.objects.get(tender=self.tender, siae=self.siae_2).detail_contact_click_date)
+
+    def test_with_authenticated_user_multiple_siae_only_one_selected(self):
+        """A user has 2 Siae that matched the same tender, but choose to answer for only one of them
+        with selecting only one in the siae select"""
+        url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
+
+        user = UserFactory()
+        self.siae_1.users.add(user)
+        self.siae_2.users.add(user)
+        self.client.force_login(user)
+
+        response_get = self.client.get(url)
+        self.assertEqual(response_get.status_code, 200)
+        # Only the 2 matched siae are grouped in the form, not the third that didn't match
+        self.assertEqual(len(response_get.context["questions_formset"]), 2)
+
+        payload = {
+            "siae": [self.siae_1.id],
+            "detail_contact_click_confirm": "true",
+            "form-TOTAL_FORMS": "2",
+            "form-INITIAL_FORMS": "2",
+            "form-MIN_NUM_FORMS": "0",
+            "form-MAX_NUM_FORMS": "1000",
+            # Answers for all selected Siaes
+            "form-0-answer": "SOMETHING",
+            "form-0-question": self.q1.id,
+            "form-1-answer": "ELSE",
+            "form-1-question": self.q2.id,
+        }
+        response_post = self.client.post(url, data=payload)
+
+        self.assertEqual(response_post.status_code, 302)
+
+        self.assertEqual(QuestionAnswer.objects.all().count(), 2)
+
+        self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_1, question=self.q1).answer, "SOMETHING")
+        self.assertEqual(QuestionAnswer.objects.get(siae=self.siae_1, question=self.q2).answer, "ELSE")
+
+        # Only the selected Siae have a detail_contact_click_date
+        self.assertTrue(TenderSiae.objects.get(tender=self.tender, siae=self.siae_1).detail_contact_click_date)
+        self.assertFalse(TenderSiae.objects.get(tender=self.tender, siae=self.siae_2).detail_contact_click_date)
+
+    def test_with_anonymous_user_single_siae(self):
+        """Unauthenticated users should also be granted the right to answers questions"""
+        url = (
+            reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
+            + f"?siae_id={self.siae_1.id}"
+        )
+
+        # Assert no answers created yet
+        self.assertEqual(QuestionAnswer.objects.count(), 0)
+
+        response_get = self.client.get(url)
+        self.assertEqual(response_get.status_code, 200)
+
+        payload = {
+            "detail_contact_click_confirm": "true",
+            "form-TOTAL_FORMS": "2",
+            "form-INITIAL_FORMS": "2",
+            "form-MIN_NUM_FORMS": "0",
+            "form-MAX_NUM_FORMS": "1000",
+            "form-0-answer": "SOMETHING",
+            "form-0-question": self.q1.id,
+            "form-1-answer": "ELSE",
+            "form-1-question": self.q2.id,
+        }
+        response_post = self.client.post(url, data=payload)
+
+        self.assertEqual(response_post.status_code, 302)
+
+        self.assertEqual(QuestionAnswer.objects.all().count(), 2)
+        self.assertEqual(QuestionAnswer.objects.first().answer, "SOMETHING")
+        self.assertEqual(QuestionAnswer.objects.last().answer, "ELSE")

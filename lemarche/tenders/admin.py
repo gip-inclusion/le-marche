@@ -19,7 +19,14 @@ from lemarche.perimeters.admin import PerimeterRegionFilter
 from lemarche.perimeters.models import Perimeter
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.forms import TenderAdminForm
-from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderSiae, TenderStepsData
+from lemarche.tenders.models import (
+    PartnerShareTender,
+    QuestionAnswer,
+    Tender,
+    TenderQuestion,
+    TenderSiae,
+    TenderStepsData,
+)
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import admin_site
@@ -351,6 +358,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         # slug
         # status
         "question_count_with_link",
+        "answer_count_with_link",
         "author_kind_detail",
         "is_partner_approch",
         "partner_approch_id",
@@ -394,6 +402,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "constraints",
                     "external_link",
                     "question_count_with_link",
+                    "answer_count_with_link",
                 ),
             },
         ),
@@ -646,6 +655,15 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     question_count_with_link.short_description = TenderQuestion._meta.verbose_name_plural
 
+    def answer_count_with_link(self, tender):
+        answers = QuestionAnswer.objects.filter(question__tender=tender)
+        id_list = [str(answer.id) for answer in answers]
+        id_string = ",".join(id_list)
+        url = reverse("admin:tenders_questionanswer_changelist") + f"?id__in={id_string}"
+        return format_html(f'<a href="{url}">{answers.count()}</a>')
+
+    answer_count_with_link.short_description = QuestionAnswer._meta.verbose_name_plural
+
     def title_with_link(self, tender):
         url = reverse("admin:tenders_tender_change", args=[tender.id])
         return format_html(f'<a href="{url}">{tender.title}</a>')
@@ -882,6 +900,12 @@ class TenderQuestionAdmin(admin.ModelAdmin):
 
     tender_with_link.short_description = "Besoin d'achat"
     tender_with_link.admin_order_field = "tender"
+
+
+@admin.register(QuestionAnswer, site=admin_site)
+class QuestionAnswerAdmin(admin.ModelAdmin):
+    list_display = ["id", "answer", "question", "siae"]
+    search_fields = ["id", "answer", "question", "siae"]
 
 
 class PartnerShareTenderNoteInline(GenericTabularInline):
