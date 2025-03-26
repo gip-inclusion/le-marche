@@ -8,6 +8,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
+from lemarche.users.validators import professional_email_validator
 from lemarche.utils import constants
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.utils.widgets import CustomSelectMultiple
@@ -196,6 +197,8 @@ class TenderCreateStepContactForm(forms.ModelForm):
         self.user = user
         user_is_anonymous = not user.is_authenticated
         user_does_not_have_company_name = user_is_anonymous or not user.company_name
+
+        self.fields["contact_email"].validators.append(professional_email_validator)
 
         # display response_is_anonymous only if the tender is a project
         if self.instance and (self.instance.kind != tender_constants.KIND_PROJECT):
