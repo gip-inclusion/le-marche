@@ -52,10 +52,10 @@
             {% if form.instance.attachment_one or attachment_one %}
                 <div class="fr-grid-row fr-mb-4w">
                     <div class="fr-col-6">
-                        {% if form.instance.attachment_one %}
-                            <a href="{{ form.instance.attachment_one.url }}" target="_blank">Document déjà téléversé</a>
-                        {% elif attachment_one %}
+                        {% if attachment_one %}
                             <span class="fr-link__detail">{{ attachment_one.name }} ({{ attachment_one.size|filesizeformat }})</span>
+                        {% elif form.instance.attachment_one %}
+                            <a href="{{ form.instance.attachment_one.url }}" target="_blank">Document déjà téléversé</a>
                         {% endif %}
                     </div>
                     <div class="fr-col-6">{% dsfr_form_field form.attachment_one_delete %}</div>
@@ -65,10 +65,10 @@
             {% if form.instance.attachment_two or attachment_two %}
                 <div class="fr-grid-row fr-mb-4w">
                     <div class="fr-col-6">
-                        {% if form.instance.attachment_two %}
-                            <a href="{{ form.instance.attachment_two.url }}" target="_blank">Document déjà téléversé</a>
-                        {% elif attachment_two %}
+                        {% if attachment_two %}
                             <span class="fr-link__detail">{{ attachment_two.name }} ({{ attachment_two.size|filesizeformat }})</span>
+                        {% elif form.instance.attachment_two %}
+                            <a href="{{ form.instance.attachment_two.url }}" target="_blank">Document déjà téléversé</a>
                         {% endif %}
                     </div>
                     <div class="fr-col-6">{% dsfr_form_field form.attachment_two_delete %}</div>
@@ -78,10 +78,10 @@
             {% if form.instance.attachment_three or attachment_three %}
                 <div class="fr-grid-row fr-mb-4w">
                     <div class="fr-col-6">
-                        {% if form.instance.attachment_three %}
-                            <a href="{{ form.instance.attachment_three.url }}" target="_blank">Document déjà téléversé</a>
-                        {% elif attachment_three %}
+                        {% if attachment_three %}
                             <span class="fr-link__detail">{{ attachment_three.name }} ({{ attachment_three.size|filesizeformat }})</span>
+                        {% elif form.instance.attachment_three %}
+                            <a href="{{ form.instance.attachment_three.url }}" target="_blank">Document déjà téléversé</a>
                         {% endif %}
                     </div>
                     <div class="fr-col-6">{% dsfr_form_field form.attachment_three_delete %}</div>
