@@ -9,21 +9,33 @@
                     </div>
                     <form method="post" action="{% url 'tenders:detail-contact-click-stat' tender.slug %}?siae_id={{ siae_id }}">
                         <div class="fr-modal__content">
-                            <h3 id="detail_contact_click_confirm_modal_title" class="fr-modal__title">Signaler votre intérêt à l'acheteur ?</h3>
-                            <p>
-                                Pour {{ tender.cta_card_button_text | lower }}, vous devez signaler votre intérêt à l'acheteur.
-                            </p>
+                            {% if questions_formset %}
+                                <div id="detail_contact_click_confirm_modal_title" class="fr-modal__title">
+                                  L'acheteur vous a posé quelques questions
+                                </div>
+                                <p>
+                                  Vos réponses vous permettront d'être mis en relation avec lui.
+                                </p>
+
+                            {% else %}
+
+                                <div id="detail_contact_click_confirm_modal_title" class="fr-modal__title">Signaler votre intérêt à l'acheteur ?</div>
+                                <p>
+                                    Pour {{ tender.cta_card_button_text | lower }}, vous devez signaler votre intérêt à l'acheteur.
+                                </p>
+                            {% endif %}
                             
                             {% csrf_token %}
+                            <div style="max-height: 300px; overflow-y: scroll; overflow-x: hidden;">
                             {% if siae_select_form %}
                                 {% dsfr_form_field siae_select_form.siae %}
                             {% endif %}
-                        
+                            </div>
                             {{ questions_formset.management_form }}
                         
                             {% for form in questions_formset %}
                                 <div class="fr-mt-5w">
-                                    <h2 class="fr-h4">{{ form.initial.question }}</h2>
+                                    <div class="fr-h5">{{ form.initial.question }}</div>
                                     <div class="">
                                         <div class="fr-form-group">
                                             {% dsfr_form form %}

@@ -23,8 +23,7 @@ class QuestionAnswerForm(forms.Form):
 
 class SiaeSelectionForm(forms.Form):
     siae = forms.ModelMultipleChoiceField(
-        label="Structures",
-        help_text="Sélectionner les structures pour lequelles vous voulez répondre au besoin",
+        label="Pour quelle(s) structure(s) souhaitez-vous répondre ?",
         queryset=Siae.objects.none(),
         widget=forms.CheckboxSelectMultiple(),
     )
