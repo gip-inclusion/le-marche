@@ -220,12 +220,17 @@
     attachment_two_delete = document.getElementById("id_detail-attachment_two_delete");
     attachment_three = document.getElementById("id_detail-attachment_three");
     attachment_three_delete = document.getElementById("id_detail-attachment_three_delete");
-    {% if not form.instance.attachment_one and not attachment_one %}
+
+    {# Disable attachment_two as long as attachment_one is not uploaded and attachment_two not already exists in draft edition #}
+    {% if not form.instance.attachment_one and not attachment_one and not form.instance.attachment_two and not attachment_two %}
         attachment_two.disabled = true;
     {% endif %}
-    {% if not form.instance.attachment_two and not attachment_two %}
+
+    {# Disable attachment_three as long as attachment_two is not uploaded and attachment_three not already exists in draft edition #}
+    {% if not form.instance.attachment_two and not attachment_two and not form.instance.attachment_three and not attachment_three %}
         attachment_three.disabled = true;
     {% endif %}
+
     attachment_one.addEventListener("change", function() {
         attachment_two.disabled = !this.files.length;
         if (!this.files.length) {
