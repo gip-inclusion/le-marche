@@ -98,14 +98,15 @@ class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, SuccessMessa
             return super().form_valid(form)
         else:
             # create SiaeUserRequest + send request email to assignee
-            siae_user_request = SiaeUserRequest.objects.create(
-                siae=self.object,
-                initiator=self.request.user,
-                assignee=self.object.users.first(),
-                logs=[{"action": "create", "timestamp": timezone.now().isoformat()}],
-            )
-            send_siae_user_request_email_to_assignee(siae_user_request)
-            success_message = f"La demande a été envoyée à {self.object.users.first().full_name}."
+            for assignee in self.object.users.all():
+                siae_user_request = SiaeUserRequest.objects.create(
+                    siae=self.object,
+                    initiator=self.request.user,
+                    assignee=assignee,
+                    logs=[{"action": "create", "timestamp": timezone.now().isoformat()}],
+                )
+                send_siae_user_request_email_to_assignee(siae_user_request)
+            success_message = "La demande a été envoyée aux gestionnaires de la strucure."
             messages.add_message(self.request, messages.SUCCESS, success_message)
             return HttpResponseRedirect(reverse_lazy("dashboard:home"))
 
