@@ -23,9 +23,7 @@ def read_csv(file_path):
     row_list = list()
 
     with open(file_path) as csv_file:
-        csvreader = csv.DictReader(csv_file, delimiter=",")
-        for index, row in enumerate(csvreader):
-            row_list.append(row)
+        row_list = list(csv.DictReader(csv_file, delimiter=","))
 
     return row_list
 
