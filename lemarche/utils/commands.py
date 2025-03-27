@@ -25,3 +25,9 @@ class BaseCommand(BaseCommand):
         messages = messages if (type(messages) is list) else [messages]
         for message in messages:
             self.stdout_success(message)
+
+    def stdout_messages_error(self, messages):
+        self.stdout_error("-" * 80)
+        messages = messages if (type(messages) is list) else [messages]
+        for message in messages:
+            self.stdout_error(message)
