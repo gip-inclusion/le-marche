@@ -66,6 +66,10 @@ def recherche_entreprises_get_or_error(siret):
                 ca_date_reference = sorted_finances[0][0]
                 ca = sorted_finances[0][1]["ca"]
 
+            if len(data["matching_etablissements"]) != 1:
+                # Did never happen because SIRET is unique, but just in case
+                raise Exception("Multiple matching establishments found")
+
             etablissement = data["matching_etablissements"][0]
             return RechercheEntreprisesResponse(
                 siret=etablissement["siret"],
