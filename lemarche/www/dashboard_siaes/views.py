@@ -75,7 +75,7 @@ class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, SuccessMessa
         - check if there isn't any pending SiaeUserRequest
         """
         context = super().get_context_data(**kwargs)
-        siae_user_pending_request = self.object.siaeuserrequest_set.initiator(self.request.user).pending()
+        siae_user_pending_request = self.object.siaeuserrequest_set.filter(initiator=self.request.user).pending()
         context["siae_user_pending_request"] = siae_user_pending_request
         context["breadcrumb_data"] = {
             "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
@@ -124,7 +124,7 @@ class SiaeUsersView(SiaeMemberRequiredMixin, DetailView):
         - check if there isn't any pending SiaeUserRequest
         """
         context = super().get_context_data(**kwargs)
-        siae_user_pending_request = self.object.siaeuserrequest_set.assignee(self.request.user).pending()
+        siae_user_pending_request = self.object.siaeuserrequest_set.filter(assignee=self.request.user).pending()
         context["siae_user_pending_requests"] = siae_user_pending_request
         context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
         context["breadcrumb_current"] = f"{self.object.name_display} : collaborateurs"
