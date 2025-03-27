@@ -7,7 +7,7 @@ from unittest.mock import patch
 import factory
 from django.core.management import call_command
 from django.db.models import signals
-from django.test import TransactionTestCase
+from django.test import TestCase, TransactionTestCase
 
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
@@ -379,7 +379,7 @@ class SiaeUpdateCountFieldsCommandTest(TransactionTestCase):
         self.assertEqual(siae_not_updated.sector_count, 0)
 
 
-class SiaeUpdateApiEntrepriseFieldsCommandTest(TransactionTestCase):
+class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
 
     def setUp(self):
         super().setUp()
