@@ -35,13 +35,13 @@
                     <button data-fr-opened="false"
                             aria-controls="siae_user_delete_modal"
                             class="fr-hidden"></button>
-                    {% if siae.siaeuserrequest_set.pending.count %}
+                    {% if siae_user_pending_requests %}
                         <div class="fr-grid-row fr-mb-1w">
                             <div class="fr-col">
                                 <h2>En attente</h2>
                             </div>
                         </div>
-                        {% for siaeuserrequest in siae.siaeuserrequest_set.pending %}
+                        {% for siaeuserrequest in siae_user_pending_requests %}
                             <div class="fr-grid-row fr-grid-row--gutters">
                                 <div class="fr-col">
                                     <div class="fr-card fr-card--sm fr-card--grey">

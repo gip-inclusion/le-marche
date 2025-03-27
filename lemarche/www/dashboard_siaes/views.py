@@ -125,7 +125,7 @@ class SiaeUsersView(SiaeMemberRequiredMixin, DetailView):
         """
         context = super().get_context_data(**kwargs)
         siae_user_pending_request = self.object.siaeuserrequest_set.assignee(self.request.user).pending()
-        context["siae_user_pending_request"] = siae_user_pending_request
+        context["siae_user_pending_requests"] = siae_user_pending_request
         context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
         context["breadcrumb_current"] = f"{self.object.name_display} : collaborateurs"
         return context
