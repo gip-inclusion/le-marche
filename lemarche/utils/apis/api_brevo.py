@@ -393,6 +393,9 @@ def send_transactional_email_with_template(
     )
 
     try:
+
+        logger.error(f"CALLED to {recipient_email}, template_id {template_id}")  # fixme
+
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
 
         # FIXME
@@ -404,4 +407,7 @@ def send_transactional_email_with_template(
     else:
         sent_log.extra_data["sent"] = True
         sent_log.save()
+
+        logger.error(f"SENT!! {response.to_dict()}")  # fixme
+
         return response.to_dict()
