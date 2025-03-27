@@ -92,6 +92,7 @@ class TenderCreateMultiStepView(SessionWizardView):
     ]
 
     # Add file storage configuration
+    # https://django-formtools.readthedocs.io/en/latest/wizard.html#formtools.wizard.views.WizardView.file_storage
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, "temp_uploads"))
 
     def get_template_names(self):
