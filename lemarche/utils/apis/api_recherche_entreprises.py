@@ -41,7 +41,7 @@ class RechercheEntreprisesResponse:
 
 
 def recherche_entreprises_get_or_error(siret):
-
+    # Doc : https://recherche-entreprises.api.gouv.fr/docs/
     url = f"{settings.API_RECHERCHE_ENTREPRISES_BASE_URL}/search?q={siret}"
 
     try:

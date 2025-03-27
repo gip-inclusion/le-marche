@@ -129,9 +129,9 @@ class Command(BaseCommand):
             else:
                 self.stdout_info(f"Would update SIAE {siae.id} with {update_data=}")
 
-            # small delay to avoid going above the API limitation, one loop generates 3 requests
-            # "max. 250 requêtes/min/jeton cumulées sur tous les endpoints"
-            time.sleep(1)
+            # small delay to avoid going above the API limitation
+            # "max. 7 requests per second"
+            time.sleep(0.2)
 
         msg_success = [
             "----- Synchronisation API Entreprise -----",
