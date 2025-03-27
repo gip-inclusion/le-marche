@@ -40,6 +40,10 @@ class RechercheEntreprisesResponse:
     ca_date_reference: date | None
 
 
+class RechercheEntreprisesAPIException(Exception):
+    pass
+
+
 def recherche_entreprises_get_or_error(siret):
     # Doc : https://recherche-entreprises.api.gouv.fr/docs/
     url = f"{settings.API_RECHERCHE_ENTREPRISES_BASE_URL}/search?q={siret}"
@@ -50,9 +54,9 @@ def recherche_entreprises_get_or_error(siret):
         response_data = response.json()
 
         if response_data["total_results"] == 0:
-            raise Exception("SIRET not found")
+            raise RechercheEntreprisesAPIException("SIRET not found")
         elif response_data["total_results"] > 1:
-            raise Exception("SIRET found but multiple results")
+            raise RechercheEntreprisesAPIException("SIRET found but multiple results")
         else:
             # get interesting data
             data = response_data["results"][0]
@@ -68,7 +72,7 @@ def recherche_entreprises_get_or_error(siret):
 
             if len(data["matching_etablissements"]) != 1:
                 # Did never happen because SIRET is unique, but just in case
-                raise Exception("Multiple matching establishments found")
+                raise RechercheEntreprisesAPIException("Multiple matching establishments found")
 
             etablissement = data["matching_etablissements"][0]
             return RechercheEntreprisesResponse(
@@ -85,4 +89,4 @@ def recherche_entreprises_get_or_error(siret):
             )
 
     except requests.exceptions.HTTPError as e:
-        raise Exception(f"Error while fetching `{url}`: {e}")
+        raise RechercheEntreprisesAPIException(f"Error while fetching `{url}`: {e}")

@@ -9,7 +9,10 @@ from sentry_sdk.crons import monitor
 from lemarche.siaes.constants import SIAE_LEGAL_FORM_CHOICE_LIST
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis import api_slack
-from lemarche.utils.apis.api_recherche_entreprises import recherche_entreprises_get_or_error
+from lemarche.utils.apis.api_recherche_entreprises import (
+    RechercheEntreprisesAPIException,
+    recherche_entreprises_get_or_error,
+)
 from lemarche.utils.commands import BaseCommand
 
 
@@ -101,7 +104,7 @@ class Command(BaseCommand):
             else:
                 self.stdout_info(f"Would update SIAE {siae.id} with {update_data=}")
             return True
-        except Exception as e:
+        except RechercheEntreprisesAPIException as e:
             self.stdout_error(str(e))
             return False
 
