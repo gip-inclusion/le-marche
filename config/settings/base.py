@@ -509,6 +509,9 @@ API_ENTREPRISE_CONTEXT = "emplois.inclusion.beta.gouv.fr"
 API_ENTREPRISE_RECIPIENT = env.str("API_ENTREPRISE_RECIPIENT", "")
 API_ENTREPRISE_TOKEN = env.str("API_ENTREPRISE_TOKEN", "")
 
+# API Recherche Entreprises.
+API_RECHERCHE_ENTREPRISES_BASE_URL = "https://recherche-entreprises.api.gouv.fr"
+
 # API QPV
 # API_QPV_RELATIVE_DAYS_TO_UPDATE is used to check last modification of SIAE.is_QPV
 #   if SIAE.is_QPV was update after `today-API_QPV_RELATIVE_DAYS_TO_UPDATE`, we call the API to QPV

@@ -1,11 +1,13 @@
 import logging
 import os
+from datetime import datetime
+from io import StringIO
 from unittest.mock import patch
 
 import factory
 from django.core.management import call_command
 from django.db.models import signals
-from django.test import TransactionTestCase
+from django.test import TestCase, TransactionTestCase
 
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
@@ -375,3 +377,172 @@ class SiaeUpdateCountFieldsCommandTest(TransactionTestCase):
         siae_not_updated.refresh_from_db()
         self.assertEqual(siae_not_updated.user_count, 0)
         self.assertEqual(siae_not_updated.sector_count, 0)
+
+
+class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.siae = SiaeFactory()
+        self.mock_return_value = {
+            "results": [
+                {
+                    "nom_complet": "SIAE (IAE)",
+                    "nom_raison_sociale": "SIAE",
+                    "activite_principale": "81.21Z",
+                    "date_creation": "2000-01-01",
+                    "date_fermeture": "null",
+                    "etat_administratif": "A",
+                    "nature_juridique": "5710",
+                    "section_activite_principale": "N",
+                    "tranche_effectif_salarie": "32",
+                    "annee_tranche_effectif_salarie": "2022",
+                    "matching_etablissements": [
+                        {
+                            "siret": self.siae.siret,
+                            "activite_principale": "81.22Z",
+                            "annee_tranche_effectif_salarie": "2024",
+                            "date_creation": "2023-06-01",
+                            "tranche_effectif_salarie": "32",
+                            "est_siege": False,
+                            "etat_administratif": "A",
+                        }
+                    ],
+                    "finances": {"2023": {"ca": 9726858, "resultat_net": -782299}},
+                }
+            ],
+            "total_results": 1,
+            "page": 1,
+            "per_page": 10,
+            "total_pages": 1,
+        }
+
+    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
+    def test_update_api_entreprise_fields_dry_run(self, mock_requests_get):
+        """
+        Check that the field is not updated in dry run
+        """
+        mock_requests_get.return_value.status_code = 200
+        mock_requests_get.return_value.json.return_value = self.mock_return_value
+
+        # Dry run
+        out = StringIO()
+        call_command("update_api_entreprise_fields", stdout=out)
+        self.siae.refresh_from_db()
+        self.assertEqual(self.siae.api_entreprise_employees, "")
+        self.assertEqual(self.siae.api_entreprise_employees_year_reference, "")
+        self.assertIsNone(self.siae.api_entreprise_date_constitution)
+        self.assertIsNone(self.siae.api_entreprise_ca)
+        self.assertIsNone(self.siae.api_entreprise_etablissement_last_sync_date)
+        self.assertIsNone(self.siae.api_entreprise_entreprise_last_sync_date)
+        self.assertIsNone(self.siae.api_entreprise_exercice_last_sync_date)
+
+        self.assertIn(f"Would update SIAE {self.siae.id} with", out.getvalue())
+        self.assertIn("Done! Processed 1 siae", out.getvalue())
+
+    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
+    def test_update_api_entreprise_fields_wet_run(self, mock_requests_get):
+        """
+        Check that the field is updated correctly in wet run
+        """
+
+        mock_requests_get.return_value.status_code = 200
+        mock_requests_get.return_value.json.return_value = self.mock_return_value
+
+        # Wet run
+        call_command("update_api_entreprise_fields", wet_run=True)
+        self.siae.refresh_from_db()
+        self.assertEqual(self.siae.api_entreprise_employees, "250 à 499 salariés")
+        self.assertEqual(self.siae.api_entreprise_employees_year_reference, "2024")
+        self.assertIsNotNone(self.siae.api_entreprise_etablissement_last_sync_date)
+        self.assertEqual(
+            self.siae.api_entreprise_date_constitution, datetime.strptime("2023-06-01", "%Y-%m-%d").date()
+        )
+        self.assertEqual(self.siae.api_entreprise_forme_juridique, "SAS")
+        self.assertEqual(self.siae.api_entreprise_forme_juridique_code, "5710")
+        self.assertIsNotNone(self.siae.api_entreprise_entreprise_last_sync_date)
+        self.assertEqual(self.siae.api_entreprise_ca, 9726858)
+        self.assertIsNotNone(self.siae.api_entreprise_exercice_last_sync_date)
+
+    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
+    def test_update_api_entreprise_fields_with_siret(self, mock_requests_get):
+        """
+        Check that the field is updated correctly with a siret
+        """
+        mock_requests_get.return_value.status_code = 200
+        mock_requests_get.return_value.json.return_value = self.mock_return_value
+
+        SiaeFactory()
+        self.siae.refresh_from_db()
+
+        out = StringIO()
+        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=out)
+
+        mock_requests_get.assert_called_once()
+        self.assertIn("Done! Processed 1 siae", out.getvalue())
+        self.siae.refresh_from_db()
+        self.assertEqual(self.siae.api_entreprise_employees, "250 à 499 salariés")
+
+    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
+    def test_update_api_entreprise_fields_with_no_finance(self, mock_requests_get):
+        """
+        Check that the field is updated correctly with no finance
+        """
+        mock_requests_get.return_value.status_code = 200
+        self.mock_return_value["results"][0]["finances"] = None
+        mock_requests_get.return_value.json.return_value = self.mock_return_value
+
+        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True)
+        self.siae.refresh_from_db()
+        self.assertEqual(self.siae.api_entreprise_employees, "250 à 499 salariés")
+        self.assertIsNone(self.siae.api_entreprise_ca)
+        self.assertIsNone(self.siae.api_entreprise_exercice_last_sync_date)
+
+    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
+    def test_update_api_entreprise_fields_finance_orders_asc(self, mock_requests_get):
+        """
+        Check that the field is updated correctly with finance orders in ascending order
+        """
+        mock_requests_get.return_value.status_code = 200
+        self.mock_return_value["results"][0]["finances"] = {
+            "2023": {"ca": 9726858, "resultat_net": -782299},
+            "2024": {"ca": 12345678, "resultat_net": 505663},
+        }
+        mock_requests_get.return_value.json.return_value = self.mock_return_value
+
+        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True)
+        self.siae.refresh_from_db()
+        self.assertEqual(self.siae.api_entreprise_ca, 12345678)
+
+    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
+    def test_update_api_entreprise_fields_finance_orders_desc(self, mock_requests_get):
+        """
+        Check that the field is updated correctly with finance orders in descending order
+        """
+        mock_requests_get.return_value.status_code = 200
+        self.mock_return_value["results"][0]["finances"] = {
+            "2024": {"ca": 12345678, "resultat_net": 505663},
+            "2023": {"ca": 9726858, "resultat_net": -782299},
+        }
+        mock_requests_get.return_value.json.return_value = self.mock_return_value
+
+        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True)
+        self.siae.refresh_from_db()
+        self.assertEqual(self.siae.api_entreprise_ca, 12345678)
+
+    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
+    def test_update_api_entreprise_fields_with_siret_not_found(self, mock_requests_get):
+        """
+        Check that the field is updated correctly with a siret not found
+        """
+        mock_requests_get.return_value.status_code = 200
+        mock_requests_get.return_value.json.return_value = {
+            "results": [],
+            "total_results": 0,
+            "page": 1,
+            "per_page": 10,
+            "total_pages": 1,
+        }
+        out = StringIO()
+        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=out)
+        self.assertIn("SIRET not found", out.getvalue())
