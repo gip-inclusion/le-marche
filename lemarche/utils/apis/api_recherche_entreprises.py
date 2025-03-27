@@ -36,8 +36,8 @@ class RechercheEntreprisesResponse:
     is_head_office: bool
     employees: str
     employees_date_reference: date
-    ca: str
-    ca_date_reference: date
+    ca: str | None
+    ca_date_reference: date | None
 
 
 def recherche_entreprises_get_or_error(siret):
