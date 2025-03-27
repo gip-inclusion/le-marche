@@ -20,8 +20,6 @@ SIAE_LEGAL_FORM_MAPPING_FILE_PATH = (
 
 
 def read_csv(file_path):
-    row_list = list()
-
     with open(file_path) as csv_file:
         row_list = list(csv.DictReader(csv_file, delimiter=","))
 
@@ -73,10 +71,6 @@ class Command(BaseCommand):
             progress += 1
             if (progress % 50) == 0:
                 self.stdout_info(f"{progress}...")
-
-            if not siae.siret:
-                self.stdout_error(f"SIAE {siae.id} without SIRET")
-                continue
 
             success = self._process_single_siae(siae, mapping_file_row_list, wet_run)
             if success:
