@@ -529,3 +529,20 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TransactionTestCase):
         call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True)
         self.siae.refresh_from_db()
         self.assertEqual(self.siae.api_entreprise_ca, 12345678)
+
+    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
+    def test_update_api_entreprise_fields_with_siret_not_found(self, mock_requests_get):
+        """
+        Check that the field is updated correctly with a siret not found
+        """
+        mock_requests_get.return_value.status_code = 200
+        mock_requests_get.return_value.json.return_value = {
+            "results": [],
+            "total_results": 0,
+            "page": 1,
+            "per_page": 10,
+            "total_pages": 1,
+        }
+        out = StringIO()
+        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=out)
+        self.assertIn("SIRET not found", out.getvalue())

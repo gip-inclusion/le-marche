@@ -81,12 +81,8 @@ class Command(BaseCommand):
 
             update_data = dict()
 
-            entreprise, error = recherche_entreprises_get_or_error(siae.siret)
-            if error:
-                results["error"] += 1
-                self.stdout_error(str(error))
-            else:
-                # Entreprise
+            try:
+                entreprise = recherche_entreprises_get_or_error(siae.siret)
                 if entreprise.forme_juridique_code:
                     siae_mapping_row = next(
                         (
@@ -123,6 +119,10 @@ class Command(BaseCommand):
                     update_data["api_entreprise_exercice_last_sync_date"] = timezone.now()
 
                 results["success"] += 1
+            except Exception as e:
+                results["error"] += 1
+                self.stdout_error(str(e))
+                continue
 
             if wet_run:
                 Siae.objects.filter(id=siae.id).update(**update_data)

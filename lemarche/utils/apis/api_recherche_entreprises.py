@@ -50,9 +50,9 @@ def recherche_entreprises_get_or_error(siret):
         response_data = response.json()
 
         if response_data["total_results"] == 0:
-            return None, "SIRET not found"
+            raise Exception("SIRET not found")
         elif response_data["total_results"] > 1:
-            return None, "SIRET found but multiple results"
+            raise Exception("SIRET found but multiple results")
         else:
             # get interesting data
             data = response_data["results"][0]
@@ -67,21 +67,18 @@ def recherche_entreprises_get_or_error(siret):
                 ca = sorted_finances[0][1]["ca"]
 
             etablissement = data["matching_etablissements"][0]
-            return (
-                RechercheEntreprisesResponse(
-                    siret=etablissement["siret"],
-                    forme_juridique_code=data["nature_juridique"],
-                    date_creation=etablissement["date_creation"],
-                    naf=etablissement["activite_principale"],
-                    is_closed=etablissement["etat_administratif"] == "F",
-                    is_head_office=etablissement["est_siege"],
-                    employees=TRANCHES_EFFECTIF_SALARIE_MAPPING.get(etablissement["tranche_effectif_salarie"], ""),
-                    employees_date_reference=etablissement["annee_tranche_effectif_salarie"],
-                    ca=ca,
-                    ca_date_reference=ca_date_reference,
-                ),
-                None,
+            return RechercheEntreprisesResponse(
+                siret=etablissement["siret"],
+                forme_juridique_code=data["nature_juridique"],
+                date_creation=etablissement["date_creation"],
+                naf=etablissement["activite_principale"],
+                is_closed=etablissement["etat_administratif"] == "F",
+                is_head_office=etablissement["est_siege"],
+                employees=TRANCHES_EFFECTIF_SALARIE_MAPPING.get(etablissement["tranche_effectif_salarie"], ""),
+                employees_date_reference=etablissement["annee_tranche_effectif_salarie"],
+                ca=ca,
+                ca_date_reference=ca_date_reference,
             )
 
     except requests.exceptions.HTTPError as e:
-        return None, f"Error while fetching `{url}`: {e}"
+        raise Exception(f"Error while fetching `{url}`: {e}")
