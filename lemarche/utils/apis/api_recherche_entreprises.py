@@ -61,8 +61,10 @@ def recherche_entreprises_get_or_error(siret):
             ca_date_reference = None
             if "finances" in data and data["finances"]:
                 finances = data["finances"]
-                ca_date_reference = next(iter(finances.keys()))
-                ca = finances[ca_date_reference]["ca"]
+                # Sort the finances data by year in descending order
+                sorted_finances = sorted(finances.items(), key=lambda x: x[0], reverse=True)
+                ca_date_reference = sorted_finances[0][0]
+                ca = sorted_finances[0][1]["ca"]
 
             etablissement = data["matching_etablissements"][0]
             return (

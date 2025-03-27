@@ -442,6 +442,9 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TransactionTestCase):
 
     @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
     def test_update_api_entreprise_fields_wet_run(self, mock_requests_get):
+        """
+        Check that the field is updated correctly in wet run
+        """
 
         mock_requests_get.return_value.status_code = 200
         mock_requests_get.return_value.json.return_value = self.mock_return_value
@@ -464,7 +467,7 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TransactionTestCase):
     @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
     def test_update_api_entreprise_fields_with_siret(self, mock_requests_get):
         """
-        Create a siae and check that the field is updated correctly
+        Check that the field is updated correctly with a siret
         """
         mock_requests_get.return_value.status_code = 200
         mock_requests_get.return_value.json.return_value = self.mock_return_value
@@ -479,3 +482,50 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TransactionTestCase):
         self.assertIn("Done! Processed 1 siae", out.getvalue())
         self.siae.refresh_from_db()
         self.assertEqual(self.siae.api_entreprise_employees, "250 à 499 salariés")
+
+    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
+    def test_update_api_entreprise_fields_with_no_finance(self, mock_requests_get):
+        """
+        Check that the field is updated correctly with no finance
+        """
+        mock_requests_get.return_value.status_code = 200
+        self.mock_return_value["results"][0]["finances"] = None
+        mock_requests_get.return_value.json.return_value = self.mock_return_value
+
+        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True)
+        self.siae.refresh_from_db()
+        self.assertEqual(self.siae.api_entreprise_employees, "250 à 499 salariés")
+        self.assertIsNone(self.siae.api_entreprise_ca)
+        self.assertIsNone(self.siae.api_entreprise_exercice_last_sync_date)
+
+    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
+    def test_update_api_entreprise_fields_finance_orders_asc(self, mock_requests_get):
+        """
+        Check that the field is updated correctly with finance orders in ascending order
+        """
+        mock_requests_get.return_value.status_code = 200
+        self.mock_return_value["results"][0]["finances"] = {
+            "2023": {"ca": 9726858, "resultat_net": -782299},
+            "2024": {"ca": 12345678, "resultat_net": 505663},
+        }
+        mock_requests_get.return_value.json.return_value = self.mock_return_value
+
+        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True)
+        self.siae.refresh_from_db()
+        self.assertEqual(self.siae.api_entreprise_ca, 12345678)
+
+    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
+    def test_update_api_entreprise_fields_finance_orders_desc(self, mock_requests_get):
+        """
+        Check that the field is updated correctly with finance orders in descending order
+        """
+        mock_requests_get.return_value.status_code = 200
+        self.mock_return_value["results"][0]["finances"] = {
+            "2024": {"ca": 12345678, "resultat_net": 505663},
+            "2023": {"ca": 9726858, "resultat_net": -782299},
+        }
+        mock_requests_get.return_value.json.return_value = self.mock_return_value
+
+        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True)
+        self.siae.refresh_from_db()
+        self.assertEqual(self.siae.api_entreprise_ca, 12345678)
