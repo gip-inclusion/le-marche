@@ -66,7 +66,6 @@ class Command(BaseCommand):
 
     def _update_siae_api_entreprise_fields(self, siae_queryset, wet_run=False):
         results = {"success": 0, "error": 0}
-
         mapping_file_row_list = read_csv(SIAE_LEGAL_FORM_MAPPING_FILE_PATH)
 
         progress = 0
@@ -79,65 +78,75 @@ class Command(BaseCommand):
                 self.stdout_error(f"SIAE {siae.id} without SIRET")
                 continue
 
-            update_data = dict()
-
-            try:
-                entreprise = recherche_entreprises_get_or_error(siae.siret)
-                if entreprise.forme_juridique_code:
-                    siae_mapping_row = next(
-                        (
-                            mapping_row
-                            for mapping_row in mapping_file_row_list
-                            if mapping_row["input_code"] == entreprise.forme_juridique_code
-                        ),
-                        None,
-                    )
-                    if siae_mapping_row:
-                        if siae_mapping_row["output_name"] in SIAE_LEGAL_FORM_CHOICE_LIST:
-                            update_data["api_entreprise_forme_juridique"] = siae_mapping_row["output_name"]
-                            update_data["api_entreprise_forme_juridique_code"] = entreprise.forme_juridique_code
-                            update_data["api_entreprise_entreprise_last_sync_date"] = timezone.now()
-                        else:
-                            results["error"] += 1
-                            self.stdout_error(f"unknown output_name {siae_mapping_row['output_name']}")
-                    else:
-                        results["error"] += 1
-                        self.stdout_error(f"unknown input_name {entreprise.forme_juridique_code}")
-
-                # Etablissement
-                update_data["api_entreprise_employees"] = (
-                    entreprise.employees if (entreprise.employees != "Unités non employeuses") else "Non renseigné"
-                )
-                update_data["api_entreprise_employees_year_reference"] = entreprise.employees_date_reference
-                update_data["api_entreprise_date_constitution"] = entreprise.date_creation
-                update_data["api_entreprise_etablissement_last_sync_date"] = timezone.now()
-
-                # Exercice
-                if entreprise.ca:
-                    update_data["api_entreprise_ca"] = entreprise.ca
-                    # api_entreprise_ca_date_fin_exercice is missing in this API but seems to be used in the frontend
-                    update_data["api_entreprise_exercice_last_sync_date"] = timezone.now()
-
+            success = self._process_single_siae(siae, mapping_file_row_list, wet_run)
+            if success:
                 results["success"] += 1
-            except Exception as e:
+            else:
                 results["error"] += 1
-                self.stdout_error(str(e))
-                continue
+
+            # small delay to avoid going above the API limitation
+            time.sleep(0.2)
+
+        total_count = siae_queryset.count()
+        msg_success = [
+            "----- Synchronisation API Entreprise -----",
+            f"Done! Processed {total_count} siae",
+            f"success count: {results['success']}/{total_count}",
+            f"error count: {results['error']}/{total_count} (voir les logs)",
+        ]
+        self.stdout_messages_success(msg_success)
+        api_slack.send_message_to_channel("\n".join(msg_success))
+
+    def _process_single_siae(self, siae, mapping_file_row_list, wet_run):
+        try:
+            entreprise = recherche_entreprises_get_or_error(siae.siret)
+            update_data = self._prepare_update_data(entreprise, mapping_file_row_list)
 
             if wet_run:
                 Siae.objects.filter(id=siae.id).update(**update_data)
             else:
                 self.stdout_info(f"Would update SIAE {siae.id} with {update_data=}")
+            return True
+        except Exception as e:
+            self.stdout_error(str(e))
+            return False
 
-            # small delay to avoid going above the API limitation
-            # "max. 7 requests per second"
-            time.sleep(0.2)
+    def _prepare_update_data(self, entreprise, mapping_file_row_list):
+        update_data = {}
 
-        msg_success = [
-            "----- Synchronisation API Entreprise -----",
-            f"Done! Processed {siae_queryset.count()} siae",
-            f"success count: {results['success']}/{siae_queryset.count()}",
-            f"error count: {results['error']}/{siae_queryset.count()} (voir les logs)",
-        ]
-        self.stdout_messages_success(msg_success)
-        api_slack.send_message_to_channel("\n".join(msg_success))
+        # Forme juridique
+        if entreprise.forme_juridique_code:
+            self._update_forme_juridique(update_data, entreprise, mapping_file_row_list)
+
+        # Etablissement
+        update_data["api_entreprise_employees"] = (
+            entreprise.employees if (entreprise.employees != "Unités non employeuses") else "Non renseigné"
+        )
+        update_data["api_entreprise_employees_year_reference"] = entreprise.employees_date_reference
+        update_data["api_entreprise_date_constitution"] = entreprise.date_creation
+        update_data["api_entreprise_etablissement_last_sync_date"] = timezone.now()
+
+        # Exercice
+        if entreprise.ca:
+            update_data["api_entreprise_ca"] = entreprise.ca
+            update_data["api_entreprise_exercice_last_sync_date"] = timezone.now()
+
+        return update_data
+
+    def _update_forme_juridique(self, update_data, entreprise, mapping_file_row_list):
+        siae_mapping_row = next(
+            (
+                mapping_row
+                for mapping_row in mapping_file_row_list
+                if mapping_row["input_code"] == entreprise.forme_juridique_code
+            ),
+            None,
+        )
+        if siae_mapping_row and siae_mapping_row["output_name"] in SIAE_LEGAL_FORM_CHOICE_LIST:
+            update_data["api_entreprise_forme_juridique"] = siae_mapping_row["output_name"]
+            update_data["api_entreprise_forme_juridique_code"] = entreprise.forme_juridique_code
+            update_data["api_entreprise_entreprise_last_sync_date"] = timezone.now()
+        elif siae_mapping_row:
+            raise ValueError(f"unknown output_name {siae_mapping_row['output_name']}")
+        else:
+            raise ValueError(f"unknown input_name {entreprise.forme_juridique_code}")
