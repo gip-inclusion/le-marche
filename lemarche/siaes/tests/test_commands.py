@@ -1,6 +1,7 @@
 import logging
 import os
 from datetime import datetime
+from io import StringIO
 from unittest.mock import patch
 
 import factory
@@ -380,15 +381,10 @@ class SiaeUpdateCountFieldsCommandTest(TransactionTestCase):
 
 class SiaeUpdateApiEntrepriseFieldsCommandTest(TransactionTestCase):
 
-    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
-    def test_update_api_entreprise_fields(self, mock_requests_get):
-        """
-        Create a siae and check that the field is updated correctly
-        """
-        siae = SiaeFactory()
-
-        mock_requests_get.return_value.status_code = 200
-        mock_requests_get.return_value.json.return_value = {
+    def setUp(self):
+        super().setUp()
+        self.siae = SiaeFactory()
+        self.mock_return_value = {
             "results": [
                 {
                     "nom_complet": "SIAE (IAE)",
@@ -403,7 +399,7 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TransactionTestCase):
                     "annee_tranche_effectif_salarie": "2022",
                     "matching_etablissements": [
                         {
-                            "siret": siae.siret,
+                            "siret": self.siae.siret,
                             "activite_principale": "81.22Z",
                             "annee_tranche_effectif_salarie": "2024",
                             "date_creation": "2023-06-01",
@@ -421,26 +417,65 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TransactionTestCase):
             "total_pages": 1,
         }
 
+    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
+    def test_update_api_entreprise_fields_dry_run(self, mock_requests_get):
+        """
+        Check that the field is not updated in dry run
+        """
+        mock_requests_get.return_value.status_code = 200
+        mock_requests_get.return_value.json.return_value = self.mock_return_value
+
         # Dry run
-        call_command("update_api_entreprise_fields")
-        siae.refresh_from_db()
-        self.assertEqual(siae.api_entreprise_employees, "")
-        self.assertEqual(siae.api_entreprise_employees_year_reference, "")
-        self.assertIsNone(siae.api_entreprise_date_constitution)
-        self.assertIsNone(siae.api_entreprise_ca)
-        self.assertIsNone(siae.api_entreprise_etablissement_last_sync_date)
-        self.assertIsNone(siae.api_entreprise_entreprise_last_sync_date)
-        self.assertIsNone(siae.api_entreprise_exercice_last_sync_date)
+        out = StringIO()
+        call_command("update_api_entreprise_fields", stdout=out)
+        self.siae.refresh_from_db()
+        self.assertEqual(self.siae.api_entreprise_employees, "")
+        self.assertEqual(self.siae.api_entreprise_employees_year_reference, "")
+        self.assertIsNone(self.siae.api_entreprise_date_constitution)
+        self.assertIsNone(self.siae.api_entreprise_ca)
+        self.assertIsNone(self.siae.api_entreprise_etablissement_last_sync_date)
+        self.assertIsNone(self.siae.api_entreprise_entreprise_last_sync_date)
+        self.assertIsNone(self.siae.api_entreprise_exercice_last_sync_date)
+
+        self.assertIn(f"Would update SIAE {self.siae.id} with", out.getvalue())
+        self.assertIn("Done! Processed 1 siae", out.getvalue())
+
+    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
+    def test_update_api_entreprise_fields_wet_run(self, mock_requests_get):
+
+        mock_requests_get.return_value.status_code = 200
+        mock_requests_get.return_value.json.return_value = self.mock_return_value
 
         # Wet run
         call_command("update_api_entreprise_fields", wet_run=True)
-        siae.refresh_from_db()
-        self.assertEqual(siae.api_entreprise_employees, "250 à 499 salariés")
-        self.assertEqual(siae.api_entreprise_employees_year_reference, "2024")
-        self.assertIsNotNone(siae.api_entreprise_etablissement_last_sync_date)
-        self.assertEqual(siae.api_entreprise_date_constitution, datetime.strptime("2023-06-01", "%Y-%m-%d").date())
-        self.assertEqual(siae.api_entreprise_forme_juridique, "SAS")
-        self.assertEqual(siae.api_entreprise_forme_juridique_code, "5710")
-        self.assertIsNotNone(siae.api_entreprise_entreprise_last_sync_date)
-        self.assertEqual(siae.api_entreprise_ca, 9726858)
-        self.assertIsNotNone(siae.api_entreprise_exercice_last_sync_date)
+        self.siae.refresh_from_db()
+        self.assertEqual(self.siae.api_entreprise_employees, "250 à 499 salariés")
+        self.assertEqual(self.siae.api_entreprise_employees_year_reference, "2024")
+        self.assertIsNotNone(self.siae.api_entreprise_etablissement_last_sync_date)
+        self.assertEqual(
+            self.siae.api_entreprise_date_constitution, datetime.strptime("2023-06-01", "%Y-%m-%d").date()
+        )
+        self.assertEqual(self.siae.api_entreprise_forme_juridique, "SAS")
+        self.assertEqual(self.siae.api_entreprise_forme_juridique_code, "5710")
+        self.assertIsNotNone(self.siae.api_entreprise_entreprise_last_sync_date)
+        self.assertEqual(self.siae.api_entreprise_ca, 9726858)
+        self.assertIsNotNone(self.siae.api_entreprise_exercice_last_sync_date)
+
+    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
+    def test_update_api_entreprise_fields_with_siret(self, mock_requests_get):
+        """
+        Create a siae and check that the field is updated correctly
+        """
+        mock_requests_get.return_value.status_code = 200
+        mock_requests_get.return_value.json.return_value = self.mock_return_value
+
+        SiaeFactory()
+        self.siae.refresh_from_db()
+
+        out = StringIO()
+        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=out)
+
+        mock_requests_get.assert_called_once()
+        self.assertIn("Done! Processed 1 siae", out.getvalue())
+        self.siae.refresh_from_db()
+        self.assertEqual(self.siae.api_entreprise_employees, "250 à 499 salariés")
