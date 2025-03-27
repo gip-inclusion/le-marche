@@ -75,7 +75,7 @@ class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, SuccessMessa
         - check if there isn't any pending SiaeUserRequest
         """
         context = super().get_context_data(**kwargs)
-        siae_user_pending_request = self.object.siaeuserrequest_set.initiator(self.request.user).pending()
+        siae_user_pending_request = self.object.siaeuserrequest_set.filter(initiator=self.request.user).pending()
         context["siae_user_pending_request"] = siae_user_pending_request
         context["breadcrumb_data"] = {
             "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
@@ -98,14 +98,15 @@ class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, SuccessMessa
             return super().form_valid(form)
         else:
             # create SiaeUserRequest + send request email to assignee
-            siae_user_request = SiaeUserRequest.objects.create(
-                siae=self.object,
-                initiator=self.request.user,
-                assignee=self.object.users.first(),
-                logs=[{"action": "create", "timestamp": timezone.now().isoformat()}],
-            )
-            send_siae_user_request_email_to_assignee(siae_user_request)
-            success_message = f"La demande a été envoyée à {self.object.users.first().full_name}."
+            for assignee in self.object.users.all():
+                siae_user_request = SiaeUserRequest.objects.create(
+                    siae=self.object,
+                    initiator=self.request.user,
+                    assignee=assignee,
+                    logs=[{"action": "create", "timestamp": timezone.now().isoformat()}],
+                )
+                send_siae_user_request_email_to_assignee(siae_user_request)
+            success_message = "La demande a été envoyée aux gestionnaires de la strucure."
             messages.add_message(self.request, messages.SUCCESS, success_message)
             return HttpResponseRedirect(reverse_lazy("dashboard:home"))
 
@@ -123,8 +124,8 @@ class SiaeUsersView(SiaeMemberRequiredMixin, DetailView):
         - check if there isn't any pending SiaeUserRequest
         """
         context = super().get_context_data(**kwargs)
-        siae_user_pending_request = self.object.siaeuserrequest_set.assignee(self.request.user).pending()
-        context["siae_user_pending_request"] = siae_user_pending_request
+        siae_user_pending_request = self.object.siaeuserrequest_set.filter(assignee=self.request.user).pending()
+        context["siae_user_pending_requests"] = siae_user_pending_request
         context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
         context["breadcrumb_current"] = f"{self.object.name_display} : collaborateurs"
         return context
