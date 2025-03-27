@@ -283,16 +283,16 @@ class UserAnonymizationTestCase(TestCase):
 
         # Called twice to veryfi that emails are not sent multiple times
         # FIXME: comment during quick revert
-        # call_command("anonymize_old_users", stdout=self.std_out)
-        # log_qs = TemplateTransactionalSendLog.objects.all()
-        # self.assertEqual(
-        #     log_qs.count(),
-        #     1,
-        #     msg="Warning emails are sent multiple times !",
-        # )
+        call_command("anonymize_old_users", stdout=self.std_out)
+        log_qs = TemplateTransactionalSendLog.objects.all()
+        self.assertEqual(
+            log_qs.count(),
+            1,
+            msg="Warning emails are sent multiple times !",
+        )
 
-        # email_log = log_qs.first()
-        # self.assertEqual(email_log.recipient_content_object, User.objects.get(first_name="about_to_be_inactive"))
+        email_log = log_qs.first()
+        self.assertEqual(email_log.recipient_content_object, User.objects.get(first_name="about_to_be_inactive"))
 
     def test_dryrun_anonymize_command(self):
         """Ensure that the database is not modified after dryrun"""

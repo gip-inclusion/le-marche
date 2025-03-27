@@ -278,7 +278,7 @@ class TemplateTransactional(models.Model):
         return None
 
     def create_send_log(self, **kwargs):
-        TemplateTransactionalSendLog.objects.create(template_transactional=self, **kwargs)
+        return TemplateTransactionalSendLog.objects.create(template_transactional=self, **kwargs)
 
     def send_transactional_email(
         self,

@@ -384,22 +384,20 @@ def send_transactional_email_with_template(
 
     data["subject"] = "SUBJECT" + EMAIL_SUBJECT_PREFIX
 
-    template_object.create_send_log(
+    sent_log = template_object.create_send_log(
         recipient_content_object=recipient_content_object,
         parent_content_object=parent_content_object,
-        extra_data={"source": "fgfh"},  # "response": result()
+        extra_data={"source": "BREVO"},
     )
-
-    logger.error("LOG CREATED")
 
     try:
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
         send_smtp_email.html_content = "gfgfdgd"
         send_smtp_email.template_id = "59"
-        logger.error("SEND SMTP ")
         response = api_instance.send_transac_email(send_smtp_email)
-        logger.error("Brevo: send transactional email with template")
-        # {'message_id': '<202407151419.84958140835@smtp-relay.mailin.fr>', 'message_ids': None}
-        return response.to_dict()
     except ApiException as e:
         logger.error(f"ApiException: {e}")
+    else:
+        sent_log.extra_data["sent"] = True
+        sent_log.save()
+        return response.to_dict()
