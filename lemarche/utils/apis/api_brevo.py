@@ -372,12 +372,14 @@ def send_transactional_email_with_template(
 ):
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.TransactionalEmailsApi(api_client)
+
     data = {
         "sender": {"email": from_email, "name": from_name},
         "to": [{"email": recipient_email, "name": recipient_name}],
         "template_id": template_id,
         "params": variables,
     }
+
     # # if subject empty, defaults to Brevo's template subject
     # if subject:
     #     data["subject"] = EMAIL_SUBJECT_PREFIX + subject
@@ -392,8 +394,10 @@ def send_transactional_email_with_template(
 
     try:
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
+
+        # FIXME
         send_smtp_email.html_content = "gfgfdgd"
-        send_smtp_email.template_id = "59"
+
         response = api_instance.send_transac_email(send_smtp_email)
     except ApiException as e:
         logger.error(f"ApiException: {e}")

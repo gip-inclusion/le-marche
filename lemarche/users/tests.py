@@ -282,7 +282,6 @@ class UserAnonymizationTestCase(TestCase):
         )
 
         # Called twice to veryfi that emails are not sent multiple times
-        # FIXME: comment during quick revert
         call_command("anonymize_old_users", stdout=self.std_out)
         log_qs = TemplateTransactionalSendLog.objects.all()
         self.assertEqual(
