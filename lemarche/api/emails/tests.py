@@ -122,7 +122,7 @@ class PermissionInboundEmailTestCase(TestCase):
 
     def test_ip_rejected(self):
         response = self.client.post(path=self.url, data={}, REMOTE_ADDR="127.0.0.1")
-        self.assertEqual(response.status_code, 401)  # unauthorized
+        self.assertEqual(response.status_code, 403)  # Forbidden
 
     def test_ip_allowed(self):
         response = self.client.post(path=self.url, data={}, REMOTE_ADDR="1.179.112.0")
