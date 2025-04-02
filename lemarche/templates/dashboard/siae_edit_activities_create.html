@@ -27,15 +27,16 @@
                     <div class="fr-grid-row fr-grid-row--gutters">
                         <div class="fr-col-12 fr-col-lg-8">
                             <div class="fr-input-group">
-                                <label class="fr-label" for="id_sector_group">Secteurs d'activités*</label>
-                                <select 
+                                <label class="fr-label" for="select-id_sector_group">Secteurs d'activités*</label>
+                                <select
+                                    id="select-id_sector_group"
+                                    class="fr-select"
+                                    name="sector_group_id"
+                                    required=""
                                     hx-get="{% url 'dashboard_siaes:siae_activities_sector_form' siae.slug %}"
                                     hx-trigger="change"
                                     hx-target="#checkboxes-id_sectors"
-                                    id="id_sector_group"
-                                    class="fr-select"
-                                    name="sector_group_id"
-                                    required="">
+                                >
                                     <option value="" selected="">----- Sélectionnez un secteur -----</option>
                                     {% for value in sector_groups %}
                                         <option value="{{ value.pk }}">{{ value.name }}</option>
