@@ -60,7 +60,7 @@ urlpatterns = [
                     name="siae_edit_activities_delete",
                 ),
                 path(
-                    "activites/<str:activity_id>/modifier/",
+                    "activites/<int:sector_group_id>/modifier/",
                     SiaeEditActivitiesEditView.as_view(),
                     name="siae_edit_activities_edit",
                 ),
