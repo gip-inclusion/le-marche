@@ -244,6 +244,8 @@ WSGI_APPLICATION = "config.wsgi.application"
 # if none, will use Site.objects.get_current().domain instead
 DEPLOY_URL = env.str("DEPLOY_URL", None)
 
+# Url without scheme provided to url fields will be converted to https
+FORMS_URLFIELD_ASSUME_HTTPS = True
 
 # Database
 # ------------------------------------------------------------------------------
