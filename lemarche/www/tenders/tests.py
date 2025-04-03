@@ -26,7 +26,6 @@ from lemarche.utils import constants
 from lemarche.www.tenders.views import TenderCreateMultiStepView
 
 
-@patch("lemarche.utils.validators.OptionalSchemeURLValidator.__call__", lambda *args: None)
 class TenderCreateViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
