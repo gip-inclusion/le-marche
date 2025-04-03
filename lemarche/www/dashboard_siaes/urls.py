@@ -52,7 +52,7 @@ urlpatterns = [
                 path(
                     "activites/creer/sectorgroup/sector/",
                     SiaeActivityPrestaGeoFormView.as_view(),
-                    name="siae_activities_presta_form",
+                    name="siae_activities_presta_geo_form",
                 ),
                 path(
                     "activites/<str:activity_id>/supprimer/",

@@ -17,7 +17,7 @@
                         dsfr="dsfr"
                         data-fr-js-checkbox-input="true"
                         
-                        hx-get="{% url 'dashboard_siaes:siae_activities_presta_form' siae.slug %}"
+                        hx-get="{% url 'dashboard_siaes:siae_activities_presta_geo_form' siae.slug %}"
                         hx-trigger="change"
                         hx-target="#prestaForm_{{ sector.id }}"
 
