@@ -95,7 +95,7 @@ class ArticlePage(ArticleBase):
         ),
     ]
 
-    parent_page_types = ["cms.ArticleList", "cms.PaidArticleList"]
+    parent_page_types = ["cms.ArticleList"]
     subpage_types = []
 
 
@@ -152,10 +152,6 @@ class ArticleList(RoutablePageMixin, Page):
 
     # parent_page_types = ["cms.HomePage"]
     subpage_types = ["cms.ArticlePage", "content_manager.ContentPage"]
-
-
-class PaidArticleList(ArticleList):
-    pass
 
 
 class HomePage(Page):
@@ -254,7 +250,7 @@ class FAQPage(ArticleBase):
         FieldPanel("faqs"),
     ]
 
-    parent_page_types = ["wagtailcore.Page", "cms.HomePage", "cms.ArticleList", "cms.PaidArticleList"]
+    parent_page_types = ["wagtailcore.Page", "cms.HomePage", "cms.ArticleList"]
 
     class Meta:
         verbose_name = "FAQ Page"
