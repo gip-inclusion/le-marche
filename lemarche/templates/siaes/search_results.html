@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load static process_dict dsfr_tags wagtailcore_tags advert_cms %}
+{% load static process_dict dsfr_tags wagtailcore_tags %}
 {% block page_title %}
     Trouvez votre prestataire parmi 8600 prestataires inclusifs{{ block.super }}
 {% endblock page_title %}
@@ -211,7 +211,6 @@
                 <div class="map-holder fr-mb-4v">
                     <div id="map-siae-list" class="map-canvas"></div>
                 </div>
-                {% cms_advert layout="fr-card" %}
                 {% include "siaes/_si_ideas_search_result.html" %}
             </div>
         </div>
