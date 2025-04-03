@@ -31,32 +31,6 @@ class ArticleCategory(models.Model):
 
 
 @register_snippet
-class InfoCard(models.Model):
-    title = models.CharField(max_length=255, verbose_name="Titre de l'encart")
-    slug = models.SlugField(
-        verbose_name="slug",
-        allow_unicode=True,
-        max_length=255,
-        help_text="A slug to identify this info card",
-    )
-
-    content_card = models.TextField(verbose_name="Contenu")
-
-    panels = [
-        FieldPanel("title"),
-        FieldPanel("slug"),
-        FieldPanel("content_card"),
-    ]
-
-    class Meta:
-        verbose_name = "Carte info"
-        verbose_name_plural = "Cartes infos"
-
-    def __str__(self):
-        return self.title
-
-
-@register_snippet
 class Paragraph(models.Model):
     title = models.CharField(max_length=255, verbose_name="Titre de l'encart")
     slug = models.SlugField(
