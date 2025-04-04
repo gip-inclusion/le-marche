@@ -1,5 +1,4 @@
 from django import forms
-from django.conf import settings
 from django.db import models
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
@@ -8,12 +7,11 @@ from wagtail import blocks as wagtail_blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.blocks import RichTextBlock
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
-from wagtail.fields import RichTextField, StreamField
+from wagtail.fields import StreamField
 from wagtail.models import Page
 
 from content_manager.models import ContentPage, Tag
 from lemarche.cms import blocks
-from lemarche.cms.forms import ArticlePageForm
 from lemarche.cms.snippets import ArticleCategory
 
 
@@ -35,68 +33,6 @@ class ArticleBase(Page):
 
     class Meta:
         abstract = True
-
-
-class ArticlePage(ArticleBase):
-    is_static_page = models.BooleanField(verbose_name="c'est une page statique ?", default=False)
-    with_cta_tender = models.BooleanField(verbose_name="avec un CTA pour les besoins ?", default=False)
-
-    template_name = models.CharField(
-        verbose_name="Nom de la template",
-        help_text="Nom du fichier présent dans 'templates/cms/static', ex: valoriser-achats.html",
-        max_length=90,
-        blank=True,
-    )
-    # Database fields
-    body = RichTextField(
-        blank=True, verbose_name="Contenu de l'article", features=settings.WAGTAIL_RICHTEXT_FIELD_FEATURES
-    )
-
-    # Override template file for static pages
-    def get_template(self, request, *args, **kwargs):
-        if self.is_static_page:
-            return f"cms/static/{self.template_name}"
-        else:
-            return super().get_template(request, *args, **kwargs)
-
-    base_form_class = ArticlePageForm
-
-    # Editor panels configuration
-
-    content_panels = ArticleBase.content_panels + [
-        FieldPanel("intro", classname="full"),
-        FieldPanel("with_cta_tender", classname="full"),
-        MultiFieldPanel([FieldPanel("categories", widget=forms.CheckboxSelectMultiple)], heading="Categories"),
-        FieldPanel(
-            "image",
-            classname="collapsible",
-        ),
-        MultiFieldPanel(
-            [
-                FieldPanel("body", classname="full"),
-            ],
-            heading="Article normal",
-            classname="collapsible",
-        ),
-        MultiFieldPanel(
-            [
-                FieldPanel("with_cta_tender", classname="full"),
-            ],
-            heading="Promotion",
-            classname="collapsible",
-        ),
-        MultiFieldPanel(
-            [
-                FieldPanel("is_static_page", classname="full"),
-                FieldPanel("template_name", classname="full"),
-            ],
-            heading="Article statique",
-            classname="collapsible collapsed",
-        ),
-    ]
-
-    parent_page_types = ["cms.ArticleList"]
-    subpage_types = []
 
 
 class ArticleList(RoutablePageMixin, Page):
@@ -150,8 +86,7 @@ class ArticleList(RoutablePageMixin, Page):
             request,
         )
 
-    # parent_page_types = ["cms.HomePage"]
-    subpage_types = ["cms.ArticlePage", "content_manager.ContentPage"]
+    subpage_types = ["content_manager.ContentPage"]
 
 
 class HomePage(Page):
