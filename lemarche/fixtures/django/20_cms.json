@@ -1,10 +1,5 @@
 [
 {
-    "model": "cms.articlelist",
-    "pk": 1,
-    "fields": {}
-},
-{
     "model": "wagtailcore.site",
     "pk": 4,
     "fields": {
@@ -762,5 +757,10 @@
         "search_description": "",
         "alias_of": null
     }
+},
+{
+    "model": "cms.articlelist",
+    "pk": 17,
+    "fields": {}
 }
 ]
