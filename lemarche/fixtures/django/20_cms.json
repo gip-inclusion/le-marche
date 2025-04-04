@@ -118,5 +118,382 @@
         "search_description": "",
         "alias_of": null
     }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 4,
+    "fields": {
+        "path": "0001000300010001",
+        "depth": 4,
+        "numchild": 0,
+        "translation_key": "4fbd5781-f5c1-4de6-a0e4-ab8bb425e176",
+        "locale": 1,
+        "live": true,
+        "first_published_at": "2022-04-06T14:48:07.792Z",
+        "last_published_at": "2022-04-07T10:02:30.030Z",
+        "title": "Qu’est-ce que l’inclusion ?",
+        "draft_title": "Qu’est-ce que l’inclusion ?",
+        "slug": "quest-ce-que-linclusion",
+        "content_type": [
+            "cms",
+            "articlepage"
+        ],
+        "url_path": "/accueil/ressources/quest-ce-que-linclusion/",
+        "owner": [
+            "admin@test.com"
+        ],
+        "seo_title": "",
+        "show_in_menus": false,
+        "search_description": "",
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 5,
+    "fields": {
+        "path": "0001000300010002",
+        "depth": 4,
+        "numchild": 0,
+        "translation_key": "dd308740-552a-4d30-86b5-f3ee1a7ac853",
+        "locale": 1,
+        "live": true,
+        "first_published_at": "2022-04-07T10:07:19.831Z",
+        "last_published_at": "2022-04-11T13:08:37.407Z",
+        "title": "Le Plan National pour des Achats Durables (PNAD) 2022",
+        "draft_title": "Le Plan National pour des Achats Durables (PNAD) 2022",
+        "slug": "le-plan-national-pour-des-achats-durables-pnad-2022",
+        "content_type": [
+            "cms",
+            "articlepage"
+        ],
+        "url_path": "/accueil/ressources/le-plan-national-pour-des-achats-durables-pnad-2022/",
+        "owner": [
+            "admin@test.com"
+        ],
+        "seo_title": "",
+        "show_in_menus": false,
+        "search_description": "",
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 6,
+    "fields": {
+        "path": "0001000300010003",
+        "depth": 4,
+        "numchild": 0,
+        "translation_key": "6c309508-1714-4e4c-870a-30be0559a7b9",
+        "locale": 1,
+        "live": true,
+        "first_published_at": "2022-04-28T14:09:09.744Z",
+        "last_published_at": "2022-05-23T15:39:12.975Z",
+        "title": "14 agences de communication inclusives pour une comm’ responsable",
+        "draft_title": "14 agences de communication inclusives pour une comm’ responsable",
+        "slug": "14-agences-de-communication-inclusives-pour-une-comm-responsable",
+        "content_type": [
+            "cms",
+            "articlepage"
+        ],
+        "url_path": "/accueil/ressources/14-agences-de-communication-inclusives-pour-une-comm-responsable/",
+        "owner": [
+            "admin@test.com"
+        ],
+        "seo_title": "",
+        "show_in_menus": false,
+        "search_description": "",
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 7,
+    "fields": {
+        "path": "0001000300010004",
+        "depth": 4,
+        "numchild": 0,
+        "translation_key": "ed3f24f4-5b97-46a2-8452-2b5f83de8d0d",
+        "locale": 1,
+        "live": true,
+        "first_published_at": "2022-06-21T08:38:25.458Z",
+        "last_published_at": "2022-06-21T08:39:54.145Z",
+        "title": "C'est quoi l'inclusion ?",
+        "draft_title": "C'est quoi l'inclusion ?",
+        "slug": "cest-quoi-linclusion",
+        "content_type": [
+            "cms",
+            "articlepage"
+        ],
+        "url_path": "/accueil/ressources/cest-quoi-linclusion/",
+        "owner": [
+            "admin@test.com"
+        ],
+        "seo_title": "",
+        "show_in_menus": false,
+        "search_description": "",
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 8,
+    "fields": {
+        "path": "0001000300010005",
+        "depth": 4,
+        "numchild": 0,
+        "translation_key": "6b6b95eb-6015-4a45-9a50-3a33044e9ca5",
+        "locale": 1,
+        "live": true,
+        "first_published_at": "2022-06-21T08:42:37.266Z",
+        "last_published_at": "2022-06-21T08:42:37.266Z",
+        "title": "Filière : Recyclage",
+        "draft_title": "Filière : Recyclage",
+        "slug": "filière-recyclage",
+        "content_type": [
+            "cms",
+            "articlepage"
+        ],
+        "url_path": "/accueil/ressources/filière-recyclage/",
+        "owner": [
+            "admin@test.com"
+        ],
+        "seo_title": "",
+        "show_in_menus": false,
+        "search_description": "",
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 9,
+    "fields": {
+        "path": "0001000300010006",
+        "depth": 4,
+        "numchild": 0,
+        "translation_key": "2fb35d77-c3c6-4a88-8f1b-0087001e6313",
+        "locale": 1,
+        "live": true,
+        "first_published_at": "2022-06-21T08:48:51.321Z",
+        "last_published_at": "2022-06-21T08:48:51.321Z",
+        "title": "Filière : restauration",
+        "draft_title": "Filière : restauration",
+        "slug": "filière-restauration",
+        "content_type": [
+            "cms",
+            "articlepage"
+        ],
+        "url_path": "/accueil/ressources/filière-restauration/",
+        "owner": [
+            "admin@test.com"
+        ],
+        "seo_title": "",
+        "show_in_menus": false,
+        "search_description": "",
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 10,
+    "fields": {
+        "path": "0001000300010007",
+        "depth": 4,
+        "numchild": 0,
+        "translation_key": "b7db8da2-9d0b-48ba-81ce-35ff1c9a7636",
+        "locale": 1,
+        "live": true,
+        "first_published_at": "2022-06-21T08:52:11.006Z",
+        "last_published_at": "2022-10-26T07:34:34.229Z",
+        "title": "Valoriser vos achats",
+        "draft_title": "Valoriser vos achats",
+        "slug": "valoriser-vos-achats",
+        "content_type": [
+            "cms",
+            "articlepage"
+        ],
+        "url_path": "/accueil/ressources/valoriser-vos-achats/",
+        "owner": [
+            "admin@test.com"
+        ],
+        "seo_title": "",
+        "show_in_menus": false,
+        "search_description": "",
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 11,
+    "fields": {
+        "path": "0001000300010008",
+        "depth": 4,
+        "numchild": 0,
+        "translation_key": "50e1aeb4-82a2-4779-a89e-0a14101b8791",
+        "locale": 1,
+        "live": true,
+        "first_published_at": "2022-07-28T16:45:05.899Z",
+        "last_published_at": "2022-07-28T16:49:09.217Z",
+        "title": "Les acteurs inclusifs témoignent ! Marine Le Borgne, Nantes Métropole",
+        "draft_title": "Les acteurs inclusifs témoignent ! Marine Le Borgne, Nantes Métropole",
+        "slug": "les-acteurs-inclusifs-témoignent-marine-le-borgne-nantes-métropole",
+        "content_type": [
+            "cms",
+            "articlepage"
+        ],
+        "url_path": "/accueil/ressources/les-acteurs-inclusifs-témoignent-marine-le-borgne-nantes-métropole/",
+        "owner": [
+            "admin@test.com"
+        ],
+        "seo_title": "",
+        "show_in_menus": false,
+        "search_description": "",
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 12,
+    "fields": {
+        "path": "0001000300010009",
+        "depth": 4,
+        "numchild": 0,
+        "translation_key": "773f312d-634f-4896-98af-213daccb67a3",
+        "locale": 1,
+        "live": true,
+        "first_published_at": "2022-08-11T09:35:57.463Z",
+        "last_published_at": "2022-10-26T07:34:49.183Z",
+        "title": "Bouygues Construction : Recherche d’une entreprise de nettoyage",
+        "draft_title": "Bouygues Construction : Recherche d’une entreprise de nettoyage",
+        "slug": "bouygues-construction-recherche-dune-entreprise-de-nettoyage",
+        "content_type": [
+            "cms",
+            "articlepage"
+        ],
+        "url_path": "/accueil/ressources/bouygues-construction-recherche-dune-entreprise-de-nettoyage/",
+        "owner": [
+            "admin@test.com"
+        ],
+        "seo_title": "",
+        "show_in_menus": false,
+        "search_description": "",
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 13,
+    "fields": {
+        "path": "000100030001000A",
+        "depth": 4,
+        "numchild": 0,
+        "translation_key": "63032a26-074a-41ed-93e9-a41867346c50",
+        "locale": 1,
+        "live": true,
+        "first_published_at": "2022-08-11T09:39:20.545Z",
+        "last_published_at": "2022-09-08T15:05:07.280Z",
+        "title": "Siemens : Besoin en développement d’applications IT",
+        "draft_title": "Siemens : Besoin en développement d’applications IT",
+        "slug": "siemens-besoin-en-développement-dapplications-it",
+        "content_type": [
+            "cms",
+            "articlepage"
+        ],
+        "url_path": "/accueil/ressources/siemens-besoin-en-développement-dapplications-it/",
+        "owner": [
+            "admin@test.com"
+        ],
+        "seo_title": "",
+        "show_in_menus": false,
+        "search_description": "",
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 14,
+    "fields": {
+        "path": "000100030001000B",
+        "depth": 4,
+        "numchild": 0,
+        "translation_key": "f25194c9-acef-43cf-bbf3-1f5e3a6fa8d9",
+        "locale": 1,
+        "live": true,
+        "first_published_at": "2022-09-06T15:21:28.338Z",
+        "last_published_at": "2022-09-06T15:21:28.338Z",
+        "title": "Ministère de l’Agriculture :  Besoin en prestations de cocktails et de buffet",
+        "draft_title": "Ministère de l’Agriculture :  Besoin en prestations de cocktails et de buffet",
+        "slug": "ministère-de-lagriculture-besoin-en-prestations-de-cocktails-et-de-buffet",
+        "content_type": [
+            "cms",
+            "articlepage"
+        ],
+        "url_path": "/accueil/ressources/ministère-de-lagriculture-besoin-en-prestations-de-cocktails-et-de-buffet/",
+        "owner": [
+            "admin@test.com"
+        ],
+        "seo_title": "",
+        "show_in_menus": false,
+        "search_description": "",
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 15,
+    "fields": {
+        "path": "000100030001000C",
+        "depth": 4,
+        "numchild": 0,
+        "translation_key": "7b3d2d8d-c0bd-4954-89f0-3bb333b36b15",
+        "locale": 1,
+        "live": true,
+        "first_published_at": "2022-09-19T14:15:49.186Z",
+        "last_published_at": "2022-09-19T14:16:19.988Z",
+        "title": "Comment prendre en compte les considérations sociales et écologiques de manière plus ambitieuse dans les achats publics",
+        "draft_title": "Comment prendre en compte les considérations sociales et écologiques de manière plus ambitieuse dans les achats publics",
+        "slug": "comment-prendre-en-compte-les-considérations-sociales-et-écologiques-de-manière-plus-ambitieuse-dans-les-achats-publics",
+        "content_type": [
+            "cms",
+            "articlepage"
+        ],
+        "url_path": "/accueil/ressources/comment-prendre-en-compte-les-considérations-sociales-et-écologiques-de-manière-plus-ambitieuse-dans-les-achats-publics/",
+        "owner": [
+            "admin@test.com"
+        ],
+        "seo_title": "",
+        "show_in_menus": false,
+        "search_description": "",
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.page",
+    "pk": 16,
+    "fields": {
+        "path": "000100030001000D",
+        "depth": 4,
+        "numchild": 0,
+        "translation_key": "27342466-d14f-4159-8e00-f107ae4873a8",
+        "locale": 1,
+        "live": true,
+        "first_published_at": "2022-10-17T16:48:36.125Z",
+        "last_published_at": "2022-10-17T16:50:00.636Z",
+        "title": "Facilitez-vous les achats responsables avec Handeco et le réseau GESAT !",
+        "draft_title": "Facilitez-vous les achats responsables avec Handeco et le réseau GESAT !",
+        "slug": "faciltez-vous-les-achats-responsables",
+        "content_type": [
+            "cms",
+            "articlepage"
+        ],
+        "url_path": "/accueil/ressources/faciltez-vous-les-achats-responsables/",
+        "owner": [
+            "admin@test.com"
+        ],
+        "seo_title": "",
+        "show_in_menus": false,
+        "search_description": "",
+        "alias_of": null
+    }
 }
 ]
