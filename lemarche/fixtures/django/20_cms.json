@@ -65,6 +65,33 @@
 },
 {
     "model": "wagtailcore.page",
+    "pk": 2,
+    "fields": {
+        "path": "00010003",
+        "depth": 2,
+        "numchild": 1,
+        "translation_key": "e096fefb-af3f-4798-801e-569407403cea",
+        "locale": 1,
+        "live": true,
+        "first_published_at": "2023-03-28T11:33:31.399Z",
+        "last_published_at": "2023-04-26T09:03:37.088Z",
+        "title": "Accueil",
+        "draft_title": "Accueil",
+        "slug": "accueil",
+        "content_type": [
+            "cms",
+            "homepage"
+        ],
+        "url_path": "/accueil/",
+        "owner": null,
+        "seo_title": "",
+        "show_in_menus": false,
+        "search_description": "",
+        "alias_of": null
+    }
+},
+{
+    "model": "wagtailcore.page",
     "pk": 3,
     "fields": {
         "path": "000100030001",
