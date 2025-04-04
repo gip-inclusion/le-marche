@@ -4,6 +4,20 @@
     <label>Activités :</label>
         *
 </legend>
+
+{% if form.errors %}
+  <ul class="fr-messages-group fr-messages-group--error">
+    {% for field, errors in form.errors.items %}
+      {% for error in errors %}
+        <li class="fr-message fr-message--error">
+          <span class="fr-message__icon" aria-hidden="true"></span>
+          <span class="fr-message__text">{{ error }}</span>
+        </li>
+      {% endfor %}
+    {% endfor %}
+  </ul>
+{% endif %}
+
 <div class="fr-fieldset__content">
     <div class="fr-checkbox-group">
         <div x-data="{ selectedSectors: [] }">
