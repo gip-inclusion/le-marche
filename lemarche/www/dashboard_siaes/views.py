@@ -325,7 +325,7 @@ class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, SuccessMessageMixin, F
 
 
 class SiaeActivitySectorFormView(FormView):
-    template_name = "dashboard/_siae_edit_activities_create_form.html"
+    template_name = "dashboard/_siae_edit_activities_create_sector_form.html"
     form_class = SiaeActivityForm
 
     def get(self, request, *args, **kwargs):
@@ -345,7 +345,7 @@ class SiaeActivitySectorFormView(FormView):
 
 
 class SiaeActivityPrestaGeoFormView(FormView):
-    template_name = "dashboard/_siae_edit_activities_create_formset.html"
+    template_name = "dashboard/_siae_edit_activities_create_presta_geo_form.html"
     form_class = SiaeActivityForm
 
     def get_context_data(self, **kwargs):
