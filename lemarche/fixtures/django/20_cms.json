@@ -1,7 +1,6 @@
 [
 {
     "model": "cms.articlecategory",
-    "pk": 1,
     "fields": {
         "name": "Acheteurs",
         "slug": "acheteurs"
@@ -9,7 +8,6 @@
 },
 {
     "model": "cms.articlecategory",
-    "pk": 2,
     "fields": {
         "name": "Solutions",
         "slug": "solutions"
@@ -17,38 +15,19 @@
 },
 {
     "model": "cms.articlecategory",
-    "pk": 3,
     "fields": {
         "name": "Solutions",
         "slug": "solutions"
     }
 },
 {
-    "model": "cms.paragraph",
-    "pk": 1,
-    "fields": {
-        "title": "Prise de rendez vous",
-        "slug": "rdv-signup",
-        "content": "<p data-block-key=\"f2lo1\">Prenez un rendez vous s'il vous plaît</p><p data-block-key=\"96gmf\"></p><p data-block-key=\"a6ksc\">Balblffregth</p><p data-block-key=\"l9ov\">hyhythy</p>"
-    }
-},
-{
-    "model": "cms.paragraph",
-    "pk": 2,
-    "fields": {
-        "title": "Vous avez des question ?",
-        "slug": "rdv-contact",
-        "content": "<h4 data-block-key=\"2tu4c\"><b>Vous avez des questions ?</b></h4><p data-block-key=\"3vo75\">Contactez nous au<br/><b>06 66 66 66 66</b></p>"
-    }
-},
-{
     "model": "cms.articlelist",
-    "pk": 3,
+    "pk": 1,
     "fields": {}
 },
 {
     "model": "cms.homepage",
-    "pk": 25,
+    "pk": 1,
     "fields": {
         "banner_title": "Tous les fournisseurs inclusifs de France à portée de clic",
         "banner_subtitle": "Un outil de sourcing dédié aux acheteurs privés et publics :",
@@ -60,7 +39,7 @@
 },
 {
     "model": "cms.homepage",
-    "pk": 26,
+    "pk": 2,
     "fields": {
         "banner_title": "Recevez gratuitement des opportunités commerciales",
         "banner_subtitle": "",
@@ -72,7 +51,7 @@
 },
 {
     "model": "cms.faqpage",
-    "pk": 45,
+    "pk": 3,
     "fields": {
         "intro": "Cette FAQ a été construite à partir des questions posées à l’issue des sessions de webinaires & de hotline organisés par le Marché de l’inclusion pour les structures inclusives dédiés aux différentes phases d'une consultation : de la rédaction de la réponse à l'exécution du marché.\r\nCet article sera complété au fur & à mesure des sessions d’échanges.",
         "image": 1,
