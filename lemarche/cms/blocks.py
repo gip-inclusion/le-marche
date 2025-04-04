@@ -24,10 +24,6 @@ class CallToAction(blocks.StructBlock):
 class StatsWebsite(blocks.StructBlock):
     """A stats of marche website section"""
 
-    # def get_context(self, value, parent_context=None):
-    #     context = super().get_context(value, parent_context)
-    #     return context
-
     class Meta:
         template = "cms/streams/stats_website.html"
         icon = "pen"
@@ -91,16 +87,6 @@ class OurSiaesSection(blocks.StructBlock):  # TODO:  to be remove after deploy o
         required=True,
         features=["bold", "italic"],
     )
-    # constats = blocks.StreamBlock(
-    #     [
-    #         (
-    #             "constat",
-    #             ConstatBlock(),
-    #         )
-    #     ],
-    #     min_num=1,
-    #     max_num=3,
-    # )
 
     class Meta:
         template = "cms/streams/section_our_siaes.html"
