@@ -259,15 +259,27 @@ class SiaeActivityForm(forms.ModelForm):
         # these fields are autocompletes
         self.fields["locations"].choices = []
 
+        # TODO : work in progress for updateview
         if self.instance and self.instance.pk:
-            self.fields["sector_group"].initial = self.instance.sector.group
             self.fields["sectors"].initial = self.instance.sector
+            self.fields["presta_type"].initial = self.instance.presta_type
+            self.fields["geo_range"].initial = self.instance.geo_range
+            self.fields["geo_range_custom_distance"].initial = self.instance.geo_range_custom_distance
+            sector_group_id = self.instance.sector.group.id
 
-        # make sure sectors are sorted by group
+        # make sure sectors are sorted by group since we use the queryset to build the form
         self.fields["sectors"].queryset = Sector.objects.form_filter_queryset(sector_group_id=sector_group_id)
 
     def clean(self):
         cleaned_data = super().clean()
+
+        # TODO : work in progress for updateview
+        sectors = cleaned_data.get("sectors")
+        print(f"🧐 Sectors reçus : {sectors}")
+
+        if not sectors:
+            self.add_error("sectors", "Vous devez choisir au moins un secteur.")
+
         geo_range = cleaned_data.get("geo_range")
         geo_range_custom_distance = cleaned_data.get("geo_range_custom_distance")
 
