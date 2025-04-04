@@ -12,24 +12,6 @@ from content_manager.models import ContentPage, Tag
 from lemarche.cms import blocks
 
 
-class ArticleBase(Page):
-    intro = models.TextField(verbose_name="Introduction de la page", null=True, blank=True)
-    image = models.ForeignKey(
-        "wagtailimages.Image", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
-    )
-
-    content_panels = Page.content_panels + [
-        FieldPanel("intro", classname="full"),
-        FieldPanel(
-            "image",
-            classname="collapsible",
-        ),
-    ]
-
-    class Meta:
-        abstract = True
-
-
 class ArticleList(RoutablePageMixin, Page):
     def get_context(self, request, *args, **kwargs):
         context = super(ArticleList, self).get_context(request, *args, **kwargs)
@@ -168,7 +150,21 @@ class HomePage(Page):
         return context
 
 
-class FAQPage(ArticleBase):
+class FAQPage(Page):
+    intro = models.TextField(verbose_name="Introduction de la page", null=True, blank=True)
+    image = models.ForeignKey(
+        "wagtailimages.Image", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("intro", classname="full"),
+        FieldPanel(
+            "image",
+            classname="collapsible",
+        ),
+        FieldPanel("faqs"),
+    ]
+
     faqs = StreamField(
         [
             ("faq_group", blocks.FAQGroupBlock()),
@@ -176,9 +172,6 @@ class FAQPage(ArticleBase):
         blank=True,
         use_json_field=True,
     )
-    content_panels = ArticleBase.content_panels + [
-        FieldPanel("faqs"),
-    ]
 
     parent_page_types = ["wagtailcore.Page", "cms.HomePage", "cms.ArticleList"]
 
