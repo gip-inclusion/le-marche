@@ -1,10 +1,8 @@
-from django import forms
 from django.db import models
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
-from modelcluster.fields import ParentalManyToManyField
 from wagtail import blocks as wagtail_blocks
-from wagtail.admin.panels import FieldPanel, MultiFieldPanel
+from wagtail.admin.panels import FieldPanel
 from wagtail.blocks import RichTextBlock
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.fields import StreamField
@@ -12,7 +10,6 @@ from wagtail.models import Page
 
 from content_manager.models import ContentPage, Tag
 from lemarche.cms import blocks
-from lemarche.cms.snippets import ArticleCategory
 
 
 class ArticleBase(Page):
@@ -20,11 +17,9 @@ class ArticleBase(Page):
     image = models.ForeignKey(
         "wagtailimages.Image", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
     )
-    categories = ParentalManyToManyField(ArticleCategory, blank=True)
 
     content_panels = Page.content_panels + [
         FieldPanel("intro", classname="full"),
-        MultiFieldPanel([FieldPanel("categories", widget=forms.CheckboxSelectMultiple)], heading="Categories"),
         FieldPanel(
             "image",
             classname="collapsible",
