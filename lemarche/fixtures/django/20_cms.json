@@ -1,7 +1,7 @@
 [
 {
     "model": "wagtailcore.site",
-    "pk": 4,
+    "pk": 1,
     "fields": {
         "hostname": "localhost",
         "port": 8000,
