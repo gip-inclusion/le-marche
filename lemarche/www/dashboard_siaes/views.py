@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
-from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, UpdateView
+from django.views.generic import DeleteView, DetailView, FormView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
 from lemarche.sectors.models import Sector, SectorGroup
@@ -178,7 +178,7 @@ class SiaeEditActivitiesDeleteView(SiaeMemberRequiredMixin, SuccessMessageMixin,
         return mark_safe(f"Votre activité <strong>{self.object.sector}</strong> a été supprimée avec succès.")
 
 
-class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, CreateView):
+class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, FormView):
     template_name = "dashboard/siae_edit_activities_create.html"
     form_class = SiaeActivitiesCreateForm
 
@@ -211,27 +211,31 @@ class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, CreateView):
             form = SiaeActivityForm(data=form_data)
 
             if form.is_valid():
-                siae_activity, created = SiaeActivity.objects.get_or_create(
+                # Check if SiaeActivity exists before creating it
+                if SiaeActivity.objects.filter(siae=self.siae, sector=sector).exists():
+                    messages.error(
+                        self.request,
+                        f"L'activité {sector.name} existe déjà."
+                        "Veuillez utiliser la fonction de modification pour mettre à jour cette activité.",
+                    )
+                    return self.form_invalid(form)
+
+                # Create
+                siae_activity = SiaeActivity.objects.create(
                     siae=self.siae,
                     sector=sector,
-                    defaults={
-                        "presta_type": form.cleaned_data["presta_type"],
-                        "geo_range": form.cleaned_data["geo_range"],
-                        "geo_range_custom_distance": form.cleaned_data["geo_range_custom_distance"],
-                    },
+                    presta_type=form.cleaned_data["presta_type"],
+                    geo_range=form.cleaned_data["geo_range"],
+                    geo_range_custom_distance=form.cleaned_data["geo_range_custom_distance"],
                 )
-
-                if created:
-                    siae_activity.locations.set(form.cleaned_data["locations"])
-                    created_count += 1
-                    created_siae_activities.append(sector.name)
-
+                siae_activity.locations.set(form.cleaned_data["locations"])
+                created_count += 1
+                created_siae_activities.append(sector.name)
             else:
                 return self.form_invalid(form)
 
-        messages.add_message(
+        messages.success(
             self.request,
-            messages.SUCCESS,
             self.get_success_message(created_siae_activities, created_count),
         )
 
