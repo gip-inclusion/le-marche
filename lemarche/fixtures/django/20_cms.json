@@ -6,7 +6,7 @@
         "hostname": "localhost",
         "port": 8000,
         "site_name": "lemarche",
-        "root_page": 1,
+        "root_page": 2,
         "is_default_site": true
     }
 },
