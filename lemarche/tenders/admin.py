@@ -18,6 +18,7 @@ from lemarche.notes.models import Note
 from lemarche.perimeters.admin import PerimeterRegionFilter
 from lemarche.perimeters.models import Perimeter
 from lemarche.tenders import constants as tender_constants
+from lemarche.tenders.constants import SOURCE_TALLY
 from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import (
     PartnerShareTender,
@@ -71,6 +72,22 @@ class HasAmountFilter(admin.SimpleListFilter):
             return queryset.has_amount()
         elif value == "No":
             return queryset.filter(amount__isnull=True, amount_exact__isnull=True)
+        return queryset
+
+
+class TallyFilter(admin.SimpleListFilter):
+    title = "Source TALLY / Pro"
+    parameter_name = "source"
+
+    def lookups(self, request, model_admin):
+        return (("TALLY", "Tally"), ("PRO", "Pro"))
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "TALLY":
+            return queryset.filter(source=SOURCE_TALLY)
+        elif value == "PRO":
+            return queryset.exclude(source=SOURCE_TALLY)
         return queryset
 
 
@@ -325,6 +342,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     ]
 
     list_filter = [
+        TallyFilter,
         AmountCustomFilter,
         ("kind", KindFilter),
         "email_sent_for_modification",
