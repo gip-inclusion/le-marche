@@ -37,8 +37,21 @@ def update_or_create_questions_list(tender, questions_list):
 
 
 def create_tender_from_dict(tender_dict: dict) -> Tender:
-    tender_dict.pop("contact_company_name", None)
-    tender_dict.pop("id_location_name", None)
+    keys_to_pop = [
+        "contact_company_name",
+        "id_location_name",
+        "attachment_one_delete",
+        "attachment_two_delete",
+        "attachment_three_delete",
+    ]
+    if tender_dict.get("attachment_one_delete"):
+        keys_to_pop.append("attachment_one")
+    if tender_dict.get("attachment_two_delete"):
+        keys_to_pop.append("attachment_two")
+    if tender_dict.get("attachment_three_delete"):
+        keys_to_pop.append("attachment_three")
+    for key in keys_to_pop:
+        tender_dict.pop(key, None)
     location = tender_dict.get("location")
     sectors = tender_dict.pop("sectors", [])
     questions = tender_dict.pop("questions_list")
