@@ -352,6 +352,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         HasAmountFilter,
         "deadline_date",
         "start_working_date",
+        "created_at",
         ResponseKindFilter,
         "siae_transactioned",
         UserAdminFilter,
