@@ -44,12 +44,16 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--siret", type=str, default=None, help="Lancer sur un Siret spécifique")
         parser.add_argument("--limit", type=int, default=None, help="Limiter le nombre de structures à processer")
-        parser.add_argument("--wet-run", action="store_true", help="Exécuter les requêtes")
+        parser.add_argument("--wet-run", action="store_true", help="Exécuter les requêtes en base de données")
 
     @monitor(monitor_slug="update-api-entreprise-fields")
     def handle(self, *args, **options):
         self.stdout_info("-" * 80)
         self.stdout_info("Populating API Entreprise fields...")
+        if not options["wet_run"]:
+            self.stdout_warning(
+                "You are running in dry mode, no changes will be applied (use --wet-run to apply changes)"
+            )
 
         if options["siret"]:
             siae_queryset = Siae.objects.filter(siret=options["siret"])
