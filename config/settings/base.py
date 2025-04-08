@@ -128,6 +128,8 @@ THIRD_PARTY_APPS = [
     "rest_framework",  # djangorestframework
     "phonenumber_field",  # django-phonenumber-field
     "simple_history",  # django-simple-history
+    "allauth",  # django-allauth
+    "allauth.account",  # django-allauth
 ]
 
 LOCAL_APPS = [
@@ -205,6 +207,7 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django_htmx.middleware.HtmxMiddleware",  # django-htmx
     "simple_history.middleware.HistoryRequestMiddleware",  # django-simple-history
+    "allauth.account.middleware.AccountMiddleware",
     # wagtail
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     # Custom Middlewares
@@ -229,6 +232,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "wagtail.contrib.settings.context_processors.settings",
+                "django.template.context_processors.request",
                 # custom
                 "lemarche.utils.settings_context_processors.expose_settings",
                 "lemarche.django_shepherd.context_processor.expose_guide_context",
@@ -286,6 +290,7 @@ BATCH_SIZE_BULK_UPDATE = env.int("BATCH_SIZE_BULK_UPDATE", 200)
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "sesame.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 # Password validation
