@@ -370,7 +370,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "siae_email_link_click_or_detail_display_count_annotated_with_link",
         "siae_detail_contact_click_count_annotated_with_link",
         "siae_detail_not_interested_click_count_annotated_with_link",
-        "siae_ai_count_annotated_with_link",
         "siae_transactioned_source",
         "siae_transactioned_last_updated",
         "source",
@@ -379,7 +378,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "extra_data_display",
         "import_raw_object_display",
         "logs_display",
-        "with_ai_matching",
     ]
     formfield_overrides = {
         models.TextField: {"widget": CKEditorWidget},
@@ -486,15 +484,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     # "siae_email_link_click_or_detail_display_count_annotated_with_link",
                     "siae_detail_contact_click_count_annotated_with_link",
                     "siae_detail_not_interested_click_count_annotated_with_link",
-                )
-            },
-        ),
-        (
-            "Structures concernés Bis",
-            {
-                "fields": (
-                    "siae_ai_count_annotated_with_link",
-                    "with_ai_matching",
                 )
             },
         ),
@@ -725,16 +714,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     siae_count_annotated_with_link_in_list.short_description = "S. concer."
     siae_count_annotated_with_link_in_list.admin_order_field = "siae_count_annotated"
-
-    def siae_ai_count_annotated_with_link(self, tender):
-        url = (
-            reverse("admin:tenders_tendersiae_changelist")
-            + f"?tender={tender.id}&mchoice_source={tender_constants.TENDER_SIAE_SOURCE_AI}"
-        )
-        return format_html(f'<a href="{url}">{getattr(tender, "siae_ai_count_annotated", 0)}</a>')
-
-    siae_ai_count_annotated_with_link.short_description = "S. ciblées uniquement par l'IA"
-    siae_ai_count_annotated_with_link.admin_order_field = "siae_ai_count_annotated"
 
     def siae_email_send_count_annotated_with_link(self, tender):
         url = (

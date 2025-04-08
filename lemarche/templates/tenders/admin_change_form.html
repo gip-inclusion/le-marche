@@ -73,15 +73,22 @@ No need to repeat them under fieldsets!
                 <p>
                     <i>L'envoi des besoins 'validés' se fait toutes les 5 minutes, du Lundi au Vendredi, entre 9h et 17h</i>
                 </p>
+                {% if original.siae_count_annotated == 0 %}
+                    <p>
+                        <i>Aucune structure concernée</i>
+                    </p>
+                {% endif %}
                 <input type="submit"
                        value="Valider (sauvegarder) et envoyer aux structures 🚀"
                        data-recipient="siaes"
                        data-title="{{ original.title }}"
-                       style="margin-right: 5px" />
+                       style="margin-right: 5px"
+                       {% if original.siae_count_annotated == 0 %}disabled{% endif %} />
                 <input type="submit"
                        value="Valider (sauvegarder) et envoyer aux partenaires 🚀"
                        data-recipient="partners"
-                       data-title="{{ original.title }}" />
+                       data-title="{{ original.title }}"
+                       {% if original.siae_count_annotated == 0 %}disabled{% endif %} />
             {% endif %}
         </div>
     {% endif %}
