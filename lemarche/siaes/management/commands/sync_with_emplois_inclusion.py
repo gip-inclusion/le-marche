@@ -259,7 +259,8 @@ class Command(BaseCommand):
                 self.stdout_info(f"New Siae created / {siae.id} / {siae.name} / {siae.siret}")
             else:
                 logger.error(
-                    f"Brand name is already used by another SIAE: '{c1_siae['brand']}' / name: '{c1_siae['name']}'"
+                    "Brand name is already used by another SIAE during creation: %s",
+                    c1_siae,
                 )
 
     def c4_update_siae(self, c1_siae, c4_siae, dry_run):
@@ -289,7 +290,8 @@ class Command(BaseCommand):
                 Siae.objects.filter(c1_id=c4_siae.c1_id).update(**c1_siae_filtered)  # avoid updated_at change
             else:
                 logger.error(
-                    f"Brand name is already used by another SIAE: '{c1_siae['brand']}' / name: '{c1_siae['name']}'"
+                    "Brand name is already used by another SIAE during update: %s",
+                    c1_siae,
                 )
 
             # self.stdout_info(f"Siae updated / {c4_siae.id} / {c4_siae.siret}")
