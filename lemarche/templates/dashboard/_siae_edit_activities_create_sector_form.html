@@ -1,7 +1,7 @@
 {% load static dsfr_tags %}
 
-<legend id="id_sectors-legend" class="fr-fieldset__legend fr-text--regular">
-    <label>Activités :</label>
+<legend id="id_sectors-legend" class="fr-fieldset__legend fr-text--regular fr-mb-3v">
+    <label>Veuillez sélectionner vos activités </label>
         *
 </legend>
 
@@ -20,34 +20,46 @@
 
 <div class="fr-fieldset__content">
     <div class="fr-checkbox-group">
-        <div x-data="{ selectedSectors: [] }">
+        <div x-data="{ selectedSectors: [{% if existing_sector_ids %}{% for sector_id in existing_sector_ids %}'{{ sector_id }}'{% if not forloop.last %},{% endif %}{% endfor %}{% endif %}] }"
+             class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
             {% for sector in form.fields.sectors.queryset %}
-                <div class="fr-checkbox-group">
-                    <input
-                        type="checkbox"
-                        name="sectors"
-                        id="id_sectors_0_{{ forloop.counter0 }}"
-                        value="{{ sector.id }}"
-                        dsfr="dsfr"
-                        data-fr-js-checkbox-input="true"
-                        
-                        hx-get="{% url 'dashboard_siaes:siae_activities_presta_geo_form' siae.slug %}"
-                        hx-trigger="change"
-                        hx-target="#prestaForm_{{ sector.id }}"
-
-                        x-model="selectedSectors"
+                <div class="fr-card fr-card--no-background fr-col-12 fr-mb-2w fr-ml-lg-2w fr-px-2w fr-px-lg-4w fr-py-2v" style="border-radius: 8px;">
+                    <div class="fr-checkbox-group fr-mt-0">
+                        <input
+                            type="checkbox"
+                            name="sectors"
+                            id="id_sectors_0_{{ forloop.counter0 }}"
+                            value="{{ sector.id }}"
+                            dsfr="dsfr"
+                            data-fr-js-checkbox-input="true"
+                            
+                            {% comment %}
+                             * We use hx-vals instead of adding the parameter directly to the URL
+                             * to prevent collisions with the name="sectors" attribute which would
+                             * otherwise cause duplicate parameters in the request.
+                             * This ensures we send only the specific sector ID we want in the URL
+                             * while still using the name="sectors" attribute for POST requests.
+                            {% endcomment %}
+                            
+                            hx-get="{% url 'dashboard_siaes:siae_activities_presta_geo_form' siae.slug %}"
+                            hx-vals='{"sectors": "{{ sector.id }}"}'
+                            hx-trigger="{% if sector.id|stringformat:'s' in existing_sector_ids %}load{% else %}change{% endif %}"
+                            hx-target="#prestaGeoForm_{{ sector.id }}"
+                            
+                            x-model="selectedSectors"
+                        >
+                        <label class="fr-label fr-mb-0" for="id_sectors_0_{{ forloop.counter0 }}">
+                            <span class="fr-text--bold">{{ sector }}</span>
+                        </label>
+                    </div>
+                    
+                    <div 
+                        id="prestaGeoForm_{{ sector.id }}"
+                        class="fr-mt-1w fr-ml-lg-4w"
+                        x-show="selectedSectors.includes('{{ sector.id }}')"
                     >
-                    <label class="fr-label" for="id_sectors_0_{{ forloop.counter0 }}">
-                        {{ sector }}
-                    </label>
-                </div>
-                <div 
-                    id="prestaForm_{{ sector.id }}"
-                    x-data="{ selectedGeoRange: '', ready: false }"
-                    x-init="ready = true"
-                    x-show="selectedSectors.includes('{{ sector.id }}')"
-                >
-                    <!-- Presta and Geo form -->
+                        <!-- Presta and Geo form -->
+                    </div>
                 </div>
             {% endfor %}
         </div>
