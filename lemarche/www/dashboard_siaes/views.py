@@ -258,6 +258,7 @@ class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, FormView):
             "current": context["page_title"],
         }
         context["sector_groups"] = SectorGroup.objects.all()
+
         return context
 
     def get_success_url(self):
@@ -324,7 +325,7 @@ class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, SuccessMessageMixin, F
         # form_list = [SiaeActivityForm(instance=siae_activity) for siae_activity in self.siae_activities]
 
         context["sector_groups"] = SectorGroup.objects.all()
-
+        context["sector_group_id"] = self.kwargs.get("sector_group_id")
         return context
 
     def get_success_url(self):
@@ -337,6 +338,9 @@ class SiaeActivitySectorFormView(FormView):
 
     def get(self, request, *args, **kwargs):
         self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
+        sector_group_id = self.request.GET.get("sector_group_id")
+        if sector_group_id:
+            self.siae_activities = SiaeActivity.objects.with_siae_and_sector_group(self.siae, sector_group_id)
         return super().get(request, *args, **kwargs)
 
     def get_form_kwargs(self):
@@ -348,6 +352,12 @@ class SiaeActivitySectorFormView(FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["siae"] = self.siae
+
+        # Récupérer les IDs des secteurs existants
+        if hasattr(self, "siae_activities") and self.siae_activities:
+            existing_sector_ids = [str(activity.sector.id) for activity in self.siae_activities]
+            context["existing_sector_ids"] = existing_sector_ids
+
         return context
 
 
