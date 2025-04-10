@@ -275,7 +275,6 @@ class SiaeActivityForm(forms.ModelForm):
 
         # TODO : work in progress for updateview
         sectors = cleaned_data.get("sectors")
-        print(f"🧐 Sectors reçus : {sectors}")
 
         if not sectors:
             self.add_error("sectors", "Vous devez choisir au moins un secteur.")
