@@ -304,7 +304,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "lemarche.utils.password_validation.CnilCompositionPasswordValidator"},
 ]
 
-LOGIN_URL = "auth:login"
+LOGIN_URL = "account_login"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
@@ -315,6 +315,15 @@ LOGOUT_REDIRECT_URL = "/"
 
 SESAME_TOKEN_NAME = "token"
 
+# Django allauth
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_SUBJECT_PREFIX = "Le marché"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
