@@ -25,7 +25,7 @@
                 </li>
             {% endif %}
             <li>
-                <form id="logout-form" method="post" action="{% url 'auth:logout' %}">
+                <form id="logout-form" method="post" action="{% url 'account_logout' %}">
                     {% csrf_token %}
                     <button class="fr-btn fr-icon-logout-box-r-line fr-btn--tertiary
                                    fr-py-md-0 fr-pr-md-0
