@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
@@ -211,16 +211,9 @@ class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, FormView):
             form = SiaeActivityForm(data=form_data)
 
             if form.is_valid():
-                # Check if SiaeActivity exists before creating it
                 if SiaeActivity.objects.filter(siae=self.siae, sector=sector).exists():
-                    messages.error(
-                        self.request,
-                        f"L'activité {sector.name} existe déjà."
-                        "Veuillez utiliser la fonction de modification pour mettre à jour cette activité.",
-                    )
-                    return self.form_invalid(form)
-
-                # Create
+                    # If SiaeActivity already exists, skip it
+                    continue
                 siae_activity = SiaeActivity.objects.create(
                     siae=self.siae,
                     sector=sector,
@@ -233,6 +226,12 @@ class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, FormView):
                 created_siae_activities.append(sector.name)
             else:
                 return self.form_invalid(form)
+
+        # If no sector is selected or no new activity is created, show an error message
+        if not selected_sectors or created_count == 0:
+            form = self.get_form()
+            form.add_error(None, "Veuillez sélectionner au moins une nouvelle activité.")
+            return self.form_invalid(form)
 
         messages.success(
             self.request,
@@ -257,6 +256,7 @@ class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, FormView):
             "current": context["page_title"],
         }
         context["sector_groups"] = SectorGroup.objects.all()
+
         return context
 
     def get_success_url(self):
@@ -289,17 +289,54 @@ class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, SuccessMessageMixin, F
         self.siae_activities = SiaeActivity.objects.with_siae_and_sector_group(self.siae, self.sector_group_id)
         self.locations = self.siae_activities.get_related_locations()
 
-        # TODO: refactor
-        form_list = [SiaeActivityForm(instance=activity) for activity in self.siae_activities]
+        updated_count = 0
+        updated_siae_activities = []
+        selected_sectors = request.POST.getlist("sectors")
 
-        return render(
-            request,
-            self.template_name,
-            {
-                "siae": self.siae,
-                "form_list": form_list,
-            },
+        # Create a dictionary to easily access activities by sector ID
+        activities_by_sector = {str(activity.sector.id): activity for activity in self.siae_activities}
+
+        for sector_id in selected_sectors:
+            # Check if SiaeActivity already exists for this sector
+            if sector_id in activities_by_sector:
+                activity = activities_by_sector[sector_id]
+                sector = activity.sector
+
+                presta_type = self.request.POST.getlist(f"presta_type_{sector_id}")
+                geo_range = self.request.POST.get(f"geo_range_{sector_id}")
+                geo_range_custom_distance = self.request.POST.get(f"geo_range_custom_distance_{sector_id}")
+                locations = self.request.POST.getlist(f"locations_{sector_id}")
+
+                form_data = {
+                    "siae": self.siae.id,
+                    "sectors": [sector.id],
+                    "presta_type": presta_type,
+                    "geo_range": geo_range,
+                    "geo_range_custom_distance": geo_range_custom_distance,
+                    "locations": [loc for loc in locations if loc],
+                }
+
+                form = SiaeActivityForm(data=form_data, instance=activity)
+
+                if form.is_valid():
+                    activity.presta_type = form.cleaned_data["presta_type"]
+                    activity.geo_range = form.cleaned_data["geo_range"]
+                    activity.geo_range_custom_distance = form.cleaned_data["geo_range_custom_distance"]
+                    activity.save()
+
+                    activity.locations.set(form.cleaned_data["locations"])
+
+                    updated_count += 1
+                    updated_siae_activities.append(sector.name)
+                else:
+                    return self.form_invalid(form)
+
+        messages.success(
+            self.request,
+            self.get_success_message(updated_siae_activities, updated_count),
         )
+
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -318,15 +355,21 @@ class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, SuccessMessageMixin, F
             "current": context["page_title"],
         }
 
-        # TODO: refactor
-        # form_list = [SiaeActivityForm(instance=siae_activity) for siae_activity in self.siae_activities]
-
         context["sector_groups"] = SectorGroup.objects.all()
-
+        context["sector_group_id"] = self.kwargs.get("sector_group_id")
         return context
 
     def get_success_url(self):
         return reverse_lazy("dashboard_siaes:siae_edit_activities", args=[self.kwargs.get("slug")])
+
+    def get_success_message(self, updated_siae_activities, updated_count):
+        if updated_count == 1:
+            return mark_safe(
+                f"Votre activité <strong>{updated_siae_activities[0]}</strong> a été modifiée avec succès."
+            )
+        else:
+            sectors = ", ".join([sector for sector in updated_siae_activities])
+            return mark_safe(f"Les activités suivantes ont été modifiées avec succès : <strong>{sectors}</strong>.")
 
 
 class SiaeActivitySectorFormView(FormView):
@@ -335,6 +378,9 @@ class SiaeActivitySectorFormView(FormView):
 
     def get(self, request, *args, **kwargs):
         self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
+        sector_group_id = self.request.GET.get("sector_group_id")
+        if sector_group_id:
+            self.siae_activities = SiaeActivity.objects.with_siae_and_sector_group(self.siae, sector_group_id)
         return super().get(request, *args, **kwargs)
 
     def get_form_kwargs(self):
@@ -346,6 +392,12 @@ class SiaeActivitySectorFormView(FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["siae"] = self.siae
+
+        # Get existing sector ids and convert to string in order to be compared with html input value
+        if hasattr(self, "siae_activities") and self.siae_activities:
+            existing_sector_ids = [str(activity.sector.id) for activity in self.siae_activities]
+            context["existing_sector_ids"] = existing_sector_ids
+
         return context
 
 
@@ -353,11 +405,27 @@ class SiaeActivityPrestaGeoFormView(FormView):
     template_name = "dashboard/_siae_edit_activities_create_presta_geo_form.html"
     form_class = SiaeActivityForm
 
+    def get(self, request, *args, **kwargs):
+        self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         sector_id = self.request.GET.get("sectors")
         if sector_id:
             context["sector_id"] = sector_id
+
+            # Get existing activity data
+            try:
+                existing_activity = SiaeActivity.objects.get(siae=self.siae, sector_id=sector_id)
+                context["existing_presta_types"] = existing_activity.presta_type
+                context["existing_geo_range"] = existing_activity.geo_range
+                context["existing_geo_range_custom_distance"] = existing_activity.geo_range_custom_distance
+
+                if hasattr(existing_activity, "locations"):
+                    context["existing_locations"] = existing_activity.locations.all()
+            except SiaeActivity.DoesNotExist:
+                pass
         return context
 
 

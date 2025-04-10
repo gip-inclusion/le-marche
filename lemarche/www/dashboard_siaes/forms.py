@@ -241,7 +241,7 @@ class SiaeActivityForm(forms.ModelForm):
     )
     locations = forms.ModelMultipleChoiceField(
         label="Localisation",
-        queryset=Perimeter.objects.all(),
+        queryset=Perimeter.objects.none(),
         to_field_name="slug",
         required=False,
         widget=CustomLocationWidget(  # displayed with a JS autocomplete library (see `perimeter_autocomplete_field.js`)  # noqa
@@ -275,7 +275,6 @@ class SiaeActivityForm(forms.ModelForm):
 
         # TODO : work in progress for updateview
         sectors = cleaned_data.get("sectors")
-        print(f"🧐 Sectors reçus : {sectors}")
 
         if not sectors:
             self.add_error("sectors", "Vous devez choisir au moins un secteur.")
