@@ -3,7 +3,7 @@
 <!-- Presta Type fieldset -->
 <fieldset id="checkboxes-id_presta_type_{{ sector_id }}" class="fr-fieldset" aria-labelledby="id_presta_type-legend">
     <legend id="id_presta_type-legend" class="fr-fieldset__legend fr-text--regular">
-        <label>Type de prestation :</label>
+        <label><span class="fr-text--bold">Type de prestation</span></label>
             *
     </legend>
     <div class="fr-fieldset__content">
@@ -17,6 +17,7 @@
                         value="{{ value }}"
                         dsfr="dsfr"
                         data-fr-js-checkbox-input="true"
+                        {% if existing_presta_types and value in existing_presta_types %}checked{% endif %}
                     >
                     <label class="fr-label" for="id_presta_type_{{ sector_id }}_{{ forloop.counter0 }}">
                         {{ label }}
@@ -27,84 +28,91 @@
     </div>
 </fieldset>
 
-<!-- Geo Range fieldset -->
-<fieldset
-    id="radio-id_geo_range_{{ sector_id }}"
-    class="fr-fieldset"
-    aria-labelledby="id_geo_range-legend"
->
-    <legend id="id_geo_range-legend" class="fr-fieldset__legend fr-text--regular">
-        <label>Périmètre d'intervention :</label>
-            *
-    </legend>
-    <div class="fr-fieldset__content">
-        <div class="fr-radio-group" x-show="ready">
-            {% for value, label in form.geo_range.field.choices %}
-                <div class="fr-radio-group">
-                    <input 
-                        id="id_geo_range_{{ sector_id }}_{{ forloop.counter0 }}" 
-                        type="radio"
-                        name="geo_range_{{ sector_id }}"
-                        value="{{ value }}"
-                        dsfr="dsfr"
-                        required=""
-                        x-model="selectedGeoRange"
-                    >
-                    <label class="fr-label" for="id_geo_range_{{ sector_id }}_{{ forloop.counter0 }}">
-                        {{ label }}
-                    </label>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-</fieldset>
-
-<div id="geo_range_distance_wrapper_{{ sector_id }}" x-show="selectedGeoRange === 'CUSTOM'">
-    <div class="fr-input-group">
-        <label class="fr-label" for="id_geo_range_custom_distance_{{ sector_id }}">
-            <span class="fr-hint-text">
-                Distance mesurée depuis le point central de la ville où se situe votre structure.
-            </span>
-        </label>
-        <input 
-            id="id_geo_range_custom_distance_{{ sector_id }}"
-            class="fr-input"
-            type="number"
-            name="geo_range_custom_distance_{{ sector_id }}"
-            aria-describedby="id_geo_range_custom_distance_{{ sector_id }}_helptext"
-        >
-    </div>
-</div>
-
-<div id="geo_range_locations_wrapper_{{ sector_id }}" class="fr-input-group" x-show="selectedGeoRange === 'ZONES'">
-    <div id="dir_form_locations_{{ sector_id }}" data-input-name="locations">
-        <div>
-            <div class="autocomplete__wrapper">
-                <div id="id_locations_{{ sector_id }}__status--A" role="status" aria-atomic="true" aria_live="polite"></div>
-                <div id="id_locations_{{ sector_id }}__status--B" role="status" aria-atomic="true" aria_live="polite"></div>
+    <!-- Geo Range fieldset -->
+<div x-data="{ selectedGeoRange: '{% if existing_geo_range %}{{ existing_geo_range }}{% endif %}'}">
+    <fieldset
+        id="radio-id_geo_range_{{ sector_id }}"
+        class="fr-fieldset"
+        aria-labelledby="id_geo_range-legend"
+    >
+        <legend id="id_geo_range-legend" class="fr-fieldset__legend fr-text--regular">
+            <label>
+                <span class="fr-text--bold">Périmètre d'intervention</span>
+            </label>
+                *
+        </legend>
+        <div class="fr-fieldset__content">
+            <div class="fr-radio-group">
+                {% for value, label in form.geo_range.field.choices %}
+                    <div class="fr-radio-group">
+                        <input 
+                            id="id_geo_range_{{ sector_id }}_{{ forloop.counter0 }}" 
+                            type="radio"
+                            name="geo_range_{{ sector_id }}"
+                            value="{{ value }}"
+                            dsfr="dsfr"
+                            required=""
+                            x-model="selectedGeoRange"
+                            {% if existing_geo_range == value %}checked{% endif %}
+                        >
+                        <label class="fr-label" for="id_geo_range_{{ sector_id }}_{{ forloop.counter0 }}">
+                            {{ label }}
+                        </label>
+                    </div>
+                {% endfor %}
             </div>
+        </div>
+    </fieldset>
+
+    <div id="geo_range_distance_wrapper_{{ sector_id }}" x-show="selectedGeoRange === 'CUSTOM'">
+        <div class="fr-input-group">
+            <label class="fr-label" for="id_geo_range_custom_distance_{{ sector_id }}">
+                <span class="fr-hint-text">
+                    Distance mesurée depuis le point central de la ville où se situe votre structure.
+                </span>
+            </label>
             <input 
-                id="id_locations_{{ sector_id }}"
-                class="autocomplete__input autocomplete__input--default"
-                type="text"
-                aria-expanded="false"
-                aria-owns="id_locations_{{ sector_id }}__listbox"
-                aria-autocomplete="both"
-                aria-describedby="id_locations_{{ sector_id }}__assistiveHint"
-                autocomplete="off"
-                name="locations_{{ sector_id }}"
-                role="combobox"
+                id="id_geo_range_custom_distance_{{ sector_id }}"
+                class="fr-input"
+                type="number"
+                name="geo_range_custom_distance_{{ sector_id }}"
+                aria-describedby="id_geo_range_custom_distance_{{ sector_id }}_helptext"
+                value="{% if existing_geo_range_custom_distance %}{{ existing_geo_range_custom_distance }}{% endif %}"
             >
         </div>
-        <ul 
-            id="id_locations_{{ sector_id }}__listbox"
-            class="autocomplete__menu autocomplete__menu-overlay autocomplete__menu--hidden"
-            role="listbox"
-        >
-        </ul>
-        <span id="id_locations_{{ sector_id }}__assistiveHint" style="display: none">
-            When autocomplete results are available use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.
-        </span>
+    </div>
+
+    <div id="geo_range_locations_wrapper_{{ sector_id }}" class="fr-input-group" x-show="selectedGeoRange === 'ZONES'">
+        <div id="dir_form_locations_{{ sector_id }}" data-input-name="locations">
+            <div>
+                <div class="autocomplete__wrapper">
+                    <div id="id_locations_{{ sector_id }}__status--A" role="status" aria-atomic="true" aria_live="polite"></div>
+                    <div id="id_locations_{{ sector_id }}__status--B" role="status" aria-atomic="true" aria_live="polite"></div>
+                </div>
+                <input 
+                    id="id_locations_{{ sector_id }}"
+                    class="autocomplete__input autocomplete__input--default"
+                    type="text"
+                    aria-expanded="false"
+                    aria-owns="id_locations_{{ sector_id }}__listbox"
+                    aria-autocomplete="both"
+                    aria-describedby="id_locations_{{ sector_id }}__assistiveHint"
+                    autocomplete="off"
+                    name="locations_{{ sector_id }}"
+                    role="combobox"
+                >
+            </div>
+            <ul 
+                id="id_locations_{{ sector_id }}__listbox"
+                class="autocomplete__menu autocomplete__menu-overlay autocomplete__menu--hidden"
+                role="listbox"
+            >
+            </ul>
+            <span id="id_locations_{{ sector_id }}__assistiveHint" style="display: none">
+                When autocomplete results are available use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.
+            </span>
+        </div>
+    </div>
+    <div id="locations-selected_{{ sector_id }}" class="fr-mt-2v">
     </div>
 </div>
-<div id="locations-selected_{{ sector_id }}" class="fr-mt-2v"></div>
