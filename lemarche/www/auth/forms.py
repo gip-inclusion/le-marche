@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, UserCreationForm
+from django.core.exceptions import ValidationError
 from dsfr.forms import DsfrBaseForm
 
 from lemarche.sectors.models import Sector
@@ -131,10 +132,16 @@ class SignupForm(UserCreationForm, DsfrBaseForm):
 
     def clean_email(self):
         email = self.cleaned_data["email"]
-        if self.cleaned_data["kind"] == User.KIND_BUYER:
-            professional_email_validator(email)
-
         return email.lower()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if self.cleaned_data["kind"] == User.KIND_BUYER:
+            try:
+                professional_email_validator(cleaned_data["email"])
+            except ValidationError as e:
+                self.add_error("email", e)
+        return cleaned_data
 
     def save(self, commit=True):
         instance = super(SignupForm, self).save(commit=False)
