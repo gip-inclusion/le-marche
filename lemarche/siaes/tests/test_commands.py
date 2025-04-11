@@ -165,7 +165,7 @@ class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
             call_command("sync_with_emplois_inclusion")
 
         # Verify warning was logged
-        self.assertIn("Brand name is already used by another SIAE", log.output[0])
+        self.assertIn("Brand name is already used by another SIAE during creation", log.output[0])
 
         # Verify both SIAEs exist
         self.assertEqual(Siae.objects.count(), 1)
@@ -236,7 +236,7 @@ class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
             call_command("sync_with_emplois_inclusion")
 
         # Verify warning was logged
-        self.assertIn("Brand name is already used by another SIAE: 'Duplicate Brand'", log.output[0])
+        self.assertIn("Brand name is already used by another SIAE during update", log.output[0])
 
         # Verify both SIAEs exist
         self.assertEqual(Siae.objects.count(), 3)
