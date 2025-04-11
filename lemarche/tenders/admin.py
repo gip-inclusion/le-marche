@@ -331,14 +331,12 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "kind",
         "amount_display",
         "location_in_list",
-        "distance_location_in_list",
-        "deadline_date_in_list",
         "start_working_date_in_list",
         "siae_count_annotated_with_link_in_list",
         "siae_detail_contact_click_count_annotated_with_link_in_list",
         "status",
+        "created_at",
         "is_validated_or_sent",
-        "is_followed_by_us",
     ]
 
     list_filter = [
@@ -354,6 +352,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         HasAmountFilter,
         "deadline_date",
         "start_working_date",
+        "created_at",
         ResponseKindFilter,
         "siae_transactioned",
         UserAdminFilter,
@@ -689,18 +688,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     location_in_list.short_description = "Lieu d'inter"
     location_in_list.admin_order_field = "location"
-
-    def distance_location_in_list(self, tender):
-        return tender.distance_location
-
-    distance_location_in_list.short_description = "Dist. d'inter"
-    distance_location_in_list.admin_order_field = "distance_location"
-
-    def deadline_date_in_list(self, tender):
-        return tender.deadline_date
-
-    deadline_date_in_list.short_description = "Clôture"
-    deadline_date_in_list.admin_order_field = "deadline_date"
 
     def start_working_date_in_list(self, tender):
         return tender.start_working_date
