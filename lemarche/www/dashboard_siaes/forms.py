@@ -5,7 +5,7 @@ from dsfr.forms import DsfrBaseForm
 
 from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
-from lemarche.sectors.models import Sector
+from lemarche.sectors.models import Sector, SectorGroup
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import (
     Siae,
@@ -201,13 +201,26 @@ class SiaeUserRequestForm(forms.ModelForm):
 
 
 class SiaeActivitiesCreateForm(forms.ModelForm):
+    sector_group = forms.ModelChoiceField(
+        label="Secteurs d'activités",
+        queryset=SectorGroup.objects.all(),
+        required=True,
+    )
+
+    class Meta:
+        model = SectorGroup
+        fields = ["sector_group"]
+
+
+class SiaeActivityForm(forms.ModelForm):
     sectors = GroupedModelMultipleChoiceField(
         label="Activités",
-        queryset=Sector.objects.form_filter_queryset(),
+        queryset=Sector.objects.all(),
         choices_groupby="group",
         required=True,
         widget=forms.CheckboxSelectMultiple,
     )
+
     presta_type = forms.MultipleChoiceField(
         label=SiaeActivity._meta.get_field("presta_type").verbose_name,
         choices=siae_constants.PRESTA_CHOICES,
@@ -240,14 +253,32 @@ class SiaeActivitiesCreateForm(forms.ModelForm):
         # FIXME: help_text not displayed
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, sector_group_id=None, **kwargs):
         super().__init__(*args, **kwargs)
 
         # these fields are autocompletes
         self.fields["locations"].choices = []
 
+        # TODO : work in progress for updateview
+        if self.instance and self.instance.pk:
+            self.fields["sectors"].initial = self.instance.sector
+            self.fields["presta_type"].initial = self.instance.presta_type
+            self.fields["geo_range"].initial = self.instance.geo_range
+            self.fields["geo_range_custom_distance"].initial = self.instance.geo_range_custom_distance
+            sector_group_id = self.instance.sector.group.id
+
+        # make sure sectors are sorted by group since we use the queryset to build the form
+        self.fields["sectors"].queryset = Sector.objects.form_filter_queryset(sector_group_id=sector_group_id)
+
     def clean(self):
         cleaned_data = super().clean()
+
+        # TODO : work in progress for updateview
+        sectors = cleaned_data.get("sectors")
+
+        if not sectors:
+            self.add_error("sectors", "Vous devez choisir au moins un secteur.")
+
         geo_range = cleaned_data.get("geo_range")
         geo_range_custom_distance = cleaned_data.get("geo_range_custom_distance")
 
@@ -264,7 +295,6 @@ class SiaeActivitiesCreateForm(forms.ModelForm):
     class Meta:
         model = SiaeActivity
         fields = [
-            "sector_group",
             "sectors",
             "presta_type",
             "geo_range",
