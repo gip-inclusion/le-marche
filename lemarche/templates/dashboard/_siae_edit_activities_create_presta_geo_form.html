@@ -1,6 +1,6 @@
 {% load static dsfr_tags %}
 
-<div x-data="{ selectedGeoRange: '', ready: false }" x-init="ready = true">
+<div x-data="{ selectedGeoRange: '{% if existing_geo_range %}{{ existing_geo_range }}{% endif %}', ready: false }" x-init="ready = true">
 <!-- Presta Type fieldset -->
 <fieldset id="checkboxes-id_presta_type_{{ sector_id }}" class="fr-fieldset" aria-labelledby="id_presta_type-legend">
     <legend id="id_presta_type-legend" class="fr-fieldset__legend fr-text--regular">
@@ -18,6 +18,7 @@
                         value="{{ value }}"
                         dsfr="dsfr"
                         data-fr-js-checkbox-input="true"
+                        {% if existing_presta_types and value in existing_presta_types %}checked{% endif %}
                     >
                     <label class="fr-label" for="id_presta_type_{{ sector_id }}_{{ forloop.counter0 }}">
                         {{ label }}
@@ -52,6 +53,7 @@
                         dsfr="dsfr"
                         required=""
                         x-model="selectedGeoRange"
+                        {% if existing_geo_range == value %}checked{% endif %}
                     >
                     <label class="fr-label" for="id_geo_range_{{ sector_id }}_{{ forloop.counter0 }}">
                         {{ label }}
@@ -75,6 +77,7 @@
             type="number"
             name="geo_range_custom_distance_{{ sector_id }}"
             aria-describedby="id_geo_range_custom_distance_{{ sector_id }}_helptext"
+            value="{% if existing_geo_range_custom_distance %}{{ existing_geo_range_custom_distance }}{% endif %}"
         >
     </div>
 </div>
@@ -110,5 +113,6 @@
         </span>
     </div>
 </div>
-<div id="locations-selected_{{ sector_id }}" class="fr-mt-2v"></div>
+<div id="locations-selected_{{ sector_id }}" class="fr-mt-2v">
+</div>
 </div>
