@@ -355,7 +355,7 @@ class SiaeActivitySectorFormView(FormView):
 
         # Récupérer les IDs des secteurs existants
         if hasattr(self, "siae_activities") and self.siae_activities:
-            existing_sector_ids = [str(activity.sector.id) for activity in self.siae_activities]
+            existing_sector_ids = [activity.sector.id for activity in self.siae_activities]
             context["existing_sector_ids"] = existing_sector_ids
 
         return context

@@ -20,39 +20,50 @@
 
 <div class="fr-fieldset__content">
     <div class="fr-checkbox-group">
-        <div x-data="{ selectedSectors: [{% if existing_sector_ids %}{% for sector_id in existing_sector_ids %}'{{ sector_id }}'{% if not forloop.last %},{% endif %}{% endfor %}{% endif %}] }"
+        <div x-data="{ selectedSectors: [{% if existing_sector_ids %}{% for sector_id in existing_sector_ids %}{{ sector_id }}{% if not forloop.last %},{% endif %}{% endfor %}{% endif %}] }"
              class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
             {% for sector in form.fields.sectors.queryset %}
                 <div class="fr-card fr-card--no-background fr-col-12 fr-mb-2w fr-ml-lg-2w fr-px-2w fr-px-lg-4w fr-py-2v" style="border-radius: 8px;">
-                        <div class="fr-checkbox-group fr-mt-0">
-                            <input
-                                type="checkbox"
-                                name="sectors"
-                                id="id_sectors_0_{{ forloop.counter0 }}"
-                                value="{{ sector.id }}"
-                                dsfr="dsfr"
-                                data-fr-js-checkbox-input="true"
-                                
-                                hx-get="{% url 'dashboard_siaes:siae_activities_presta_geo_form' siae.slug %}?sectors={{ sector.id }}"
-                                hx-trigger="{% if sector.id in existing_sector_ids %}load{% else %}change{% endif %}"
-                                hx-target="#prestaForm_{{ sector.id }}"
-                                
-                                x-model="selectedSectors"
-                                {% if sector.id in existing_sector_ids %}checked{% endif %}
-                            >
-                            <label class="fr-label fr-mb-0" for="id_sectors_0_{{ forloop.counter0 }}">
-                                <span class="fr-text--bold">{{ sector }}</span>
-                            </label>
-                        </div>
-                        <div 
-                            id="prestaForm_{{ sector.id }}"
-                            x-data="{ selectedGeoRange: '', ready: false }"
-                            x-init="ready = true"
-                            x-show="selectedSectors.includes('{{ sector.id }}')"
-                            class="fr-mt-1w fr-ml-lg-4w"
+                    <div class="fr-checkbox-group fr-mt-0">
+                        <input
+                            type="checkbox"
+                            name="sectors"
+                            id="id_sectors_0_{{ forloop.counter0 }}"
+                            value="{{ sector.id }}"
+                            dsfr="dsfr"
+                            data-fr-js-checkbox-input="true"
+                            
+                            hx-get="{% url 'dashboard_siaes:siae_activities_presta_geo_form' siae.slug %}"
+
+                            {% comment %}
+                             * We use hx-vals instead of adding the parameter directly to the URL
+                             * to prevent collisions with the name="sectors" attribute which would
+                             * otherwise cause duplicate parameters in the request.
+                             * This ensures we send only the specific sector ID we want in the URL
+                             * while still using the name="sectors" attribute for POST requests.
+                            {% endcomment %}
+
+                            hx-vals='{"sectors": "{{ sector.id }}"}'
+                            hx-trigger="{% if sector.id in existing_sector_ids %}load{% else %}change{% endif %}"
+                            hx-target="#prestaGeoForm_{{ sector.id }}"
+                            hx-swap="outerHTML settle:1s"
+                            
+                            x-model="selectedSectors"
                         >
-                            <!-- Presta and Geo form -->
-                        </div>
+                        <label class="fr-label fr-mb-0" for="id_sectors_0_{{ forloop.counter0 }}">
+                            <span class="fr-text--bold">{{ sector }}</span>
+                        </label>
+                    </div>
+                    
+                    <div 
+                        id="prestaGeoForm_{{ sector.id }}"
+                        x-show="selectedSectors.includes({{ sector.id }})"
+                        x-data="{ selectedGeoRange: '', ready: false }"
+                        x-init="ready = true"
+                        class="fr-mt-1w fr-ml-lg-4w"
+                    >
+                        <!-- Presta and Geo form -->
+                    </div>
                 </div>
             {% endfor %}
         </div>
