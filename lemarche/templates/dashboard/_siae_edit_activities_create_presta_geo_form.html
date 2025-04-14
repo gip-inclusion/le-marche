@@ -1,5 +1,6 @@
 {% load static dsfr_tags %}
 
+<div x-data="{ selectedGeoRange: '', ready: false }" x-init="ready = true">
 <!-- Presta Type fieldset -->
 <fieldset id="checkboxes-id_presta_type_{{ sector_id }}" class="fr-fieldset" aria-labelledby="id_presta_type-legend">
     <legend id="id_presta_type-legend" class="fr-fieldset__legend fr-text--regular">
@@ -110,3 +111,4 @@
     </div>
 </div>
 <div id="locations-selected_{{ sector_id }}" class="fr-mt-2v"></div>
+</div>
