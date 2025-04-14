@@ -20,24 +20,8 @@
 
 <div class="fr-fieldset__content">
     <div class="fr-checkbox-group">
-        <div x-data="{ 
-                selectedSectors: [{% if existing_sector_ids %}{% for sector_id in existing_sector_ids %}'{{ sector_id }}'{% if not forloop.last %},{% endif %}{% endfor %}{% endif %}], 
-                triggerHtmxRequest(sectorId) {
-                    if (this.selectedSectors.includes(sectorId)) {
-                        const target = document.querySelector(`#prestaForm_${sectorId}`);
-                        const url = `{% url 'dashboard_siaes:siae_activities_presta_geo_form' siae.slug %}?sectors=${sectorId}`;
-                        htmx.ajax('GET', url, { target: target });
-                    }
-                },
-                initExistingSectors() {
-                    // Déclencher les requêtes pour les secteurs déjà sélectionnés
-                    this.selectedSectors.forEach(sectorId => {
-                        this.triggerHtmxRequest(sectorId);
-                    });
-                }
-            }" 
-            x-init="initExistingSectors()"
-            class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+        <div x-data="{ selectedSectors: [{% if existing_sector_ids %}{% for sector_id in existing_sector_ids %}'{{ sector_id }}'{% if not forloop.last %},{% endif %}{% endfor %}{% endif %}] }"
+             class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
             {% for sector in form.fields.sectors.queryset %}
                 <div class="fr-card fr-card--no-background fr-col-12 fr-mb-2w fr-ml-lg-2w fr-px-2w fr-px-lg-4w fr-py-2v" style="border-radius: 8px;">
                         <div class="fr-checkbox-group fr-mt-0">
@@ -48,9 +32,13 @@
                                 value="{{ sector.id }}"
                                 dsfr="dsfr"
                                 data-fr-js-checkbox-input="true"
+                                
+                                hx-get="{% url 'dashboard_siaes:siae_activities_presta_geo_form' siae.slug %}?sectors={{ sector.id }}"
+                                hx-trigger="{% if sector.id in existing_sector_ids %}load{% else %}change{% endif %}"
+                                hx-target="#prestaForm_{{ sector.id }}"
+                                
                                 x-model="selectedSectors"
-                                x-on:change="triggerHtmxRequest('{{ sector.id }}')"
-                                {% if existing_sector_ids and sector.id|stringformat:"s" in existing_sector_ids %}checked{% endif %}
+                                {% if sector.id in existing_sector_ids %}checked{% endif %}
                             >
                             <label class="fr-label fr-mb-0" for="id_sectors_0_{{ forloop.counter0 }}">
                                 <span class="fr-text--bold">{{ sector }}</span>
