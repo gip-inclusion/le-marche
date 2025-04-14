@@ -591,6 +591,17 @@ SPECTACULAR_SETTINGS = {
         "DepartmentEnum": "lemarche.siaes.models.Siae.DEPARTMENT_CHOICES",
     },
     "SWAGGER_UI_SETTINGS": {"defaultModelsExpandDepth": -1},  # hide model schemas
+    "SECURITY": [{"bearerAuth": []}],
+    "APPEND_COMPONENTS": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Ajoutez votre token d'API dans le header de la requête.",
+            },
+        },
+    },
 }
 
 
