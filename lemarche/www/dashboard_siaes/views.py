@@ -370,6 +370,13 @@ class SiaeActivityPrestaGeoFormView(FormView):
         sector_id = self.request.GET.get("sectors")
         if sector_id:
             context["sector_id"] = sector_id
+            context["existing_presta_types"] = SiaeActivity.objects.get(sector_id=sector_id).presta_type
+            context["existing_geo_range"] = SiaeActivity.objects.get(sector_id=sector_id).geo_range
+            context["existing_geo_range_custom_distance"] = SiaeActivity.objects.get(
+                sector_id=sector_id
+            ).geo_range_custom_distance
+            # TODO: get existing locations by fixing perimeter_autocomplete.js
+            # context["existing_locations"] = SiaeActivity.objects.get(sector_id=sector_id).locations.all()
         return context
 
 
