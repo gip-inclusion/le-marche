@@ -6,6 +6,16 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2025.4.0](https://github.com/gip-inclusion/le-marche/compare/v2025.3.0...v2025.4.0) (2025-04-15)
+
+
+### Features
+
+* **Admin:** Désactivation du bouton "Valider" si aucune SIAE ne correspond ([#1689](https://github.com/gip-inclusion/le-marche/issues/1689)) ([0dac772](https://github.com/gip-inclusion/le-marche/commit/0dac772e60ebecdaac8d7c1420a0cb8b05501d30))
+* **API Swagger:** Possibilité d'ajouter son token dans Swagger  ([#1695](https://github.com/gip-inclusion/le-marche/issues/1695)) ([9fb0c76](https://github.com/gip-inclusion/le-marche/commit/9fb0c7630caf00e9026da1bc060bd9959377673f))
+* Interdiction des mails personnels pour l'inscription des acheteurs ([#1677](https://github.com/gip-inclusion/le-marche/issues/1677)) ([4af734a](https://github.com/gip-inclusion/le-marche/commit/4af734abe8520faec2ed40ff47f012b3abf4bf1b))
+* Répondre aux questions de la DDB ([#1668](https://github.com/gip-inclusion/le-marche/issues/1668)) ([be12276](https://github.com/gip-inclusion/le-marche/commit/be12276aaa2be2158776b03161b71926783ab6aa))
+
 ## [2025.3.0](https://github.com/gip-inclusion/le-marche/compare/v2024.9.0...v2024.2.0) (2025-03-20)
 
 
