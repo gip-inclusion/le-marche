@@ -1409,22 +1409,57 @@ class SiaeActivityQuerySet(models.QuerySet):
 
         return qs
 
+    def with_sector_and_sector_group(self, siae):
+        """
+        Filter the queryset to include only those SiaeActivities that belong to a specific Siae
+        and are associated with a sector and its group.
+
+        Args:
+            siae (Siae): The Siae instance to filter the activities for.
+
+        Returns:
+            QuerySet: A queryset of SiaeActivities that match the specified siae, with sector
+            and sector group information included.
+        """
+
+        return self.filter(siae=siae).select_related("sector", "sector__group")
+
+    def with_siae_and_sector_group(self, siae, sector_group_id):
+        """
+        Filter the queryset to include only those SiaeActivities that belong to a specific Siae
+        and are associated with a given sector group.
+
+        Args:
+            siae (Siae): The Siae instance to filter the activities for.
+            sector_group_id (int): The ID of the sector group to filter the activities by.
+
+        Returns:
+            QuerySet: A queryset of SiaeActivities that match the specified siae and sector group.
+        """
+
+        qs = (
+            self.select_related("siae", "sector__group")
+            .prefetch_related("locations")
+            .filter(siae=siae, sector__group_id=sector_group_id)
+            .distinct()
+        )
+        return qs
+
+    def get_related_locations(self):
+        """
+        Return a queryset of perimeters associated with SiaeActivities
+        present in the current queryset.
+        """
+        qs = Perimeter.objects.filter(siae_activities__in=self).prefetch_related("siaeactivity").distinct()
+        return qs
+
 
 class SiaeActivity(models.Model):
     siae = models.ForeignKey(
         "siaes.Siae", verbose_name="Structure", related_name="activities", on_delete=models.CASCADE
     )
-
-    sector_group = models.ForeignKey(
-        "sectors.SectorGroup",
-        verbose_name="Secteur d'activité",
-        related_name="siae_activities",
-        on_delete=models.SET_NULL,
-        null=True,
-        # blank=True,
-    )
-    sectors = models.ManyToManyField(
-        "sectors.Sector", verbose_name="Activités", related_name="siae_activities", blank=True
+    sector = models.ForeignKey(
+        "sectors.Sector", verbose_name="Activité", related_name="siae_activity", on_delete=models.CASCADE
     )
     presta_type = ChoiceArrayField(
         verbose_name="Type de prestation",
@@ -1492,7 +1527,7 @@ class SiaeOffer(models.Model):
 @receiver(post_delete, sender=SiaeActivity)
 def siae_activity_post_save(sender, instance, **kwargs):
     """Update sector_count when SiaeActivity is created or updated."""
-    instance.siae.sector_count = instance.siae.activities.values("sector_group").distinct().count()
+    instance.siae.sector_count = instance.siae.activities.values("sector__group").distinct().count()
     instance.siae.save()
 
 
