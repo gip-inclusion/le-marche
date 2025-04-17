@@ -5,6 +5,7 @@
 {% block step_subtitle %}Ici, en quelques clics vous pourrez solliciter l'ensemble des prestataires inclusifs pertinents pour votre besoin. Veuillez d'abord remplir les informations générales.{% endblock step_subtitle %}
 
 {% block content_form %}
+    {% csrf_token %}
     <div class="fr-grid-row">
         <div class="fr-col-12 fr-col-lg-7">
             {% dsfr_form_field form.kind %}
