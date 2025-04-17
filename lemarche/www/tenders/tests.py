@@ -201,7 +201,7 @@ class TenderCreateViewTest(TestCase):
         tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
-        self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
+        self.assertEqual(tender.status, tender_constants.STATUS_SUBMITTED)
         self.assertIsNotNone(tender.published_at)
         messages = list(get_messages(final_response.wsgi_request))
         self.assertEqual(len(messages), 1)
@@ -309,7 +309,7 @@ class TenderCreateViewTest(TestCase):
         tender.reset_modification_request()
         tender.save()
 
-        self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
+        self.assertEqual(tender.status, tender_constants.STATUS_SUBMITTED)
         self.assertEqual(tender.email_sent_for_modification, False)
 
 
@@ -604,8 +604,8 @@ class TenderDetailViewTest(TestCase):
 
     def test_only_author_or_admin_can_view_non_sent_tender(self):
         tender_draft = TenderFactory(author=self.user_buyer_1, status=tender_constants.STATUS_DRAFT)
-        tender_published = TenderFactory(
-            author=self.user_buyer_1, status=tender_constants.STATUS_PUBLISHED, published_at=timezone.now()
+        tender_submitted = TenderFactory(
+            author=self.user_buyer_1, status=tender_constants.STATUS_SUBMITTED, published_at=timezone.now()
         )
         tender_validated_but_not_sent = TenderFactory(
             author=self.user_buyer_1,
@@ -613,7 +613,7 @@ class TenderDetailViewTest(TestCase):
             published_at=timezone.now(),
             validated_at=timezone.now(),
         )
-        for tender in [tender_draft, tender_published, tender_validated_but_not_sent]:
+        for tender in [tender_draft, tender_submitted, tender_validated_but_not_sent]:
             # anonymous user
             url = reverse("tenders:detail", kwargs={"slug": tender.slug})
             response = self.client.get(url)
