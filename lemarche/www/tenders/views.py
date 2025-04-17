@@ -216,7 +216,7 @@ class TenderCreateMultiStepView(SessionWizardView):
         return form.data
 
     def save_instance_tender(self, tender_dict: dict, form_dict: dict, is_draft: bool):
-        tender_status = tender_constants.STATUS_DRAFT if is_draft else tender_constants.STATUS_PUBLISHED
+        tender_status = tender_constants.STATUS_DRAFT if is_draft else tender_constants.STATUS_SUBMITTED
         tender_published_at = None if is_draft else timezone.now()
 
         if self.request.user.is_authenticated:
@@ -256,7 +256,7 @@ class TenderCreateMultiStepView(SessionWizardView):
                             case _:
                                 setattr(self.instance, attribute, tender_dict.get(attribute))
             # Check before adding logs or resetting modification request
-            if tender_status == tender_constants.STATUS_PUBLISHED:
+            if tender_status == tender_constants.STATUS_SUBMITTED:
                 self.instance.reset_modification_request()
             self.instance.save()
         else:
