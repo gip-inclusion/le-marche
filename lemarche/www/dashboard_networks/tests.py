@@ -8,7 +8,7 @@ from lemarche.networks.factories import NetworkFactory
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.factories import TenderFactory
-from lemarche.tenders.models import TenderSiae
+from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 
@@ -35,7 +35,7 @@ class DashboardNetworkViewTest(TestCase):
             author=cls.user_buyer,
             amount=tender_constants.AMOUNT_RANGE_100_150,
             accept_share_amount=False,
-            status=tender_constants.STATUS_SENT,
+            status=Tender.StatusChoices.STATUS_SENT,
             validated_at=timezone.now(),
             deadline_date=timezone.now() - timedelta(days=5),
         )

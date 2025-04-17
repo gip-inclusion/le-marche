@@ -11,9 +11,8 @@ from django.utils import timezone
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
-from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.factories import TenderFactory
-from lemarche.tenders.models import TenderSiae
+from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 
@@ -197,7 +196,7 @@ class UpdateTenderStatusToRejectedCommandTest(TestCase):
         threshold_date = timezone.now() - timedelta(days=10)
 
         tender_recent = TenderFactory(
-            status=tender_constants.STATUS_DRAFT,
+            status=Tender.StatusChoices.STATUS_DRAFT,
             email_sent_for_modification=True,
             logs=[
                 {"action": "send tender author modification request", "date": recent_date.isoformat()},
@@ -205,14 +204,14 @@ class UpdateTenderStatusToRejectedCommandTest(TestCase):
         )
 
         tender_expired = TenderFactory(
-            status=tender_constants.STATUS_DRAFT,
+            status=Tender.StatusChoices.STATUS_DRAFT,
             email_sent_for_modification=True,
             logs=[
                 {"action": "send tender author modification request", "date": threshold_date.isoformat()},
             ],
         )
 
-        tender_with_no_modification_request = TenderFactory(status=tender_constants.STATUS_DRAFT)
+        tender_with_no_modification_request = TenderFactory(status=Tender.StatusChoices.STATUS_DRAFT)
 
         call_command("tenders_update_status_to_rejected")
 
@@ -220,9 +219,9 @@ class UpdateTenderStatusToRejectedCommandTest(TestCase):
         tender_expired.refresh_from_db()
         tender_with_no_modification_request.refresh_from_db()
 
-        self.assertEqual(tender_recent.status, tender_constants.STATUS_DRAFT)
-        self.assertEqual(tender_expired.status, tender_constants.STATUS_REJECTED)
-        self.assertEqual(tender_with_no_modification_request.status, tender_constants.STATUS_DRAFT)
+        self.assertEqual(tender_recent.status, Tender.StatusChoices.STATUS_DRAFT)
+        self.assertEqual(tender_expired.status, Tender.StatusChoices.STATUS_REJECTED)
+        self.assertEqual(tender_with_no_modification_request.status, Tender.StatusChoices.STATUS_DRAFT)
 
 
 class UpdateTenderCountFieldsCommandTest(TestCase):

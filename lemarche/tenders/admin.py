@@ -618,7 +618,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             if obj.author_id and obj.author_id != request.user.id:
                 readonly_fields.append("status")
             # slug cannot be changed once the tender is validated
-            if obj.status == tender_constants.STATUS_VALIDATED:
+            if obj.status == Tender.StatusChoices.STATUS_VALIDATED:
                 readonly_fields.append("slug")
         return readonly_fields
 
