@@ -4,6 +4,7 @@
 {% block step_title %}Aperçu du besoin{% endblock step_title %}
 {% block step_subtitle %}Vous y êtes presque ! Vérifiez quand même que toutes les informations soient exactes avant de publier.{% endblock step_subtitle %}
 {% block content_form %}
+    {% csrf_token %}
 {% endblock %}
 {% block recap_section %}
 <div class="fr-grid-row">
