@@ -3,6 +3,14 @@
 from django.db import migrations, models
 
 
+def update_submitted_tenders(apps, schema_editor):
+    """
+    Update status field value for SUBMITTED tenders
+    """
+    Tender = apps.get_model("tenders", "Tender")
+    Tender.objects.filter(status="PUBLISHED").update(status="SUBMITTED")
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -26,4 +34,5 @@ class Migration(migrations.Migration):
                 verbose_name="Statut",
             ),
         ),
+        migrations.RunPython(update_submitted_tenders, migrations.RunPython.noop),
     ]
