@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("tenders", "0097_questionanswer"),
+        ("tenders", "0098_update_rejected"),
     ]
 
     operations = [
