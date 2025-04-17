@@ -336,11 +336,6 @@ class Tender(models.Model):
         "siae_transactioned",
     ]
 
-    # used in templates
-    STATUS_DRAFT = tender_constants.STATUS_DRAFT
-    STATUS_SUBMITTED = tender_constants.STATUS_SUBMITTED
-    STATUS_VALIDATED = tender_constants.STATUS_VALIDATED
-
     title = models.CharField(verbose_name="Titre du besoin", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
     kind = models.CharField(
@@ -709,7 +704,7 @@ class Tender(models.Model):
         Reset modification request when republishing a tender.
         This method can only be called on Tender updates if status is changed to SUBMITTED
         """
-        if self.status == self.STATUS_SUBMITTED and self.email_sent_for_modification:
+        if self.status == tender_constants.STATUS_SUBMITTED and self.email_sent_for_modification:
             self.email_sent_for_modification = False
             self.save(update_fields=["email_sent_for_modification"])
 
