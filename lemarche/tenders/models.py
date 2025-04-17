@@ -338,7 +338,7 @@ class Tender(models.Model):
 
     # used in templates
     STATUS_DRAFT = tender_constants.STATUS_DRAFT
-    STATUS_PUBLISHED = tender_constants.STATUS_PUBLISHED
+    STATUS_SUBMITTED = tender_constants.STATUS_SUBMITTED
     STATUS_VALIDATED = tender_constants.STATUS_VALIDATED
 
     title = models.CharField(verbose_name="Titre du besoin", max_length=255)
@@ -707,16 +707,16 @@ class Tender(models.Model):
     def reset_modification_request(self):
         """
         Reset modification request when republishing a tender.
-        This method can only be called on Tender updates if status is changed to published
+        This method can only be called on Tender updates if status is changed to SUBMITTED
         """
-        if self.status == self.STATUS_PUBLISHED and self.email_sent_for_modification:
+        if self.status == self.STATUS_SUBMITTED and self.email_sent_for_modification:
             self.email_sent_for_modification = False
             self.save(update_fields=["email_sent_for_modification"])
 
     def set_modification_request(self):
         """
         Set modification request when republishing a tender.
-        This method can only be called on Tender updates if status is changed to published
+        This method can only be called on Tender updates if status is changed to SUBMITTED
         """
         self.email_sent_for_modification = True
         self.status = tender_constants.STATUS_DRAFT
@@ -968,7 +968,7 @@ class Tender(models.Model):
 
     @property
     def is_pending_validation(self) -> bool:
-        return self.status == tender_constants.STATUS_PUBLISHED
+        return self.status == tender_constants.STATUS_SUBMITTED
 
     @property
     def is_validated(self) -> bool:

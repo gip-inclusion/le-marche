@@ -130,7 +130,7 @@ def duplicate(tender: Tender, fields_to_remove=FIELDS_TO_REMOVE) -> Tender:
         new_tender_dict[key] = tender.__dict__[key]
 
     # overwrite some fields
-    new_tender_dict["status"] = tender_constants.STATUS_PUBLISHED
+    new_tender_dict["status"] = tender_constants.STATUS_SUBMITTED
     new_tender_dict["source"] = tender_constants.SOURCE_STAFF_C4_CREATED
     new_tender_dict["logs"] = [{"action": "tender_duplicated", "from": tender.id}]
 
