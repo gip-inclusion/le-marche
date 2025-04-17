@@ -8,9 +8,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, ListView, UpdateView, View
 from django.views.generic.edit import FormMixin
 from formtools.wizard.views import SessionWizardView
@@ -49,7 +47,6 @@ from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
 from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user, update_or_create_questions_list
 
 
-@method_decorator(csrf_exempt, name="dispatch")
 class TenderCreateMultiStepView(SessionWizardView):
     """
     Multi-step Tender create form.
