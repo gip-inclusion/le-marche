@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.conf import settings
 from django.contrib.messages.views import SuccessMessageMixin
@@ -18,6 +19,9 @@ from lemarche.www.pages.forms import (
     SocialImpactBuyersCalculatorForm,
 )
 from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
+
+
+logger = logging.getLogger(__name__)
 
 
 class ContactView(SuccessMessageMixin, FormView):
@@ -192,6 +196,18 @@ class CompanyReferenceCalculatorView(FormMixin, ListView):
                 context["results"] = self.get_queryset()
                 context["current_search_query"] = self.request.GET.urlencode()
         return context
+
+
+def csrf_failure(request, reason=""):  # noqa C901
+    """
+    Display a custom message on CSRF errors, log failure
+    """
+    template_name = "403_csrf.html"
+    context = {}
+
+    logger.error("CSRF FAILURE  PATH %s POST %s SESSION %s", request.PATH, request.POST, dict(request.session))
+
+    return render(request, template_name, context)
 
 
 def trigger_error(request):
