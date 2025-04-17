@@ -236,7 +236,9 @@ def csrf_failure(request, reason=""):  # noqa C901
         # in some cases, there is no POST data...
         # create initial tender_dict
         tender_status = (
-            tender_constants.STATUS_DRAFT if request.POST.get("is_draft") else tender_constants.STATUS_SUBMITTED
+            Tender.StatusChoices.STATUS_DRAFT
+            if request.POST.get("is_draft")
+            else Tender.StatusChoices.STATUS_SUBMITTED
         )
         tender_published_at = None if request.POST.get("is_draft") else timezone.now()
         tender_dict = dict(
@@ -273,7 +275,7 @@ def csrf_failure(request, reason=""):  # noqa C901
                         if value[0]:
                             tender_dict[key_cleaned] = value[0]
                     elif key_cleaned == "is_draft":
-                        tender_dict["status"] = tender_constants.STATUS_DRAFT
+                        tender_dict["status"] = Tender.StatusChoices.STATUS_DRAFT
                         tender_dict["published_at"] = None
                     else:  # response_kind, marche_benefits
                         tender_dict[key_cleaned] = list() if value[0] == "" else value
@@ -302,7 +304,7 @@ def csrf_failure(request, reason=""):  # noqa C901
                 else:
                     setattr(tender, attribute, tender_dict.get(attribute))
             # Check before adding logs or resetting modification request
-            if tender.status == tender_constants.STATUS_SUBMITTED:
+            if tender.status == Tender.StatusChoices.STATUS_SUBMITTED:
                 tender.reset_modification_request()
             tender.save()
 
