@@ -102,7 +102,7 @@ class TenderCreateApiTest(TestCase):
         tender = Tender.objects.get(title="Test author 1")
         self.assertEqual(User.objects.count(), 3 + 1)  # created a new user
         self.assertEqual(tender.author.email, USER_CONTACT_EMAIL)
-        self.assertEqual(tender.status, tender_constants.STATUS_SUBMITTED)
+        self.assertEqual(tender.status, Tender.StatusChoices.STATUS_SUBMITTED)
         self.assertEqual(tender.source, tender_constants.SOURCE_API)
         self.assertIsNotNone(tender.import_raw_object)
         self.assertEqual(tender.import_raw_object["title"], "Test author 1")
@@ -121,7 +121,7 @@ class TenderCreateApiTest(TestCase):
         tender = Tender.objects.get(title="Test author 2")
         self.assertEqual(User.objects.count(), 4)  # did not create a new user
         self.assertEqual(tender.author, self.user_with_token)
-        self.assertEqual(tender.status, tender_constants.STATUS_SUBMITTED)
+        self.assertEqual(tender.status, Tender.StatusChoices.STATUS_SUBMITTED)
         self.assertEqual(tender.source, tender_constants.SOURCE_API)
         self.assertIsNotNone(tender.import_raw_object)
         self.assertEqual(tender.import_raw_object["title"], "Test author 2")
@@ -251,7 +251,7 @@ class TenderCreateApiTest(TestCase):
         tender.reset_modification_request()
         tender.save()
 
-        self.assertEqual(tender.status, tender_constants.STATUS_SUBMITTED)
+        self.assertEqual(tender.status, Tender.StatusChoices.STATUS_SUBMITTED)
         self.assertEqual(tender.email_sent_for_modification, False)
 
     def test_create_tender_with_different_contact_data(self):

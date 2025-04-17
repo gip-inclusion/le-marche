@@ -38,7 +38,7 @@ class TenderFactory(DjangoModelFactory):
     contact_phone = "0123456789"  # factory.fuzzy.FuzzyText(length=10, chars=string.digits)
     # amount = tender_constants.AMOUNT_RANGE_100_150
     # marche_benefits = factory.fuzzy.FuzzyChoice([key for (key, _) in constants.MARCHE_BENEFIT_CHOICES])
-    status = tender_constants.STATUS_SENT
+    status = Tender.StatusChoices.STATUS_SENT
     validated_at = timezone.now()
     first_sent_at = timezone.now()
 

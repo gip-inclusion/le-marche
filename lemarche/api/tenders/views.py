@@ -73,7 +73,7 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         # create Tender
         tender = serializer.save(
             author=user,
-            status=tender_constants.STATUS_SUBMITTED,
+            status=Tender.StatusChoices.STATUS_SUBMITTED,
             published_at=timezone.now(),
             source=tender_source,
             import_raw_object=self.request.data,
