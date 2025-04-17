@@ -44,7 +44,6 @@ from lemarche.utils.constants import (
 from lemarche.utils.data import phone_number_display
 from lemarche.utils.fields import ChoiceArrayField
 from lemarche.utils.urls import get_object_admin_url
-from lemarche.utils.validators import OptionalSchemeURLValidator
 
 
 def get_perimeter_filter(siae):
@@ -372,10 +371,9 @@ class Tender(models.Model):
         verbose_name="Comment répondre à cette demande ?",
         blank=True,
     )
-    external_link = models.CharField(
+    external_link = models.URLField(
         verbose_name="Lien vers l'appel d'offres",
         help_text="Ajoutez ici l'URL de votre appel d'offres",
-        validators=[OptionalSchemeURLValidator()],
         blank=True,
     )
     deadline_date = models.DateField(

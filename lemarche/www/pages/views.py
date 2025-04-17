@@ -1,23 +1,16 @@
 import json
+import logging
 
 from django.conf import settings
-from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.views.generic import FormView, ListView, TemplateView, View
 from django.views.generic.edit import FormMixin
 from wagtail.models import Site as WagtailSite
 
-from lemarche.perimeters.models import Perimeter
-from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae, SiaeGroup
-from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.models import Tender, TenderStepsData
-from lemarche.users import constants as user_constants
-from lemarche.utils.emails import add_to_contact_list
 from lemarche.utils.tracker import track
 from lemarche.www.pages.forms import (
     CompanyReferenceCalculatorForm,
@@ -26,9 +19,9 @@ from lemarche.www.pages.forms import (
     SocialImpactBuyersCalculatorForm,
 )
 from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
-from lemarche.www.tenders.tasks import notify_admin_tender_created
-from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user_from_anonymous_content
-from lemarche.www.tenders.views import TenderCreateMultiStepView
+
+
+logger = logging.getLogger(__name__)
 
 
 class ContactView(SuccessMessageMixin, FormView):
@@ -204,136 +197,18 @@ class CompanyReferenceCalculatorView(FormMixin, ListView):
                 context["current_search_query"] = self.request.GET.urlencode()
         return context
 
-    # not needed for now
-    # def get_initial(self):
-    #     """If the user is logged in, fill the form with the user's company."""
-    #     initial = super().get_initial()
-    #     if self.request.user.is_authenticated:
-    #         initial["company_client_reference"] = self.request.user.company_name
-    #     return initial
-
 
 def csrf_failure(request, reason=""):  # noqa C901
     """
-    Display a custom message on CSRF errors
-    *BUT* we skip this error if it comes from the Tender create form
+    Display a custom message on CSRF errors, log failure
     """
     template_name = "403_csrf.html"
-    context = {}  # self.get_context_data()
+    context = {}
 
-    print("csrf_failure", "request.path", request.path)
-    print("csrf_failure", "request.POST", request.POST)
-    print("csrf_failure", "request.session", dict(request.session))
+    logger.error(
+        "CSRF FAILURE REASON %s PATH %s POST %s SESSION %s", reason, request.path, request.POST, dict(request.session)
+    )
 
-    path_add_tender = "/besoins/ajouter/"
-    path_update_tender = "/besoins/modifier/"
-    # if path_add_tender in request.path:
-    is_adding = path_add_tender in request.path
-    is_update = path_update_tender in request.path
-    if (is_adding or is_update) and (
-        request.POST.get("tender_create_multi_step_view-current_step") == TenderCreateMultiStepView.STEP_CONFIRMATION
-    ):
-        # in some cases, there is no POST data...
-        # create initial tender_dict
-        tender_status = (
-            tender_constants.STATUS_DRAFT if request.POST.get("is_draft") else tender_constants.STATUS_PUBLISHED
-        )
-        tender_published_at = None if request.POST.get("is_draft") else timezone.now()
-        tender_dict = dict(
-            status=tender_status,
-            published_at=tender_published_at,
-            source=tender_constants.SOURCE_FORM_CSRF,
-        )
-        formtools_session_step_data = request.session.get("wizard_tender_create_multi_step_view", {}).get(
-            "step_data", {}
-        )
-        for step in formtools_session_step_data.keys():
-            for key in formtools_session_step_data.get(step).keys():
-                if not key.startswith(("csrfmiddlewaretoken", "tender_create_multi_step_view")):
-                    value = formtools_session_step_data.get(step).get(key)
-                    key_cleaned = key.replace(f"{step}-", "")
-                    if key_cleaned == "location":
-                        tender_dict[key_cleaned] = Perimeter.objects.get(slug=value[0])
-                    elif key_cleaned in [
-                        "is_country_area",
-                        "accept_share_amount",
-                    ]:
-                        tender_dict[key_cleaned] = value[0] == "on"
-                    elif key_cleaned == "sectors":
-                        tender_dict[key_cleaned] = Sector.objects.filter(slug__in=value)
-                    elif key_cleaned == "questions_list" and value:
-                        tender_dict[key_cleaned] = json.loads(value[0])
-                    elif key_cleaned == "alpine-questions_list":
-                        continue
-                    elif key_cleaned not in [
-                        "response_kind",
-                        "is_country_area",
-                        "accept_share_amount",
-                    ]:
-                        if value[0]:
-                            tender_dict[key_cleaned] = value[0]
-                    elif key_cleaned == "is_draft":
-                        tender_dict["status"] = tender_constants.STATUS_DRAFT
-                        tender_dict["published_at"] = None
-                    else:  # response_kind, marche_benefits
-                        tender_dict[key_cleaned] = list() if value[0] == "" else value
-        # get user
-        if not request.user.is_authenticated:
-            user = get_or_create_user_from_anonymous_content(tender_dict, source=user_constants.SOURCE_TENDER_FORM)
-        else:
-            user = request.user
-        tender_dict["author"] = user
-        # create tender
-        if is_adding:
-            tender: Tender = create_tender_from_dict(tender_dict)
-            tender.save()
-            add_to_contact_list(user=user, type="signup", tender=tender)
-        elif is_update:
-            slug = request.path.split("/")[-1]
-            tender: Tender = Tender.objects.get(slug=slug)
-            for attribute in tender_dict.keys():
-                if attribute == "sectors":
-                    sectors = tender_dict.get("sectors", None)
-                    tender.sectors.set(sectors)
-                elif attribute == "location":
-                    location = tender_dict.get("location")
-                    tender.location = location
-                    tender.perimeters.set([location])
-                else:
-                    setattr(tender, attribute, tender_dict.get(attribute))
-            # Check before adding logs or resetting modification request
-            if tender.status == tender_constants.STATUS_PUBLISHED:
-                tender.reset_modification_request()
-            tender.save()
-
-        # remove steps data
-        uuid = request.session.get("tender_steps_data_uuid", None)
-        if uuid:
-            TenderStepsData.objects.filter(uuid=uuid).delete()
-
-        if settings.BITOUBI_ENV == "prod":
-            notify_admin_tender_created(tender)
-
-        if tender.is_draft:
-            messages.add_message(
-                request=request,
-                level=messages.INFO,
-                message=TenderCreateMultiStepView.get_success_message(
-                    TenderCreateMultiStepView, tender_dict, tender, is_draft=True
-                ),
-            )
-        else:
-            messages.add_message(
-                request=request,
-                level=messages.SUCCESS,
-                message=TenderCreateMultiStepView.get_success_message(
-                    TenderCreateMultiStepView, tender_dict, tender, is_draft=False
-                ),
-                extra_tags="modal_message_bizdev",
-            )
-        return HttpResponseRedirect(TenderCreateMultiStepView.success_url)
-
-    # return HttpResponseForbidden()
     return render(request, template_name, context)
 
 

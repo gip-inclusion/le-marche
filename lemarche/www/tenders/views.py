@@ -164,9 +164,6 @@ class TenderCreateMultiStepView(SessionWizardView):
         Save step data
         """
         data = form.data.copy()
-        if "csrfmiddlewaretoken" in data:
-            del data["csrfmiddlewaretoken"]
-
         data["timestamp"] = timezone.now().isoformat()
 
         uuid = self.request.session.get("tender_steps_data_uuid", None)
