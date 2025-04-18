@@ -20,7 +20,7 @@ class CompanyModelTest(TestCase):
 
 class CompanyQuerysetTest(TestCase):
     @classmethod
-    def setUpTestData(cls):
+    def setUpTestData(cls):  # fixme flacky ?
         cls.user_1 = UserFactory()
         cls.user_2 = UserFactory()
         TenderFactory(author=cls.user_1)
