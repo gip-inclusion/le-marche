@@ -1,5 +1,3 @@
-import string
-
 import factory.fuzzy
 from factory.django import DjangoModelFactory
 
@@ -11,9 +9,9 @@ class CodeFactory(DjangoModelFactory):
         model = Code
         skip_postgeneration_save = True  # Prevents unnecessary save
 
-    name = factory.Faker("name", locale="fr_FR")
+    name = factory.Sequence("Some Code name N°:{0}".format)
     # slug: auto-generated
-    cpv_code = factory.fuzzy.FuzzyText(length=8, chars=string.digits)
+    cpv_code = "12345678"
 
     @factory.post_generation
     def sectors(self, create, extracted, **kwargs):

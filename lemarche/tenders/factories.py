@@ -24,8 +24,8 @@ class TenderFactory(DjangoModelFactory):
         tender_constants.RESPONSE_KIND_TEL,
         tender_constants.RESPONSE_KIND_EXTERNAL,
     ]
-    description = factory.Faker("paragraph", nb_sentences=5, locale="fr_FR")
-    constraints = factory.Faker("paragraph", nb_sentences=5, locale="fr_FR")
+    description = "Ceci est un pagagraphe de test"
+    constraints = "Ceci est un pagagraphe de test"
     deadline_date = date.today() + timedelta(days=10)
     start_working_date = date.today() + timedelta(days=50)
     author = factory.SubFactory(UserFactory)
