@@ -93,25 +93,21 @@ class SiaeOfferFactory(DjangoModelFactory):
     class Meta:
         model = SiaeOffer
 
-    name = factory.Faker("name", locale="fr_FR")
+    name = "Some SiaeOffer"
 
 
 class SiaeClientReferenceFactory(DjangoModelFactory):
     class Meta:
         model = SiaeClientReference
 
-    name = factory.Faker("name", locale="fr_FR")
-
 
 class SiaeLabelOldFactory(DjangoModelFactory):
     class Meta:
         model = SiaeLabelOld
 
-    name = factory.Faker("name", locale="fr_FR")
+    name = "Some SiaeLabelOld"
 
 
 class SiaeImageFactory(DjangoModelFactory):
     class Meta:
         model = SiaeImage
-
-    name = factory.Faker("name", locale="fr_FR")
