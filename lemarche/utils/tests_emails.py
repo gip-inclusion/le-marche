@@ -15,3 +15,9 @@ class EmailTest(TestCase):
         self.assertEqual(whitelist_recipient_list(email_list_1), [])
         email_list_2 = ["bob@test.com", "prenom.nom@inclusion.gouv.fr"]
         self.assertEqual(whitelist_recipient_list(email_list_2), ["prenom.nom@inclusion.gouv.fr"])
+
+    def should_filter_out_non_betagouv_emails_when_not_in_prod(self):
+        email_list = ["test@inclusion.gouv.fr", "test@example.com"]
+        email_list_filtered = whitelist_recipient_list(email_list)
+        self.assertTrue("test@inclusion.gouv.fr" in email_list_filtered)
+        self.assertTrue("test@example.com" not in email_list_filtered)

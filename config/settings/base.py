@@ -210,8 +210,6 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     # wagtail
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
-    # Custom Middlewares
-    "lemarche.utils.tracker.TrackerMiddleware",
     # Final logger
     "django_datadog_logger.middleware.request_log.RequestLoggingMiddleware",
 ]
