@@ -1,5 +1,4 @@
 <!-- admin info -->
-{% load info_card_cms %}
 {% if user.is_authenticated and user.is_admin %}
     <div class="fr-col-12">
         {% include "tenders/_detail_admin_extra_info.html" with tender=tender %}
@@ -42,11 +41,6 @@
                     {% endif %}
                 <!-- siae info & actions -->
                 {% elif user.kind == user.KIND_SIAE %}
-                    {% if tender.can_display_contact_phone %}
-                        <div class="fr-col-12">
-                            {% cms_info_card %}
-                        </div>
-                    {% endif %}
                     {% if not user.has_siae %}
                         <div class="fr-col-12">
                             {% include "tenders/_detail_siae_user_without_siae.html" %}

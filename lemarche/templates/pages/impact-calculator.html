@@ -1,5 +1,5 @@
 {% extends BASE_TEMPLATE %}
-{% load dsfr_tags process_dict static humanize wagtailcore_tags advert_cms %}
+{% load dsfr_tags process_dict static humanize wagtailcore_tags %}
 {% block page_title %}
     Calibrer votre achat socialement responsable{{ block.super }}
 {% endblock page_title %}
@@ -122,7 +122,6 @@
             {% endblock htmx %}
         </div>
     </section>
-    {% cms_advert %}
 {% endblock content %}
 {% block extra_js %}
     <script type="text/javascript" src="{% static 'js/multiselect.js' %}"></script>

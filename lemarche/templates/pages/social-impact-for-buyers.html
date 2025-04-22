@@ -1,5 +1,5 @@
 {% extends BASE_TEMPLATE %}
-{% load process_dict dsfr_tags static humanize wagtailcore_tags advert_cms %}
+{% load process_dict dsfr_tags static humanize wagtailcore_tags %}
 
 {% block page_title %}Calculer l'impact social d'un achat inclusif{{ block.super }}{% endblock page_title %}
 {% block meta_description %}
@@ -92,7 +92,5 @@
         {% endblock htmx %}
     </div>
 </section>
-
-{% cms_advert %}
 
 {% endblock content %}
