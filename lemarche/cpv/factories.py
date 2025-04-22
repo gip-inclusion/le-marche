@@ -1,4 +1,4 @@
-import factory.fuzzy
+import factory
 from factory.django import DjangoModelFactory
 
 from lemarche.cpv.models import Code

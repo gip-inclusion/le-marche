@@ -1,7 +1,6 @@
 import functools
-import string
 
-import factory.fuzzy
+import factory
 from django.contrib.auth.hashers import make_password
 from factory.django import DjangoModelFactory
 
@@ -25,7 +24,7 @@ class UserFactory(DjangoModelFactory):
     last_name = factory.Sequence("last_name{0}".format)
     email = factory.Sequence("email{0}@example.com".format)
     password = factory.LazyFunction(default_password)
-    phone = factory.fuzzy.FuzzyText(length=10, chars=string.digits)
+    phone = "0666666666"
     kind = User.KIND_SIAE
 
     @factory.post_generation
