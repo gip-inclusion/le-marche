@@ -861,15 +861,17 @@ class TenderSiaeModelAndQuerysetTest(TestCase):
 
 
 class TenderAdminTest(TestCase):
-    def setUp(cls):
+    @classmethod
+    def setUpTestData(cls):
         cls.factory = RequestFactory()
         cls.site = MarcheAdminSite()
         cls.admin = TenderAdmin(Tender, cls.site)
         cls.user = User.objects.create_superuser(email="admin@example.com", password="admin")
         cls.sectors = [SectorFactory() for i in range(10)]
         cls.perimeter_paris = PerimeterFactory(department_code="75", post_codes=["75019", "75018"])
-        cls.perimeter_marseille = PerimeterFactory(coords=Point(43.35101634452076, 5.379616625955892))
-        cls.perimeters = [cls.perimeter_paris, PerimeterFactory()]
+        cls.perimeter_marseille = PerimeterFactory(
+            name="Marseille", department_code="13", coords=Point(43.35101634452076, 5.379616625955892)
+        )
         # by default is Paris
         coords_paris = Point(48.86385199985207, 2.337071483848432)
 

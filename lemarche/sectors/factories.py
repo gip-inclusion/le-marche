@@ -8,7 +8,7 @@ class SectorGroupFactory(DjangoModelFactory):
     class Meta:
         model = SectorGroup
 
-    name = factory.Faker("name", locale="fr_FR")
+    name = factory.Sequence("Some SectorGroup N°:{0}".format)
     # slug auto-generated
 
 
@@ -17,7 +17,7 @@ class SectorFactory(DjangoModelFactory):
         model = Sector
         skip_postgeneration_save = True  # Prevents unnecessary save
 
-    name = factory.Faker("name", locale="fr_FR")
+    name = factory.Sequence("Some Sector N°:{0}".format)
     # slug auto-generated
     group = factory.SubFactory(SectorGroupFactory)
 

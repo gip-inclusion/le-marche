@@ -18,8 +18,10 @@ class TenderMatchingActivitiesTest(TestCase):
         cls.sectors = [SectorFactory() for i in range(10)]
         cls.other_sector = SectorFactory()
         cls.perimeter_paris = PerimeterFactory(department_code="75", post_codes=["75019", "75018"])
-        cls.perimeter_marseille = PerimeterFactory(coords=Point(43.35101634452076, 5.379616625955892))
-        cls.perimeters = [cls.perimeter_paris, PerimeterFactory()]
+        cls.perimeter_marseille = PerimeterFactory(
+            name="Marseille", department_code="13", coords=Point(43.35101634452076, 5.379616625955892)
+        )
+        cls.perimeters = [cls.perimeter_paris, cls.perimeter_marseille]
         # by default is Paris
         coords_paris = Point(48.86385199985207, 2.337071483848432)
 
@@ -159,7 +161,9 @@ class TenderMatchingActivitiesTest(TestCase):
         siae_marseille_activity.sectors.add(self.sectors[0])
 
         # create tender in Azay-le-rideau (near Tours ~25km)
-        perimeter_azaylerideau = PerimeterFactory(coords=Point(47.262352, 0.466372))
+        perimeter_azaylerideau = PerimeterFactory(
+            name="Azay-le-rideau", department_code="37", coords=Point(47.262352, 0.466372)
+        )
         tender = TenderFactory(
             location=perimeter_azaylerideau,
             distance_location=30,
