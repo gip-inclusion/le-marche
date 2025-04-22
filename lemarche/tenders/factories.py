@@ -15,7 +15,7 @@ class TenderFactory(DjangoModelFactory):
         model = Tender
         skip_postgeneration_save = True  # Prevents unnecessary save
 
-    title = factory.Faker("name", locale="fr_FR")
+    title = factory.Sequence("Some TenderFactory Title N°{0}".format)
     # slug auto-generated
     kind = tender_constants.KIND_QUOTE
     presta_type = []
@@ -68,7 +68,7 @@ class TenderQuestionFactory(DjangoModelFactory):
     class Meta:
         model = TenderQuestion
 
-    text = factory.Faker("paragraph", nb_sentences=1, locale="fr_FR")
+    text = "Est ce que donnez des échantillons gratuits ?"
 
 
 class PartnerShareTenderFactory(DjangoModelFactory):
@@ -76,9 +76,9 @@ class PartnerShareTenderFactory(DjangoModelFactory):
         model = PartnerShareTender
         skip_postgeneration_save = True  # Prevents unnecessary save
 
-    name = factory.Faker("name", locale="fr_FR")
+    name = "Some PartnerShare Name"
 
-    contact_email_list = factory.LazyFunction(lambda: [factory.Faker("email", locale="fr_FR") for i in range(4)])
+    contact_email_list = ["email.partenaire1@test.com", "email.partenaire2@test.com"]
 
     @factory.post_generation
     def perimeters(self, create, extracted, **kwargs):
