@@ -50,7 +50,7 @@ class PagesHeaderLinkTest(TestCase):
         self.assertNotContains(response, reverse("dashboard:home"))
 
         self.assertNotContains(response, "Déconnexion")
-        self.assertNotContains(response, reverse("auth:logout"))
+        self.assertNotContains(response, reverse("account_logout"))
 
     def test_anonymous_user_home_for_siae(self):
         response = self.client.get("/accueil-structure/")
@@ -78,7 +78,7 @@ class PagesHeaderLinkTest(TestCase):
         self.assertNotContains(response, reverse("dashboard:home"))
 
         self.assertNotContains(response, "Déconnexion")
-        self.assertNotContains(response, reverse("auth:logout"))
+        self.assertNotContains(response, reverse("account_logout"))
 
     def test_siae_user_home(self):
         self.client.force_login(self.siae_user)
@@ -107,7 +107,7 @@ class PagesHeaderLinkTest(TestCase):
         self.assertContains(response, reverse("dashboard:home"))
 
         self.assertContains(response, "Déconnexion")
-        self.assertContains(response, reverse("auth:logout"))
+        self.assertContains(response, reverse("account_logout"))
 
     def test_buyer_user_home(self):
         self.client.force_login(self.user_buyer)
@@ -136,7 +136,7 @@ class PagesHeaderLinkTest(TestCase):
         self.assertContains(response, reverse("dashboard:home"))
 
         self.assertContains(response, "Déconnexion")
-        self.assertContains(response, reverse("auth:logout"))
+        self.assertContains(response, reverse("account_logout"))
 
 
 class SitemapTests(TestCase):

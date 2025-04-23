@@ -9,7 +9,6 @@ app_name = "auth"
 
 urlpatterns = [
     path("login/", CustomLoginView.as_view(), name="account_login"),
-    path("logout/", auth_views.LogoutView.as_view(template_name="auth/logged_out.html"), name="logout"),
     path("signup/", SignupView.as_view(), name="signup"),
     path("rendez-vous/", MeetingCalendarView.as_view(), name="booking-meeting-view"),
     path("password-reset/", PasswordResetView.as_view(), name="password_reset"),
