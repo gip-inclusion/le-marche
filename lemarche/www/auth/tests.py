@@ -409,7 +409,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         driver = self.driver
         driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
-        driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys(user_siae.email)
+        driver.find_element(By.CSS_SELECTOR, "input#id_login").send_keys(user_siae.email)
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys(DEFAULT_PASSWORD)
 
         driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
@@ -422,7 +422,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         driver = self.driver
         driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
-        driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys(user_buyer.email)
+        driver.find_element(By.CSS_SELECTOR, "input#id_login").send_keys(user_buyer.email)
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys(DEFAULT_PASSWORD)
 
         driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
@@ -435,7 +435,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         driver = self.driver
         driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
-        driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys("SIAE5@example.com")
+        driver.find_element(By.CSS_SELECTOR, "input#id_login").send_keys("SIAE5@example.com")
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys(DEFAULT_PASSWORD)
 
         driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
@@ -445,7 +445,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         driver = self.driver
         driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
-        driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys(user_siae.email)
+        driver.find_element(By.CSS_SELECTOR, "input#id_login").send_keys(user_siae.email)
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys("password")
 
         driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
@@ -454,7 +454,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('account_login')}")
         # error message should be displayed
         messages = driver.find_element(By.CSS_SELECTOR, "section.fr-input-group--error")
-        self.assertTrue("Saisissez un Adresse e-mail et un mot de passe valides" in messages.text)
+        self.assertTrue("L’adresse e-mail ou le mot de passe sont incorrects." in messages.text)
 
     def test_user_empty_credentials_should_see_password_reset_message(self):
         existing_user = UserFactory(email="existing-user@example.com", password="")
@@ -463,7 +463,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         driver = self.driver
         driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
-        driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys("existing-user@example.com")
+        driver.find_element(By.CSS_SELECTOR, "input#id_login").send_keys("existing-user@example.com")
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys("password")
 
         driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
