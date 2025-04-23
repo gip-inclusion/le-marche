@@ -1,3 +1,4 @@
+from allauth.account.views import LoginView
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, views as auth_views
@@ -12,14 +13,13 @@ from lemarche.cms.snippets import Paragraph
 from lemarche.users.models import User
 from lemarche.utils.emails import add_to_contact_list
 from lemarche.utils.urls import get_safe_url
-from lemarche.www.auth.forms import LoginForm, PasswordResetForm, SignupForm
+from lemarche.www.auth.forms import CustomLoginForm, PasswordResetForm, SignupForm
 from lemarche.www.auth.tasks import send_signup_notification_email
 
 
-class LoginView(auth_views.LoginView):
-    template_name = "auth/login.html"
-    form_class = LoginForm
-    redirect_authenticated_user = True
+class CustomLoginView(LoginView):
+    template_name = "account/login.html"
+    form_class = CustomLoginForm
 
     def get_context_data(self, **kwargs):
         """
@@ -27,7 +27,7 @@ class LoginView(auth_views.LoginView):
         - Get next param to append to the signup url
         """
         context = super().get_context_data(**kwargs)
-        email = self.request.POST.get("username", "")
+        email = self.request.POST.get("login", "")
         if email:
             user = User.objects.filter(email=email.lower()).first()
             if user:

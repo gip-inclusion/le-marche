@@ -11,6 +11,7 @@ class LeMarcheAccountAdapter(DefaultAccountAdapter):
         """
         This redirect is called only if the user already has a verifier email.
         If not, upon login the user will be redirected the the page asking to check its email.
+        This method could work out of the box with the CustomLoginView and overridden get_success_url()
         """
         success_url = super().get_login_redirect_url(request)
         next_url = self.request.GET.get("next", None)
