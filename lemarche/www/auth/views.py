@@ -37,25 +37,6 @@ class LoginView(auth_views.LoginView):
             context["next_param"] = f"?next={next_url}"
         return context
 
-    def get_success_url(self):
-        """
-        Redirect to:
-        - next_url if there is a next param
-        - or dashboard if SIAE
-        """
-        success_url = super().get_success_url()
-        next_url = self.request.GET.get("next", None)
-        # sanitize next_url
-        if next_url:
-            safe_url = get_safe_url(self.request, param_name="next")
-            if safe_url:
-                return safe_url
-        elif self.request.user.kind == User.KIND_SIAE:
-            return reverse_lazy("dashboard:home")
-        elif self.request.user.kind == User.KIND_BUYER:
-            return reverse_lazy("siae:search_results")
-        return success_url
-
 
 class SignupView(SuccessMessageMixin, CreateView):
     template_name = "auth/signup.html"

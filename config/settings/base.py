@@ -323,6 +323,8 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_EMAIL_SUBJECT_PREFIX = "Le marché"
+ACCOUNT_ADAPTER = "lemarche.users.adapter.LeMarcheAccountAdapter"
+ACCOUNT_FORMS = {"login": "lemarche.www.auth.forms.CustomLoginForm"}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/

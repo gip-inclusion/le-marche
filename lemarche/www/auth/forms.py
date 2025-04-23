@@ -1,5 +1,6 @@
+from allauth.account.forms import LoginForm
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, UserCreationForm
+from django.contrib.auth.forms import PasswordResetForm, UserCreationForm
 from django.core.exceptions import ValidationError
 from dsfr.forms import DsfrBaseForm
 
@@ -165,13 +166,11 @@ class SignupForm(UserCreationForm, DsfrBaseForm):
         return instance
 
 
-class LoginForm(AuthenticationForm, DsfrBaseForm):
-    username = forms.CharField(label="Adresse e-mail", required=True)
+class CustomLoginForm(LoginForm, DsfrBaseForm):
 
-    def clean_username(self):
-        username = self.cleaned_data["username"]
-        print(username)
-        return username.lower()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["login"].label = "Adresse e-mail"
 
 
 class PasswordResetForm(PasswordResetForm, DsfrBaseForm):

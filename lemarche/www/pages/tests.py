@@ -41,7 +41,7 @@ class PagesHeaderLinkTest(TestCase):
         self.assertContains(response, reverse("auth:signup"))
 
         self.assertContains(response, "Se connecter")
-        self.assertContains(response, reverse("auth:login"))
+        self.assertContains(response, reverse("account_login"))
 
         self.assertNotContains(response, "Demandes reçues")
         self.assertNotContains(response, f'"{reverse("tenders:list")}"')
@@ -69,7 +69,7 @@ class PagesHeaderLinkTest(TestCase):
         self.assertContains(response, reverse("auth:signup"))
 
         self.assertContains(response, "Se connecter")
-        self.assertContains(response, reverse("auth:login"))
+        self.assertContains(response, reverse("account_login"))
 
         self.assertNotContains(response, "Demandes reçues")
         self.assertNotContains(response, f'"{reverse("tenders:list")}"')
@@ -98,7 +98,7 @@ class PagesHeaderLinkTest(TestCase):
         self.assertNotContains(response, reverse("auth:signup"))
 
         self.assertNotContains(response, "Se connecter")
-        self.assertNotContains(response, reverse("auth:login"))
+        self.assertNotContains(response, reverse("account_login"))
 
         self.assertContains(response, "Demandes reçues")
         self.assertContains(response, f'"{reverse("tenders:list")}"')
@@ -127,7 +127,7 @@ class PagesHeaderLinkTest(TestCase):
         self.assertNotContains(response, reverse("auth:signup"))
 
         self.assertNotContains(response, "Se connecter")
-        self.assertNotContains(response, reverse("auth:login"))
+        self.assertNotContains(response, reverse("account_login"))
 
         self.assertNotContains(response, "Demandes reçues")
         self.assertNotContains(response, f'"{reverse("tenders:list")}"')
