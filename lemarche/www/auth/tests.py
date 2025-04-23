@@ -407,7 +407,7 @@ class LoginFormTest(StaticLiveServerTestCase):
     def test_siae_user_can_sign_in_and_is_redirected_to_dashboard(self):
         user_siae = UserFactory(email="siae5@example.com", kind=User.KIND_SIAE)
         driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:login')}")
+        driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
         driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys(user_siae.email)
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys(DEFAULT_PASSWORD)
@@ -420,7 +420,7 @@ class LoginFormTest(StaticLiveServerTestCase):
     def test_non_siae_user_can_sign_in_and_is_redirected_to_home(self):
         user_buyer = UserFactory(email="buyer5@example.com", kind=User.KIND_BUYER)
         driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:login')}")
+        driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
         driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys(user_buyer.email)
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys(DEFAULT_PASSWORD)
@@ -433,7 +433,7 @@ class LoginFormTest(StaticLiveServerTestCase):
     def test_user_can_sign_in_with_email_containing_capital_letters(self):
         UserFactory(email="siae5@example.com", kind=User.KIND_SIAE)
         driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:login')}")
+        driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
         driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys("SIAE5@example.com")
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys(DEFAULT_PASSWORD)
@@ -443,7 +443,7 @@ class LoginFormTest(StaticLiveServerTestCase):
     def test_user_wrong_credentials_should_see_error_message(self):
         user_siae = UserFactory(email="siae5@example.com", kind=User.KIND_SIAE)
         driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:login')}")
+        driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
         driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys(user_siae.email)
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys("password")
@@ -451,7 +451,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
 
         # should not submit form
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:login')}")
+        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('account_login')}")
         # error message should be displayed
         messages = driver.find_element(By.CSS_SELECTOR, "section.fr-input-group--error")
         self.assertTrue("Saisissez un Adresse e-mail et un mot de passe valides" in messages.text)
@@ -461,7 +461,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         # only way to have an empty password field
         User.objects.filter(id=existing_user.id).update(password="")
         driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:login')}")
+        driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
         driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys("existing-user@example.com")
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys("password")
@@ -469,7 +469,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
 
         # should not submit form
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:login')}")
+        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('account_login')}")
         # # new-user-without-password-login-message message should be displayed
         messages = driver.find_element(By.CSS_SELECTOR, "div#new-user-without-password-login-message")
         self.assertTrue("pas encore défini de mot de passe" in messages.text)
