@@ -43,7 +43,12 @@ class BrevoWhitelistPermission(BasePermission):
         ip_addr = ipaddress.ip_address(request.META["REMOTE_ADDR"])
         network = ipaddress.ip_network(settings.BREVO_IP_WHITELIST_RANGE)
 
-        return ip_addr in network
+        has_permission = ip_addr in network
+        if has_permission:
+            logger.info("BrevoWhitelistPermission: %s has permission", ip_addr)
+        else:
+            logger.warning("BrevoWhitelistPermission: %s has no permission", ip_addr)
+        return has_permission
 
 
 class InboundParsingEmailView(APIView):
@@ -52,6 +57,7 @@ class InboundParsingEmailView(APIView):
     @extend_schema(exclude=True)
     def post(self, request):
         serializer = EmailsSerializer(data=request.data)
+        logger.info("InboundParsingEmailView called from %s", request.META["REMOTE_ADDR"])
         if serializer.is_valid():
             inbound_email = serializer.validated_data.get("items")[0]
             inbound_email_prefix = inbound_email["To"][0]["Address"].split("@")[0]
@@ -62,6 +68,7 @@ class InboundParsingEmailView(APIView):
             data_inbound_clean = clean_saved_data_of_inbound(data_inbound=serializer.data.get("items")[0])
             conv.data.append(data_inbound_clean)
             conv.save()
+            logger.info("InboundParsingEmailView saved data for conversation %s", conv.uuid)
             # find user_kind
             if version >= 1:
                 user_kind = conv.get_user_kind(conv_uuid)
@@ -75,6 +82,5 @@ class InboundParsingEmailView(APIView):
             )
             return Response(conv.uuid, status=status.HTTP_201_CREATED)
         else:
-            logger.error(f"[INBOUND_PARSING_WEBHOOK_ERROR] {str(serializer.errors)}")
-            logger.error(f"[INBOUND_PARSING_WEBHOOK_ERROR] {str(serializer.data)}")
+            logger.error("INBOUND_PARSING_WEBHOOK_ERROR %s : %s", serializer.errors, serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
