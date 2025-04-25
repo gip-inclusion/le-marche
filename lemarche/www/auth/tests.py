@@ -10,7 +10,7 @@ from selenium.webdriver.support.select import Select
 from lemarche.cms.snippets import Paragraph
 from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
-from lemarche.www.auth.forms import SignupForm
+from lemarche.www.auth.forms import CustomSignupForm
 
 
 def scroll_to_and_click_element(driver, element, click=True):
@@ -111,7 +111,7 @@ class SignupFormTest(StaticLiveServerTestCase):
             "password2": EXAMPLE_PASSWORD,
         }
 
-    def _complete_form(self, user_profile: dict, signup_url=reverse("auth:signup"), with_submit=True):
+    def _complete_form(self, user_profile: dict, signup_url=reverse("account_signup"), with_submit=True):
         """the function allows you to go to the "signup" page and complete the user profile.
 
         Args:
@@ -167,7 +167,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{redirect_url}")
         # message should be displayed
         if user_kind != User.KIND_BUYER:
-            messages = self.driver.find_element(By.CSS_SELECTOR, "div.fr-alert--success")
+            messages = self.driver.find_elements(By.CSS_SELECTOR, "div.fr-alert--success")[1]
             self.assertTrue("Inscription validée" in messages.text)
             return messages
 
@@ -186,7 +186,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._complete_form(user_profile=user_profile, with_submit=True)
 
         # should not submit form (last_name field is required)
-        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('account_signup')}")
 
     def test_siae_submits_signup_form_email_already_exists(self):
         UserFactory(email=self.SIAE["email"], kind=User.KIND_SIAE)
@@ -195,7 +195,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._complete_form(user_profile=user_profile, with_submit=True)
 
         # should not submit form (email field already used)
-        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('account_signup')}")
 
         alerts = self.driver.find_element(By.CSS_SELECTOR, "form")
         self.assertTrue("Cette adresse e-mail est déjà utilisée." in alerts.text)
@@ -245,7 +245,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._complete_form(user_profile=user_profile, with_submit=True)
 
         # should not submit form (position field is required)
-        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('account_signup')}")
 
     def test_partner_submits_signup_form_success(self):
         self._complete_form(user_profile=self.PARTNER, with_submit=False)
@@ -256,6 +256,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
         scroll_to_and_click_element(self.driver, submit_element)
 
+        # in fact because of LiveServer erasing migrations, "wagtail_serve" is a 404...
         self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)))
 
     def test_partner_submits_signup_form_error(self):
@@ -265,7 +266,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._complete_form(user_profile=user_profile, with_submit=True)
 
         # should not submit form (company_name field is required)
-        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('account_signup')}")
 
     # TODO: problem with this test
     # def test_individual_submits_signup_form_success(self):
@@ -281,13 +282,13 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._complete_form(user_profile=user_profile, with_submit=True)
 
         # should not submit form (last_name field is required)
-        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('account_signup')}")
 
     def test_user_submits_signup_form_with_next_param_success_and_redirect(self):
         next_url = f"{reverse('siae:search_results')}?kind=ESAT"
         self._complete_form(
             user_profile=self.SIAE,
-            signup_url=f"{reverse('auth:signup')}?next={next_url}",
+            signup_url=f"{reverse('account_signup')}?next={next_url}",
             with_submit=False,
         )
         submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
@@ -301,7 +302,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         super().tearDownClass()
 
 
-class SignupSimpleTestcase(TestCase):
+class SignupFormTestcase(TestCase):
     """Without integration testing"""
 
     def setUp(self):
@@ -321,7 +322,7 @@ class SignupSimpleTestcase(TestCase):
         self.form_data["kind"] = User.KIND_BUYER
         self.form_data["email"] = "buyer@gmail.com"
 
-        form = SignupForm(data=self.form_data)
+        form = CustomSignupForm(data=self.form_data)
         self.assertFalse(form.is_valid())
         self.assertIn("email", form.errors)
 
@@ -330,7 +331,7 @@ class SignupSimpleTestcase(TestCase):
         self.form_data["kind"] = User.KIND_INDIVIDUAL
         self.form_data["email"] = "buyer@gmail.com"
 
-        form = SignupForm(data=self.form_data)
+        form = CustomSignupForm(data=self.form_data)
         self.assertTrue(form.is_valid())
 
     def test_professional_email_buyer(self):
@@ -338,7 +339,7 @@ class SignupSimpleTestcase(TestCase):
         self.form_data["kind"] = User.KIND_INDIVIDUAL
         self.form_data["email"] = "buyer@veryprofessional.com"
 
-        form = SignupForm(data=self.form_data)
+        form = CustomSignupForm(data=self.form_data)
         self.assertTrue(form.is_valid())
 
 
@@ -375,7 +376,7 @@ class SignupMeetingTestCase(TestCase):
         with the magic link"""
         self.assertEqual(User.objects.count(), 0)
 
-        post_response = self.client.post(path=f"{reverse('auth:signup')}?skip_meeting=true", data=self.form_data)
+        post_response = self.client.post(path=f"{reverse('account_signup')}?skip_meeting=true", data=self.form_data)
         self.assertEqual(post_response.status_code, 302)
         self.assertTrue(User.objects.get().is_onboarded)
 
@@ -383,7 +384,7 @@ class SignupMeetingTestCase(TestCase):
         """View should redirect to meeting"""
         self.assertEqual(User.objects.count(), 0)
 
-        post_response = self.client.post(path=reverse("auth:signup"), data=self.form_data)
+        post_response = self.client.post(path=reverse("account_signup"), data=self.form_data)
         self.assertEqual(post_response.status_code, 302)
         self.assertFalse(User.objects.get().is_onboarded)
         self.assertRedirects(post_response, reverse("auth:booking-meeting-view"))

@@ -1,4 +1,4 @@
-Bonjour {{ user.username }},
+Bonjour {{ user.full_name }},
 
 Cliquez sur le lien suivant pour vérifier votre adresse email :
 {{ activate_url }}

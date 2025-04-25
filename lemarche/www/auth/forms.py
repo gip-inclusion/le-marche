@@ -1,6 +1,6 @@
-from allauth.account.forms import LoginForm
+from allauth.account.forms import LoginForm, SignupForm
 from django import forms
-from django.contrib.auth.forms import PasswordResetForm, UserCreationForm
+from django.contrib.auth.forms import PasswordResetForm
 from django.core.exceptions import ValidationError
 from dsfr.forms import DsfrBaseForm
 
@@ -15,7 +15,7 @@ from lemarche.utils.password_validation import CnilCompositionPasswordValidator
 from lemarche.utils.widgets import CustomSelectMultiple
 
 
-class SignupForm(UserCreationForm, DsfrBaseForm):
+class CustomSignupForm(SignupForm, DsfrBaseForm):
     KIND_CHOICES_FORM = (
         (User.KIND_SIAE, "Une entreprise sociale inclusive (SIAE ou structure du handicap, GEIQ)"),
         (User.KIND_BUYER, "Un acheteur"),
@@ -132,7 +132,16 @@ class SignupForm(UserCreationForm, DsfrBaseForm):
         self.fields["password1"].help_text = CnilCompositionPasswordValidator().get_help_text()
 
     def clean_email(self):
+        """
+        Allauth doest seem to handle basic integrity constraints. It's supposed to allow duplicate emails
+        as the validated emails are checked later with integrity constraints.
+        ACCOUNT_PREVENT_ENUMERATION = False had no effect in our case.
+        """
         email = self.cleaned_data["email"]
+
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("Cette adresse e-mail est déjà utilisée.")
+
         return email.lower()
 
     def clean(self):
@@ -143,27 +152,6 @@ class SignupForm(UserCreationForm, DsfrBaseForm):
             except ValidationError as e:
                 self.add_error("email", e)
         return cleaned_data
-
-    def save(self, commit=True):
-        instance = super(SignupForm, self).save(commit=False)
-        extra_data = {}
-        if self.cleaned_data.get("nb_of_inclusive_provider_last_year"):
-            extra_data["nb_of_inclusive_provider_last_year"] = self.cleaned_data.get(
-                "nb_of_inclusive_provider_last_year"
-            )
-
-        if self.cleaned_data.get("nb_of_handicap_provider_last_year"):
-            extra_data["nb_of_handicap_provider_last_year"] = self.cleaned_data.get(
-                "nb_of_handicap_provider_last_year"
-            )
-
-        instance.extra_data = extra_data
-
-        if commit:
-            instance.save()
-            self.save_m2m()
-
-        return instance
 
 
 class CustomLoginForm(LoginForm, DsfrBaseForm):

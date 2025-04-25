@@ -501,7 +501,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     onboard_user_button.short_description = "L'utilisateur a suivi la procédure d'onboarding"
 
     def display_signup_magic_link(self, user):
-        return format_html(f"<a target='_blank' href='{reverse('auth:signup')}?skip_meeting=true'>Lien magique</a>")
+        return format_html(f"<a target='_blank' href='{reverse('account_signup')}?skip_meeting=true'>Lien magique</a>")
 
     display_signup_magic_link.short_description = "Lien magic pour l'inscription"
 
