@@ -314,11 +314,11 @@ LOGOUT_REDIRECT_URL = "/"
 SESAME_TOKEN_NAME = "token"
 
 # Django allauth
-
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_VERIFICATION = "optional"
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_EMAIL_SUBJECT_PREFIX = "Le marché"
 ACCOUNT_ADAPTER = "lemarche.users.adapter.LeMarcheAccountAdapter"
