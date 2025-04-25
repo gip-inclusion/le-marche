@@ -7,7 +7,7 @@ class NonOnboardedRedirectMiddleware:
 
     allowed_views = [
         reverse_lazy("auth:booking-meeting-view"),
-        reverse_lazy("auth:logout"),
+        reverse_lazy("account_logout"),
         "/onboarding-en-cours/",
     ]
 

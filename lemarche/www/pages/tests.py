@@ -38,10 +38,10 @@ class PagesHeaderLinkTest(TestCase):
 
         self.assertContains(response, "S'inscrire")
         self.assertNotContains(response, "Référencer ma structure")
-        self.assertContains(response, reverse("auth:signup"))
+        self.assertContains(response, reverse("account_signup"))
 
         self.assertContains(response, "Se connecter")
-        self.assertContains(response, reverse("auth:login"))
+        self.assertContains(response, reverse("account_login"))
 
         self.assertNotContains(response, "Demandes reçues")
         self.assertNotContains(response, f'"{reverse("tenders:list")}"')
@@ -50,7 +50,7 @@ class PagesHeaderLinkTest(TestCase):
         self.assertNotContains(response, reverse("dashboard:home"))
 
         self.assertNotContains(response, "Déconnexion")
-        self.assertNotContains(response, reverse("auth:logout"))
+        self.assertNotContains(response, reverse("account_logout"))
 
     def test_anonymous_user_home_for_siae(self):
         response = self.client.get("/accueil-structure/")
@@ -66,10 +66,10 @@ class PagesHeaderLinkTest(TestCase):
 
         self.assertNotContains(response, "S'inscrire")
         self.assertContains(response, "Référencer ma structure")
-        self.assertContains(response, reverse("auth:signup"))
+        self.assertContains(response, reverse("account_signup"))
 
         self.assertContains(response, "Se connecter")
-        self.assertContains(response, reverse("auth:login"))
+        self.assertContains(response, reverse("account_login"))
 
         self.assertNotContains(response, "Demandes reçues")
         self.assertNotContains(response, f'"{reverse("tenders:list")}"')
@@ -78,7 +78,7 @@ class PagesHeaderLinkTest(TestCase):
         self.assertNotContains(response, reverse("dashboard:home"))
 
         self.assertNotContains(response, "Déconnexion")
-        self.assertNotContains(response, reverse("auth:logout"))
+        self.assertNotContains(response, reverse("account_logout"))
 
     def test_siae_user_home(self):
         self.client.force_login(self.siae_user)
@@ -95,10 +95,10 @@ class PagesHeaderLinkTest(TestCase):
 
         self.assertNotContains(response, "S'inscrire")
         self.assertNotContains(response, "Référencer ma structure")
-        self.assertNotContains(response, reverse("auth:signup"))
+        self.assertNotContains(response, reverse("account_signup"))
 
         self.assertNotContains(response, "Se connecter")
-        self.assertNotContains(response, reverse("auth:login"))
+        self.assertNotContains(response, reverse("account_login"))
 
         self.assertContains(response, "Demandes reçues")
         self.assertContains(response, f'"{reverse("tenders:list")}"')
@@ -107,7 +107,7 @@ class PagesHeaderLinkTest(TestCase):
         self.assertContains(response, reverse("dashboard:home"))
 
         self.assertContains(response, "Déconnexion")
-        self.assertContains(response, reverse("auth:logout"))
+        self.assertContains(response, reverse("account_logout"))
 
     def test_buyer_user_home(self):
         self.client.force_login(self.user_buyer)
@@ -124,10 +124,10 @@ class PagesHeaderLinkTest(TestCase):
 
         self.assertNotContains(response, "S'inscrire")
         self.assertNotContains(response, "Référencer ma structure")
-        self.assertNotContains(response, reverse("auth:signup"))
+        self.assertNotContains(response, reverse("account_signup"))
 
         self.assertNotContains(response, "Se connecter")
-        self.assertNotContains(response, reverse("auth:login"))
+        self.assertNotContains(response, reverse("account_login"))
 
         self.assertNotContains(response, "Demandes reçues")
         self.assertNotContains(response, f'"{reverse("tenders:list")}"')
@@ -136,7 +136,7 @@ class PagesHeaderLinkTest(TestCase):
         self.assertContains(response, reverse("dashboard:home"))
 
         self.assertContains(response, "Déconnexion")
-        self.assertContains(response, reverse("auth:logout"))
+        self.assertContains(response, reverse("account_logout"))
 
 
 class SitemapTests(TestCase):

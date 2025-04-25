@@ -1,5 +1,7 @@
+from allauth.account.forms import LoginForm, SignupForm
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, UserCreationForm
+from django.contrib.auth.forms import PasswordResetForm
+from django.core.exceptions import ValidationError
 from dsfr.forms import DsfrBaseForm
 
 from lemarche.sectors.models import Sector
@@ -13,7 +15,7 @@ from lemarche.utils.password_validation import CnilCompositionPasswordValidator
 from lemarche.utils.widgets import CustomSelectMultiple
 
 
-class SignupForm(UserCreationForm, DsfrBaseForm):
+class CustomSignupForm(SignupForm, DsfrBaseForm):
     KIND_CHOICES_FORM = (
         (User.KIND_SIAE, "Une entreprise sociale inclusive (SIAE ou structure du handicap, GEIQ)"),
         (User.KIND_BUYER, "Un acheteur"),
@@ -130,41 +132,33 @@ class SignupForm(UserCreationForm, DsfrBaseForm):
         self.fields["password1"].help_text = CnilCompositionPasswordValidator().get_help_text()
 
     def clean_email(self):
+        """
+        Allauth doest seem to handle basic integrity constraints. It's supposed to allow duplicate emails
+        as the validated emails are checked later with integrity constraints.
+        ACCOUNT_PREVENT_ENUMERATION = False had no effect in our case.
+        """
         email = self.cleaned_data["email"]
-        if self.cleaned_data["kind"] == User.KIND_BUYER:
-            professional_email_validator(email)
+
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("Cette adresse e-mail est déjà utilisée.")
 
         return email.lower()
 
-    def save(self, commit=True):
-        instance = super(SignupForm, self).save(commit=False)
-        extra_data = {}
-        if self.cleaned_data.get("nb_of_inclusive_provider_last_year"):
-            extra_data["nb_of_inclusive_provider_last_year"] = self.cleaned_data.get(
-                "nb_of_inclusive_provider_last_year"
-            )
-
-        if self.cleaned_data.get("nb_of_handicap_provider_last_year"):
-            extra_data["nb_of_handicap_provider_last_year"] = self.cleaned_data.get(
-                "nb_of_handicap_provider_last_year"
-            )
-
-        instance.extra_data = extra_data
-
-        if commit:
-            instance.save()
-            self.save_m2m()
-
-        return instance
+    def clean(self):
+        cleaned_data = super().clean()
+        if self.cleaned_data["kind"] == User.KIND_BUYER:
+            try:
+                professional_email_validator(cleaned_data["email"])
+            except ValidationError as e:
+                self.add_error("email", e)
+        return cleaned_data
 
 
-class LoginForm(AuthenticationForm, DsfrBaseForm):
-    username = forms.CharField(label="Adresse e-mail", required=True)
+class CustomLoginForm(LoginForm, DsfrBaseForm):
 
-    def clean_username(self):
-        username = self.cleaned_data["username"]
-        print(username)
-        return username.lower()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["login"].label = "Adresse e-mail"
 
 
 class PasswordResetForm(PasswordResetForm, DsfrBaseForm):

@@ -19,12 +19,12 @@
 	{% else %}
 		{% if page and page.slug == "accueil-structure" %}
 			<li class="fr-nav__item">
-				<a class="fr-nav__link" href="{% url 'auth:signup' %}" id="header-demande" target="_self">
+				<a class="fr-nav__link" href="{% url 'account_signup' %}" id="header-demande" target="_self">
 					<span>Référencer ma structure</span>
 				</a>
 			</li>
 			<li class="fr-nav__item">
-				<a class="fr-nav__link" href="{% url 'auth:login' %}" id="h_login" target="_self">
+				<a class="fr-nav__link" href="{% url 'account_login' %}" id="h_login" target="_self">
 					<span>Se connecter</span>
 				</a>
 			</li>
@@ -35,12 +35,12 @@
 				</a>
 			</li>
 			<li class="fr-nav__item">
-				<a class="fr-nav__link" href="{% url 'auth:signup' %}" id="header-demande" target="_self">
+				<a class="fr-nav__link" href="{% url 'account_signup' %}" id="header-demande" target="_self">
 					<span>S'inscrire</span>
 				</a>
 			</li>
 			<li class="fr-nav__item">
-				<a class="fr-nav__link" href="{% url 'auth:login' %}" id="h_login" target="_self">
+				<a class="fr-nav__link" href="{% url 'account_login' %}" id="h_login" target="_self">
 					<span>Se connecter</span>
 				</a>
 			</li>

@@ -43,7 +43,7 @@
                                     <div class="fr-fieldset__element">
                                         <fieldset class="fr-fieldset" id="credentials" aria-labelledby="credentials-messages">
                                             <div class="fr-fieldset__element">
-                                                {% dsfr_form_field form.username %}
+                                                {% dsfr_form_field form.login %}
                                             </div>
                                             <div class="fr-fieldset__element">
                                                 {% dsfr_form_field form.password %}
@@ -71,7 +71,7 @@
                         <h2>Vous n’avez pas de compte ?</h2>
                         <ul class="fr-btns-group">
                             <li>
-                                <a href="{% url 'auth:signup' %}{{ next_param }}" class="fr-btn fr-btn--secondary">
+                                <a href="{% url 'account_signup' %}{{ next_param }}" class="fr-btn fr-btn--secondary">
                                     Créer un compte
                                 </a>
                             </li>
