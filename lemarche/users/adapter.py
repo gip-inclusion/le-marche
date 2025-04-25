@@ -89,11 +89,10 @@ class LeMarcheAccountAdapter(DefaultAccountAdapter):
         # add to Brevo list (to send welcome email + automation)
         add_to_contact_list(user, "signup")
         # signup notification email for the team
-        send_signup_notification_email(user)  # fixme combiner avec le mail de vérification, supprimer ?
-
-        # user.sectors = form.cleaned_data.get("sectors")  # fixme
+        send_signup_notification_email(user)
 
         if commit:
             user.save()
+            user.sectors.set(form.cleaned_data.get("sectors"))
 
         return user
