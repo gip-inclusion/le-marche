@@ -209,9 +209,7 @@ class TenderQuerySet(models.QuerySet):
         Enrich each Tender with stats on their linked Siae
         """
         return self.annotate(
-            siae_count_annotated=Count(
-                "siaes", filter=~Q(tendersiae__source=tender_constants.TENDER_SIAE_SOURCE_AI), distinct=True
-            ),
+            siae_count_annotated=Count("siaes", distinct=True),
             siae_email_send_count_annotated=Sum(
                 Case(When(tendersiae__email_send_date__isnull=False, then=1), default=0, output_field=IntegerField())
             ),
