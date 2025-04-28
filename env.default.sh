@@ -22,11 +22,3 @@ export API_EMPLOIS_INCLUSION_TOKEN=""
 # ########################
 export MTCAPTCHA_PRIVATE_KEY=""
 export MTCAPTCHA_PUBLIC_KEY=""
-
-# OPENAI
-# ########################
-export OPENAI_ORG=""
-export OPENAI_API_BASE=""
-export OPENAI_API_KEY=""
-export OPENAI_MODEL=""
-
