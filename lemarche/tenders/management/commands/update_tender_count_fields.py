@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.utils import timezone
+from sentry_sdk.crons import monitor
 
 from lemarche.tenders.models import Tender
 from lemarche.utils.apis import api_slack
@@ -24,6 +25,7 @@ class Command(BaseCommand):
             "--fields", action="append", default=[], help="Filtrer sur les champs count à mettre à jour"
         )
 
+    @monitor(monitor_slug="update-tender-count-fields")
     def handle(self, *args, **options):
         self.stdout_messages_info("Updating Tender count fields (only for tenders not outdated a month ago)...")
 
