@@ -1,3 +1,7 @@
+from datetime import timedelta
+
+from django.utils import timezone
+
 from lemarche.tenders.models import Tender
 from lemarche.utils.apis import api_slack
 from lemarche.utils.commands import BaseCommand
@@ -21,10 +25,11 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        self.stdout_messages_info("Updating Tender count fields...")
+        self.stdout_messages_info("Updating Tender count fields (only for tenders not outdated a month ago)...")
 
         # Step 1a: build the queryset
-        tender_queryset = Tender.objects.with_siae_stats().all()
+        one_month_ago = timezone.now() - timedelta(days=30)
+        tender_queryset = Tender.objects.is_not_outdated(one_month_ago).with_siae_stats().all()
         if options["id"]:
             tender_queryset = tender_queryset.filter(id=options["id"])
         self.stdout_messages_info(f"Found {tender_queryset.count()} tenders")

@@ -97,8 +97,8 @@ class TenderQuerySet(models.QuerySet):
             ]
         )
 
-    def is_not_outdated(self):
-        return self.filter(Q(deadline_date__isnull=True) | Q(deadline_date__gte=datetime.today()))
+    def is_not_outdated(self, limit_date=datetime.today()):
+        return self.filter(Q(deadline_date__isnull=True) | Q(deadline_date__gte=limit_date))
 
     def is_live(self):
         return self.sent().is_not_outdated()
