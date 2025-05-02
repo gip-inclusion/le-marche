@@ -950,7 +950,10 @@ class TenderSiaeStatusFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         value = self.value()
-        return queryset.filter(status_annotated=value)
+        if value is None:
+            return queryset
+        else:
+            return queryset.filter(status_annotated=value)
 
 
 @admin.register(TenderSiae, site=admin_site)
