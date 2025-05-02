@@ -8,7 +8,7 @@
                     {% if tender_response_is_anonymous %}
                         <form method="post" action="{% url 'tenders:detail-contact-click-stat' tender.slug %}?siae_id={{ siae_id }}">
                             {% csrf_token %}
-                            <button type="submit" class="fr-btn" name="detail_contact_click_confirm" value="true">{{ tender.cta_card_button_text|safe }}</button>
+                            <button type="submit" class="fr-btn">{{ tender.cta_card_button_text|safe }}</button>
                         </form>
                     {% else %}
                         <button type="button" id="show-tender-contact-modal-btn" class="fr-btn" data-fr-opened="false" aria-controls="detail_contact_click_confirm_modal" data-siae-id="{{ siae_id }}" title="{{ tender.cta_card_button_text|safe }}">
