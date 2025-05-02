@@ -394,15 +394,15 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
         get_params_form = TenderDetailGetParams(request.GET)
         if get_params_form.is_valid():
             self.siae = get_params_form.cleaned_data["siae_id"]
-            self.user = get_params_form.cleaned_data["user_id"]
+            self.user_from_get = get_params_form.cleaned_data["user_id"]
         else:
             raise Http404()
 
         # update 'email_link_click_date'
         if self.siae:
-            if self.user:
+            if self.user_from_get:
                 TenderSiae.objects.filter(tender=self.object, siae=self.siae, email_link_click_date=None).update(
-                    user=self.user, email_link_click_date=timezone.now(), updated_at=timezone.now()
+                    user=self.user_from_get, email_link_click_date=timezone.now(), updated_at=timezone.now()
                 )
             else:
                 TenderSiae.objects.filter(tender=self.object, siae=self.siae, email_link_click_date=None).update(
