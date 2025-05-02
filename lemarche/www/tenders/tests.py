@@ -1246,27 +1246,26 @@ class TenderDetailContactClickStatViewTest(TestCase):
         for user in [self.user_buyer_1, self.user_buyer_2, self.user_partner, self.user_admin]:
             self.client.force_login(user)
             response = self.client.post(
-                self.tender_contact_click_stat_url, data={"detail_contact_click_confirm": "false"}
+                self.tender_contact_click_stat_url,
             )
             self.assertEqual(response.status_code, 403)
         # authorized
         for user in [self.siae_user_1, self.siae_user_2]:
             self.client.force_login(user)
             response = self.client.post(
-                self.tender_contact_click_stat_url, data={"detail_contact_click_confirm": "false"}
+                self.tender_contact_click_stat_url,
             )
             self.assertEqual(response.status_code, 302)
         # authorized with siae_id parameter
         self.client.logout()
         response = self.client.post(
             f"{self.tender_contact_click_stat_url}?siae_id={self.siae.id}",
-            data={"detail_contact_click_confirm": "false"},
         )
         self.assertEqual(response.status_code, 302)
         # forbidden because wrong siae_id parameter
         self.client.logout()
         response = self.client.post(
-            f"{self.tender_contact_click_stat_url}?siae_id=test", data={"detail_contact_click_confirm": "false"}
+            f"{self.tender_contact_click_stat_url}?siae_id=test",
         )
         self.assertEqual(response.status_code, 403)
 
@@ -1289,7 +1288,6 @@ class TenderDetailContactClickStatViewTest(TestCase):
         response = self.client.post(
             self.tender_contact_click_stat_url,
             data={
-                "detail_contact_click_confirm": "true",
                 # No questions from buyer
                 "form-TOTAL_FORMS": 0,
                 "form-INITIAL_FORMS": 0,
@@ -1309,7 +1307,7 @@ class TenderDetailContactClickStatViewTest(TestCase):
         self.assertContains(response, self.cta_message_success)
         # clicking again on the button doesn't update detail_contact_click_date
         # Note: button will disappear on reload anyway
-        response = self.client.post(self.tender_contact_click_stat_url, data={"detail_contact_click_confirm": "false"})
+        response = self.client.post(self.tender_contact_click_stat_url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             self.tender.tendersiae_set.first().detail_contact_click_date, siae_2_detail_contact_click_date
@@ -1331,7 +1329,6 @@ class TenderDetailContactClickStatViewTest(TestCase):
         response = self.client.post(
             f"{self.tender_contact_click_stat_url}?siae_id={siae_2.id}",
             data={
-                "detail_contact_click_confirm": "true",
                 # No questions from buyer
                 "form-TOTAL_FORMS": 0,
                 "form-INITIAL_FORMS": 0,
@@ -1349,7 +1346,7 @@ class TenderDetailContactClickStatViewTest(TestCase):
         # clicking again on the button doesn't update detail_contact_click_date
         # Note: button will disappear on reload anyway
         response = self.client.post(
-            f"{self.tender_contact_click_stat_url}?siae_id={siae_2.id}", data={"detail_contact_click_confirm": "false"}
+            f"{self.tender_contact_click_stat_url}?siae_id={siae_2.id}",
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
@@ -1931,7 +1928,6 @@ class TenderQuestionAnswerTestCase(TestCase):
         self.assertEqual(response_get.status_code, 200)
 
         payload = {
-            "detail_contact_click_confirm": "true",
             "form-TOTAL_FORMS": "2",
             "form-INITIAL_FORMS": "2",
             "form-MIN_NUM_FORMS": "0",
@@ -1968,7 +1964,6 @@ class TenderQuestionAnswerTestCase(TestCase):
 
         payload = {
             "siae": [self.siae_1.id, self.siae_2.id],
-            "detail_contact_click_confirm": "true",
             "form-TOTAL_FORMS": "2",
             "form-INITIAL_FORMS": "2",
             "form-MIN_NUM_FORMS": "0",
@@ -2010,7 +2005,6 @@ class TenderQuestionAnswerTestCase(TestCase):
 
         payload = {
             "siae": [self.siae_1.id],
-            "detail_contact_click_confirm": "true",
             "form-TOTAL_FORMS": "2",
             "form-INITIAL_FORMS": "2",
             "form-MIN_NUM_FORMS": "0",
@@ -2048,7 +2042,6 @@ class TenderQuestionAnswerTestCase(TestCase):
         self.assertEqual(response_get.status_code, 200)
 
         payload = {
-            "detail_contact_click_confirm": "true",
             "form-TOTAL_FORMS": "2",
             "form-INITIAL_FORMS": "2",
             "form-MIN_NUM_FORMS": "0",
