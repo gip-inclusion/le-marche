@@ -10,11 +10,12 @@ def restore_restaurants(apps, schema_editor):
     SiaeActivity = apps.get_model("siaes", "SiaeActivity")
     Sector = apps.get_model("sectors", "Sector")
     SectorGroup = apps.get_model("sectors", "SectorGroup")
-
-    restau = SectorGroup.objects.get(slug="restauration")
-
-    SiaeActivity.objects.filter(sector_group__isnull=True).update(sector_group=restau)
-    Sector.objects.filter(group__isnull=True).update(group=restau)
+    try:
+        restau = SectorGroup.objects.get(slug="restauration")
+        SiaeActivity.objects.filter(sector_group__isnull=True).update(sector_group=restau)
+        Sector.objects.filter(group__isnull=True).update(group=restau)
+    except SectorGroup.DoesNotExist:
+        pass
 
 
 class Migration(migrations.Migration):
