@@ -9,7 +9,7 @@ class FavoriteListFactory(DjangoModelFactory):
         model = FavoriteList
         skip_postgeneration_save = True  # Prevents unnecessary save
 
-    name = factory.Faker("company", locale="fr_FR")
+    name = "Some FavoriteList"
     # slug: auto-generated
 
     @factory.post_generation

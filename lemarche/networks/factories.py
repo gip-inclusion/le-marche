@@ -9,7 +9,7 @@ class NetworkFactory(DjangoModelFactory):
         model = Network
         skip_postgeneration_save = True  # Prevents unnecessary save
 
-    name = factory.Faker("company", locale="fr_FR")
+    name = "Some Network"
     # slug: auto-generated
     website = "https://example.com"
 

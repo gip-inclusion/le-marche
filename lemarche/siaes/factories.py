@@ -1,6 +1,4 @@
-import string
-
-import factory.fuzzy
+import factory
 from factory.django import DjangoModelFactory
 
 from lemarche.sectors.factories import SectorGroupFactory
@@ -21,7 +19,7 @@ class SiaeGroupFactory(DjangoModelFactory):
         model = SiaeGroup
         skip_postgeneration_save = True  # Prevents unnecessary save
 
-    name = factory.Faker("company", locale="fr_FR")
+    name = factory.Sequence("Some SiaeGroup{0}".format)
     # slug auto-generated
 
     @factory.post_generation
@@ -35,20 +33,20 @@ class SiaeFactory(DjangoModelFactory):
         model = Siae
         skip_postgeneration_save = True
 
-    name = factory.Faker("company", locale="fr_FR")
+    name = factory.Sequence("Some Siae N°{0}".format)
     # slug auto-generated
     kind = siae_constants.KIND_EI
-    nature = factory.fuzzy.FuzzyChoice([key for (key, value) in siae_constants.NATURE_CHOICES])
+    nature = [siae_constants.NATURE_HEAD_OFFICE]
     # Don't start a SIRET with 0.
-    siret = factory.fuzzy.FuzzyText(length=13, chars=string.digits, prefix="1")
-    address = factory.Faker("street_address", locale="fr_FR")
-    city = factory.Faker("city", locale="fr_FR")
-    post_code = factory.Faker("postalcode")
+    siret = "1234567891234"
+    address = "1 rue de la paix"
+    city = "Rennes"
+    post_code = "35000"
     department = "35"
     region = "Bretagne"
     contact_email = factory.Sequence("siae_contact_email{0}@inclusion.gouv.fr".format)
-    contact_first_name = factory.Faker("name", locale="fr_FR")
-    contact_last_name = factory.Faker("name", locale="fr_FR")
+    contact_first_name = "Jean"
+    contact_last_name = "Lejean"
 
     @factory.post_generation
     def users(self, create, extracted, **kwargs):
@@ -70,7 +68,7 @@ class SiaeActivityFactory(DjangoModelFactory):
         with_country_perimeter = factory.Trait(geo_range=siae_constants.GEO_RANGE_COUNTRY)
         with_custom_distance_perimeter = factory.Trait(
             geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            geo_range_custom_distance=factory.fuzzy.FuzzyInteger(1, 100),
+            geo_range_custom_distance=30,
         )
         with_zones_perimeter = factory.Trait(geo_range=siae_constants.GEO_RANGE_ZONES)
 
@@ -93,25 +91,21 @@ class SiaeOfferFactory(DjangoModelFactory):
     class Meta:
         model = SiaeOffer
 
-    name = factory.Faker("name", locale="fr_FR")
+    name = "Some SiaeOffer"
 
 
 class SiaeClientReferenceFactory(DjangoModelFactory):
     class Meta:
         model = SiaeClientReference
 
-    name = factory.Faker("name", locale="fr_FR")
-
 
 class SiaeLabelOldFactory(DjangoModelFactory):
     class Meta:
         model = SiaeLabelOld
 
-    name = factory.Faker("name", locale="fr_FR")
+    name = "Some SiaeLabelOld"
 
 
 class SiaeImageFactory(DjangoModelFactory):
     class Meta:
         model = SiaeImage
-
-    name = factory.Faker("name", locale="fr_FR")

@@ -472,7 +472,7 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
         mock_requests_get.return_value.status_code = 200
         mock_requests_get.return_value.json.return_value = self.mock_return_value
 
-        SiaeFactory()
+        SiaeFactory(siret="1222222222222")
         self.siae.refresh_from_db()
 
         out = StringIO()

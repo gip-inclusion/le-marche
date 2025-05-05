@@ -1,7 +1,6 @@
-import random
 from datetime import date, timedelta
 
-import factory.fuzzy
+import factory
 from django.utils import timezone
 from factory.django import DjangoModelFactory
 
@@ -20,24 +19,22 @@ class TenderFactory(DjangoModelFactory):
     # slug auto-generated
     kind = tender_constants.KIND_QUOTE
     presta_type = []
-    response_kind = factory.List(
-        [
-            factory.fuzzy.FuzzyChoice([key for (key, _) in tender_constants.RESPONSE_KIND_CHOICES]),
-        ]
-    )
-    description = factory.Faker("paragraph", nb_sentences=5, locale="fr_FR")
-    constraints = factory.Faker("paragraph", nb_sentences=5, locale="fr_FR")
+    response_kind = [
+        tender_constants.RESPONSE_KIND_EMAIL,
+        tender_constants.RESPONSE_KIND_TEL,
+        tender_constants.RESPONSE_KIND_EXTERNAL,
+    ]
+    description = "Ceci est un pagagraphe de test"
+    constraints = "Ceci est un pagagraphe de test"
     deadline_date = date.today() + timedelta(days=10)
-    start_working_date = date.today() + timedelta(days=random.randint(12, 90))
+    start_working_date = date.today() + timedelta(days=50)
     author = factory.SubFactory(UserFactory)
     external_link = "https://www.example.com"
     # Contact fields
     contact_first_name = factory.Sequence("first_name{0}".format)
     contact_last_name = factory.Sequence("last_name{0}".format)
     contact_email = factory.Sequence("email_contact_tender{0}@example.com".format)
-    contact_phone = "0123456789"  # factory.fuzzy.FuzzyText(length=10, chars=string.digits)
-    # amount = tender_constants.AMOUNT_RANGE_100_150
-    # marche_benefits = factory.fuzzy.FuzzyChoice([key for (key, _) in constants.MARCHE_BENEFIT_CHOICES])
+    contact_phone = "0123456789"
     status = tender_constants.STATUS_SENT
     validated_at = timezone.now()
     first_sent_at = timezone.now()
@@ -81,9 +78,7 @@ class PartnerShareTenderFactory(DjangoModelFactory):
 
     name = factory.Faker("name", locale="fr_FR")
 
-    contact_email_list = factory.LazyFunction(
-        lambda: [factory.Faker("email", locale="fr_FR") for i in range(random.randint(1, 4))]
-    )
+    contact_email_list = factory.LazyFunction(lambda: [factory.Faker("email", locale="fr_FR") for i in range(4)])
 
     @factory.post_generation
     def perimeters(self, create, extracted, **kwargs):

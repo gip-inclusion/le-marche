@@ -9,20 +9,17 @@ class ConversationFactory(DjangoModelFactory):
     class Meta:
         model = Conversation
 
-    title = factory.Faker("name", locale="fr_FR")
-    sender_first_name = factory.Faker("name", locale="fr_FR")
-    sender_last_name = factory.Faker("name", locale="fr_FR")
+    title = "Some Conversation Title"
+    sender_first_name = "Jean"
+    sender_last_name = "Lejean"
     sender_email = factory.Sequence("email{0}@inclusion.gouv.fr".format)
     siae = factory.SubFactory(SiaeFactory)
-    initial_body_message = factory.Faker("name", locale="fr_FR")
+    initial_body_message = "Bien ou bien ?"
 
 
 class EmailGroupFactory(DjangoModelFactory):
     class Meta:
         model = EmailGroup
-
-    display_name = factory.Faker("name", locale="fr_FR")
-    description = factory.Faker("name", locale="fr_FR")
 
 
 class TemplateTransactionalFactory(DjangoModelFactory):
@@ -30,6 +27,6 @@ class TemplateTransactionalFactory(DjangoModelFactory):
         model = TemplateTransactional
         django_get_or_create = ("code",)
 
-    name = factory.Faker("name", locale="fr_FR")
-    code = factory.Faker("name", locale="fr_FR")
+    name = "Some TemplateTransactional"
+    code = "FAKE_CODE"
     group = factory.SubFactory(EmailGroupFactory)
