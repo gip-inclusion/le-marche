@@ -1419,9 +1419,8 @@ class SiaeActivity(models.Model):
         "sectors.SectorGroup",
         verbose_name="Secteur d'activité",
         related_name="siae_activities",
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         null=True,
-        # blank=True,
     )
     sectors = models.ManyToManyField(
         "sectors.Sector", verbose_name="Activités", related_name="siae_activities", blank=True
