@@ -66,7 +66,7 @@ class Sector(models.Model):
         "SectorGroup",
         verbose_name="Groupe parent",
         related_name="sectors",
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
     )
