@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Prefetch
 from django.forms import formset_factory
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -557,13 +558,14 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
             siae_qs = Siae.objects.filter(id=self.siae_id)
 
         if self.answers_formset.is_valid():
-            for answer_form in self.answers_formset:
-                for siae in siae_qs:  # We copy the answer for each selected siae
-                    QuestionAnswer.objects.create(
-                        question=answer_form.cleaned_data["question"],
-                        answer=answer_form.cleaned_data["answer"],
-                        siae=siae,
-                    )
+            with transaction.atomic():  # Rollback all answers if any problem appears, e.g. when going back in brownser
+                for answer_form in self.answers_formset:
+                    for siae in siae_qs:  # We copy the answer for each selected siae
+                        QuestionAnswer.objects.create(
+                            question=answer_form.cleaned_data["question"],
+                            answer=answer_form.cleaned_data["answer"],
+                            siae=siae,
+                        )
         else:
             messages.add_message(
                 self.request, messages.ERROR, "Une erreur a eu lieu lors de la soumission du formulaire"
