@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 
 from django.utils import timezone
@@ -6,6 +7,9 @@ from sentry_sdk.crons import monitor
 from lemarche.tenders.models import Tender
 from lemarche.utils.apis import api_slack
 from lemarche.utils.commands import BaseCommand
+
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -44,6 +48,20 @@ class Command(BaseCommand):
         progress = 0
         for index, tender in enumerate(tender_queryset):
             # M2M
+
+            # raise warning log if a field is not up to date (signal failed ?)
+            for field in Tender.FIELDS_STATS_COUNT:
+                annotated_field = f"{field}_annotated"
+                if getattr(tender, field) != getattr(tender, annotated_field):
+                    logger.warning(
+                        "Tender %s has a mismatch between %s and %s: %s != %s",
+                        tender.id,
+                        field,
+                        annotated_field,
+                        getattr(tender, field),
+                        getattr(tender, annotated_field),
+                    )
+
             tender.siae_count = tender.siae_count_annotated
             tender.siae_email_send_count = tender.siae_email_send_count_annotated
             tender.siae_email_link_click_count = tender.siae_email_link_click_count_annotated

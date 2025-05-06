@@ -226,20 +226,16 @@ class UpdateTenderStatusToRejectedCommandTest(TestCase):
 
 
 class UpdateTenderCountFieldsCommandTest(TestCase):
-    @factory.django.mute_signals(signals.post_save, signals.m2m_changed)
-    def test_update_count_fields(self):
+    @factory.django.mute_signals(signals.post_save, signals.m2m_changed)  # mute signals to avoid side effects
+    def test_update_all_counters(self):
         """
-        Create two tenders with siaes, and check that the count fields are updated correctly
+        Create two tenders with siaes, and check that all count fields are updated correctly
         """
         siae_1 = SiaeFactory()
         siae_2 = SiaeFactory()
         siae_3 = SiaeFactory()
 
         tender_1 = TenderFactory(siaes=[siae_1, siae_2, siae_3])
-        tender_2 = TenderFactory(siaes=[siae_1, siae_2])
-
-        deadline_date = timezone.now() - timedelta(days=35)
-        tender_3 = TenderFactory(siaes=[siae_3], deadline_date=deadline_date)
 
         TenderSiae.objects.create(
             tender=tender_1,
@@ -272,31 +268,12 @@ class UpdateTenderCountFieldsCommandTest(TestCase):
         self.assertEqual(tender_1.siae_detail_not_interested_click_count, 0)
         self.assertEqual(tender_1.siae_email_link_click_or_detail_display_count, 0)
 
-        self.assertEqual(tender_2.siae_count, 0)
-        self.assertEqual(tender_2.siae_email_send_count, 0)
-        self.assertEqual(tender_2.siae_email_link_click_count, 0)
-        self.assertEqual(tender_2.siae_detail_display_count, 0)
-        self.assertEqual(tender_2.siae_detail_contact_click_count, 0)
-        self.assertEqual(tender_2.siae_detail_not_interested_click_count, 0)
-        self.assertEqual(tender_2.siae_email_link_click_or_detail_display_count, 0)
-
-        self.assertEqual(tender_3.siae_count, 0)
-        self.assertEqual(tender_3.siae_email_send_count, 0)
-        self.assertEqual(tender_3.siae_email_link_click_count, 0)
-        self.assertEqual(tender_3.siae_detail_display_count, 0)
-        self.assertEqual(tender_3.siae_detail_contact_click_count, 0)
-        self.assertEqual(tender_3.siae_detail_not_interested_click_count, 0)
-        self.assertEqual(tender_3.siae_email_link_click_or_detail_display_count, 0)
-
         std_out = StringIO()
         call_command("update_tender_count_fields", stdout=std_out)
-        self.assertIn("Done! Processed 2 tenders", std_out.getvalue())
+        self.assertIn("Done! Processed 1 tenders", std_out.getvalue())
 
         tender_1.refresh_from_db()
-        tender_2.refresh_from_db()
-        tender_3.refresh_from_db()
 
-        # two first tenders should be updated
         self.assertEqual(tender_1.siae_count, 3)
         self.assertEqual(tender_1.siae_email_send_count, 3)
         self.assertEqual(tender_1.siae_email_link_click_count, 2)
@@ -304,19 +281,43 @@ class UpdateTenderCountFieldsCommandTest(TestCase):
         self.assertEqual(tender_1.siae_detail_contact_click_count, 1)
         self.assertEqual(tender_1.siae_detail_not_interested_click_count, 1)
         self.assertEqual(tender_1.siae_email_link_click_or_detail_display_count, 3)
-        self.assertEqual(tender_2.siae_count, 2)
-        self.assertEqual(tender_2.siae_email_send_count, 0)
-        self.assertEqual(tender_2.siae_email_link_click_count, 0)
-        self.assertEqual(tender_2.siae_detail_display_count, 0)
-        self.assertEqual(tender_2.siae_detail_contact_click_count, 0)
-        self.assertEqual(tender_2.siae_detail_not_interested_click_count, 0)
-        self.assertEqual(tender_2.siae_email_link_click_or_detail_display_count, 0)
 
-        # third tender should not be updated because it's outdated a more than 30 days ago
-        self.assertEqual(tender_3.siae_count, 0)
-        self.assertEqual(tender_3.siae_email_send_count, 0)
-        self.assertEqual(tender_3.siae_email_link_click_count, 0)
-        self.assertEqual(tender_3.siae_detail_display_count, 0)
-        self.assertEqual(tender_3.siae_detail_contact_click_count, 0)
-        self.assertEqual(tender_3.siae_detail_not_interested_click_count, 0)
-        self.assertEqual(tender_3.siae_email_link_click_or_detail_display_count, 0)
+    @factory.django.mute_signals(signals.post_save, signals.m2m_changed)  # mute signals to avoid side effects
+    def test_update_one_counter_future_deadline(self):
+        """
+        Create a tender with siaes and a future deadline, and check that the count fields are updated correctly
+        """
+        siae_1 = SiaeFactory()
+        future_deadline = timezone.now() + timedelta(days=10)
+        tender = TenderFactory(siaes=[siae_1], deadline_date=future_deadline)
+
+        self.assertEqual(tender.siae_count, 0)
+
+        std_out = StringIO()
+        call_command("update_tender_count_fields", stdout=std_out)
+        print(std_out.getvalue())
+        self.assertIn("Done! Processed 1 tenders", std_out.getvalue())
+
+        tender.refresh_from_db()
+
+        self.assertEqual(tender.siae_count, 1)
+
+    @factory.django.mute_signals(signals.post_save, signals.m2m_changed)  # mute signals to avoid side effects
+    def test_update_one_counter_outdated_deadline(self):
+        """
+        Create a tender with siaes and an outdated deadline, and check that the count fields are not updated
+        """
+        siae_1 = SiaeFactory()
+        outdated_deadline = timezone.now() - timedelta(days=35)
+        tender = TenderFactory(siaes=[siae_1], deadline_date=outdated_deadline)
+
+        self.assertEqual(tender.siae_count, 0)
+
+        std_out = StringIO()
+        call_command("update_tender_count_fields", stdout=std_out)
+        self.assertIn("Done! Processed 0 tenders", std_out.getvalue())
+
+        tender.refresh_from_db()
+
+        # Count should still be 0 as the tender has an outdated deadline
+        self.assertEqual(tender.siae_count, 0)
