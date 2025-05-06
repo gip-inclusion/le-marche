@@ -1,4 +1,5 @@
 import os
+import csv
 
 from django.conf import settings
 from django.contrib import messages
@@ -19,7 +20,7 @@ from formtools.wizard.views import SessionWizardView
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.forms import QuestionAnswerForm, SiaeSelectionForm
-from lemarche.tenders.models import QuestionAnswer, Tender, TenderSiae, TenderStepsData
+from lemarche.tenders.models import QuestionAnswer, Tender, TenderQuestion, TenderSiae, TenderStepsData
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.utils import constants, settings_context_processors
@@ -721,6 +722,46 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
             "current": "Prestataires ciblés & intéressés",
         }
         return context
+
+
+class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
+    http_method_names = ["get"]
+    model = Tender
+
+    # todo filtrer la vue avec le formulaire
+    # todo regarder au niveau de l'arg status
+    # todo regarder le qs de la vue parente
+
+    def get(self, request, *args, **kwargs):
+        super().get(request, *args, **kwargs)
+
+        siae_qs = Siae.objects.filter(tendersiae__tender=self.object)
+
+        siae_qs = siae_qs.prefetch_related(
+            Prefetch(
+                "questionanswer_set",
+                queryset=QuestionAnswer.objects.filter(question__tender=self.object).order_by("question__id"),
+                to_attr="questions_for_tender",
+            )
+        )
+
+        question_list = TenderQuestion.objects.filter(tender=self.object).order_by("id").values_list("text", flat=True)
+
+        filename_with_extension = "besoins.csv"
+
+        response = HttpResponse(content_type="text/csv", charset="utf-8")
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
+
+        writer = csv.writer(response)
+
+        headers = ["Nom de Structure"] + list(question_list)
+
+        writer.writerow(headers)
+
+        for siae in siae_qs:
+            writer.writerow([siae.name] + list(siae.questionanswer_set.values_list("answer", flat=True)))
+
+        return response
 
 
 class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, UpdateView):
