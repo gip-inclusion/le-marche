@@ -52,6 +52,17 @@ class InboundEmailParsingApiTestV0(TestCase):
         self.assertEqual(len(self.conv.data), 1)
         self.assertEqual(response.status_code, 201)
 
+    def test_inbound_emails_refresh_data_json_with_reply_to(self):
+        self.item_email_data["ReplyTo"] = {"Name": "Antoine Lefeuvre", "Address": "contact@mailclark.ai"}
+
+        # assert that we have initial message in data
+        self.assertEqual(len(self.conv.data), 0)
+
+        response = self.client.post(self.url, data=self.email_data, content_type="application/json")
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(len(self.conv.data), 1)
+
     def test_inbound_emails_send_to_buyer(self):
         mail_subject = "test send from siae to buyer"
         self.item_email_data["To"][0]["Address"] = self.conv.sender_email_buyer_encoded
