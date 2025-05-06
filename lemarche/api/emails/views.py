@@ -83,5 +83,5 @@ class InboundParsingEmailView(APIView):
             )
             return Response(conv.uuid, status=status.HTTP_201_CREATED)
         else:
-            logger.error("INBOUND_PARSING_WEBHOOK_ERROR %s : %s", serializer.errors, str(request.data))
+            logger.error("INBOUND_PARSING_WEBHOOK_ERROR : %s", serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
