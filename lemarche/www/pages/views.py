@@ -3,7 +3,7 @@ import json
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -18,7 +18,6 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderStepsData
 from lemarche.users import constants as user_constants
 from lemarche.utils.emails import add_to_contact_list
-from lemarche.utils.tracker import track
 from lemarche.www.pages.forms import (
     CompanyReferenceCalculatorForm,
     ContactForm,
@@ -79,17 +78,6 @@ class StatsView(TemplateView):
         context = super().get_context_data(**kwargs)
         context["METABASE_PUBLIC_DASHBOARD_URL"] = settings.METABASE_PUBLIC_DASHBOARD_URL
         return context
-
-
-class TrackView(View):
-    def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        track(
-            page=data.get("page", ""),
-            action=data.get("action", ""),
-            meta=data.get("meta", None),
-        )
-        return JsonResponse({"message": "success"})
 
 
 class ImpactCalculatorView(FormMixin, ListView):

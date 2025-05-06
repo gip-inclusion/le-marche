@@ -207,8 +207,6 @@ MIDDLEWARE = [
     "simple_history.middleware.HistoryRequestMiddleware",  # django-simple-history
     # wagtail
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
-    # Custom Middlewares
-    "lemarche.utils.tracker.TrackerMiddleware",
     # Final logger
     "django_datadog_logger.middleware.request_log.RequestLoggingMiddleware",
     # Onboarded user middleware
