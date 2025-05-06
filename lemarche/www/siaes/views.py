@@ -25,7 +25,7 @@ from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
 from lemarche.www.conversations.forms import ContactForm
-from lemarche.www.siaes.forms import SiaeDownloadForm, SiaeFavoriteForm, SiaeFilterForm
+from lemarche.www.siaes.forms import SiaeFavoriteForm, SiaeFilterForm
 
 
 CURRENT_SEARCH_QUERY_COOKIE_NAME = "current_search"
@@ -142,7 +142,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         """
         Filter results.
         """
-        filter_form = SiaeDownloadForm(data=self.request.GET)
+        filter_form = SiaeFilterForm(data=self.request.GET)
         results = filter_form.filter_queryset()
         return results
 
@@ -158,9 +158,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
 
         # we check if there are any search filters
         request_params = [
-            value
-            for (key, value) in self.request.GET.items()
-            if ((key not in ["marche_benefits", "download_source", "page", "format"]) and value)
+            value for (key, value) in self.request.GET.items() if ((key not in ["page", "format"]) and value)
         ]
 
         # no search filters -> the user wants to download the whole list -> serve the generated file stored on S3
