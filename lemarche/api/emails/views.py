@@ -57,7 +57,8 @@ class InboundParsingEmailView(APIView):
     @extend_schema(exclude=True)
     def post(self, request):
         serializer = EmailsSerializer(data=request.data)
-        logger.info("InboundParsingEmailView called from %s", request.META["REMOTE_ADDR"])
+        remote_addr = ipaddress.ip_address(request.META["REMOTE_ADDR"])
+        logger.info("InboundParsingEmailView called from %s", remote_addr)
         if serializer.is_valid():
             inbound_email = serializer.validated_data.get("items")[0]
             inbound_email_prefix = inbound_email["To"][0]["Address"].split("@")[0]
@@ -82,5 +83,5 @@ class InboundParsingEmailView(APIView):
             )
             return Response(conv.uuid, status=status.HTTP_201_CREATED)
         else:
-            logger.error("INBOUND_PARSING_WEBHOOK_ERROR %s : %s", serializer.errors, serializer.data)
+            logger.error("INBOUND_PARSING_WEBHOOK_ERROR %s : %s", serializer.errors, str(request.data))
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
