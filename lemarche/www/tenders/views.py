@@ -759,7 +759,7 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
         writer.writerow(headers)
 
         for siae in siae_qs:
-            writer.writerow([siae.name] + list(siae.questionanswer_set.values_list("answer", flat=True)))
+            writer.writerow([siae.name] + [question_answer.answer for question_answer in siae.questions_for_tender])
 
         return response
 
