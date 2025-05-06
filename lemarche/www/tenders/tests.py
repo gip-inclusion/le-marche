@@ -283,8 +283,6 @@ class TenderCreateViewTest(TestCase):
             kwargs.get("tender"), Tender, "Expected an instance of Tender for the 'tender' argument."
         )
 
-    # @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, type, tender: None)
-
     @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.api.contacts_api.ContactsApi.create_contact")
     @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.CreateContact")
     def test_create_contact_call_has_user_buyer_attributes(self, mock_create_contact, mock_api_create_contact):
