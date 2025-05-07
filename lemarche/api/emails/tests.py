@@ -42,10 +42,27 @@ class InboundEmailParsingApiTestV0(TestCase):
         self.assertEqual(response.status_code, 201)
 
     def test_inbound_emails_refresh_data_json(self):
-        # assert that we have initial message in data
+        # assert that we have no reply in data
         self.assertEqual(len(self.conv.data), 0)
 
         response = self.client.post(self.url, data=self.email_data, content_type="application/json")
+
+        # refresh conversation data field and check if update
+        self.conv.refresh_from_db()
+        self.assertEqual(len(self.conv.data), 1)
+        self.assertEqual(response.status_code, 201)
+
+    def test_inbound_emails_refresh_data_json_with_reply_to(self):
+        email_data_with_reply_to = self.email_data.copy()
+        email_data_with_reply_to["items"][0]["ReplyTo"] = {
+            "Name": "Antoine Lefeuvre",
+            "Address": "contact@mailclark.ai",
+        }
+
+        # assert that we have no reply in data
+        self.assertEqual(len(self.conv.data), 0)
+
+        response = self.client.post(self.url, data=email_data_with_reply_to, content_type="application/json")
 
         # refresh conversation data field and check if update
         self.conv.refresh_from_db()

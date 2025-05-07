@@ -17,7 +17,7 @@ class EmailItemSerializer(serializers.Serializer):
     From = UserInboundParsingSerializer()
     To = serializers.ListField(child=UserInboundParsingSerializer())
     Cc = serializers.ListField(child=UserInboundParsingSerializer(), required=False)
-    ReplyTo = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    ReplyTo = UserInboundParsingSerializer(required=False, allow_null=True)
     SentAtDate = serializers.CharField()
     Subject = serializers.CharField(required=False, allow_null=True)
     RawHtmlBody = serializers.CharField(required=False, allow_null=True, allow_blank=True)
