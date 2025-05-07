@@ -2123,3 +2123,13 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         sheet = workbook.active
 
         self.assertEqual(sheet["A1"].value, "Raison sociale")
+        self.assertEqual(sheet["A2"].value, "siae_1")
+        self.assertEqual(sheet["A3"].value, "siae_2")
+
+        self.assertEqual(sheet["X1"].value, "question_1_title")
+        self.assertEqual(sheet["X2"].value, "answer_for_q1_from_siae_1")
+        self.assertEqual(sheet["X3"].value, "answer_for_q1_from_siae_2")
+
+        self.assertEqual(sheet["Y1"].value, "question_2_title")
+        self.assertEqual(sheet["Y2"].value, "answer_for_q2_from_siae_1")
+        self.assertEqual(sheet["Y3"].value, "answer_for_q2_from_siae_2")
