@@ -2114,7 +2114,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
             reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug}) + "?format=xlsx"
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "application/ms-excel")
+        self.assertEqual(response["Content-Type"], "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         self.assertEqual(response["Content-Disposition"], 'attachment; filename="besoins.xlsx"')
 
         # Load file from response into a workbook
