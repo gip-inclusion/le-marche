@@ -1,6 +1,15 @@
+import logging
+from datetime import timedelta
+
+from django.utils import timezone
+from sentry_sdk.crons import monitor
+
 from lemarche.tenders.models import Tender
 from lemarche.utils.apis import api_slack
 from lemarche.utils.commands import BaseCommand
+
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -20,11 +29,13 @@ class Command(BaseCommand):
             "--fields", action="append", default=[], help="Filtrer sur les champs count à mettre à jour"
         )
 
+    @monitor(monitor_slug="update-tender-count-fields")
     def handle(self, *args, **options):
-        self.stdout_messages_info("Updating Tender count fields...")
+        self.stdout_messages_info("Updating Tender count fields (only for tenders not outdated a month ago)...")
 
         # Step 1a: build the queryset
-        tender_queryset = Tender.objects.with_siae_stats().all()
+        one_month_ago = timezone.now() - timedelta(days=30)
+        tender_queryset = Tender.objects.is_not_outdated(one_month_ago).with_siae_stats().all()
         if options["id"]:
             tender_queryset = tender_queryset.filter(id=options["id"])
         self.stdout_messages_info(f"Found {tender_queryset.count()} tenders")
@@ -37,6 +48,20 @@ class Command(BaseCommand):
         progress = 0
         for index, tender in enumerate(tender_queryset):
             # M2M
+
+            # raise warning log if a field is not up to date (signal failed ?)
+            for field in Tender.FIELDS_STATS_COUNT:
+                annotated_field = f"{field}_annotated"
+                if getattr(tender, field) != getattr(tender, annotated_field):
+                    logger.warning(
+                        "Tender %s has a mismatch between %s and %s: %s != %s",
+                        tender.id,
+                        field,
+                        annotated_field,
+                        getattr(tender, field),
+                        getattr(tender, annotated_field),
+                    )
+
             tender.siae_count = tender.siae_count_annotated
             tender.siae_email_send_count = tender.siae_email_send_count_annotated
             tender.siae_email_link_click_count = tender.siae_email_link_click_count_annotated
