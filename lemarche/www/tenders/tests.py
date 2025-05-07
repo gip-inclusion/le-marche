@@ -1,8 +1,10 @@
 import csv
 import json
 from datetime import timedelta
+from io import BytesIO
 from unittest.mock import patch
 
+import openpyxl
 from django.conf import settings
 from django.contrib.messages import get_messages
 from django.core.files.storage import default_storage
@@ -2105,3 +2107,19 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         self.assertEqual(rows[1]["Raison sociale"], "siae_2")
         self.assertEqual(rows[1].get("question_1_title"), "answer_for_q1_from_siae_2")
         self.assertEqual(rows[1].get("question_2_title"), "answer_for_q2_from_siae_2")
+
+    def test_download_xlsx(self):
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug}) + "?format=xlsx"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/ms-excel")
+        self.assertEqual(response["Content-Disposition"], 'attachment; filename="besoins.xlsx"')
+
+        # Load file from response into a workbook
+        file_content = BytesIO(response.content)
+        workbook = openpyxl.load_workbook(file_content)
+        sheet = workbook.active
+
+        self.assertEqual(sheet["A1"].value, "Raison sociale")
