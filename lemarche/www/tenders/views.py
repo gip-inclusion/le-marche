@@ -780,7 +780,7 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
         """Same as get_csv_response() but for XLSX file format"""
         filename_with_extension = "besoins.xlsx"
 
-        response = HttpResponse(content_type="application/ms-excel")
+        response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
 
         wb = openpyxl.Workbook()
