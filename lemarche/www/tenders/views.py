@@ -26,6 +26,7 @@ from lemarche.users.models import User
 from lemarche.utils import constants, settings_context_processors
 from lemarche.utils.data import get_choice
 from lemarche.utils.emails import add_to_contact_list
+from lemarche.utils.export import generate_header, generate_siae_row, get_siae_fields
 from lemarche.utils.mixins import (
     SesameSiaeMemberRequiredMixin,
     SesameTenderAuthorRequiredMixin,
@@ -727,6 +728,7 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
 class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
     http_method_names = ["get"]
     model = Tender
+    FIELD_LIST = get_siae_fields(with_contact_info=True)
 
     # todo filtrer la vue avec le formulaire
     # todo regarder au niveau de l'arg status
@@ -747,19 +749,29 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
 
         question_list = TenderQuestion.objects.filter(tender=self.object).order_by("id").values_list("text", flat=True)
 
+        header_list = generate_header(self.FIELD_LIST) + list(question_list)
+
+        if self.request.GET.get("format") == "csv":
+            return self.get_csv_response(siae_qs, header_list)
+        else:
+            return None
+
+    def get_csv_response(self, siae_qs, header_list):
+        """Write a CSV file to a response object, containing all the defined export fields for each SIAE plus
+        the questions as headers and corresponding answers in rows"""
         filename_with_extension = "besoins.csv"
 
         response = HttpResponse(content_type="text/csv", charset="utf-8")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
 
         writer = csv.writer(response)
-
-        headers = ["Nom de Structure"] + list(question_list)
-
-        writer.writerow(headers)
+        writer.writerow(header_list)
 
         for siae in siae_qs:
-            writer.writerow([siae.name] + [question_answer.answer for question_answer in siae.questions_for_tender])
+            writer.writerow(
+                generate_siae_row(siae, self.FIELD_LIST)
+                + [question_answer.answer for question_answer in siae.questions_for_tender]
+            )
 
         return response
 
