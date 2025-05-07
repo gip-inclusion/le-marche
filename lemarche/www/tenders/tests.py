@@ -1,3 +1,4 @@
+import csv
 import json
 from datetime import timedelta
 from unittest.mock import patch
@@ -21,7 +22,7 @@ from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
-from lemarche.tenders.factories import TenderFactory, TenderQuestionFactory, TenderSiaeFactory
+from lemarche.tenders.factories import QuestionAnswerFactory, TenderFactory, TenderQuestionFactory, TenderSiaeFactory
 from lemarche.tenders.models import QuestionAnswer, Tender, TenderSiae, TenderStepsData
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
@@ -2062,3 +2063,43 @@ class TenderQuestionAnswerTestCase(TestCase):
         self.assertEqual(QuestionAnswer.objects.all().count(), 2)
         self.assertEqual(QuestionAnswer.objects.first().answer, "SOMETHING")
         self.assertEqual(QuestionAnswer.objects.last().answer, "ELSE")
+
+
+class TenderSiaeDownloadViewTestCase(TestCase):
+
+    def setUp(self):
+        self.user = UserFactory(kind=User.KIND_BUYER)
+
+        siae_1 = SiaeFactory(name="siae_1")
+        siae_2 = SiaeFactory(name="siae_2")
+
+        self.tender = TenderFactory(siaes=[siae_1, siae_2])
+
+        q1 = TenderQuestionFactory(tender=self.tender, text="question_1_title")
+        q2 = TenderQuestionFactory(tender=self.tender, text="question_2_title")
+
+        QuestionAnswerFactory(question=q1, siae=siae_1, answer="answer_for_q1_from_siae_1")
+        QuestionAnswerFactory(question=q2, siae=siae_1, answer="answer_for_q2_from_siae_1")
+        QuestionAnswerFactory(question=q1, siae=siae_2, answer="answer_for_q1_from_siae_2")
+        QuestionAnswerFactory(question=q2, siae=siae_2, answer="answer_for_q2_from_siae_2")
+
+    def test_download_csv(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/csv")
+        self.assertEqual(response["Content-Disposition"], 'attachment; filename="besoins.csv"')
+
+        # Parse CSV content into dict
+        content = response.content.decode("utf-8")
+        csv_reader = csv.DictReader(content.splitlines())
+        rows = list(csv_reader)
+        self.assertEqual(len(rows), 2)  # 2 siaes in the tender
+
+        self.assertEqual(rows[0]["Nom de Structure"], "siae_1")
+        self.assertEqual(rows[0].get("question_1_title"), "answer_for_q1_from_siae_1")
+        self.assertEqual(rows[0].get("question_2_title"), "answer_for_q2_from_siae_1")
+
+        self.assertEqual(rows[1]["Nom de Structure"], "siae_2")
+        self.assertEqual(rows[1].get("question_1_title"), "answer_for_q1_from_siae_2")
+        self.assertEqual(rows[1].get("question_2_title"), "answer_for_q2_from_siae_2")
