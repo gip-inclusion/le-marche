@@ -35,12 +35,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
 from lemarche.tenders.utils import find_amount_ranges
 from lemarche.users.models import User
-from lemarche.utils.constants import (
-    ADMIN_FIELD_HELP_TEXT,
-    AUTO_FIELD_HELP_TEXT,
-    MARCHE_BENEFIT_CHOICES,
-    RECALCULATED_FIELD_HELP_TEXT,
-)
+from lemarche.utils.constants import ADMIN_FIELD_HELP_TEXT, AUTO_FIELD_HELP_TEXT, RECALCULATED_FIELD_HELP_TEXT
 from lemarche.utils.data import phone_number_display
 from lemarche.utils.fields import ChoiceArrayField
 from lemarche.utils.urls import get_object_admin_url
@@ -333,7 +328,7 @@ class Tender(models.Model):
         "created_at",
         "updated_at",
     ]
-    FIELDS_STATS = FIELDS_STATS_COUNT + FIELDS_STATS_TIMESTAMPS + ["marche_benefits"]
+    FIELDS_STATS = FIELDS_STATS_COUNT + FIELDS_STATS_TIMESTAMPS
     READONLY_FIELDS = FIELDS_SURVEY_TRANSACTIONED + FIELDS_STATS
 
     TRACK_UPDATE_FIELDS = [
@@ -536,13 +531,6 @@ class Tender(models.Model):
         default=SurveyDoesNotExistQuestionChoices.DONT_KNOW,
     )
 
-    marche_benefits = ChoiceArrayField(
-        verbose_name="Bénéfices du marché de l'inclusion",
-        help_text="Pour ce besoin, quels sont les bénéfices de passer par le Marché de l'inclusion ?",
-        base_field=models.CharField(max_length=20, choices=MARCHE_BENEFIT_CHOICES),
-        blank=True,
-        default=list,
-    )
     survey_transactioned_send_date = models.DateTimeField(
         verbose_name="Sondage transaction : date d'envoi de l'e-mail", blank=True, null=True
     )
