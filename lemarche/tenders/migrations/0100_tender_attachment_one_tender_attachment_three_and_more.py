@@ -8,7 +8,7 @@ import lemarche.tenders.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("tenders", "0096_tender_email_sent_for_modification_and_more"),
+        ("tenders", "0099_alter_tender_external_link"),
     ]
 
     operations = [
