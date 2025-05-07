@@ -3,7 +3,7 @@
         "model": "favorites.favoritelist",
         "pk": 1,
         "fields": {
-            "name": "Ma séléction",
+            "name": "Ma sélection",
             "slug": "ma-selection",
             "user": 2,
             "created_at": "2021-07-01T12:44:39Z",
