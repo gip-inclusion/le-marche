@@ -1,6 +1,8 @@
 {% extends "tenders/create_base.html" %}
 {% load dsfr_tags static %}
-{% block step_title %}Détails du besoin{% endblock step_title %}
+{% block step_title %}
+    Détails du besoin
+{% endblock step_title %}
 {% block step_subtitle %}
     Veuillez détailler au maximum votre besoin pour que les prestataires inclusifs puissent se positionner.
 {% endblock step_subtitle %}
@@ -15,25 +17,22 @@
     </div>
     <div class="fr-grid-row fr-mb-4w" x-data="TenderQuestionForm">
         <div class="fr-col-12 fr-col-lg-7">
-            <h4>Questions à poser aux prestataires ciblés</h4>
-            <div x-show="questions.length > 0" x-cloak>
+            <label for="id_detail-questions_list" class="fr-label">Questions à poser aux prestataires ciblés</label>
+            <div class="fr-mt-2v" x-show="questions.length > 0" x-cloak>
                 <template x-for="(question, index) in questions" :key="index">
                     <div class="fr-grid-row fr-mb-2w">
                         <div class="fr-col-11">
                             <div class="fr-input-group mb-3" :key="index">
                                 <input type="text"
-                                    x-model="question.text"
-                                    name="alpine-questions_list"
-                                    class="fr-input"
-                                />
+                                       x-model="question.text"
+                                       name="alpine-questions_list"
+                                       class="fr-input" />
                             </div>
                         </div>
                         <div class="fr-col-1">
                             <button class="fr-btn fr-icon-delete-bin-line fr-btn--tertiary-no-outline"
                                     type="button"
-                                    @click="removeQuestion(index)">
-                                    Supprimer la question
-                            </button>
+                                    @click="removeQuestion(index)">Supprimer la question</button>
                         </div>
                     </div>
                 </template>
@@ -42,7 +41,52 @@
                        :value="getValue()"
                        value="form.questions_list">
             </div>
-            <button type="button" class="fr-btn fr-btn--tertiary" x-on:click="addNewQuestion()">Ajouter une question</button>
+            <button type="button"
+                    class="fr-btn fr-btn--tertiary"
+                    x-on:click="addNewQuestion()">Ajouter une question</button>
+        </div>
+    </div>
+    <div class="fr-grid-row fr-mb-4w">
+        <div class="fr-col-12 fr-col-lg-7">
+            {% dsfr_form_field form.attachment_one %}
+            {% if form.instance.attachment_one or attachment_one %}
+                <div class="fr-grid-row fr-mb-4w">
+                    <div class="fr-col-6">
+                        {% if attachment_one %}
+                            <span class="fr-link__detail">{{ attachment_one.name }} ({{ attachment_one.size|filesizeformat }})</span>
+                        {% elif form.instance.attachment_one %}
+                            <a href="{{ form.instance.attachment_one.url }}" target="_blank">Document déjà téléversé</a>
+                        {% endif %}
+                    </div>
+                    <div class="fr-col-6">{% dsfr_form_field form.attachment_one_delete %}</div>
+                </div>
+            {% endif %}
+            {% dsfr_form_field form.attachment_two %}
+            {% if form.instance.attachment_two or attachment_two %}
+                <div class="fr-grid-row fr-mb-4w">
+                    <div class="fr-col-6">
+                        {% if attachment_two %}
+                            <span class="fr-link__detail">{{ attachment_two.name }} ({{ attachment_two.size|filesizeformat }})</span>
+                        {% elif form.instance.attachment_two %}
+                            <a href="{{ form.instance.attachment_two.url }}" target="_blank">Document déjà téléversé</a>
+                        {% endif %}
+                    </div>
+                    <div class="fr-col-6">{% dsfr_form_field form.attachment_two_delete %}</div>
+                </div>
+            {% endif %}
+            {% dsfr_form_field form.attachment_three %}
+            {% if form.instance.attachment_three or attachment_three %}
+                <div class="fr-grid-row fr-mb-4w">
+                    <div class="fr-col-6">
+                        {% if attachment_three %}
+                            <span class="fr-link__detail">{{ attachment_three.name }} ({{ attachment_three.size|filesizeformat }})</span>
+                        {% elif form.instance.attachment_three %}
+                            <a href="{{ form.instance.attachment_three.url }}" target="_blank">Document déjà téléversé</a>
+                        {% endif %}
+                    </div>
+                    <div class="fr-col-6">{% dsfr_form_field form.attachment_three_delete %}</div>
+                </div>
+            {% endif %}
         </div>
     </div>
     <div class="fr-grid-row">
@@ -58,9 +102,12 @@
         </div>
         <div class="fr-col-12 fr-col-lg-5 fr-pl-2w">
             <div class="fr-callout fr-p-4v">
-                <h3 class="fr-callout__title fr-text--sm"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Conseil</h3>
+                <h3 class="fr-callout__title fr-text--sm">
+                    <span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Conseil
+                </h3>
                 <p class="fr-callout__text fr-text--sm fr-pl-7v">
-                    Le montant € estimé nous aide à évaluer l'impact de la plateforme du Marché de l'inclusion.<br />
+                    Le montant € estimé nous aide à évaluer l'impact de la plateforme du Marché de l'inclusion.
+                    <br />
                     Cette donnée restera confidentielle si vous souhaitez ne pas la partager aux prestataires.
                 </p>
             </div>
@@ -164,6 +211,43 @@
         selectDetailAmount.addEventListener("change", function () {
             toggleRadioSelectElement(divWhyIsBlank, this.value);
         });
+    });
+
+    // Disable attachment_two as long as attachment_one is not uploaded and attachment_three as long as attachment_two is not uploaded
+    attachment_one = document.getElementById("id_detail-attachment_one");
+    attachment_one_delete = document.getElementById("id_detail-attachment_one_delete");
+    attachment_two = document.getElementById("id_detail-attachment_two");
+    attachment_two_delete = document.getElementById("id_detail-attachment_two_delete");
+    attachment_three = document.getElementById("id_detail-attachment_three");
+    attachment_three_delete = document.getElementById("id_detail-attachment_three_delete");
+
+    {# Disable attachment_two as long as attachment_one is not uploaded and attachment_two not already exists in draft edition #}
+    {% if not form.instance.attachment_one and not attachment_one and not form.instance.attachment_two and not attachment_two %}
+        attachment_two.disabled = true;
+    {% endif %}
+
+    {# Disable attachment_three as long as attachment_two is not uploaded and attachment_three not already exists in draft edition #}
+    {% if not form.instance.attachment_two and not attachment_two and not form.instance.attachment_three and not attachment_three %}
+        attachment_three.disabled = true;
+    {% endif %}
+
+    attachment_one.addEventListener("change", function() {
+        attachment_two.disabled = !this.files.length;
+        if (!this.files.length) {
+            attachment_three.disabled = true; // Reset file3 if file1 is cleared
+        }
+    });
+    attachment_two.addEventListener("change", function() {
+        attachment_three.disabled = !this.files.length;
+    });
+    attachment_one_delete.addEventListener("change", function() {
+        attachment_one.disabled = this.checked;
+    });
+    attachment_two_delete.addEventListener("change", function() {
+        attachment_two.disabled = this.checked;
+    });
+    attachment_three_delete.addEventListener("change", function() {
+        attachment_three.disabled = this.checked;
     });
     </script>
 {% endblock extra_js %}

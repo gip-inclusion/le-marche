@@ -401,7 +401,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         (
             None,
             {
-                "fields": ("title", "slug", "kind"),
+                "fields": ("title", "slug", "kind", "attachment_one", "attachment_two", "attachment_three"),
             },
         ),
         TenderNoteInline,

@@ -1,6 +1,9 @@
+import os
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
 from django.db.models import Prefetch
 from django.forms import formset_factory
@@ -88,6 +91,10 @@ class TenderCreateMultiStepView(SessionWizardView):
         (STEP_CONFIRMATION, TenderCreateStepConfirmationForm),
     ]
 
+    # Add file storage configuration
+    # https://django-formtools.readthedocs.io/en/latest/wizard.html#formtools.wizard.views.WizardView.file_storage
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, "temp_uploads"))
+
     def get_template_names(self):
         return [self.TEMPLATES[self.steps.current]]
 
@@ -112,7 +119,8 @@ class TenderCreateMultiStepView(SessionWizardView):
                 kwargs["questions_list"] = list(self.instance.questions_list())
         if step == self.STEP_CONTACT:
             kwargs["kind"] = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("kind")
-            kwargs["external_link"] = self.get_cleaned_data_for_step(self.STEP_DETAIL).get("external_link")
+            detail_data = self.get_cleaned_data_for_step(self.STEP_DETAIL)
+            kwargs["external_link"] = detail_data.get("external_link") if detail_data else None
             kwargs["user"] = self.request.user
         return kwargs
 
@@ -149,7 +157,26 @@ class TenderCreateMultiStepView(SessionWizardView):
                 if tender_dict["accept_share_amount"]
                 else tender_constants.ACCEPT_SHARE_AMOUNT_FALSE
             )
+            tender_dict["attachments"] = []
+            for attachment_key in ["attachment_one", "attachment_two", "attachment_three"]:
+                if not tender_dict.get(f"{attachment_key}_delete"):
+                    if tender_dict.get(attachment_key):
+                        tender_dict["attachments"].append(tender_dict[attachment_key])
+                    elif getattr(self.instance, attachment_key):
+                        tender_dict["attachments"].append(getattr(self.instance, attachment_key))
             context.update({"tender": tender_dict})
+        elif self.steps.current == self.STEP_DETAIL:
+            tender_dict = self.get_all_cleaned_data()
+            for attachment_key in ["attachment_one", "attachment_two", "attachment_three"]:
+                if tender_dict.get(attachment_key):
+                    context.update(
+                        {
+                            attachment_key: {
+                                "name": os.path.basename(tender_dict.get(attachment_key).name),
+                                "size": tender_dict.get(attachment_key).size,
+                            }
+                        }
+                    )
 
         context["breadcrumb_links"] = []
         if self.request.user.is_authenticated:
@@ -165,6 +192,9 @@ class TenderCreateMultiStepView(SessionWizardView):
         """
         data = form.data.copy()
         data["timestamp"] = timezone.now().isoformat()
+
+        if self.request.FILES:
+            data["files"] = str(self.request.FILES)
 
         uuid = self.request.session.get("tender_steps_data_uuid", None)
         if uuid:
@@ -212,6 +242,12 @@ class TenderCreateMultiStepView(SessionWizardView):
                                 update_or_create_questions_list(
                                     tender=self.instance, questions_list=tender_dict.get("questions_list")
                                 )
+                            case "attachment_one_delete":
+                                self.instance.attachment_one = None
+                            case "attachment_two_delete":
+                                self.instance.attachment_two = None
+                            case "attachment_three_delete":
+                                self.instance.attachment_three = None
                             case _:
                                 setattr(self.instance, attribute, tender_dict.get(attribute))
             # Check before adding logs or resetting modification request

@@ -309,6 +309,11 @@ class TenderQuerySet(models.QuerySet):
         )
 
 
+def tender_attachment_directory_path(instance, filename):
+    filename = f"{str(uuid4())}.{filename.split('.')[-1]}"
+    return f"tenders/attachments/{filename}"
+
+
 class Tender(models.Model):
     """Appel d'offres, demande de devis et sourcing"""
 
@@ -360,6 +365,17 @@ class Tender(models.Model):
     )
     description = models.TextField(
         verbose_name="Description du besoin", help_text="Décrivez en quelques mots votre besoin", blank=True
+    )
+    # Use three fields to store the three attachments Django does not support yet multiple file upload
+    # https://docs.djangoproject.com/en/5.1/topics/http/file-uploads/#uploading-multiple-files
+    attachment_one = models.FileField(
+        verbose_name="Premier fichier joint", upload_to=tender_attachment_directory_path, null=True, blank=True
+    )
+    attachment_two = models.FileField(
+        verbose_name="Deuxième fichier joint", upload_to=tender_attachment_directory_path, null=True, blank=True
+    )
+    attachment_three = models.FileField(
+        verbose_name="Troisième fichier joint", upload_to=tender_attachment_directory_path, null=True, blank=True
     )
     presta_type = ChoiceArrayField(
         verbose_name="Type de prestation",
@@ -769,6 +785,14 @@ class Tender(models.Model):
         """
         siae_found_list = Siae.objects.filter_with_tender_through_activities(self)
         self.siaes.set(siae_found_list, clear=False)
+
+    @property
+    def attachments(self):
+        return [
+            attachment
+            for attachment in [self.attachment_one, self.attachment_two, self.attachment_three]
+            if attachment
+        ]
 
     def save(self, *args, **kwargs):
         """

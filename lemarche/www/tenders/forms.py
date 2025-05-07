@@ -1,3 +1,4 @@
+import logging
 from datetime import date
 
 from ckeditor.widgets import CKEditorWidget
@@ -12,6 +13,9 @@ from lemarche.users.validators import professional_email_validator
 from lemarche.utils import constants
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.utils.widgets import CustomSelectMultiple
+
+
+logger = logging.getLogger(__name__)
 
 
 class TenderCreateStepGeneralForm(forms.ModelForm):
@@ -85,6 +89,25 @@ class TenderCreateStepDetailForm(forms.ModelForm):
 
     questions_list = forms.JSONField(required=False)
 
+    attachment_one = forms.FileField(
+        label="Importer un document à la fois (cahier des charges, grille tarifaire, projet de contrat…)",
+        required=False,
+        help_text="Indication : taille maximale : 10 Mo. Formats supportés : PDF, DOC, DOCX, ODT, XLS, XLSX, ODS",
+    )
+    attachment_one_delete = forms.BooleanField(label="Supprimer le document", required=False)
+    attachment_two = forms.FileField(
+        label="",
+        required=False,
+        help_text="Indication : taille maximale : 10 Mo. Formats supportés : PDF, DOC, DOCX, ODT, XLS, XLSX, ODS",
+    )
+    attachment_two_delete = forms.BooleanField(label="Supprimer le document", required=False)
+    attachment_three = forms.FileField(
+        label="",
+        required=False,
+        help_text="Indication : taille maximale : 10 Mo. Formats supportés : PDF, DOC, DOCX, ODT, XLS, XLSX, ODS",
+    )
+    attachment_three_delete = forms.BooleanField(label="Supprimer le document", required=False)
+
     class Meta:
         model = Tender
         fields = [
@@ -110,6 +133,7 @@ class TenderCreateStepDetailForm(forms.ModelForm):
             self.initial["deadline_date"] = self.instance.deadline_date.isoformat()
         if questions_list:
             self.initial["questions_list"] = questions_list
+
         if self.instance.start_working_date:
             self.initial["start_working_date"] = self.instance.start_working_date.isoformat()
 
@@ -138,6 +162,48 @@ class TenderCreateStepDetailForm(forms.ModelForm):
             if not question.get("text"):
                 questions.pop(index)
         return questions
+
+    def clean_attachment(self, attachment_field):
+        attachment = self.cleaned_data.get(attachment_field, [])
+        if not attachment:
+            return attachment
+
+        allowed_types = [
+            "application/pdf",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.oasis.opendocument.text",
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/vnd.oasis.opendocument.spreadsheet",
+        ]
+        # Merge the content type and extension checks into a single validation
+        if attachment.content_type not in allowed_types or not attachment.name.endswith(
+            (".pdf", ".doc", ".docx", ".odt", ".xls", ".xlsx", ".ods")
+        ):
+            logger.warning(
+                "Attachment validation error : %s has an invalid content type: %s",
+                attachment.name,
+                attachment.content_type,
+            )
+            raise forms.ValidationError(
+                "Format de fichier non autorisé. Formats acceptés : PDF, DOC, DOCX, ODT, XLS, XLSX, ODS"
+            )
+
+        max_size = 10 * 1024 * 1024  # 10Mo
+        if attachment.size > max_size:
+            raise forms.ValidationError("La taille du fichier ne doit pas dépasser 10Mo")
+
+        return attachment
+
+    def clean_attachment_one(self):
+        return self.clean_attachment("attachment_one")
+
+    def clean_attachment_two(self):
+        return self.clean_attachment("attachment_two")
+
+    def clean_attachment_three(self):
+        return self.clean_attachment("attachment_three")
 
     def clean(self):
         super().clean()
