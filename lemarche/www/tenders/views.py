@@ -1,6 +1,7 @@
 import os
 import csv
 
+import openpyxl
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -754,7 +755,7 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
         if self.request.GET.get("format") == "csv":
             return self.get_csv_response(siae_qs, header_list)
         else:
-            return None
+            return self.get_xlxs_response(siae_qs, header_list)
 
     def get_csv_response(self, siae_qs, header_list):
         """Write a CSV file to a response object, containing all the defined export fields for each SIAE plus
@@ -772,6 +773,39 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
                 generate_siae_row(siae, self.FIELD_LIST)
                 + [question_answer.answer for question_answer in siae.questions_for_tender]
             )
+
+        return response
+
+    def get_xlxs_response(self, siae_qs, header_list):
+        """Same as get_csv_response() but for XLSX file format"""
+        filename_with_extension = "besoins.xlsx"
+
+        response = HttpResponse(content_type="application/ms-excel")
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
+
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Structures"
+
+        # header
+        for index, header_item in enumerate(header_list, start=1):
+            cell = ws.cell(row=1, column=index)
+            cell.value = header_item
+            cell.font = openpyxl.styles.Font(bold=True)
+
+        # rows
+        row_number = 2
+        for siae in siae_qs:
+            siae_row = generate_siae_row(siae, self.FIELD_LIST) + [
+                question_answer.answer for question_answer in siae.questions_for_tender
+            ]
+            for index, row_item in enumerate(siae_row, start=1):
+                cell = ws.cell(row=row_number, column=index)
+                cell.value = row_item
+                cell.alignment = openpyxl.styles.Alignment(wrap_text=True)
+            row_number += 1
+
+        wb.save(response)
 
         return response
 
