@@ -2085,7 +2085,9 @@ class TenderSiaeDownloadViewTestCase(TestCase):
 
     def test_download_csv(self):
         self.client.force_login(self.user)
-        response = self.client.get(reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug}))
+        response = self.client.get(
+            reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug}) + "?format=csv"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "text/csv")
         self.assertEqual(response["Content-Disposition"], 'attachment; filename="besoins.csv"')
@@ -2096,10 +2098,10 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         rows = list(csv_reader)
         self.assertEqual(len(rows), 2)  # 2 siaes in the tender
 
-        self.assertEqual(rows[0]["Nom de Structure"], "siae_1")
+        self.assertEqual(rows[0]["Raison sociale"], "siae_1")
         self.assertEqual(rows[0].get("question_1_title"), "answer_for_q1_from_siae_1")
         self.assertEqual(rows[0].get("question_2_title"), "answer_for_q2_from_siae_1")
 
-        self.assertEqual(rows[1]["Nom de Structure"], "siae_2")
+        self.assertEqual(rows[1]["Raison sociale"], "siae_2")
         self.assertEqual(rows[1].get("question_1_title"), "answer_for_q1_from_siae_2")
         self.assertEqual(rows[1].get("question_2_title"), "answer_for_q2_from_siae_2")
