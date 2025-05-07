@@ -1,3 +1,4 @@
+import logging
 from datetime import date
 
 from ckeditor.widgets import CKEditorWidget
@@ -12,6 +13,9 @@ from lemarche.users.validators import professional_email_validator
 from lemarche.utils import constants
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.utils.widgets import CustomSelectMultiple
+
+
+logger = logging.getLogger(__name__)
 
 
 class TenderCreateStepGeneralForm(forms.ModelForm):
@@ -177,6 +181,11 @@ class TenderCreateStepDetailForm(forms.ModelForm):
         if attachment.content_type not in allowed_types or not attachment.name.endswith(
             (".pdf", ".doc", ".docx", ".odt", ".xls", ".xlsx", ".ods")
         ):
+            logger.warning(
+                "Attachment validation error : %s has an invalid content type: %s",
+                attachment.name,
+                attachment.content_type,
+            )
             raise forms.ValidationError(
                 "Format de fichier non autorisé. Formats acceptés : PDF, DOC, DOCX, ODT, XLS, XLSX, ODS"
             )
