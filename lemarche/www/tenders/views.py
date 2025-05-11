@@ -690,6 +690,7 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
                 to_attr="questions_for_tender",
             )
         )
+        print("RESuls", qs)
         return qs
 
     def get(self, request, status=None, *args, **kwargs):
@@ -735,16 +736,22 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
     # todo regarder au niveau de l'arg status
     # todo regarder le qs de la vue parente
 
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.status = request.GET.get("status", None)
+
     def get(self, request, *args, **kwargs):
         super().get(request, *args, **kwargs)
 
-        siae_qs = Siae.objects.filter(tendersiae__tender=self.object)
-
-        siae_qs = siae_qs.prefetch_related(
-            Prefetch(
-                "questionanswer_set",
-                queryset=QuestionAnswer.objects.filter(question__tender=self.object).order_by("question__id"),
-                to_attr="questions_for_tender",
+        siae_qs = (
+            Siae.objects.filter(tendersiae__tender=self.object)
+            .filter_with_tender_tendersiae_status(tender=self.object, tendersiae_status=self.status)
+            .prefetch_related(
+                Prefetch(
+                    "questionanswer_set",
+                    queryset=QuestionAnswer.objects.filter(question__tender=self.object).order_by("question__id"),
+                    to_attr="questions_for_tender",
+                )
             )
         )
 
