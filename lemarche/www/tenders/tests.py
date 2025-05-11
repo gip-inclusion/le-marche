@@ -2085,8 +2085,27 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         QuestionAnswerFactory(question=q1, siae=siae_2, answer="answer_for_q1_from_siae_2")
         QuestionAnswerFactory(question=q2, siae=siae_2, answer="answer_for_q2_from_siae_2")
 
-    def test_download_csv(self):
         self.client.force_login(self.user)
+
+    def test_filtering(self):
+        # for status in ["INTERESTED", "VIEWED"]:  # 'constants' only defined in templaes
+        #     with self.subTest(status=status):
+        #         response = self.client.get(
+        #             reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug}) +
+        #             f"?tendersiae_status={status}&format=csv"
+        #         )
+
+        with self.subTest(status="INTERESTED"):
+            response = self.client.get(
+                reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
+                + "?tendersiae_status=INTERESTED&format=csv"
+            )
+            content = response.content.decode("utf-8")
+            csv_reader = csv.DictReader(content.splitlines())
+            rows = list(csv_reader)
+            self.assertEqual(len(rows), 2)
+
+    def test_download_csv(self):
         response = self.client.get(
             reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug}) + "?format=csv"
         )
@@ -2109,7 +2128,6 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         self.assertEqual(rows[1].get("question_2_title"), "answer_for_q2_from_siae_2")
 
     def test_download_xlsx(self):
-        self.client.force_login(self.user)
         response = self.client.get(
             reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug}) + "?format=xlsx"
         )
