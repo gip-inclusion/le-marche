@@ -5,6 +5,7 @@ from ckeditor.widgets import CKEditorWidget
 from django import forms
 
 from lemarche.sectors.models import Sector
+from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
 from lemarche.tenders.models import Tender, TenderSiae
@@ -448,3 +449,10 @@ class TenderFilterForm(forms.Form):
                 new_choices.append((kind_key, kind_label))
 
         self.fields["kind"].choices = new_choices
+
+
+class TenderDetailGetParams(forms.Form):
+    """Form used to parse correctly GET parameters"""
+
+    siae_id = forms.ModelChoiceField(queryset=Siae.objects.all(), required=False)
+    user_id = forms.ModelChoiceField(queryset=User.objects.all(), required=False)
