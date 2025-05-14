@@ -101,16 +101,6 @@
     },
     {
         "model": "sectors.sectorgroup",
-        "pk": 63,
-        "fields": {
-            "name": "Restauration",
-            "slug": "restauration",
-            "created_at": "2021-10-26T22:26:53.151Z",
-            "updated_at": "2021-10-26T22:26:53.151Z"
-        }
-    },
-    {
-        "model": "sectors.sectorgroup",
         "pk": 65,
         "fields": {
             "name": "Ameublement, déco, textile & Artisanat",
@@ -197,6 +187,16 @@
             "slug": "services-a-la-personne",
             "created_at": "2021-10-26T22:26:53.430Z",
             "updated_at": "2021-10-26T22:26:53.430Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 142,
+        "fields": {
+            "name": "Restauration",
+            "slug": "restauration",
+            "created_at": "2025-05-05T14:59:01.539Z",
+            "updated_at": "2025-05-05T14:59:01.544Z"
         }
     }
 ]
