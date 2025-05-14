@@ -25,11 +25,11 @@
         "model": "sectors.sector",
         "pk": 3,
         "fields": {
-            "name": "Nettoyage spécifique (chantiers, parkings...)",
+            "name": "Nettoyage spécifique (chantiers, parkings, hôpitaux, hôtellerie...)",
             "slug": "nettoyage-specifique-chantiers-parkings-6",
             "group": 56,
             "created_at": "2021-10-26T22:26:53.020Z",
-            "updated_at": "2021-10-26T22:26:53.020Z"
+            "updated_at": "2022-03-09T17:01:08.975Z"
         }
     },
     {
@@ -269,7 +269,7 @@
         "fields": {
             "name": "Confiturerie",
             "slug": "confiturerie",
-            "group": 63,
+            "group": 142,
             "created_at": "2021-10-28T12:23:39.325Z",
             "updated_at": "2021-10-28T12:23:39.339Z"
         }
@@ -291,7 +291,7 @@
         "fields": {
             "name": "Apiculture",
             "slug": "apiculture",
-            "group": 63,
+            "group": 142,
             "created_at": "2021-10-28T12:25:20.184Z",
             "updated_at": "2021-10-28T12:25:20.200Z"
         }
@@ -313,7 +313,7 @@
         "fields": {
             "name": "Fromagerie",
             "slug": "fromagerie",
-            "group": 63,
+            "group": 142,
             "created_at": "2021-10-28T12:25:39.724Z",
             "updated_at": "2021-10-28T12:25:39.737Z"
         }
@@ -324,7 +324,7 @@
         "fields": {
             "name": "Traiteur",
             "slug": "traiteur",
-            "group": 63,
+            "group": 142,
             "created_at": "2021-10-26T22:26:53.154Z",
             "updated_at": "2021-10-26T22:26:53.154Z"
         }
@@ -377,22 +377,22 @@
         "model": "sectors.sector",
         "pk": 35,
         "fields": {
-            "name": "Objet promotionnel",
+            "name": "Objet promotionnel (goodies)",
             "slug": "objet-promotionnel",
             "group": 67,
             "created_at": "2021-10-28T12:27:26.813Z",
-            "updated_at": "2021-10-28T12:27:26.829Z"
+            "updated_at": "2023-12-18T16:18:37.735Z"
         }
     },
     {
         "model": "sectors.sector",
         "pk": 36,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Médico-social)",
             "slug": "autre-medico-social",
             "group": 2,
             "created_at": "2021-10-28T12:29:28.674Z",
-            "updated_at": "2021-10-28T12:29:28.685Z"
+            "updated_at": "2022-10-20T12:51:03.174Z"
         }
     },
     {
@@ -432,11 +432,11 @@
         "model": "sectors.sector",
         "pk": 40,
         "fields": {
-            "name": "Reconditionnement informatique",
+            "name": "Achat de produits reconditionnés (informatique, électronique...)",
             "slug": "reconditionnement-informatique",
             "group": 85,
             "created_at": "2021-10-26T22:26:53.265Z",
-            "updated_at": "2021-10-26T22:26:53.265Z"
+            "updated_at": "2023-11-20T14:44:19.733Z"
         }
     },
     {
@@ -687,7 +687,7 @@
         "fields": {
             "name": "Paniers, plateaux repas",
             "slug": "paniers-plateaux-repas",
-            "group": 63,
+            "group": 142,
             "created_at": "2021-10-26T22:26:53.157Z",
             "updated_at": "2021-10-26T22:26:53.157Z"
         }
@@ -751,11 +751,11 @@
         "model": "sectors.sector",
         "pk": 74,
         "fields": {
-            "name": "Maraîchage",
+            "name": "Maraîchage, légumerie, conserverie",
             "slug": "maraichage",
             "group": 54,
             "created_at": "2021-10-26T22:26:53.359Z",
-            "updated_at": "2021-10-26T22:26:53.360Z"
+            "updated_at": "2022-03-09T16:58:42.257Z"
         }
     },
     {
@@ -784,11 +784,11 @@
         "model": "sectors.sector",
         "pk": 79,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Espaces verts)",
             "slug": "autre",
             "group": 1,
             "created_at": "2021-10-26T22:26:53.014Z",
-            "updated_at": "2021-10-26T22:26:53.014Z"
+            "updated_at": "2022-10-20T12:50:50.228Z"
         }
     },
     {
@@ -927,11 +927,11 @@
         "model": "sectors.sector",
         "pk": 96,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Divertissement)",
             "slug": "autre-90",
             "group": 90,
             "created_at": "2021-10-26T22:26:53.351Z",
-            "updated_at": "2021-10-26T22:26:53.352Z"
+            "updated_at": "2022-10-20T12:50:41.684Z"
         }
     },
     {
@@ -1072,7 +1072,7 @@
         "fields": {
             "name": "Boulangerie, Patisserie, Confiseries",
             "slug": "boulangerie-patisserie-confiseries-118",
-            "group": 63,
+            "group": 142,
             "created_at": "2021-10-26T22:26:53.160Z",
             "updated_at": "2021-10-26T22:26:53.160Z"
         }
@@ -1083,7 +1083,7 @@
         "fields": {
             "name": "Restaurants, Cantines",
             "slug": "restaurants-cantines",
-            "group": 63,
+            "group": 142,
             "created_at": "2021-10-26T22:26:53.163Z",
             "updated_at": "2021-10-26T22:26:53.163Z"
         }
@@ -1213,176 +1213,176 @@
         "model": "sectors.sector",
         "pk": 124,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Réparation)",
             "slug": "autre-4",
             "group": 4,
             "created_at": "2021-10-26T22:26:53.055Z",
-            "updated_at": "2021-10-26T22:26:53.055Z"
+            "updated_at": "2022-10-20T12:50:32.731Z"
         }
     },
     {
         "model": "sectors.sector",
         "pk": 125,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Linge)",
             "slug": "autre-10",
             "group": 10,
             "created_at": "2021-10-26T22:26:53.075Z",
-            "updated_at": "2021-10-26T22:26:53.075Z"
+            "updated_at": "2022-10-20T12:50:25.837Z"
         }
     },
     {
         "model": "sectors.sector",
         "pk": 126,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Sécurité)",
             "slug": "autre-46",
             "group": 46,
             "created_at": "2021-10-26T22:26:53.326Z",
-            "updated_at": "2021-10-26T22:26:53.327Z"
+            "updated_at": "2022-10-20T12:50:18.769Z"
         }
     },
     {
         "model": "sectors.sector",
         "pk": 127,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Agro-alimentaire)",
             "slug": "autre-54",
             "group": 54,
             "created_at": "2021-10-26T22:26:53.372Z",
-            "updated_at": "2021-10-26T22:26:53.372Z"
+            "updated_at": "2022-10-20T12:50:10.937Z"
         }
     },
     {
         "model": "sectors.sector",
         "pk": 128,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Propreté)",
             "slug": "autre-56",
             "group": 56,
             "created_at": "2021-10-26T22:26:53.039Z",
-            "updated_at": "2021-10-26T22:26:53.039Z"
+            "updated_at": "2022-10-20T12:48:45.926Z"
         }
     },
     {
         "model": "sectors.sector",
         "pk": 129,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (BTP)",
             "slug": "autre-57",
             "group": 57,
             "created_at": "2021-10-26T22:26:53.229Z",
-            "updated_at": "2021-10-26T22:26:53.229Z"
+            "updated_at": "2022-10-20T12:49:45.637Z"
         }
     },
     {
         "model": "sectors.sector",
         "pk": 130,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Administratif)",
             "slug": "autre-59",
             "group": 59,
             "created_at": "2021-10-26T22:26:53.148Z",
-            "updated_at": "2021-10-26T22:26:53.148Z"
+            "updated_at": "2022-10-20T12:48:31.064Z"
         }
     },
     {
         "model": "sectors.sector",
         "pk": 131,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Informatique)",
             "slug": "autre-61",
             "group": 61,
             "created_at": "2021-10-26T22:26:53.255Z",
-            "updated_at": "2021-10-26T22:26:53.255Z"
+            "updated_at": "2022-10-20T12:49:03.328Z"
         }
     },
     {
         "model": "sectors.sector",
         "pk": 132,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Restauration)",
             "slug": "autre-63",
-            "group": 63,
+            "group": 142,
             "created_at": "2021-10-26T22:26:53.168Z",
-            "updated_at": "2021-10-26T22:26:53.168Z"
+            "updated_at": "2022-10-20T12:48:16.997Z"
         }
     },
     {
         "model": "sectors.sector",
         "pk": 133,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Ameublement)",
             "slug": "autre-65",
             "group": 65,
             "created_at": "2021-10-26T22:26:53.095Z",
-            "updated_at": "2021-10-26T22:26:53.095Z"
+            "updated_at": "2022-10-20T12:49:13.402Z"
         }
     },
     {
         "model": "sectors.sector",
         "pk": 134,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Communication)",
             "slug": "autre-67",
             "group": 67,
             "created_at": "2021-10-26T22:26:53.193Z",
-            "updated_at": "2021-10-26T22:26:53.194Z"
+            "updated_at": "2022-10-20T12:48:07.233Z"
         }
     },
     {
         "model": "sectors.sector",
         "pk": 135,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Industrie)",
             "slug": "autre-68",
             "group": 68,
             "created_at": "2021-10-26T22:26:53.313Z",
-            "updated_at": "2021-10-26T22:26:53.314Z"
+            "updated_at": "2022-10-20T12:49:26.615Z"
         }
     },
     {
         "model": "sectors.sector",
         "pk": 136,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Livraisons)",
             "slug": "autre-71",
             "group": 71,
             "created_at": "2021-10-26T22:26:53.120Z",
-            "updated_at": "2021-10-26T22:26:53.121Z"
+            "updated_at": "2022-10-20T12:47:58.015Z"
         }
     },
     {
         "model": "sectors.sector",
         "pk": 137,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Collecte des déchets)",
             "slug": "autre-80",
             "group": 80,
             "created_at": "2021-10-26T22:26:53.410Z",
-            "updated_at": "2021-10-26T22:26:53.410Z"
+            "updated_at": "2022-10-20T12:50:02.705Z"
         }
     },
     {
         "model": "sectors.sector",
         "pk": 138,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Recyclage)",
             "slug": "autre-85",
             "group": 85,
             "created_at": "2021-10-26T22:26:53.286Z",
-            "updated_at": "2021-10-26T22:26:53.286Z"
+            "updated_at": "2022-10-20T12:47:43.481Z"
         }
     },
     {
         "model": "sectors.sector",
         "pk": 140,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Conseil)",
             "slug": "autre-115",
             "group": 115,
             "created_at": "2021-10-26T22:26:53.427Z",
-            "updated_at": "2021-10-26T22:26:53.427Z"
+            "updated_at": "2022-10-20T12:49:37.669Z"
         }
     },
     {
@@ -1422,11 +1422,11 @@
         "model": "sectors.sector",
         "pk": 145,
         "fields": {
-            "name": "Autre",
+            "name": "Autre (Service à la personne)",
             "slug": "autre-141",
             "group": 141,
             "created_at": "2021-10-26T22:26:53.443Z",
-            "updated_at": "2021-10-26T22:26:53.444Z"
+            "updated_at": "2022-10-20T12:47:33.850Z"
         }
     },
     {
@@ -1457,7 +1457,7 @@
         "fields": {
             "name": "Producteurs, Fournisseurs",
             "slug": "producteurs-fournisseurs",
-            "group": 63,
+            "group": 142,
             "created_at": "2021-10-26T22:26:53.171Z",
             "updated_at": "2021-10-26T22:26:53.171Z"
         }
@@ -1501,7 +1501,7 @@
         "fields": {
             "name": "Location/Vente de materiels de restauration",
             "slug": "location-vente-de-materiels-de-restauration",
-            "group": 63,
+            "group": 142,
             "created_at": "2021-10-26T22:26:53.175Z",
             "updated_at": "2021-10-26T22:26:53.175Z"
         }
@@ -1524,8 +1524,173 @@
             "name": "Collecte des déchets industriels",
             "slug": "collecte-des-dechets-industriels",
             "group": 80,
-            "created_at": "2021-11-04T08:36:49.093Z",
-            "updated_at": "2021-11-04T08:36:49.118Z"
+            "created_at": "2021-11-03T17:18:39.592Z",
+            "updated_at": "2021-11-03T17:18:39.603Z"
+        }
+    },
+    {
+        "model": "sectors.sector",
+        "pk": 155,
+        "fields": {
+            "name": "Entretien, restauration, aménagement des espaces naturels",
+            "slug": "entretien-restauration-amenagement-des-espaces-naturels",
+            "group": 1,
+            "created_at": "2022-03-09T16:52:31.530Z",
+            "updated_at": "2022-03-09T16:52:31.550Z"
+        }
+    },
+    {
+        "model": "sectors.sector",
+        "pk": 156,
+        "fields": {
+            "name": "Génie écologique",
+            "slug": "genie-ecologique",
+            "group": 1,
+            "created_at": "2022-03-09T16:53:07.922Z",
+            "updated_at": "2022-03-09T16:53:07.938Z"
+        }
+    },
+    {
+        "model": "sectors.sector",
+        "pk": 157,
+        "fields": {
+            "name": "Maintenance de flottes de véhicules (vélos à assistance électrique, voitures...)",
+            "slug": "maintenance-de-flottes-de-vehicules-velos-a-assistance-electrique-voitures",
+            "group": 4,
+            "created_at": "2022-03-09T16:54:29.084Z",
+            "updated_at": "2022-03-09T16:54:29.098Z"
+        }
+    },
+    {
+        "model": "sectors.sector",
+        "pk": 158,
+        "fields": {
+            "name": "Confection à façon",
+            "slug": "confection-a-facon",
+            "group": 10,
+            "created_at": "2022-03-09T16:54:52.133Z",
+            "updated_at": "2022-03-09T16:54:52.149Z"
+        }
+    },
+    {
+        "model": "sectors.sector",
+        "pk": 159,
+        "fields": {
+            "name": "Collecte 5 flux (papier, métal, verre et bois) et fournitures d'entreprise",
+            "slug": "collecte-5-flux-papier-metal-verre-et-bois-et-fournitures-dentreprise",
+            "group": 80,
+            "created_at": "2022-03-09T16:55:31.022Z",
+            "updated_at": "2022-03-09T16:55:31.038Z"
+        }
+    },
+    {
+        "model": "sectors.sector",
+        "pk": 160,
+        "fields": {
+            "name": "Collecte et traitement des déchets dangereux",
+            "slug": "collecte-et-traitement-des-dechets-dangereux",
+            "group": 80,
+            "created_at": "2022-03-09T16:56:09.588Z",
+            "updated_at": "2022-03-09T16:56:09.600Z"
+        }
+    },
+    {
+        "model": "sectors.sector",
+        "pk": 161,
+        "fields": {
+            "name": "Recyclage 5 flux et fournitures d'entreprise",
+            "slug": "recyclage-5-flux-et-fournitures-dentreprise",
+            "group": 85,
+            "created_at": "2022-03-09T16:57:24.037Z",
+            "updated_at": "2022-03-09T16:57:24.049Z"
+        }
+    },
+    {
+        "model": "sectors.sector",
+        "pk": 162,
+        "fields": {
+            "name": "Médiation dans les transports publics",
+            "slug": "mediation-dans-les-transports-publics",
+            "group": 46,
+            "created_at": "2022-03-09T16:57:44.878Z",
+            "updated_at": "2022-03-09T16:57:44.894Z"
+        }
+    },
+    {
+        "model": "sectors.sector",
+        "pk": 163,
+        "fields": {
+            "name": "Sylviculture",
+            "slug": "sylviculture",
+            "group": 54,
+            "created_at": "2022-03-09T16:59:45.195Z",
+            "updated_at": "2022-03-09T16:59:45.210Z"
+        }
+    },
+    {
+        "model": "sectors.sector",
+        "pk": 164,
+        "fields": {
+            "name": "Nettoyage urbain",
+            "slug": "nettoyage-urbain",
+            "group": 56,
+            "created_at": "2022-03-09T17:03:20.618Z",
+            "updated_at": "2022-03-09T17:03:20.630Z"
+        }
+    },
+    {
+        "model": "sectors.sector",
+        "pk": 165,
+        "fields": {
+            "name": "Nettoyage industriel",
+            "slug": "nettoyage-industriel",
+            "group": 56,
+            "created_at": "2022-03-09T17:03:40.386Z",
+            "updated_at": "2022-03-09T17:03:40.398Z"
+        }
+    },
+    {
+        "model": "sectors.sector",
+        "pk": 166,
+        "fields": {
+            "name": "Déconstruction, curage, démolition",
+            "slug": "deconstruction-curage-demolition",
+            "group": 57,
+            "created_at": "2022-03-09T17:05:18.496Z",
+            "updated_at": "2022-03-09T17:05:18.521Z"
+        }
+    },
+    {
+        "model": "sectors.sector",
+        "pk": 167,
+        "fields": {
+            "name": "Restauration collective",
+            "slug": "restauration-collective",
+            "group": 142,
+            "created_at": "2022-03-09T17:06:46.916Z",
+            "updated_at": "2022-03-09T17:06:46.926Z"
+        }
+    },
+    {
+        "model": "sectors.sector",
+        "pk": 168,
+        "fields": {
+            "name": "Collecte et traitement des bio déchets",
+            "slug": "collecte-et-traitement-des-bio-dechets",
+            "group": 80,
+            "created_at": "2022-03-14T13:58:01.874Z",
+            "updated_at": "2022-03-14T13:58:01.893Z"
+        }
+    },
+    {
+        "model": "sectors.sector",
+        "pk": 169,
+        "fields": {
+            "name": "Activité culturelle, théâtrale et spectacle",
+            "slug": "activite-culturelle-theatrale-et-spectacle",
+            "group": 90,
+            "created_at": "2022-05-10T16:15:45.681Z",
+            "updated_at": "2022-05-10T16:15:45.695Z"
         }
     }
 ]
