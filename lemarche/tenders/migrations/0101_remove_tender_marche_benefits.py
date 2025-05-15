@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("tenders", "0099_alter_tender_external_link"),
+        ("tenders", "0100_tender_attachment_one_tender_attachment_three_and_more"),
     ]
 
     operations = [
