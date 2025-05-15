@@ -733,7 +733,7 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
-        self.status = request.GET.get("status", None)
+        self.status = request.GET.get("tendersiae_status", None)
 
     def get(self, request, *args, **kwargs):
         """Gather siaes the according to the parent view (TenderSiaeListView), taking into account values from
