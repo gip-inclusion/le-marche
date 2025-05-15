@@ -1,5 +1,5 @@
-import os
 import csv
+import os
 
 import openpyxl
 from django.conf import settings
@@ -690,7 +690,6 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
                 to_attr="questions_for_tender",
             )
         )
-        print("RESuls", qs)
         return qs
 
     def get(self, request, status=None, *args, **kwargs):
@@ -732,19 +731,18 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
     model = Tender
     FIELD_LIST = get_siae_fields(with_contact_info=True)
 
-    # todo filtrer la vue avec le formulaire
-    # todo regarder au niveau de l'arg status
-    # todo regarder le qs de la vue parente
-
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
         self.status = request.GET.get("status", None)
 
     def get(self, request, *args, **kwargs):
+        """Gather siaes the according to the parent view (TenderSiaeListView), taking into account values from
+        the filter form and the current tab (VIEWED or INTERESTED)."""
         super().get(request, *args, **kwargs)
 
         siae_qs = (
-            Siae.objects.filter(tendersiae__tender=self.object)
+            SiaeFilterForm(data=self.request.GET)
+            .filter_queryset(Siae.objects.filter(tendersiae__tender=self.object))
             .filter_with_tender_tendersiae_status(tender=self.object, tendersiae_status=self.status)
             .prefetch_related(
                 Prefetch(
