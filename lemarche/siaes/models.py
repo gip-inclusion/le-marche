@@ -211,6 +211,9 @@ class SiaeQuerySet(models.QuerySet):
     def tender_matching_query_set(self):
         return self.is_live().exclude(kind="OPCS").has_contact_email()
 
+    def potential_matching_query_set(self):
+        return self.is_live().exclude(kind="OPCS")
+
     def api_query_set(self):
         return self.exclude(kind="OPCS")
 
@@ -361,6 +364,24 @@ class SiaeQuerySet(models.QuerySet):
             # why need to filter more ?
             qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
             qs = qs.order_by("-tendersiae__email_send_date")
+
+        return qs.distinct()
+
+    def filter_with_potential_through_activities(self, sector, perimeter=None):
+        """
+        Filter Siaes with sector and perimeter:
+        - first we filter the Siae that are live
+        - then we filter through the SiaeActivity on the sector and perimeter
+        """
+        qs = self.potential_matching_query_set()
+
+        # Subquery to filter SiaeActivity by sector and perimeter
+        siae_activity_subquery = (
+            SiaeActivity.objects.filter_for_potential_through_activities(sector, perimeter)
+            .filter(siae=OuterRef("pk"))
+            .values("pk")
+        )
+        qs = qs.filter(Q(activities__in=Subquery(siae_activity_subquery)))
 
         return qs.distinct()
 
@@ -1406,6 +1427,14 @@ class SiaeActivityQuerySet(models.QuerySet):
                 qs = qs.geo_range_in_perimeter_list(tender.perimeters.all()).exclude_country_geo_range()
             elif tender.include_country_area:
                 qs = qs.filter(Q(geo_range=siae_constants.GEO_RANGE_COUNTRY))
+
+        return qs
+
+    def filter_for_potential_through_activities(self, sector, perimeter=None):
+        """ """
+        qs = self.prefetch_related("sectors").filter_sectors([sector])
+        if perimeter:
+            qs = qs.prefetch_related("locations").geo_range_in_perimeter_list([perimeter], include_country_area=True)
 
         return qs
 
