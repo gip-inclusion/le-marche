@@ -35,33 +35,3 @@
         </button>
     </li>
 {% endblock submit_btn %}
-{% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    let formPreviousButton = document.getElementById('tender-create-form-previous-step-btn');
-    let formDraftButton = document.getElementById('tender-create-draft-form-btn');
-    let formSubmitButton = document.getElementById('tender-create-form-submit-btn');
-    let formSubmitAboveButton = document.getElementById('tender-create-form-submit-above-btn');
-
-    function submitForm() {
-        $(formPreviousButton).prop('disabled', true);
-        $(formDraftButton).prop('disabled', true);
-        $(formSubmitButton).prop('disabled', true);
-        $(formSubmitAboveButton).prop('disabled', true);
-        const body = document.querySelector('body');
-        let loader = '<div class="loader-in-all-page"><div class="loader-inner"></div></div>'
-        body.innerHTML += loader;
-        setTimeout(function() {
-            $('form').submit();
-        }, 1000);
-    };
-
-    formSubmitButton.addEventListener('click', function(e) {
-        submitForm();
-    });
-    formSubmitAboveButton.addEventListener('click', function(e) {
-        submitForm();
-    });
-});
-</script>
-{% endblock %}
