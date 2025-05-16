@@ -422,19 +422,6 @@ class SiaeFavoriteForm(forms.ModelForm):
         fields = ["favorite_lists"]
 
 
-class SiaeDownloadForm(SiaeFilterForm):
-    marche_benefits = forms.MultipleChoiceField(
-        label="Pourquoi téléchargez-vous cette liste ?",
-        choices=Tender._meta.get_field("marche_benefits").base_field.choices,
-        widget=forms.CheckboxSelectMultiple,
-        required=False,
-    )
-    download_source = forms.CharField(required=False, widget=forms.HiddenInput())
-    format = forms.ChoiceField(
-        label="Format", widget=forms.RadioSelect, choices=(("xls", "xls"), ("csv", "csv")), required=False
-    )
-
-
 class NetworkSiaeFilterForm(forms.Form):
     perimeter = forms.ModelChoiceField(
         label="Filtrer par région",

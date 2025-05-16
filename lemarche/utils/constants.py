@@ -18,21 +18,6 @@ ADMIN_FIELD_HELP_TEXT = "Champ renseigné par un ADMIN"
 AUTO_FIELD_HELP_TEXT = "Champ mis à jour automatiquement"
 RECALCULATED_FIELD_HELP_TEXT = "Champ recalculé à intervalles réguliers"
 
-MARCHE_BENEFIT_TIME = "TIME"
-MARCHE_BENEFIT_DISCOVER = "DISCOVER"
-MARCHE_BENEFIT_MORE = "MORE"
-MARCHE_BENEFIT_CLAUSE = "CLAUSE"
-MARCHE_BENEFIT_SECURE = "SECURE"
-MARCHE_BENEFIT_NONE = "NONE"
-MARCHE_BENEFIT_CHOICES = (
-    (MARCHE_BENEFIT_TIME, "Gagner du temps"),
-    (MARCHE_BENEFIT_DISCOVER, "Découvrir de nouveaux prestataires inclusifs"),
-    (MARCHE_BENEFIT_MORE, "Faire plus d'achats inclusifs"),
-    (MARCHE_BENEFIT_CLAUSE, "Intégrer une clause sociale à un marché"),
-    (MARCHE_BENEFIT_SECURE, "Sécuriser un marché réservé"),
-    (MARCHE_BENEFIT_NONE, "Aucun"),
-)
-
 # how many scale is used for survey on signup
 # nb of inculsive or handicap provider
 HOW_MANY_SCALE_0 = "0"
