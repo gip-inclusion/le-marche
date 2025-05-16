@@ -751,7 +751,7 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
                     to_attr="questions_for_tender",
                 )
             )
-        )
+        ).order_by("name")
 
         question_list = TenderQuestion.objects.filter(tender=self.object).order_by("id").values_list("text", flat=True)
 

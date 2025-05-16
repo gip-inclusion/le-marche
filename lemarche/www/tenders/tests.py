@@ -2074,8 +2074,24 @@ class TenderSiaeDownloadViewTestCase(TestCase):
 
         siae_1 = SiaeFactory(name="siae_1")
         siae_2 = SiaeFactory(name="siae_2")
+        siae_3 = SiaeFactory(name="siae_3")
 
-        self.tender = TenderFactory(siaes=[siae_1, siae_2])
+        self.tender = TenderFactory()
+        # INTERESTED
+        TenderSiaeFactory(
+            tender=self.tender,
+            siae=siae_1,
+            detail_display_date=timezone.now(),
+            detail_contact_click_date=timezone.now(),
+        )
+        TenderSiaeFactory(
+            tender=self.tender,
+            siae=siae_2,
+            detail_display_date=timezone.now(),
+            detail_contact_click_date=timezone.now(),
+        )
+        # VIEWED
+        TenderSiaeFactory(tender=self.tender, siae=siae_3, detail_display_date=timezone.now())
 
         q1 = TenderQuestionFactory(tender=self.tender, text="question_1_title")
         q2 = TenderQuestionFactory(tender=self.tender, text="question_2_title")
@@ -2088,12 +2104,16 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         self.client.force_login(self.user)
 
     def test_filtering(self):
-        # for status in ["INTERESTED", "VIEWED"]:  # 'constants' only defined in templaes
-        #     with self.subTest(status=status):
-        #         response = self.client.get(
-        #             reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug}) +
-        #             f"?tendersiae_status={status}&format=csv"
-        #         )
+
+        with self.subTest(status="VIEWED"):
+            response = self.client.get(
+                reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
+                + "?tendersiae_status=VIEWED&format=csv"
+            )
+            content = response.content.decode("utf-8")
+            csv_reader = csv.DictReader(content.splitlines())
+            rows = list(csv_reader)
+            self.assertEqual(len(rows), 3)
 
         with self.subTest(status="INTERESTED"):
             response = self.client.get(
@@ -2107,7 +2127,8 @@ class TenderSiaeDownloadViewTestCase(TestCase):
 
     def test_download_csv(self):
         response = self.client.get(
-            reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug}) + "?format=csv"
+            reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
+            + "?format=csv&tendersiae_status=INTERESTED"
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "text/csv")
@@ -2129,7 +2150,8 @@ class TenderSiaeDownloadViewTestCase(TestCase):
 
     def test_download_xlsx(self):
         response = self.client.get(
-            reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug}) + "?format=xlsx"
+            reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
+            + "?format=xlsx&tendersiae_status=INTERESTED"
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
