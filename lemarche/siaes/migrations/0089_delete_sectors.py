@@ -3,8 +3,12 @@ from django.db.models import Count, OuterRef, Subquery
 
 
 def migrate_siaeactivity_sectors(apps, schema_editor):
+    """When multiple sectors are associated to a single siae activity, a new activity is created
+    for each supplementary sector found in 'sectors'.
+    When only a single sector is found in 'sectors', then it's moved to the 'sector' foreign key."""
     SiaeActivity = apps.get_model("siaes", "SiaeActivity")
     Sector = apps.get_model("sectors", "Sector")
+
     qs = SiaeActivity.objects.annotate(sector_count=Count("sectors")).filter(sector_count__gt=1)
     for siae_activity in qs:
         siae_activity.sector = siae_activity.sectors.first()
@@ -19,11 +23,11 @@ def migrate_siaeactivity_sectors(apps, schema_editor):
                 updated_at=siae_activity.updated_at,
             )
             new_siae_activity.locations.set(siae_activity.locations.all())
+
+    # Update single sectors
     sector_subquery = Sector.objects.filter(siae_activities=OuterRef("pk"))
-    qs = (
-        SiaeActivity.objects.annotate(sector_count=Count("sectors"))
-        .filter(sector_count=1)
-        .update(sector=Subquery(sector_subquery.values("pk")[:1]))
+    SiaeActivity.objects.annotate(sector_count=Count("sectors")).filter(sector_count=1).update(
+        sector=Subquery(sector_subquery.values("pk")[:1])
     )
 
 
