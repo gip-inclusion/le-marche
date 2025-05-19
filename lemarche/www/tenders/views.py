@@ -762,10 +762,19 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
         else:
             return self.get_xlxs_response(siae_qs, header_list)
 
+    def get_filename(self, extension: str) -> str:
+        """Get name for the exported file, according status and format."""
+        if self.status == "INTERESTED":
+            return f"{self.object.slug}-liste-structures-interessees.{extension}"
+        elif self.status == "VIEWED":
+            return f"{self.object.slug}-liste-structures-ciblees.{extension}"
+        else:
+            raise ValueError
+
     def get_csv_response(self, siae_qs, header_list):
         """Write a CSV file to a response object, containing all the defined export fields for each SIAE plus
         the questions as headers and corresponding answers in rows"""
-        filename_with_extension = "besoins.csv"
+        filename_with_extension = self.get_filename(extension="csv")
 
         response = HttpResponse(content_type="text/csv", charset="utf-8")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
@@ -783,7 +792,7 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
 
     def get_xlxs_response(self, siae_qs, header_list):
         """Same as get_csv_response() but for XLSX file format"""
-        filename_with_extension = "besoins.xlsx"
+        filename_with_extension = self.get_filename(extension="xlsx")
 
         response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
