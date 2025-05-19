@@ -7,7 +7,7 @@ from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
 from django.db.models import Prefetch
 from django.forms import formset_factory
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -39,6 +39,7 @@ from lemarche.www.tenders.forms import (
     TenderCreateStepDetailForm,
     TenderCreateStepGeneralForm,
     TenderCreateStepSurveyForm,
+    TenderDetailGetParams,
     TenderFilterForm,
     TenderSiaeSurveyTransactionedForm,
     TenderSurveyTransactionedForm,
@@ -390,18 +391,18 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
         """
         self.object = self.get_object()
         user = self.request.user
-        self.siae_id = request.GET.get("siae_id", None)
-        self.user_id = request.GET.get("user_id", None)
-        if self.siae_id:
-            self.siae = get_object_or_404(Siae, id=self.siae_id)
-        if self.user_id:
-            self.siae_user = get_object_or_404(User, id=self.user_id)
+        get_params_form = TenderDetailGetParams(request.GET)
+        if get_params_form.is_valid():
+            self.siae = get_params_form.cleaned_data["siae_id"]
+            self.user_from_get = get_params_form.cleaned_data["user_id"]
+        else:
+            raise Http404()
 
         # update 'email_link_click_date'
-        if self.siae_id:
-            if self.user_id:
+        if self.siae:
+            if self.user_from_get:
                 TenderSiae.objects.filter(tender=self.object, siae=self.siae, email_link_click_date=None).update(
-                    user=self.user_id, email_link_click_date=timezone.now(), updated_at=timezone.now()
+                    user=self.user_from_get, email_link_click_date=timezone.now(), updated_at=timezone.now()
                 )
             else:
                 TenderSiae.objects.filter(tender=self.object, siae=self.siae, email_link_click_date=None).update(
@@ -440,14 +441,14 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
             if user_kind == User.KIND_SIAE and self.object.kind == tender_constants.KIND_PROJECT
             else self.object.get_kind_display()
         )
-        if self.siae_id:
-            context["siae_id"] = self.siae_id
+        if self.siae:
+            context["siae_id"] = self.siae.id
             context["siae_has_detail_contact_click_date"] = TenderSiae.objects.filter(
-                tender=self.object, siae_id=int(self.siae_id), detail_contact_click_date__isnull=False
+                tender=self.object, siae=self.siae, detail_contact_click_date__isnull=False
             ).exists()
             context["display_buyer_contact"] = context["siae_has_detail_contact_click_date"]
             context["siae_has_detail_not_interested_click_date"] = TenderSiae.objects.filter(
-                tender=self.object, siae_id=int(self.siae_id), detail_not_interested_click_date__isnull=False
+                tender=self.object, siae_id=self.siae, detail_not_interested_click_date__isnull=False
             ).exists()
 
         context["breadcrumb_data"] = {
