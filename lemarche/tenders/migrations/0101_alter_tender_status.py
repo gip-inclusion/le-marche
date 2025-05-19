@@ -14,7 +14,7 @@ def update_submitted_tenders(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("tenders", "0098_update_rejected"),
+        ("tenders", "0100_tender_attachment_one_tender_attachment_three_and_more"),
     ]
 
     operations = [
