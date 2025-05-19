@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("siaes", "0084_remove_historicalsiae_presta_type_and_more"),
+        ("siaes", "0086_alter_siaeactivity_sector_group"),
     ]
 
     operations = [

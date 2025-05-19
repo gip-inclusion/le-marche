@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("sectors", "0003_sector_sectorgroup_ordering"),
-        ("siaes", "0086_remove_siaeactivity_sectors_siaeactivity_sector"),
+        ("siaes", "0088_remove_siaeactivity_sectors_siaeactivity_sector"),
     ]
 
     operations = [
