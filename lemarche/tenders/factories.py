@@ -35,7 +35,7 @@ class TenderFactory(DjangoModelFactory):
     contact_last_name = factory.Sequence("last_name{0}".format)
     contact_email = factory.Sequence("email_contact_tender{0}@example.com".format)
     contact_phone = "0123456789"
-    status =  Tender.StatusChoices.STATUS_SENT
+    status = Tender.StatusChoices.STATUS_SENT
     validated_at = timezone.now()
     first_sent_at = timezone.now()
 
