@@ -2132,7 +2132,10 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "text/csv")
-        self.assertEqual(response["Content-Disposition"], 'attachment; filename="besoins.csv"')
+        self.assertEqual(
+            response["Content-Disposition"],
+            'attachment; filename="{self.tender.slug}-liste-structures-interessees.csv"',
+        )
 
         # Parse CSV content into dict
         content = response.content.decode("utf-8")
@@ -2155,7 +2158,10 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        self.assertEqual(response["Content-Disposition"], 'attachment; filename="besoins.xlsx"')
+        self.assertEqual(
+            response["Content-Disposition"],
+            f'attachment; filename="{self.tender.slug}-liste-structures-interessees.xlsx"',
+        )
 
         # Load file from response into a workbook
         file_content = BytesIO(response.content)
