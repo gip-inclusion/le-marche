@@ -767,9 +767,9 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
         if self.status == "INTERESTED":
             return f"{self.object.slug}-liste-structures-interessees.{extension}"
         elif self.status == "VIEWED":
-            return f"{self.object.slug}-liste-structures-ciblees.{extension}"
+            return f"{self.object.slug}-liste-structures-vues.{extension}"
         else:
-            raise ValueError
+            return f"{self.object.slug}-liste-structures-ciblees.{extension}"
 
     def get_csv_response(self, siae_qs, header_list):
         """Write a CSV file to a response object, containing all the defined export fields for each SIAE plus
