@@ -2134,7 +2134,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         self.assertEqual(response["Content-Type"], "text/csv")
         self.assertEqual(
             response["Content-Disposition"],
-            'attachment; filename="{self.tender.slug}-liste-structures-interessees.csv"',
+            f'attachment; filename="{self.tender.slug}-liste-structures-interessees.csv"',
         )
 
         # Parse CSV content into dict
