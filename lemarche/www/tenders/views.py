@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
+from django.db import IntegrityError, transaction
 from django.db.models import Prefetch
 from django.forms import formset_factory
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -547,7 +548,6 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
-        detail_contact_click_confirm = self.request.POST.get("detail_contact_click_confirm", False) == "true"
         self.answers_formset = self.answers_formset_class(data=self.request.POST)
         if user.is_authenticated:
             if siae_list := self.request.POST.getlist("siae"):
@@ -557,62 +557,54 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
         else:
             siae_qs = Siae.objects.filter(id=self.siae_id)
 
-        if detail_contact_click_confirm:
-            if self.answers_formset.is_valid():
+        if self.answers_formset.is_valid():
+            with transaction.atomic():  # Rollback all answers if any problem appears, e.g. when going back in browser
                 for answer_form in self.answers_formset:
                     for siae in siae_qs:  # We copy the answer for each selected siae
-                        QuestionAnswer.objects.create(
-                            question=answer_form.cleaned_data["question"],
-                            answer=answer_form.cleaned_data["answer"],
-                            siae=siae,
-                        )
-            else:
-                messages.add_message(
-                    self.request, messages.ERROR, "Une erreur a eu lieu lors de la soumission du formulaire"
-                )
-                return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm, self.siae_id))
-
-            # update detail_contact_click_date
-            if user.is_authenticated:
-                TenderSiae.objects.filter(
-                    tender=self.object, siae__in=siae_qs, detail_contact_click_date__isnull=True
-                ).update(user=user, detail_contact_click_date=timezone.now(), updated_at=timezone.now())
-            else:
-                TenderSiae.objects.filter(
-                    tender=self.object, siae__in=siae_qs, detail_contact_click_date__isnull=True
-                ).update(detail_contact_click_date=timezone.now(), updated_at=timezone.now())
-
-            # notify the tender author
-            send_siae_interested_email_to_author(self.object)
-            messages.add_message(
-                self.request, messages.SUCCESS, self.get_success_message(detail_contact_click_confirm)
-            )
+                        try:  # Integrity errors can happen when going back in browser and submit again
+                            QuestionAnswer.objects.create(
+                                question=answer_form.cleaned_data["question"],
+                                answer=answer_form.cleaned_data["answer"],
+                                siae=siae,
+                            )
+                        except IntegrityError:
+                            return self.redirect_on_error()
         else:
-            messages.add_message(
-                self.request, messages.WARNING, self.get_success_message(detail_contact_click_confirm)
-            )
-        # redirect
-        return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm, self.siae_id))
+            return self.redirect_on_error()
 
-    def get_success_url(self, detail_contact_click_confirm, siae_id=None):
+        # update detail_contact_click_date
+        if user.is_authenticated:
+            TenderSiae.objects.filter(
+                tender=self.object, siae__in=siae_qs, detail_contact_click_date__isnull=True
+            ).update(user=user, detail_contact_click_date=timezone.now(), updated_at=timezone.now())
+        else:
+            TenderSiae.objects.filter(
+                tender=self.object, siae__in=siae_qs, detail_contact_click_date__isnull=True
+            ).update(detail_contact_click_date=timezone.now(), updated_at=timezone.now())
+
+        # notify the tender author
+        send_siae_interested_email_to_author(self.object)
+        messages.add_message(self.request, messages.SUCCESS, self.get_success_message())
+
+        # redirect
+        return HttpResponseRedirect(self.get_success_url(self.siae_id))
+
+    def redirect_on_error(self):
+        messages.add_message(self.request, messages.ERROR, "Une erreur a eu lieu lors de la soumission du formulaire")
+        return HttpResponseRedirect(self.get_success_url(self.siae_id))
+
+    def get_success_url(self, siae_id=None):
         success_url = reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
-        if detail_contact_click_confirm:
-            success_url += "?nps=true"
-            if siae_id:
-                success_url += f"&siae_id={siae_id}"
+        success_url += "?nps=true"
+        if siae_id:
+            success_url += f"&siae_id={siae_id}"
         return success_url
 
-    def get_success_message(self, detail_contact_click_confirm):
-        if detail_contact_click_confirm:
-            return (
-                "<strong>Bravo !</strong><br />"
-                "Vos coordonnées, ainsi que le lien vers votre fiche commerciale ont été transmis à l'acheteur."
-                " Assurez-vous d'avoir une fiche commerciale bien renseignée."
-            )
+    def get_success_message(self):
         return (
-            f"<strong>{self.object.cta_card_button_text}</strong><br />"
-            f"Pour {self.object.cta_card_button_text.lower()},"
-            f" vous devez accepter d'être mis en relation avec l'acheteur."
+            "<strong>Bravo !</strong><br />"
+            "Vos coordonnées, ainsi que le lien vers votre fiche commerciale ont été transmis à l'acheteur."
+            " Assurez-vous d'avoir une fiche commerciale bien renseignée."
         )
 
     def get_context_data(self, **kwargs):
