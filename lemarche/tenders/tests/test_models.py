@@ -128,11 +128,13 @@ class TenderModelPropertyTest(TestCase):
         self.assertTrue(tender_outdated.start_working_date_outdated)
 
     def test_status_property(self):
-        tender_draft = TenderFactory(status=tender_constants.STATUS_DRAFT)
-        tender_pending_validation = TenderFactory(status=tender_constants.STATUS_PUBLISHED)
-        tender_validated_half = TenderFactory(status=tender_constants.STATUS_VALIDATED)
-        tender_validated_full = TenderFactory(status=tender_constants.STATUS_VALIDATED, validated_at=timezone.now())
-        tender_sent = TenderFactory(status=tender_constants.STATUS_SENT, first_sent_at=timezone.now())
+        tender_draft = TenderFactory(status=Tender.StatusChoices.STATUS_DRAFT)
+        tender_pending_validation = TenderFactory(status=Tender.StatusChoices.STATUS_SUBMITTED)
+        tender_validated_half = TenderFactory(status=Tender.StatusChoices.STATUS_VALIDATED)
+        tender_validated_full = TenderFactory(
+            status=Tender.StatusChoices.STATUS_VALIDATED, validated_at=timezone.now()
+        )
+        tender_sent = TenderFactory(status=Tender.StatusChoices.STATUS_SENT, first_sent_at=timezone.now())
         self.assertTrue(tender_draft.is_draft)
         self.assertTrue(tender_pending_validation.is_pending_validation)
         self.assertTrue(tender_validated_half.is_validated)
@@ -273,13 +275,15 @@ class TenderModelQuerysetTest(TestCase):
 
     def test_validated_but_not_sent(self):
         siae = SiaeFactory()
-        TenderFactory(siaes=[siae], status=tender_constants.STATUS_PUBLISHED, validated_at=None, first_sent_at=None)
         TenderFactory(
-            siaes=[siae], status=tender_constants.STATUS_VALIDATED, validated_at=timezone.now(), first_sent_at=None
+            siaes=[siae], status=Tender.StatusChoices.STATUS_SUBMITTED, validated_at=None, first_sent_at=None
+        )
+        TenderFactory(
+            siaes=[siae], status=Tender.StatusChoices.STATUS_VALIDATED, validated_at=timezone.now(), first_sent_at=None
         )
         TenderFactory(
             siaes=[siae],
-            status=tender_constants.STATUS_SENT,
+            status=Tender.StatusChoices.STATUS_SENT,
             validated_at=timezone.now(),
             first_sent_at=timezone.now(),
         )
@@ -292,7 +296,7 @@ class TenderModelQuerysetTest(TestCase):
         TenderFactory(
             siaes=[siae],
             version=1,
-            status=tender_constants.STATUS_PUBLISHED,
+            status=Tender.StatusChoices.STATUS_SUBMITTED,
             validated_at=None,
             first_sent_at=None,
             last_sent_at=None,
@@ -301,7 +305,7 @@ class TenderModelQuerysetTest(TestCase):
         TenderFactory(
             siaes=[siae],
             version=1,
-            status=tender_constants.STATUS_VALIDATED,
+            status=Tender.StatusChoices.STATUS_VALIDATED,
             validated_at=timezone.now(),
             first_sent_at=None,
             last_sent_at=None,
@@ -310,7 +314,7 @@ class TenderModelQuerysetTest(TestCase):
         TenderFactory(
             siaes=[siae],
             version=1,
-            status=tender_constants.STATUS_SENT,
+            status=Tender.StatusChoices.STATUS_SENT,
             validated_at=timezone.now(),
             first_sent_at=timezone.now(),
             last_sent_at=timezone.now(),
@@ -319,7 +323,7 @@ class TenderModelQuerysetTest(TestCase):
         TenderFactory(
             siaes=[siae],
             version=1,
-            status=tender_constants.STATUS_SENT,
+            status=Tender.StatusChoices.STATUS_SENT,
             validated_at=one_hour_ago,
             first_sent_at=one_hour_ago,
             last_sent_at=one_hour_ago,
@@ -329,7 +333,7 @@ class TenderModelQuerysetTest(TestCase):
         TenderFactory(
             siaes=[siae],
             version=1,
-            status=tender_constants.STATUS_SENT,
+            status=Tender.StatusChoices.STATUS_SENT,
             validated_at=two_days_ago,
             first_sent_at=two_days_ago,
             last_sent_at=two_days_ago,
@@ -347,7 +351,9 @@ class TenderModelQuerysetTest(TestCase):
     def test_is_live(self):
         TenderFactory(deadline_date=timezone.now() + timedelta(days=1))
         TenderFactory(
-            deadline_date=timezone.now() + timedelta(days=1), first_sent_at=None, status=tender_constants.STATUS_DRAFT
+            deadline_date=timezone.now() + timedelta(days=1),
+            first_sent_at=None,
+            status=Tender.StatusChoices.STATUS_DRAFT,
         )
         TenderFactory(deadline_date=timezone.now() - timedelta(days=1))
         # TenderFactory(deadline_date=None)  # cannot be None
@@ -906,7 +912,7 @@ class TenderAdminTest(TestCase):
         cls.tender = TenderFactory(
             sectors=cls.sectors[6:8],
             perimeters=[cls.perimeter_paris],
-            status=tender_constants.STATUS_PUBLISHED,
+            status=Tender.StatusChoices.STATUS_SUBMITTED,
             published_at=timezone.now(),
             validated_at=None,
         )
@@ -1086,9 +1092,9 @@ class TenderAdminTest(TestCase):
         self.assertTrue(tender_response.send_to_commercial_partners_only)
 
     @patch("lemarche.tenders.admin.send_tender_author_modification_request")
-    def test_email_sent_for_published_status(self, mock_send_email):
+    def test_email_sent_for_submitted_status(self, mock_send_email):
         """
-        When the admin saves a published tender with the email_sent_for_modification field to True,
+        When the admin saves a SUBMITTED tender with the email_sent_for_modification field to True,
         the email is sent to the author and the status of the tender is set to STATUS_DRAFT.
         """
         self.client.force_login(self.user)
@@ -1108,7 +1114,7 @@ class TenderAdminTest(TestCase):
 
         mock_send_email.assert_called_once_with(tender=tender_response)
         self.assertTrue(tender_response.email_sent_for_modification)
-        self.assertEqual(tender_response.status, tender_constants.STATUS_DRAFT)
+        self.assertEqual(tender_response.status, Tender.StatusChoices.STATUS_DRAFT)
         self.assertIn("send tender author modification request", actions)
 
     def test_email_sent_for_modification_updates_status_and_logs(self):
@@ -1127,8 +1133,8 @@ class TenderAdminTest(TestCase):
         )
         tender_response = response.context_data["adminform"].form.instance
 
-        # Tender status changed from PUBLISHED to DRAFT
-        self.assertEqual(tender_response.status, tender_constants.STATUS_DRAFT)
+        # Tender status changed from SUBMITTED to DRAFT
+        self.assertEqual(tender_response.status, Tender.StatusChoices.STATUS_DRAFT)
 
         # Tasks 'send_tender_autor_modification_request' logs email sent date
         log_entry = tender_response.logs[0]
@@ -1161,7 +1167,7 @@ class TenderAdminTest(TestCase):
         messages = list(get_messages(response.wsgi_request))
         message_texts = [msg.message for msg in messages]
 
-        self.assertEqual(tender_response.status, tender_constants.STATUS_PUBLISHED)
+        self.assertEqual(tender_response.status, Tender.StatusChoices.STATUS_SUBMITTED)
         self.assertFalse(tender_response.email_sent_for_modification)
         self.assertNotIn("send tender author modification request", actions)
         self.assertIn(
@@ -1183,7 +1189,7 @@ class TenderUtilsTest(TransactionTestCase):
             sectors=[cls.sector],
             author=cls.user_buyer,
             deadline_date=date_tomorrow,
-            status=tender_constants.STATUS_SENT,
+            status=Tender.StatusChoices.STATUS_SENT,
             first_sent_at=timezone.now(),
         )
 

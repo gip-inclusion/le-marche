@@ -336,10 +336,12 @@ class Tender(models.Model):
         "siae_transactioned",
     ]
 
-    # used in templates
-    STATUS_DRAFT = tender_constants.STATUS_DRAFT
-    STATUS_PUBLISHED = tender_constants.STATUS_PUBLISHED
-    STATUS_VALIDATED = tender_constants.STATUS_VALIDATED
+    class StatusChoices(models.TextChoices):
+        STATUS_DRAFT = "DRAFT", "Brouillon"
+        STATUS_SUBMITTED = "SUBMITTED", "Déposé"
+        STATUS_VALIDATED = "VALIDATED", "Validé"
+        STATUS_SENT = "SENT", "Envoyé"
+        STATUS_REJECTED = "REJECTED", "Rejeté"
 
     title = models.CharField(verbose_name="Titre du besoin", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
@@ -554,8 +556,8 @@ class Tender(models.Model):
     status = models.CharField(
         verbose_name="Statut",
         max_length=10,
-        choices=tender_constants.STATUS_CHOICES,
-        default=tender_constants.STATUS_DRAFT,
+        choices=StatusChoices.choices,
+        default=StatusChoices.STATUS_DRAFT,
     )
     validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
     first_sent_at = models.DateTimeField("Date du premier envoi", blank=True, null=True)
@@ -707,19 +709,19 @@ class Tender(models.Model):
     def reset_modification_request(self):
         """
         Reset modification request when republishing a tender.
-        This method can only be called on Tender updates if status is changed to published
+        This method can only be called on Tender updates if status is changed to SUBMITTED
         """
-        if self.status == self.STATUS_PUBLISHED and self.email_sent_for_modification:
+        if self.status == self.StatusChoices.STATUS_SUBMITTED and self.email_sent_for_modification:
             self.email_sent_for_modification = False
             self.save(update_fields=["email_sent_for_modification"])
 
     def set_modification_request(self):
         """
         Set modification request when republishing a tender.
-        This method can only be called on Tender updates if status is changed to published
+        This method can only be called on Tender updates if status is changed to SUBMITTED
         """
         self.email_sent_for_modification = True
-        self.status = tender_constants.STATUS_DRAFT
+        self.status = self.StatusChoices.STATUS_DRAFT
         log_item = {
             "action": "send tender author modification request",
             "date": timezone.now().isoformat(),
@@ -728,7 +730,7 @@ class Tender(models.Model):
         self.save(update_fields=["email_sent_for_modification", "status", "logs"])
 
     def set_rejected(self):
-        self.status = tender_constants.STATUS_REJECTED
+        self.status = self.StatusChoices.STATUS_REJECTED
         log_item = {
             "action": "reject",
             "date": timezone.now().isoformat(),
@@ -964,15 +966,15 @@ class Tender(models.Model):
 
     @property
     def is_draft(self) -> bool:
-        return self.status == tender_constants.STATUS_DRAFT
+        return self.status == self.StatusChoices.STATUS_DRAFT
 
     @property
     def is_pending_validation(self) -> bool:
-        return self.status == tender_constants.STATUS_PUBLISHED
+        return self.status == self.StatusChoices.STATUS_SUBMITTED
 
     @property
     def is_validated(self) -> bool:
-        return bool(self.validated_at) and self.status == tender_constants.STATUS_VALIDATED
+        return bool(self.validated_at) and self.status == self.StatusChoices.STATUS_VALIDATED
 
     @property
     def is_pending_validation_or_validated(self) -> bool:
@@ -980,7 +982,7 @@ class Tender(models.Model):
 
     @property
     def is_sent(self) -> bool:
-        return bool(self.first_sent_at) and self.status == tender_constants.STATUS_SENT
+        return bool(self.first_sent_at) and self.status == self.StatusChoices.STATUS_SENT
 
     @property
     def is_validated_or_sent(self) -> bool:
@@ -988,7 +990,7 @@ class Tender(models.Model):
 
     @property
     def is_rejected(self) -> bool:
-        return self.status == tender_constants.STATUS_REJECTED
+        return self.status == self.StatusChoices.STATUS_REJECTED
 
     @property
     def is_partner_approch(self) -> bool:
@@ -1006,7 +1008,7 @@ class Tender(models.Model):
 
     def set_validated(self):
         self.validated_at = timezone.now()
-        self.status = tender_constants.STATUS_VALIDATED
+        self.status = self.StatusChoices.STATUS_VALIDATED
         log_item = {
             "action": "validate",
             "date": self.validated_at.isoformat(),
@@ -1017,7 +1019,7 @@ class Tender(models.Model):
     def set_sent(self):
         if not self.first_sent_at:
             self.first_sent_at = timezone.now()
-            self.status = tender_constants.STATUS_SENT
+            self.status = self.StatusChoices.STATUS_SENT
 
         self.last_sent_at = timezone.now()
         log_item = {
