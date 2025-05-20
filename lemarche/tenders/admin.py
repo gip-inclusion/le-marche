@@ -542,7 +542,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             {
                 "classes": ["collapse"],
                 "fields": (
-                    "marche_benefits",
                     "siae_list_last_seen_date",
                     "source",
                     "parent_transactional_send_logs_count_with_link",

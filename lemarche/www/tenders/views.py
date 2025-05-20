@@ -1,5 +1,7 @@
+import csv
 import os
 
+import openpyxl
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -19,12 +21,13 @@ from formtools.wizard.views import SessionWizardView
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.forms import QuestionAnswerForm, SiaeSelectionForm
-from lemarche.tenders.models import QuestionAnswer, Tender, TenderSiae, TenderStepsData
+from lemarche.tenders.models import QuestionAnswer, Tender, TenderQuestion, TenderSiae, TenderStepsData
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.utils import constants, settings_context_processors
 from lemarche.utils.data import get_choice
 from lemarche.utils.emails import add_to_contact_list
+from lemarche.utils.export import generate_header, generate_siae_row, get_siae_fields
 from lemarche.utils.mixins import (
     SesameSiaeMemberRequiredMixin,
     SesameTenderAuthorRequiredMixin,
@@ -721,6 +724,104 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
             "current": "Prestataires ciblés & intéressés",
         }
         return context
+
+
+class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
+    http_method_names = ["get"]
+    model = Tender
+    FIELD_LIST = get_siae_fields(with_contact_info=True)
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.status = request.GET.get("tendersiae_status", None)
+
+    def get(self, request, *args, **kwargs):
+        """Gather siaes the according to the parent view (TenderSiaeListView), taking into account values from
+        the filter form and the current tab (VIEWED or INTERESTED)."""
+        super().get(request, *args, **kwargs)
+
+        siae_qs = (
+            SiaeFilterForm(data=self.request.GET)
+            .filter_queryset(Siae.objects.filter(tendersiae__tender=self.object))
+            .filter_with_tender_tendersiae_status(tender=self.object, tendersiae_status=self.status)
+            .prefetch_related(
+                Prefetch(
+                    "questionanswer_set",
+                    queryset=QuestionAnswer.objects.filter(question__tender=self.object).order_by("question__id"),
+                    to_attr="questions_for_tender",
+                )
+            )
+        ).order_by("name")
+
+        question_list = TenderQuestion.objects.filter(tender=self.object).order_by("id").values_list("text", flat=True)
+
+        header_list = generate_header(self.FIELD_LIST) + list(question_list)
+
+        if self.request.GET.get("format") == "csv":
+            return self.get_csv_response(siae_qs, header_list)
+        else:
+            return self.get_xlxs_response(siae_qs, header_list)
+
+    def get_filename(self, extension: str) -> str:
+        """Get name for the exported file, according status and format."""
+        if self.status == "INTERESTED":
+            return f"{self.object.slug}-liste-structures-interessees.{extension}"
+        elif self.status == "VIEWED":
+            return f"{self.object.slug}-liste-structures-vues.{extension}"
+        else:
+            return f"{self.object.slug}-liste-structures-ciblees.{extension}"
+
+    def get_csv_response(self, siae_qs, header_list):
+        """Write a CSV file to a response object, containing all the defined export fields for each SIAE plus
+        the questions as headers and corresponding answers in rows"""
+        filename_with_extension = self.get_filename(extension="csv")
+
+        response = HttpResponse(content_type="text/csv", charset="utf-8")
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
+
+        writer = csv.writer(response)
+        writer.writerow(header_list)
+
+        for siae in siae_qs:
+            writer.writerow(
+                generate_siae_row(siae, self.FIELD_LIST)
+                + [question_answer.answer for question_answer in siae.questions_for_tender]
+            )
+
+        return response
+
+    def get_xlxs_response(self, siae_qs, header_list):
+        """Same as get_csv_response() but for XLSX file format"""
+        filename_with_extension = self.get_filename(extension="xlsx")
+
+        response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
+
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Structures"
+
+        # header
+        for index, header_item in enumerate(header_list, start=1):
+            cell = ws.cell(row=1, column=index)
+            cell.value = header_item
+            cell.font = openpyxl.styles.Font(bold=True)
+
+        # rows
+        row_number = 2
+        for siae in siae_qs:
+            siae_row = generate_siae_row(siae, self.FIELD_LIST) + [
+                question_answer.answer for question_answer in siae.questions_for_tender
+            ]
+            for index, row_item in enumerate(siae_row, start=1):
+                cell = ws.cell(row=row_number, column=index)
+                cell.value = row_item
+                cell.alignment = openpyxl.styles.Alignment(wrap_text=True)
+            row_number += 1
+
+        wb.save(response)
+
+        return response
 
 
 class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, UpdateView):

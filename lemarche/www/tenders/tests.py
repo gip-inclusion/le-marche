@@ -1,7 +1,10 @@
+import csv
 import json
 from datetime import timedelta
+from io import BytesIO
 from unittest.mock import patch
 
+import openpyxl
 from django.conf import settings
 from django.contrib.messages import get_messages
 from django.core.files.storage import default_storage
@@ -21,7 +24,7 @@ from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
-from lemarche.tenders.factories import TenderFactory, TenderQuestionFactory, TenderSiaeFactory
+from lemarche.tenders.factories import QuestionAnswerFactory, TenderFactory, TenderQuestionFactory, TenderSiaeFactory
 from lemarche.tenders.models import QuestionAnswer, Tender, TenderSiae, TenderStepsData
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
@@ -2062,3 +2065,129 @@ class TenderQuestionAnswerTestCase(TestCase):
         self.assertEqual(QuestionAnswer.objects.all().count(), 2)
         self.assertEqual(QuestionAnswer.objects.first().answer, "SOMETHING")
         self.assertEqual(QuestionAnswer.objects.last().answer, "ELSE")
+
+
+class TenderSiaeDownloadViewTestCase(TestCase):
+
+    def setUp(self):
+        self.user = UserFactory(kind=User.KIND_BUYER)
+
+        siae_1 = SiaeFactory(name="siae_1")
+        siae_2 = SiaeFactory(name="siae_2")
+        siae_3 = SiaeFactory(name="siae_3")
+
+        self.tender = TenderFactory()
+        # INTERESTED
+        TenderSiaeFactory(
+            tender=self.tender,
+            siae=siae_1,
+            detail_display_date=timezone.now(),
+            detail_contact_click_date=timezone.now(),
+        )
+        TenderSiaeFactory(
+            tender=self.tender,
+            siae=siae_2,
+            detail_display_date=timezone.now(),
+            detail_contact_click_date=timezone.now(),
+        )
+        # VIEWED
+        TenderSiaeFactory(tender=self.tender, siae=siae_3, detail_display_date=timezone.now())
+
+        q1 = TenderQuestionFactory(tender=self.tender, text="question_1_title")
+        q2 = TenderQuestionFactory(tender=self.tender, text="question_2_title")
+
+        QuestionAnswerFactory(question=q1, siae=siae_1, answer="answer_for_q1_from_siae_1")
+        QuestionAnswerFactory(question=q2, siae=siae_1, answer="answer_for_q2_from_siae_1")
+        QuestionAnswerFactory(question=q1, siae=siae_2, answer="answer_for_q1_from_siae_2")
+        QuestionAnswerFactory(question=q2, siae=siae_2, answer="answer_for_q2_from_siae_2")
+
+        self.client.force_login(self.user)
+
+    def test_filtering(self):
+
+        with self.subTest(
+            status="TARGETED"
+        ):  # That status is implicit, it switches to targeted when no status is given
+            response = self.client.get(
+                reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
+                + "?tendersiae_status=&format=csv"
+            )
+            content = response.content.decode("utf-8")
+            csv_reader = csv.DictReader(content.splitlines())
+            rows = list(csv_reader)
+            self.assertEqual(len(rows), 0)
+
+        with self.subTest(status="VIEWED"):
+            response = self.client.get(
+                reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
+                + "?tendersiae_status=VIEWED&format=csv"
+            )
+            content = response.content.decode("utf-8")
+            csv_reader = csv.DictReader(content.splitlines())
+            rows = list(csv_reader)
+            self.assertEqual(len(rows), 3)
+
+        with self.subTest(status="INTERESTED"):
+            response = self.client.get(
+                reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
+                + "?tendersiae_status=INTERESTED&format=csv"
+            )
+            content = response.content.decode("utf-8")
+            csv_reader = csv.DictReader(content.splitlines())
+            rows = list(csv_reader)
+            self.assertEqual(len(rows), 2)
+
+    def test_download_csv(self):
+        response = self.client.get(
+            reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
+            + "?format=csv&tendersiae_status=INTERESTED"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/csv")
+        self.assertEqual(
+            response["Content-Disposition"],
+            f'attachment; filename="{self.tender.slug}-liste-structures-interessees.csv"',
+        )
+
+        # Parse CSV content into dict
+        content = response.content.decode("utf-8")
+        csv_reader = csv.DictReader(content.splitlines())
+        rows = list(csv_reader)
+        self.assertEqual(len(rows), 2)  # 2 siaes in the tender
+
+        self.assertEqual(rows[0]["Raison sociale"], "siae_1")
+        self.assertEqual(rows[0].get("question_1_title"), "answer_for_q1_from_siae_1")
+        self.assertEqual(rows[0].get("question_2_title"), "answer_for_q2_from_siae_1")
+
+        self.assertEqual(rows[1]["Raison sociale"], "siae_2")
+        self.assertEqual(rows[1].get("question_1_title"), "answer_for_q1_from_siae_2")
+        self.assertEqual(rows[1].get("question_2_title"), "answer_for_q2_from_siae_2")
+
+    def test_download_xlsx(self):
+        response = self.client.get(
+            reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
+            + "?format=xlsx&tendersiae_status=INTERESTED"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        self.assertEqual(
+            response["Content-Disposition"],
+            f'attachment; filename="{self.tender.slug}-liste-structures-interessees.xlsx"',
+        )
+
+        # Load file from response into a workbook
+        file_content = BytesIO(response.content)
+        workbook = openpyxl.load_workbook(file_content)
+        sheet = workbook.active
+
+        self.assertEqual(sheet["A1"].value, "Raison sociale")
+        self.assertEqual(sheet["A2"].value, "siae_1")
+        self.assertEqual(sheet["A3"].value, "siae_2")
+
+        self.assertEqual(sheet["X1"].value, "question_1_title")
+        self.assertEqual(sheet["X2"].value, "answer_for_q1_from_siae_1")
+        self.assertEqual(sheet["X3"].value, "answer_for_q1_from_siae_2")
+
+        self.assertEqual(sheet["Y1"].value, "question_2_title")
+        self.assertEqual(sheet["Y2"].value, "answer_for_q2_from_siae_1")
+        self.assertEqual(sheet["Y3"].value, "answer_for_q2_from_siae_2")

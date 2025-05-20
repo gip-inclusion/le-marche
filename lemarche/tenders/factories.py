@@ -6,7 +6,7 @@ from factory.django import DjangoModelFactory
 
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderSiae
+from lemarche.tenders.models import PartnerShareTender, QuestionAnswer, Tender, TenderQuestion, TenderSiae
 from lemarche.users.factories import UserFactory
 
 
@@ -68,7 +68,16 @@ class TenderQuestionFactory(DjangoModelFactory):
     class Meta:
         model = TenderQuestion
 
-    text = factory.Faker("paragraph", nb_sentences=1, locale="fr_FR")
+    text = "How do you do ?"
+
+
+class QuestionAnswerFactory(DjangoModelFactory):
+    class Meta:
+        model = QuestionAnswer
+
+    question = factory.SubFactory(TenderQuestionFactory)
+    siae = factory.SubFactory(SiaeFactory)
+    answer = "Yes I do"
 
 
 class PartnerShareTenderFactory(DjangoModelFactory):
