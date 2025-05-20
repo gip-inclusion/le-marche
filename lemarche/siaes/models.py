@@ -381,7 +381,7 @@ class SiaeQuerySet(models.QuerySet):
             .filter(siae=OuterRef("pk"))
             .values("pk")
         )
-        qs = qs.filter(Q(activities__in=Subquery(siae_activity_subquery)))
+        qs = qs.filter(activities__in=Subquery(siae_activity_subquery))
 
         return qs.distinct()
 
@@ -1431,7 +1431,9 @@ class SiaeActivityQuerySet(models.QuerySet):
         return qs
 
     def filter_for_potential_through_activities(self, sector, perimeter=None):
-        """ """
+        """
+        Filter SiaeActivity with a sector and a perimeter if provided
+        """
         qs = self.prefetch_related("sectors").filter_sectors([sector])
         if perimeter:
             qs = qs.prefetch_related("locations").geo_range_in_perimeter_list([perimeter], include_country_area=True)
