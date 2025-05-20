@@ -531,41 +531,6 @@ class SiaeModelQuerysetTest(TestCase):
         self.assertEqual(siae_queryset.get(id=siae_8.id).employees_insertion_count_with_c2_etp_annotated, 125)
         self.assertEqual(siae_queryset.get(id=siae_8.id).employees_count_annotated, 125 + 88)
 
-    def test_filter_with_potential_through_activities(self):
-        """
-        Test that the filter_with_potential_through_activities method returns the correct number of siaes
-        - active siaes with a contact_email
-        - active siaes without a contact_email
-        - not inactive siaes
-        - not delisted siaes
-        """
-        sector = SectorFactory()
-        perimeter_department = PerimeterFactory(
-            name="Paris", kind=Perimeter.KIND_DEPARTMENT, insee_code="75", region_code="11"
-        )
-
-        siae_1 = SiaeFactory(is_active=True, contact_email="")
-        siae_2 = SiaeFactory(is_active=True)
-        siae_3 = SiaeFactory(is_active=False)
-        siae_4 = SiaeFactory(is_delisted=True)
-
-        for siae in [siae_1, siae_2, siae_3, siae_4]:
-            siae_activity = SiaeActivityFactory(
-                siae=siae,
-                sector_group=sector.group,
-                presta_type=[siae_constants.PRESTA_BUILD],
-                with_zones_perimeter=True,
-            )
-            siae_activity.sectors.add(sector)
-            siae_activity.locations.set([perimeter_department])
-
-        siae_queryset = Siae.objects.filter_with_potential_through_activities(sector, perimeter_department)
-        self.assertEqual(siae_queryset.count(), 2)
-        self.assertIn(siae_1, siae_queryset)
-        self.assertIn(siae_2, siae_queryset)
-        self.assertNotIn(siae_3, siae_queryset)
-        self.assertNotIn(siae_4, siae_queryset)
-
 
 class SiaeModelPerimeterQuerysetTest(TestCase):
     @classmethod
@@ -730,20 +695,14 @@ class SiaeFilterWithPotentialThroughActivitiesTest(TestCase):
     def test_filter_with_potential_through_activities_with_sector(self):
         siae_queryset = Siae.objects.filter_with_potential_through_activities(self.sector_1)
         self.assertEqual(siae_queryset.count(), 2)
-        self.assertIn(self.siae_1, siae_queryset)
-        self.assertIn(self.siae_3, siae_queryset)
-        self.assertNotIn(self.siae_2, siae_queryset)
+        self.assertQuerySetEqual(siae_queryset, [self.siae_1, self.siae_3])
 
     def test_filter_with_potential_through_activities_with_sector_and_perimeter(self):
         siae_queryset = Siae.objects.filter_with_potential_through_activities(self.sector_1, self.perimeter_1)
         self.assertEqual(siae_queryset.count(), 1)
-        self.assertIn(self.siae_1, siae_queryset)
-        self.assertNotIn(self.siae_2, siae_queryset)
-        self.assertNotIn(self.siae_3, siae_queryset)
+        self.assertQuerySetEqual(siae_queryset, [self.siae_1])
 
     def test_filter_with_potential_through_activities_with_sector_and_perimeter_2(self):
         siae_queryset = Siae.objects.filter_with_potential_through_activities(self.sector_1, self.perimeter_2)
         self.assertEqual(siae_queryset.count(), 1)
-        self.assertIn(self.siae_3, siae_queryset)
-        self.assertNotIn(self.siae_1, siae_queryset)
-        self.assertNotIn(self.siae_2, siae_queryset)
+        self.assertQuerySetEqual(siae_queryset, [self.siae_3])
