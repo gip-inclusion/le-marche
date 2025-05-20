@@ -6,6 +6,27 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2025.4.0](https://github.com/gip-inclusion/le-marche/compare/v2025.3.0...v2025.4.0) (2025-05-20)
+
+
+### Features
+
+* **Admin:** Désactivation du bouton "Valider" si aucune SIAE ne correspond ([#1689](https://github.com/gip-inclusion/le-marche/issues/1689)) ([0dac772](https://github.com/gip-inclusion/le-marche/commit/0dac772e60ebecdaac8d7c1420a0cb8b05501d30))
+* **API Swagger:** Possibilité d'ajouter son token dans Swagger  ([#1695](https://github.com/gip-inclusion/le-marche/issues/1695)) ([9fb0c76](https://github.com/gip-inclusion/le-marche/commit/9fb0c7630caf00e9026da1bc060bd9959377673f))
+* **DDB:** Possibilité d'ajouter des pièces jointes ([#1673](https://github.com/gip-inclusion/le-marche/issues/1673)) ([53d2051](https://github.com/gip-inclusion/le-marche/commit/53d2051780df3b9c6a4595d179e9f1a2c0509051))
+* Interdiction des mails personnels pour l'inscription des acheteurs ([#1677](https://github.com/gip-inclusion/le-marche/issues/1677)) ([4af734a](https://github.com/gip-inclusion/le-marche/commit/4af734abe8520faec2ed40ff47f012b3abf4bf1b))
+* Répondre aux questions de la DDB ([#1668](https://github.com/gip-inclusion/le-marche/issues/1668)) ([be12276](https://github.com/gip-inclusion/le-marche/commit/be12276aaa2be2158776b03161b71926783ab6aa))
+* Téléchargement des questions et réponses en fichiers .xlsx et .csv ([#1710](https://github.com/gip-inclusion/le-marche/issues/1710)) ([291cf55](https://github.com/gip-inclusion/le-marche/commit/291cf55555bb220e35dfcce67253625906004b7e))
+
+
+### Bug Fixes
+
+* Correction bug des paramètres GET de la vue détail de DDB ([#1706](https://github.com/gip-inclusion/le-marche/issues/1706)) ([989a870](https://github.com/gip-inclusion/le-marche/commit/989a870846e9b8fb99f741e3b986caf5b3e00705))
+* CSRF error des DDB ([#1713](https://github.com/gip-inclusion/le-marche/issues/1713)) ([5d34333](https://github.com/gip-inclusion/le-marche/commit/5d34333dbf8c8a746b606c782d2f52660caf55e2))
+* Erreur du formulaire de réponse aux questions ([#1707](https://github.com/gip-inclusion/le-marche/issues/1707)) ([7762035](https://github.com/gip-inclusion/le-marche/commit/7762035761475cdc1e7aa3d586050300a6843060))
+* **Inbound parsing:** Correction du serialiser et ajout de logs ([#1700](https://github.com/gip-inclusion/le-marche/issues/1700)) ([0496a2d](https://github.com/gip-inclusion/le-marche/commit/0496a2d2f013de178e5dbd4735103c9214cdf410))
+* Suppression accidentelle du groupe d'activité "restauration" ([#1709](https://github.com/gip-inclusion/le-marche/issues/1709)) ([0959bcb](https://github.com/gip-inclusion/le-marche/commit/0959bcbebfd1c0a96af97a30b35a522998d0a16e))
+
 ## [2025.3.0](https://github.com/gip-inclusion/le-marche/compare/v2024.9.0...v2024.2.0) (2025-03-20)
 
 
