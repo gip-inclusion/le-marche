@@ -2105,6 +2105,18 @@ class TenderSiaeDownloadViewTestCase(TestCase):
 
     def test_filtering(self):
 
+        with self.subTest(
+            status="TARGETED"
+        ):  # That status is implicit, it switches to targeted when no status is given
+            response = self.client.get(
+                reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
+                + "?tendersiae_status=&format=csv"
+            )
+            content = response.content.decode("utf-8")
+            csv_reader = csv.DictReader(content.splitlines())
+            rows = list(csv_reader)
+            self.assertEqual(len(rows), 0)
+
         with self.subTest(status="VIEWED"):
             response = self.client.get(
                 reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
