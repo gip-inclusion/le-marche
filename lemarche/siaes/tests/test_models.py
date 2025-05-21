@@ -6,6 +6,7 @@ from lemarche.labels.factories import LabelFactory
 from lemarche.networks.factories import NetworkFactory
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
+from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants, utils as siae_utils
 from lemarche.siaes.factories import (
     SiaeActivityFactory,
@@ -646,3 +647,62 @@ class SiaeActivitiesTest(TestCase):
         self.siae.name = "test_siae"
         self.siae.save()
         self.assertTrue(self.siae.updated_at == self.siae.latest_activity_at)
+
+
+class SiaeFilterWithPotentialThroughActivitiesTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.sector_1 = SectorFactory()
+        cls.sector_2 = SectorFactory()
+        cls.perimeter_1 = PerimeterFactory(
+            name="Paris", kind=Perimeter.KIND_DEPARTMENT, insee_code="75", region_code="11"
+        )
+        cls.perimeter_2 = PerimeterFactory(
+            name="Indre-et-Loire", kind=Perimeter.KIND_DEPARTMENT, insee_code="37", region_code="24"
+        )
+
+        cls.siae_1 = SiaeFactory()
+        cls.siae_2 = SiaeFactory()
+        cls.siae_3 = SiaeFactory()
+
+        cls.siae_activity_1 = SiaeActivityFactory(
+            siae=cls.siae_1,
+            sector_group=cls.sector_1.group,
+            presta_type=[siae_constants.PRESTA_BUILD],
+            with_zones_perimeter=True,
+        )
+        cls.siae_activity_1.sectors.add(cls.sector_1)
+        cls.siae_activity_1.locations.set([cls.perimeter_1])
+
+        cls.siae_activity_2 = SiaeActivityFactory(
+            siae=cls.siae_2,
+            sector_group=cls.sector_2.group,
+            presta_type=[siae_constants.PRESTA_BUILD],
+            with_zones_perimeter=True,
+        )
+        cls.siae_activity_2.sectors.add(cls.sector_2)
+        cls.siae_activity_2.locations.set([cls.perimeter_2])
+
+        cls.siae_activity_3 = SiaeActivityFactory(
+            siae=cls.siae_3,
+            sector_group=cls.sector_1.group,
+            presta_type=[siae_constants.PRESTA_BUILD],
+            with_zones_perimeter=True,
+        )
+        cls.siae_activity_3.sectors.add(cls.sector_1)
+        cls.siae_activity_3.locations.set([cls.perimeter_2])
+
+    def test_filter_with_potential_through_activities_with_sector(self):
+        siae_queryset = Siae.objects.filter_with_potential_through_activities(self.sector_1)
+        self.assertEqual(siae_queryset.count(), 2)
+        self.assertQuerySetEqual(siae_queryset, [self.siae_1, self.siae_3])
+
+    def test_filter_with_potential_through_activities_with_sector_and_perimeter(self):
+        siae_queryset = Siae.objects.filter_with_potential_through_activities(self.sector_1, self.perimeter_1)
+        self.assertEqual(siae_queryset.count(), 1)
+        self.assertQuerySetEqual(siae_queryset, [self.siae_1])
+
+    def test_filter_with_potential_through_activities_with_sector_and_perimeter_2(self):
+        siae_queryset = Siae.objects.filter_with_potential_through_activities(self.sector_1, self.perimeter_2)
+        self.assertEqual(siae_queryset.count(), 1)
+        self.assertQuerySetEqual(siae_queryset, [self.siae_3])

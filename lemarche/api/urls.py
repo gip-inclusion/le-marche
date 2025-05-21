@@ -5,6 +5,7 @@ from rest_framework import routers
 
 from lemarche.api.datacube.views import SimpleTenderList
 from lemarche.api.emails.views import InboundParsingEmailView
+from lemarche.api.inclusive_potential.views import InclusivePotentialView
 from lemarche.api.networks.views import NetworkViewSet
 from lemarche.api.perimeters.views import PerimeterAutocompleteViewSet, PerimeterKindViewSet, PerimeterViewSet
 from lemarche.api.sectors.views import SectorViewSet
@@ -41,6 +42,7 @@ urlpatterns = [
     ),
     path("inbound-email-parsing/", InboundParsingEmailView.as_view(), name="inbound-email-parsing"),
     path("datacube/tenders/", SimpleTenderList.as_view(), name="datacube-tenders"),
+    path("inclusive-potential/", InclusivePotentialView.as_view(), name="inclusive-potential"),
     # Swagger / OpenAPI documentation
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path("docs/", SpectacularSwaggerView.as_view(url_name="api:schema"), name="swagger-ui"),
