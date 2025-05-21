@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from lemarche.api.inclusive_potential.serializers import InclusivePotentialQuerySerializer
+from lemarche.siaes.constants import KIND_HANDICAP_LIST, KIND_INSERTION_LIST
 from lemarche.siaes.models import Siae
 
 
@@ -20,12 +21,13 @@ class InclusivePotentialView(APIView):
         perimeter = serializer.validated_data.get("perimeter")
 
         siaes = Siae.objects.filter_with_potential_through_activities(sector, perimeter)
-
         return Response(
             {
                 "sector_name": sector.name,
                 "perimeter_name": perimeter.name if perimeter else None,
                 "perimeter_kind": perimeter.kind if perimeter else None,
                 "potential_siaes": siaes.count(),
+                "insertion_siaes": siaes.filter(kind__in=KIND_INSERTION_LIST).count(),
+                "handicap_siaes": siaes.filter(kind__in=KIND_HANDICAP_LIST).count(),
             }
         )
