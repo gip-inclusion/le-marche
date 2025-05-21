@@ -20,7 +20,7 @@ class InclusivePotentialViewTests(TestCase):
         )
 
         self.siae_1 = SiaeFactory(kind=KIND_INSERTION_LIST[0])
-        self.siae_2 = SiaeFactory(kind=KIND_INSERTION_LIST[1])
+        self.siae_2 = SiaeFactory(kind=KIND_INSERTION_LIST[1], super_badge=True)
         self.siae_3 = SiaeFactory(kind=KIND_HANDICAP_LIST[0])
 
         for siae in [self.siae_1, self.siae_2, self.siae_3]:
@@ -64,6 +64,7 @@ class InclusivePotentialViewTests(TestCase):
         self.assertEqual(response.data["potential_siaes"], 3)
         self.assertEqual(response.data["insertion_siaes"], 2)
         self.assertEqual(response.data["handicap_siaes"], 1)
+        self.assertEqual(response.data["siaes_with_super_badge"], 1)
 
     def test_with_sector_only(self):
         """Test with only a valid sector (without perimeter)"""
@@ -77,3 +78,4 @@ class InclusivePotentialViewTests(TestCase):
         self.assertEqual(response.data["potential_siaes"], 3)
         self.assertEqual(response.data["insertion_siaes"], 2)
         self.assertEqual(response.data["handicap_siaes"], 1)
+        self.assertEqual(response.data["siaes_with_super_badge"], 1)

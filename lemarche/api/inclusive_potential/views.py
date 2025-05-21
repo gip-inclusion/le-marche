@@ -29,5 +29,6 @@ class InclusivePotentialView(APIView):
                 "potential_siaes": siaes.count(),
                 "insertion_siaes": siaes.filter(kind__in=KIND_INSERTION_LIST).count(),
                 "handicap_siaes": siaes.filter(kind__in=KIND_HANDICAP_LIST).count(),
+                "siaes_with_super_badge": siaes.filter(super_badge=True).count(),
             }
         )
