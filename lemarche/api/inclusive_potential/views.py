@@ -21,14 +21,27 @@ class InclusivePotentialView(APIView):
         perimeter = serializer.validated_data.get("perimeter")
 
         siaes = Siae.objects.filter_with_potential_through_activities(sector, perimeter)
+
+        insertion_siaes = 0
+        handicap_siaes = 0
+        siaes_with_super_badge = 0
+        for siae in siaes:
+            if siae.kind in KIND_INSERTION_LIST:
+                insertion_siaes += 1
+            elif siae.kind in KIND_HANDICAP_LIST:
+                handicap_siaes += 1
+
+            if siae.super_badge:
+                siaes_with_super_badge += 1
+
         return Response(
             {
                 "sector_name": sector.name,
                 "perimeter_name": perimeter.name if perimeter else None,
                 "perimeter_kind": perimeter.kind if perimeter else None,
                 "potential_siaes": siaes.count(),
-                "insertion_siaes": siaes.filter(kind__in=KIND_INSERTION_LIST).count(),
-                "handicap_siaes": siaes.filter(kind__in=KIND_HANDICAP_LIST).count(),
-                "siaes_with_super_badge": siaes.filter(super_badge=True).count(),
+                "insertion_siaes": insertion_siaes,
+                "handicap_siaes": handicap_siaes,
+                "siaes_with_super_badge": siaes_with_super_badge,
             }
         )
