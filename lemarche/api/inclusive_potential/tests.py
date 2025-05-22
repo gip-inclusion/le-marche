@@ -95,5 +95,6 @@ class InclusivePotentialViewTests(TestCase):
         self.assertEqual(response.data["potential_siaes"], 3)
 
         # siaes with ca: 200000 + 1000000 = 1200000 (2 siaes so avg = 600000)
+        self.assertEqual(response.data["ca_average"], 600000)
         # 100000 / 600000 * 100 = 16.67
         self.assertEqual(response.data["eco_dependency"], 16.67)

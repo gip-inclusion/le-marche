@@ -36,6 +36,7 @@ class InclusivePotentialView(APIView):
                 siaes_with_super_badge += 1
 
         eco_dependency = None
+        ca_average = None
         if budget:
             # Get all valid CA values from siaes
             ca_values = [siae.ca or siae.api_entreprise_ca for siae in siaes if siae.ca or siae.api_entreprise_ca]
@@ -54,5 +55,6 @@ class InclusivePotentialView(APIView):
                 "handicap_siaes": handicap_siaes,
                 "siaes_with_super_badge": siaes_with_super_badge,
                 "eco_dependency": eco_dependency,
+                "ca_average": ca_average,
             }
         )
