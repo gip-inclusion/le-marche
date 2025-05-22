@@ -19,8 +19,8 @@ class InclusivePotentialViewTests(TestCase):
             name="Paris", kind=Perimeter.KIND_DEPARTMENT, insee_code="75", region_code="11"
         )
 
-        siae_1 = SiaeFactory(kind=KIND_INSERTION_LIST[0])
-        siae_2 = SiaeFactory(kind=KIND_INSERTION_LIST[1], super_badge=True)
+        siae_1 = SiaeFactory(kind=KIND_INSERTION_LIST[0], api_entreprise_ca=200000)
+        siae_2 = SiaeFactory(kind=KIND_INSERTION_LIST[1], super_badge=True, ca=1000000, api_entreprise_ca=500000)
         siae_3 = SiaeFactory(kind=KIND_HANDICAP_LIST[0])
 
         for siae in [siae_1, siae_2, siae_3]:
@@ -47,6 +47,12 @@ class InclusivePotentialViewTests(TestCase):
         response = self.authenticated_client.get(
             self.url, {"sector": self.sector.slug, "perimeter": "perimetre-invalide"}
         )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_invalid_budget(self):
+        """Test with an invalid budget"""
+        response = self.authenticated_client.get(self.url, {"sector": self.sector.slug, "budget": "cent"})
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -79,3 +85,15 @@ class InclusivePotentialViewTests(TestCase):
         self.assertEqual(response.data["insertion_siaes"], 2)
         self.assertEqual(response.data["handicap_siaes"], 1)
         self.assertEqual(response.data["siaes_with_super_badge"], 1)
+
+    def test_with_budget(self):
+        """Test with a valid budget"""
+
+        response = self.authenticated_client.get(self.url, {"sector": self.sector.slug, "budget": 100000})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["potential_siaes"], 3)
+
+        # siaes with ca: 200000 + 1000000 = 1200000 (2 siaes so avg = 600000)
+        # 100000 / 600000 * 100 = 16.67
+        self.assertEqual(response.data["eco_dependency"], 16.67)
