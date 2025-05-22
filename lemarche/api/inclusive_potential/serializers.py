@@ -22,3 +22,4 @@ class InclusivePotentialQuerySerializer(serializers.Serializer):
             "does_not_exist": "Le périmètre avec ce slug n'existe pas.",
         },
     )
+    budget = serializers.IntegerField(required=False)
