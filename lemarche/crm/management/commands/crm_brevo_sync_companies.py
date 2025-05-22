@@ -1,6 +1,8 @@
 from datetime import timedelta
 
+from django.db import transaction
 from django.utils import timezone
+from tqdm import tqdm
 
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis import api_brevo
@@ -19,6 +21,7 @@ class Command(BaseCommand):
 
     Usage:
     python manage.py crm_brevo_sync_companies --recently-updated
+    python manage.py crm_brevo_sync_companies --batch-size=50 --dry-run
     python manage.py crm_brevo_sync_companies
     """
 
@@ -54,6 +57,21 @@ class Command(BaseCommand):
             default=2,
             help="Synchronize only recently modified SIAEs from the last X weeks (default: 2 weeks)",
         )
+        parser.add_argument(
+            "--batch-size",
+            dest="batch_size",
+            type=int,
+            default=50,
+            help="Number of companies to process per batch",
+        )
+        parser.add_argument(
+            "--max-retries",
+            dest="max_retries",
+            type=int,
+            default=3,
+            help="Maximum number of retry attempts in case of API error",
+        )
+        parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Simulation mode (no changes)")
 
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Simulation mode (no changes)")
 
