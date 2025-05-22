@@ -5,7 +5,7 @@ from dsfr.forms import DsfrBaseForm
 
 from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
-from lemarche.sectors.models import Sector, SectorGroup
+from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import (
     Siae,
@@ -17,7 +17,6 @@ from lemarche.siaes.models import (
     SiaeOffer,
     SiaeUserRequest,
 )
-from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.www.siaes.widgets import CustomLocationWidget
 
 
@@ -201,17 +200,10 @@ class SiaeUserRequestForm(forms.ModelForm):
 
 
 class SiaeActivitiesCreateForm(forms.ModelForm):
-    sector_group = forms.ModelChoiceField(
-        label="Secteurs d'activités",
-        queryset=SectorGroup.objects.all(),
-        required=True,
-    )
-    sectors = GroupedModelMultipleChoiceField(
-        label="Activités",
+    sector = forms.ModelChoiceField(
+        label="Activité",
         queryset=Sector.objects.form_filter_queryset(),
-        choices_groupby="group",
         required=True,
-        widget=forms.CheckboxSelectMultiple,
     )
     presta_type = forms.MultipleChoiceField(
         label=SiaeActivity._meta.get_field("presta_type").verbose_name,
@@ -269,8 +261,7 @@ class SiaeActivitiesCreateForm(forms.ModelForm):
     class Meta:
         model = SiaeActivity
         fields = [
-            "sector_group",
-            "sectors",
+            "sector",
             "presta_type",
             "geo_range",
             "geo_range_custom_distance",
