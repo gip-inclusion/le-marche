@@ -59,9 +59,9 @@ def siae_sector_groups_display(object, display_max=5, current_sector_groups=[]):
 
     # Add remaining sector groups from object's activities
     for activity in object.activities.all():
-        if activity.sector_group.slug not in seen_slugs:
-            values.append(activity.sector_group.name)
-            seen_slugs.add(activity.sector_group.slug)
+        if activity.sector.group.slug not in seen_slugs:
+            values.append(activity.sector.group.name)
+            seen_slugs.add(activity.sector.group.slug)
 
     # alphabetical order here to avoid N+1 queries
     values = sorted(values)
