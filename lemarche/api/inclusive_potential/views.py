@@ -14,7 +14,7 @@ class InclusivePotentialView(APIView):
         parameters=[InclusivePotentialQuerySerializer],
         responses={200: None},
     )
-    def get(self, request):
+    def get(self, request):  # noqa: C901
         serializer = InclusivePotentialQuerySerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
 
@@ -53,7 +53,6 @@ class InclusivePotentialView(APIView):
                     recommendation = RECOMMENDATIONS["lot"]
             elif siaes_count > 10:
                 recommendation = RECOMMENDATIONS["lot"]
-
             elif siaes_count > 1:
                 recommendation = RECOMMENDATIONS["clause"]
             else:
