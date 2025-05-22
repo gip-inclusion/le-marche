@@ -19,6 +19,7 @@ class InclusivePotentialView(APIView):
 
         sector = serializer.validated_data.get("sector")
         perimeter = serializer.validated_data.get("perimeter")
+        budget = serializer.validated_data.get("budget")
 
         siaes = Siae.objects.filter_with_potential_through_activities(sector, perimeter)
 
@@ -34,6 +35,15 @@ class InclusivePotentialView(APIView):
             if siae.super_badge:
                 siaes_with_super_badge += 1
 
+        eco_dependency = None
+        if budget:
+            # Get all valid CA values from siaes
+            ca_values = [siae.ca or siae.api_entreprise_ca for siae in siaes if siae.ca or siae.api_entreprise_ca]
+
+            if ca_values:
+                ca_average = sum(ca_values) / len(ca_values)
+                eco_dependency = round(budget / ca_average * 100, 2)
+
         return Response(
             {
                 "sector_name": sector.name,
@@ -43,5 +53,6 @@ class InclusivePotentialView(APIView):
                 "insertion_siaes": insertion_siaes,
                 "handicap_siaes": handicap_siaes,
                 "siaes_with_super_badge": siaes_with_super_badge,
+                "eco_dependency": eco_dependency,
             }
         )
