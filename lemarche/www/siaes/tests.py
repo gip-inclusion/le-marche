@@ -192,22 +192,11 @@ class SiaeSectorSearchFilterTest(TestCase):
         cls.sector_1 = SectorFactory()
         cls.sector_2 = SectorFactory()
         cls.sector_3 = SectorFactory()
-        siae_with_one_sector_activity = SiaeActivityFactory(siae=siae_with_one_sector, sector_group=cls.sector_1.group)
-        siae_with_one_sector_activity.sectors.add(cls.sector_1)
+        SiaeActivityFactory(siae=siae_with_one_sector, sector=cls.sector_1)
 
-        siae_with_two_sectors_activity_1 = SiaeActivityFactory(
-            siae=siae_with_two_sectors, sector_group=cls.sector_1.group
-        )
-        siae_with_two_sectors_activity_1.sectors.add(cls.sector_1)
-        siae_with_two_sectors_activity_2 = SiaeActivityFactory(
-            siae=siae_with_two_sectors, sector_group=cls.sector_2.group
-        )
-        siae_with_two_sectors_activity_2.sectors.add(cls.sector_2)
-
-        siae_with_other_sector_activity = SiaeActivityFactory(
-            siae=siae_with_other_sector, sector_group=cls.sector_3.group
-        )
-        siae_with_other_sector_activity.sectors.add(cls.sector_3)
+        SiaeActivityFactory(siae=siae_with_two_sectors, sector=cls.sector_1)
+        SiaeActivityFactory(siae=siae_with_two_sectors, sector=cls.sector_2)
+        SiaeActivityFactory(siae=siae_with_other_sector, sector=cls.sector_3)
 
     def test_search_sector_empty(self):
         url = reverse("siae:search_results")

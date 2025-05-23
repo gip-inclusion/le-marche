@@ -1,7 +1,7 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from lemarche.sectors.factories import SectorGroupFactory
+from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import (
     Siae,
@@ -72,14 +72,8 @@ class SiaeActivityFactory(DjangoModelFactory):
         )
         with_zones_perimeter = factory.Trait(geo_range=siae_constants.GEO_RANGE_ZONES)
 
-    sector_group = factory.SubFactory(SectorGroupFactory)
-
+    sector = factory.SubFactory(SectorFactory)
     presta_type = [siae_constants.PRESTA_DISP]
-
-    @factory.post_generation
-    def sectors(self, create, extracted, **kwargs):
-        if extracted:
-            self.sectors.add(*extracted)
 
     @factory.post_generation
     def locations(self, create, extracted, **kwargs):

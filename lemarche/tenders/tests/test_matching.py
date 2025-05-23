@@ -30,38 +30,33 @@ class TenderMatchingActivitiesTest(TestCase):
             kind=siae_constants.KIND_AI,
             coords=coords_paris,
         )
-        cls.siae_one_activity = SiaeActivityFactory(
-            siae=cls.siae_one,
-            sector_group=cls.sectors[0].group,
-            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
-            geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            geo_range_custom_distance=100,
-        )
-        cls.siae_one_activity.locations.set([cls.perimeter_paris])
         cls.siae_one_other_activity = SiaeActivityFactory(
             siae=cls.siae_one,
-            sector_group=cls.other_sector.group,
+            sector=cls.other_sector,
             presta_type=[siae_constants.PRESTA_BUILD],
             with_country_perimeter=True,
         )
-        cls.siae_one_other_activity.sectors.add(cls.other_sector)
-
         cls.siae_two = SiaeFactory(
             is_active=True,
             kind=siae_constants.KIND_ESAT,
             coords=coords_paris,
         )
-        cls.siae_two_activity = SiaeActivityFactory(
-            siae=cls.siae_two,
-            sector_group=cls.sectors[5].group,
-            presta_type=[siae_constants.PRESTA_BUILD],
-            geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            geo_range_custom_distance=10,
-        )
 
         for i in range(5):
-            cls.siae_one_activity.sectors.add(cls.sectors[i])
-            cls.siae_two_activity.sectors.add(cls.sectors[i + 5])
+            SiaeActivityFactory(
+                siae=cls.siae_one,
+                sector=cls.sectors[i],
+                presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
+                geo_range=siae_constants.GEO_RANGE_CUSTOM,
+                geo_range_custom_distance=100,
+            )
+            SiaeActivityFactory(
+                siae=cls.siae_two,
+                sector=cls.sectors[i + 5],
+                presta_type=[siae_constants.PRESTA_BUILD],
+                geo_range=siae_constants.GEO_RANGE_CUSTOM,
+                geo_range_custom_distance=10,
+            )
 
         cls.siae_three = SiaeFactory(
             is_active=True,
@@ -70,11 +65,10 @@ class TenderMatchingActivitiesTest(TestCase):
         )
         cls.siae_three_activity = SiaeActivityFactory(
             siae=cls.siae_three,
-            sector_group=cls.other_sector.group,
+            sector=cls.other_sector,
             presta_type=[siae_constants.PRESTA_BUILD],
             with_country_perimeter=True,
         )
-        cls.siae_three_activity.sectors.add(cls.other_sector)
 
         # siae with activity without locations to check if match directly city/department/region
         cls.siae_four = SiaeFactory(
@@ -86,11 +80,10 @@ class TenderMatchingActivitiesTest(TestCase):
         )
         cls.siae_four_activity = SiaeActivityFactory(
             siae=cls.siae_four,
-            sector_group=cls.sectors[0].group,
+            sector=cls.sectors[i],
             presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
             geo_range=siae_constants.GEO_RANGE_ZONES,
         )
-        cls.siae_four_activity.sectors.add(cls.sectors[i])
 
     def test_matching_siae_presta_type(self):
         tender = TenderFactory(presta_type=[], sectors=self.sectors, perimeters=self.perimeters)
@@ -137,14 +130,12 @@ class TenderMatchingActivitiesTest(TestCase):
             kind=siae_constants.KIND_AI,
             coords=Point(47.392287, 0.690049),  # Tours city
         )
-        siae_tours_activity = SiaeActivityFactory(
+        SiaeActivityFactory(
             siae=siae_tours,
-            sector_group=self.sectors[0].group,
+            sector=self.sectors[0],
             presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
             with_custom_distance_perimeter=True,
         )
-
-        siae_tours_activity.sectors.add(self.sectors[0])
 
         # create SIAE in Marseille
         siae_marseille = SiaeFactory(
@@ -152,13 +143,12 @@ class TenderMatchingActivitiesTest(TestCase):
             kind=siae_constants.KIND_AI,
             coords=self.perimeter_marseille.coords,
         )
-        siae_marseille_activity = SiaeActivityFactory(
+        SiaeActivityFactory(
             siae=siae_marseille,
-            sector_group=self.sectors[0].group,
+            sector=self.sectors[0],
             presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
             with_country_perimeter=True,
         )
-        siae_marseille_activity.sectors.add(self.sectors[0])
 
         # create tender in Azay-le-rideau (near Tours ~25km)
         perimeter_azaylerideau = PerimeterFactory(
@@ -229,13 +219,12 @@ class TenderMatchingActivitiesTest(TestCase):
     def test_matching_siae_perimeters_custom(self):
         # add Siae with geo_range_country
         siae_country = SiaeFactory(is_active=True)
-        siae_country_activity = SiaeActivityFactory(
+        SiaeActivityFactory(
             siae=siae_country,
-            sector_group=self.sectors[0].group,
+            sector=self.sectors[0],
             presta_type=[],
             with_country_perimeter=True,
         )
-        siae_country_activity.sectors.add(self.sectors[0])
         # tender perimeter custom with include_country_area = False
         tender_1 = TenderFactory(sectors=self.sectors, perimeters=self.perimeters)
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender_1)
@@ -248,20 +237,18 @@ class TenderMatchingActivitiesTest(TestCase):
     def test_matching_siae_country(self):
         # add Siae with geo_range_country
         siae_country = SiaeFactory(is_active=True)
-        siae_country_activity = SiaeActivityFactory(
+        SiaeActivityFactory(
             siae=siae_country,
-            sector_group=self.sectors[0].group,
+            sector=self.sectors[0],
             with_country_perimeter=True,
         )
-        siae_country_activity.sectors.add(self.sectors[0])
 
         siae_country_2 = SiaeFactory(is_active=True)
-        siae_country_activity_2 = SiaeActivityFactory(
+        SiaeActivityFactory(
             siae=siae_country_2,
-            sector_group=self.sectors[0].group,
+            sector=self.sectors[0],
             with_country_perimeter=True,
         )
-        siae_country_activity_2.sectors.add(self.sectors[0])
 
         # tender perimeter custom with is_country_area = False
         tender_1 = TenderFactory(sectors=self.sectors, is_country_area=True)
@@ -296,9 +283,8 @@ class TenderMatchingActivitiesTest(TestCase):
         # add Siae with geo_range_department (75)
         siae_department = SiaeFactory(is_active=True)
         siae_department_activity = SiaeActivityFactory(
-            siae=siae_department, sector_group=self.sectors[0].group, with_zones_perimeter=True
+            siae=siae_department, sector=self.sectors[0], with_zones_perimeter=True
         )
-        siae_department_activity.sectors.add(self.sectors[0])
         perimeter_department = PerimeterFactory(
             name="Paris", kind=Perimeter.KIND_DEPARTMENT, insee_code="75", region_code="11"
         )
@@ -316,10 +302,7 @@ class TenderMatchingActivitiesTest(TestCase):
         self.assertEqual(len(siae_found_list), 0)
         # add Siae with geo_range_country
         siae_country = SiaeFactory(is_active=True)
-        siae_country_activity = SiaeActivityFactory(
-            siae=siae_country, sector_group=self.sectors[0].group, with_country_perimeter=True
-        )
-        siae_country_activity.sectors.add(self.sectors[0])
+        SiaeActivityFactory(siae=siae_country, sector=self.sectors[0], with_country_perimeter=True)
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender)
         self.assertEqual(len(siae_found_list), 1)
 
@@ -333,20 +316,18 @@ class TenderMatchingActivitiesTest(TestCase):
         )
         siae_activity1 = SiaeActivityFactory(
             siae=siae,
-            sector_group=sector1.group,
+            sector=sector1,
             presta_type=[siae_constants.PRESTA_PREST],
             with_zones_perimeter=True,
         )
-        siae_activity1.sectors.add(sector1)
         siae_activity1.locations.set([self.perimeter_paris])
 
         siae_activity2 = SiaeActivityFactory(
             siae=siae,
-            sector_group=sector2.group,
+            sector=sector2,
             presta_type=[siae_constants.PRESTA_BUILD],
             with_zones_perimeter=True,
         )
-        siae_activity2.sectors.add(sector2)
         siae_activity2.locations.set([self.perimeter_paris])
 
         tender = TenderFactory(
@@ -374,9 +355,8 @@ class TenderMatchingActivitiesTest(TestCase):
     def test_with_no_contact_email(self):
         tender = TenderFactory(sectors=self.sectors, perimeters=self.perimeters)
         siae = SiaeFactory(is_active=True, contact_email="")
-        siae_activity = SiaeActivityFactory(siae=siae, sector_group=self.sectors[0].group, with_zones_perimeter=True)
+        siae_activity = SiaeActivityFactory(siae=siae, sector=self.sectors[0], with_zones_perimeter=True)
         siae_activity.locations.set([self.perimeter_paris])
-        siae_activity.sectors.add(self.sectors[0])
 
         siae_found_list = Siae.objects.filter_with_tender_through_activities(tender)
         self.assertEqual(len(siae_found_list), 3 + 0)
@@ -389,12 +369,11 @@ class TenderMatchingActivitiesTest(TestCase):
             for j in range(10):
                 siae_activity = SiaeActivityFactory(
                     siae=siae,
-                    sector_group=self.sectors[j % 10].group,
+                    sector=self.sectors[j % 10],
                     presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
                     with_zones_perimeter=True,
                 )
                 siae_activity.locations.set([self.perimeter_paris])
-                siae_activity.sectors.add(self.sectors[j % 10])
 
         tender = TenderFactory(sectors=self.sectors, perimeters=self.perimeters)
 

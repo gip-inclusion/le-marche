@@ -25,7 +25,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
             super()
             .get_queryset()
             .prefetch_related(
-                "activities", "activities__sectors", "networks", "offers", "client_references", "labels_old"
+                "activities", "activities__sector", "networks", "offers", "client_references", "labels_old"
             )
         )
 

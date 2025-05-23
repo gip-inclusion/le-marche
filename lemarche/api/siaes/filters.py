@@ -17,7 +17,7 @@ class SiaeFilter(django_filters.FilterSet):
     department = django_filters.CharFilter(label="Numéro du département")
     sectors = django_filters.ModelMultipleChoiceFilter(
         label="Secteur(s) d'activité<br /><br /><i>Mettre le slug de chaque secteur d'activité</i>",
-        field_name="activities__sectors__slug",
+        field_name="activities__sector__slug",
         to_field_name="slug",
         queryset=Sector.objects.all(),
     )
