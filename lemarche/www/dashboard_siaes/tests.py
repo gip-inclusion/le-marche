@@ -279,8 +279,6 @@ class DashboardSiaeEditActivitiesViewTest(TestCase):
 
     def test_siae_user_can_see_siae_activity_in_list(self):
         siae_activity = SiaeActivityFactory(siae=self.siae_with_user)
-        sector = SectorFactory(group=siae_activity.sector_group)
-        siae_activity.sectors.add(sector)
 
         self.client.force_login(self.user_siae)
         url = reverse("dashboard_siaes:siae_edit_activities", args=[self.siae_with_user.slug])
@@ -291,7 +289,7 @@ class DashboardSiaeEditActivitiesViewTest(TestCase):
             response, reverse("dashboard_siaes:siae_edit_activities_create", args=[self.siae_with_user.slug])
         )
 
-        self.assertContains(response, sector.name)
+        self.assertContains(response, siae_activity.sector.name)
         self.assertContains(response, siae_activity.presta_type_display)
         self.assertContains(response, siae_activity.geo_range_pretty_display)
 
@@ -457,13 +455,9 @@ class DashboardSiaeEditActivitiesEditViewTest(TestCase):
         siae_activity = SiaeActivityFactory(
             siae=self.siae_with_user, with_country_perimeter=True, presta_type=[siae_constants.PRESTA_DISP]
         )
-        sector_before = SectorFactory(group=siae_activity.sector_group)
-        siae_activity.sectors.add(sector_before)
         self.assertEqual(self.siae_with_user.activities.count(), 1)
         self.assertEqual(siae_activity.geo_range, siae_constants.GEO_RANGE_COUNTRY)
-        self.assertEqual(siae_activity.sectors.count(), 1)
-        self.assertEqual(siae_activity.sectors.first(), sector_before)
-
+        self.assertIsNotNone(siae_activity.sector)
         self.client.force_login(self.user_siae)
         url = reverse("dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.id])
         response = self.client.get(url)
@@ -494,13 +488,10 @@ class DashboardSiaeEditActivitiesEditViewTest(TestCase):
         siae_activity = SiaeActivityFactory(
             siae=self.siae_with_user, with_custom_distance_perimeter=True, presta_type=[siae_constants.PRESTA_DISP]
         )
-        sector_before = SectorFactory(group=siae_activity.sector_group)
-        siae_activity.sectors.add(sector_before)
         self.assertEqual(self.siae_with_user.activities.count(), 1)
         self.assertEqual(siae_activity.geo_range, siae_constants.GEO_RANGE_CUSTOM)
         self.assertIsNotNone(siae_activity.geo_range_custom_distance)
-        self.assertEqual(siae_activity.sectors.count(), 1)
-        self.assertEqual(siae_activity.sectors.first(), sector_before)
+        self.assertIsNotNone(siae_activity.sector)
         self.assertEqual(siae_activity.locations.count(), 0)
 
         self.client.force_login(self.user_siae)
@@ -541,12 +532,9 @@ class DashboardSiaeEditActivitiesEditViewTest(TestCase):
         siae_activity = SiaeActivityFactory(
             siae=self.siae_with_user, with_zones_perimeter=True, presta_type=[siae_constants.PRESTA_DISP]
         )
-        sector_before = SectorFactory(group=siae_activity.sector_group)
-        siae_activity.sectors.add(sector_before)
         self.assertEqual(self.siae_with_user.activities.count(), 1)
         self.assertEqual(siae_activity.geo_range, siae_constants.GEO_RANGE_ZONES)
-        self.assertEqual(siae_activity.sectors.count(), 1)
-        self.assertEqual(siae_activity.sectors.first(), sector_before)
+        self.assertIsNotNone(siae_activity.sector)
 
         perimeter_city = PerimeterFactory(name="Azay-le-rideau", kind=Perimeter.KIND_CITY, insee_code="37190")
         perimeter_department = PerimeterFactory(

@@ -50,7 +50,7 @@ def siae_sector_groups_display(object, display_max=5, current_sector_groups=[]):
     current_values = []
     # Add sector groups from current_sector_groups if they are in object's activities
     for sector_group in current_sector_groups:
-        if any(activity.sector_group.slug == sector_group.slug for activity in object.activities.all()):
+        if any(activity.sector.group.slug == sector_group.slug for activity in object.activities.all()):
             if sector_group.slug not in seen_slugs:
                 current_values.append(sector_group.name)
                 seen_slugs.add(sector_group.slug)

@@ -53,9 +53,9 @@ class SiaeListFilterApiTest(TestCase):
         cls.sector_1 = SectorFactory()
         cls.sector_2 = SectorFactory()
         siae_with_sector_1 = SiaeFactory(kind=siae_constants.KIND_EI, department="01")
-        SiaeActivityFactory(siae=siae_with_sector_1, sectors=[cls.sector_1], presta_type=[siae_constants.PRESTA_BUILD])
+        SiaeActivityFactory(siae=siae_with_sector_1, sector=cls.sector_1, presta_type=[siae_constants.PRESTA_BUILD])
         siae_with_sector_2 = SiaeFactory(kind=siae_constants.KIND_EI, department="01")
-        SiaeActivityFactory(siae=siae_with_sector_2, sectors=[cls.sector_2], presta_type=[siae_constants.PRESTA_PREST])
+        SiaeActivityFactory(siae=siae_with_sector_2, sector=cls.sector_2, presta_type=[siae_constants.PRESTA_PREST])
         cls.network_1 = NetworkFactory(name="Reseau 1")
         cls.network_2 = NetworkFactory(name="Reseau 2")
         siae_with_network_1 = SiaeFactory(kind=siae_constants.KIND_EI, department="01")
@@ -166,7 +166,7 @@ class SiaeDetailApiTest(TestCase):
         sector_3 = SectorFactory(name="sector3")
         SiaeActivityFactory(
             siae=siae2,
-            sectors=[sector_3],
+            sector=sector_3,
         )
 
         SiaeActivityFactory(
@@ -174,7 +174,7 @@ class SiaeDetailApiTest(TestCase):
             sectors=[sector_1, sector_2],
             presta_type=[siae_constants.PRESTA_BUILD, siae_constants.PRESTA_DISP],
         )
-        SiaeActivityFactory(siae=self.siae, sectors=[sector_1], presta_type=[siae_constants.PRESTA_DISP])
+        SiaeActivityFactory(siae=self.siae, sector=sector_1, presta_type=[siae_constants.PRESTA_DISP])
 
     def test_should_return_4O4_if_siae_excluded(self):
         siae_opcs = SiaeFactory(kind="OPCS")

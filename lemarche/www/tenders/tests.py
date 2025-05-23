@@ -1897,8 +1897,8 @@ class TenderQuestionAnswerTestCase(TestCase):
 
         self.siae_1 = SiaeFactory()
         self.siae_2 = SiaeFactory()
-        SiaeActivityFactory(siae=self.siae_1, sectors=[sector], locations=[perimeter])
-        SiaeActivityFactory(siae=self.siae_2, sectors=[sector], locations=[perimeter])
+        SiaeActivityFactory(siae=self.siae_1, sector=sector, locations=[perimeter])
+        SiaeActivityFactory(siae=self.siae_2, sector=sector, locations=[perimeter])
 
         self.tender = TenderFactory(sectors=[sector], perimeters=[perimeter])
         self.q1 = TenderQuestionFactory(tender=self.tender)
