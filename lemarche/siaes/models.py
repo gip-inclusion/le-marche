@@ -1400,7 +1400,7 @@ class SiaeActivityQuerySet(models.QuerySet):
 
         If tender specify a city and a distance, we filter on the Siae adress that are within the distance of the city.
         """
-        qs = self.prefetch_related("locations")
+        qs = self.select_related("sector").prefetch_related("locations")
 
         # filter by presta_type
         if len(tender.presta_type):
