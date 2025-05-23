@@ -30,14 +30,6 @@ class TenderMatchingActivitiesTest(TestCase):
             kind=siae_constants.KIND_AI,
             coords=coords_paris,
         )
-        cls.siae_one_activity = SiaeActivityFactory(
-            siae=cls.siae_one,
-            sector=cls.sectors[0],
-            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
-            geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            geo_range_custom_distance=100,
-        )
-        cls.siae_one_activity.locations.set([cls.perimeter_paris])
         cls.siae_one_other_activity = SiaeActivityFactory(
             siae=cls.siae_one,
             sector=cls.other_sector,
@@ -48,13 +40,6 @@ class TenderMatchingActivitiesTest(TestCase):
             is_active=True,
             kind=siae_constants.KIND_ESAT,
             coords=coords_paris,
-        )
-        cls.siae_two_activity = SiaeActivityFactory(
-            siae=cls.siae_two,
-            sector=cls.sectors[5],
-            presta_type=[siae_constants.PRESTA_BUILD],
-            geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            geo_range_custom_distance=10,
         )
 
         for i in range(5):
