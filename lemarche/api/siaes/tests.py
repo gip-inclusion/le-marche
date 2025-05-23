@@ -171,7 +171,12 @@ class SiaeDetailApiTest(TestCase):
 
         SiaeActivityFactory(
             siae=self.siae,
-            sectors=[sector_1, sector_2],
+            sector=sector_1,
+            presta_type=[siae_constants.PRESTA_BUILD, siae_constants.PRESTA_DISP],
+        )
+        SiaeActivityFactory(
+            siae=self.siae,
+            sector=sector_2,
             presta_type=[siae_constants.PRESTA_BUILD, siae_constants.PRESTA_DISP],
         )
         SiaeActivityFactory(siae=self.siae, sector=sector_1, presta_type=[siae_constants.PRESTA_DISP])
