@@ -97,29 +97,13 @@ class SiaeSectorGroupsDisplayTest(TestCase):
         SiaeActivityFactory(siae=cls.siae_with_one_sector, sector=sector_1)
         SiaeActivityFactory(siae=cls.siae_with_three_sectors, sector=sector_1)
         SiaeActivityFactory(siae=cls.siae_with_three_sectors, sector=sector_2)
-        siae_with_three_sectors_activity_3 = SiaeActivityFactory(siae=cls.siae_with_three_sectors, sector=sector_3)
-        siae_with_three_sectors_activity_3.sectors.add(sector_3, sector_5)
+        SiaeActivityFactory(siae=cls.siae_with_three_sectors, sector=sector_3)
 
-        siae_with_many_sectors_activity_1 = SiaeActivityFactory(
-            siae=cls.siae_with_many_sectors, sector_group=cls.sector_group_1
-        )
-        siae_with_many_sectors_activity_1.sectors.add(sector_1)
-        siae_with_many_sectors_activity_2 = SiaeActivityFactory(
-            siae=cls.siae_with_many_sectors, sector_group=cls.sector_group_2
-        )
-        siae_with_many_sectors_activity_2.sectors.add(sector_2)
-        siae_with_many_sectors_activity_3 = SiaeActivityFactory(
-            siae=cls.siae_with_many_sectors, sector_group=cls.sector_group_3
-        )
-        siae_with_many_sectors_activity_3.sectors.add(sector_3)
-        siae_with_many_sectors_activity_4 = SiaeActivityFactory(
-            siae=cls.siae_with_many_sectors, sector_group=cls.sector_group_4
-        )
-        siae_with_many_sectors_activity_4.sectors.add(sector_4)
-        siae_with_many_sectors_activity_5 = SiaeActivityFactory(
-            siae=cls.siae_with_many_sectors, sector_group=cls.sector_group_3
-        )
-        siae_with_many_sectors_activity_5.sectors.add(sector_5)
+        SiaeActivityFactory(siae=cls.siae_with_many_sectors, sector=sector_1)
+        SiaeActivityFactory(siae=cls.siae_with_many_sectors, sector=sector_2)
+        SiaeActivityFactory(siae=cls.siae_with_many_sectors, sector=sector_3)
+        SiaeActivityFactory(siae=cls.siae_with_many_sectors, sector=sector_4)
+        SiaeActivityFactory(siae=cls.siae_with_many_sectors, sector=sector_5)
 
     # Test siae_sector_groups_display if return only one sector group
     def test_should_return_html_with_siae_sector_groups(self):
