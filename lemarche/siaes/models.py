@@ -1407,7 +1407,7 @@ class SiaeActivityQuerySet(models.QuerySet):
             qs = qs.filter(presta_type__overlap=tender.presta_type)
 
         if tender.sectors.count():
-            qs = qs.filter_sectors(tender.sectors.all())
+            qs = qs.filter(sector__tenders__id=tender.id)
 
         # filter by perimeters
         if tender.is_country_area:  # for all country
