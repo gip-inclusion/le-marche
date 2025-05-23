@@ -465,8 +465,7 @@ class DashboardSiaeEditActivitiesEditViewTest(TestCase):
 
         sector_after = SectorFactory()
         data = {
-            "sector_group": sector_after.group.id,
-            "sectors": [sector_after.id],
+            "sector": sector_after.id,
             "presta_type": [siae_constants.PRESTA_BUILD],
             "geo_range": siae_constants.GEO_RANGE_CUSTOM,
             "geo_range_custom_distance": 42,
@@ -478,9 +477,9 @@ class DashboardSiaeEditActivitiesEditViewTest(TestCase):
         )
         self.assertEqual(self.siae_with_user.activities.count(), 1)
         updated_activity = self.siae_with_user.activities.first()
-        self.assertEqual(updated_activity.sector_group, sector_after.group)
-        self.assertEqual(updated_activity.sectors.count(), 1)
-        self.assertEqual(updated_activity.sectors.first(), sector_after)
+        self.assertEqual(updated_activity.sector.group, sector_after.group)
+        self.assertIsNotNone(updated_activity.sector)
+        self.assertEqual(updated_activity.sector, sector_after)
         self.assertEqual(updated_activity.presta_type, [siae_constants.PRESTA_BUILD])
         self.assertEqual(updated_activity.geo_range, siae_constants.GEO_RANGE_CUSTOM)
 
@@ -505,8 +504,7 @@ class DashboardSiaeEditActivitiesEditViewTest(TestCase):
             name="Vienne", kind=Perimeter.KIND_DEPARTMENT, insee_code="86", region_code="75"
         )
         data = {
-            "sector_group": sector_after.group.id,
-            "sectors": [sector_after.id],
+            "sector": sector_after.id,
             "presta_type": [siae_constants.PRESTA_BUILD],
             "geo_range": siae_constants.GEO_RANGE_ZONES,
             "locations": [perimeter_city.slug, perimeter_department.slug],
@@ -518,9 +516,9 @@ class DashboardSiaeEditActivitiesEditViewTest(TestCase):
         )
         self.assertEqual(self.siae_with_user.activities.count(), 1)
         updated_activity = self.siae_with_user.activities.first()
-        self.assertEqual(updated_activity.sector_group, sector_after.group)
-        self.assertEqual(updated_activity.sectors.count(), 1)
-        self.assertEqual(updated_activity.sectors.first(), sector_after)
+        self.assertEqual(updated_activity.sector.group, sector_after.group)
+        self.assertIsNotNone(updated_activity.sector)
+        self.assertEqual(updated_activity.sector, sector_after)
         self.assertEqual(updated_activity.presta_type, [siae_constants.PRESTA_BUILD])
         self.assertEqual(updated_activity.geo_range, siae_constants.GEO_RANGE_ZONES)
         self.assertEqual(updated_activity.locations.count(), 2)
@@ -551,8 +549,7 @@ class DashboardSiaeEditActivitiesEditViewTest(TestCase):
 
         sector_after = SectorFactory()
         data = {
-            "sector_group": sector_after.group.id,
-            "sectors": [sector_after.id],
+            "sector": sector_after.id,
             "presta_type": [siae_constants.PRESTA_BUILD],
             "geo_range": siae_constants.GEO_RANGE_COUNTRY,
         }
@@ -563,9 +560,9 @@ class DashboardSiaeEditActivitiesEditViewTest(TestCase):
         )
         self.assertEqual(self.siae_with_user.activities.count(), 1)
         updated_activity = self.siae_with_user.activities.first()
-        self.assertEqual(updated_activity.sector_group, sector_after.group)
-        self.assertEqual(updated_activity.sectors.count(), 1)
-        self.assertEqual(updated_activity.sectors.first(), sector_after)
+        self.assertEqual(updated_activity.sector.group, sector_after.group)
+        self.assertIsNotNone(updated_activity.sector)
+        self.assertEqual(updated_activity.sector, sector_after)
         self.assertEqual(updated_activity.presta_type, [siae_constants.PRESTA_BUILD])
         self.assertEqual(updated_activity.geo_range, siae_constants.GEO_RANGE_COUNTRY)
         self.assertEqual(updated_activity.locations.count(), 0)
