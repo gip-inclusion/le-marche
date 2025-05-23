@@ -330,8 +330,7 @@ class DashboardSiaeEditActivitiesCreateViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         data = {
-            "sector_group": self.sector_group.id,
-            "sectors": [self.sector1.id, self.sector2.id],
+            "sector": self.sector1.id,
             "presta_type": [siae_constants.PRESTA_PREST],
             "geo_range": siae_constants.GEO_RANGE_COUNTRY,
         }
@@ -342,10 +341,8 @@ class DashboardSiaeEditActivitiesCreateViewTest(TestCase):
         )
         self.assertEqual(self.siae_with_user.activities.count(), 1)
         created_activity = self.siae_with_user.activities.first()
-        self.assertEqual(created_activity.sector_group, self.sector_group)
-        self.assertEqual(created_activity.sectors.count(), 2)
-        self.assertIn(self.sector1, created_activity.sectors.all())
-        self.assertIn(self.sector2, created_activity.sectors.all())
+        self.assertEqual(created_activity.sector.group, self.sector_group)
+        self.assertEqual(created_activity.sector, self.sector1)
         self.assertEqual(created_activity.presta_type, [siae_constants.PRESTA_PREST])
         self.assertEqual(created_activity.geo_range, siae_constants.GEO_RANGE_COUNTRY)
 
@@ -357,8 +354,7 @@ class DashboardSiaeEditActivitiesCreateViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         data = {
-            "sector_group": self.sector_group.id,
-            "sectors": [self.sector1.id],
+            "sector": self.sector1.id,
             "presta_type": [siae_constants.PRESTA_DISP],
             "geo_range": siae_constants.GEO_RANGE_CUSTOM,
         }
@@ -377,9 +373,9 @@ class DashboardSiaeEditActivitiesCreateViewTest(TestCase):
 
         self.assertEqual(self.siae_with_user.activities.count(), 1)
         created_activity = self.siae_with_user.activities.first()
-        self.assertEqual(created_activity.sector_group, self.sector_group)
-        self.assertEqual(created_activity.sectors.count(), 1)
-        self.assertEqual(created_activity.sectors.first(), self.sector1)
+        self.assertEqual(created_activity.sector.group, self.sector_group)
+        self.assertIsNotNone(created_activity.sector)
+        self.assertEqual(created_activity.sector, self.sector1)
         self.assertEqual(created_activity.presta_type, [siae_constants.PRESTA_DISP])
         self.assertEqual(created_activity.geo_range, siae_constants.GEO_RANGE_CUSTOM)
         self.assertEqual(created_activity.geo_range_custom_distance, 10)
@@ -392,8 +388,7 @@ class DashboardSiaeEditActivitiesCreateViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         data = {
-            "sector_group": self.sector_group.id,
-            "sectors": [self.sector2.id],
+            "sector": self.sector2.id,
             "presta_type": [siae_constants.PRESTA_BUILD],
             "geo_range": siae_constants.GEO_RANGE_ZONES,
         }
@@ -418,9 +413,9 @@ class DashboardSiaeEditActivitiesCreateViewTest(TestCase):
 
         self.assertEqual(self.siae_with_user.activities.count(), 1)
         created_activity = self.siae_with_user.activities.first()
-        self.assertEqual(created_activity.sector_group, self.sector_group)
-        self.assertEqual(created_activity.sectors.count(), 1)
-        self.assertEqual(created_activity.sectors.first(), self.sector2)
+        self.assertEqual(created_activity.sector.group, self.sector_group)
+        self.assertIsNotNone(created_activity.sector)
+        self.assertEqual(created_activity.sector, self.sector2)
         self.assertEqual(created_activity.presta_type, [siae_constants.PRESTA_BUILD])
         self.assertEqual(created_activity.geo_range, siae_constants.GEO_RANGE_ZONES)
         self.assertEqual(created_activity.locations.count(), 3)
