@@ -199,24 +199,24 @@ class TenderModelMatchingTest(TestCase):
             is_active=True,
             kind=siae_constants.KIND_AI,
         )
-        siae_one_activity = SiaeActivityFactory(
+        SiaeActivityFactory(
             siae=cls.siae_one,
+            sector=cls.sector,
             presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
             with_country_perimeter=True,
         )
-        siae_one_activity.sectors.add(cls.sector)
 
         # siae found by presta_type
         cls.siae_two = SiaeFactory(
             is_active=True,
             kind=siae_constants.KIND_ESAT,
         )
-        siae_two_activity = SiaeActivityFactory(
+        SiaeActivityFactory(
             siae=cls.siae_two,
+            sector=cls.sector,
             presta_type=[siae_constants.PRESTA_BUILD],
             with_country_perimeter=True,
         )
-        siae_two_activity.sectors.add(cls.sector)
 
         # siae not found
         cls.siae_five = SiaeFactory()

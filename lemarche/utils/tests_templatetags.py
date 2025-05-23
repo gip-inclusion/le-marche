@@ -19,7 +19,7 @@ class SiaeActivitySectorDisplayTest(TestCase):
         sector_4 = SectorFactory(name="Bâtiment")
         sector_5 = SectorFactory(name="Informatique")
 
-        cls.siae_activity_with_one_sector = SiaeActivityFactory(siae=siae_with_one_sector, sectors=[sector_1])
+        cls.siae_activity_with_one_sector = SiaeActivityFactory(siae=siae_with_one_sector, sector=sector_1)
         cls.siae_activity_with_two_sectors = SiaeActivityFactory(
             siae=siae_with_two_sectors, sectors=[sector_1, sector_2]
         )
@@ -94,22 +94,10 @@ class SiaeSectorGroupsDisplayTest(TestCase):
         sector_4 = SectorFactory(name="Agriculture", group=cls.sector_group_4)
         sector_5 = SectorFactory(name="Plomberie", group=cls.sector_group_3)
 
-        siae_with_one_sector_activity = SiaeActivityFactory(
-            siae=cls.siae_with_one_sector, sector_group=cls.sector_group_1
-        )
-        siae_with_one_sector_activity.sectors.add(sector_1)
-
-        siae_with_three_sectors_activity_1 = SiaeActivityFactory(
-            siae=cls.siae_with_three_sectors, sector_group=cls.sector_group_1
-        )
-        siae_with_three_sectors_activity_1.sectors.add(sector_1)
-        siae_with_three_sectors_activity_2 = SiaeActivityFactory(
-            siae=cls.siae_with_three_sectors, sector_group=cls.sector_group_2
-        )
-        siae_with_three_sectors_activity_2.sectors.add(sector_2)
-        siae_with_three_sectors_activity_3 = SiaeActivityFactory(
-            siae=cls.siae_with_three_sectors, sector_group=cls.sector_group_3
-        )
+        SiaeActivityFactory(siae=cls.siae_with_one_sector, sector=sector_1)
+        SiaeActivityFactory(siae=cls.siae_with_three_sectors, sector=sector_1)
+        SiaeActivityFactory(siae=cls.siae_with_three_sectors, sector=sector_2)
+        siae_with_three_sectors_activity_3 = SiaeActivityFactory(siae=cls.siae_with_three_sectors, sector=sector_3)
         siae_with_three_sectors_activity_3.sectors.add(sector_3, sector_5)
 
         siae_with_many_sectors_activity_1 = SiaeActivityFactory(

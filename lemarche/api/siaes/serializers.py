@@ -80,5 +80,5 @@ class SiaeDetailSerializer(serializers.ModelSerializer):
 
     def get_sectors(self, obj) -> list:
         """Return unique list of serialized sectors"""
-        sectors = set(sector for activity in obj.activities.all() for sector in activity.sectors.all())
+        sectors = set(activity.sector for activity in obj.activities.all())
         return [SectorSimpleSerializer(sector).data for sector in sectors]

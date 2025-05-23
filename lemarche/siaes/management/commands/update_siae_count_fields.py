@@ -47,7 +47,7 @@ class Command(BaseCommand):
         for index, siae in enumerate(siae_queryset):
             # M2M
             siae.user_count = siae.users.count()
-            siae.sector_count = siae.activities.values_list("sector_group").distinct().count()
+            siae.sector_count = siae.activities.values_list("sector__group").distinct().count()
             siae.network_count = siae.networks.count()
             siae.group_count = siae.groups.count()
             # FK
