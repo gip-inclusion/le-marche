@@ -213,6 +213,7 @@ class SiaeFilterForm(forms.Form):
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
 
+        qs = qs.prefetch_related("activities__sector__group")
         kinds = self.cleaned_data.get("kind", None)
         if kinds:
             qs = qs.filter(kind__in=kinds)
