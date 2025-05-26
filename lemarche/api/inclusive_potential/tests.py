@@ -19,22 +19,22 @@ class InclusivePotentialViewTests(TestCase):
             name="Paris", kind=Perimeter.KIND_DEPARTMENT, insee_code="75", region_code="11"
         )
 
-        self.siae_1 = SiaeFactory(kind=KIND_INSERTION_LIST[0])
-        self.siae_2 = SiaeFactory(kind=KIND_INSERTION_LIST[1], super_badge=True)
-        self.siae_3 = SiaeFactory(kind=KIND_HANDICAP_LIST[0])
+        siae_1 = SiaeFactory(kind=KIND_INSERTION_LIST[0])
+        siae_2 = SiaeFactory(kind=KIND_INSERTION_LIST[1], super_badge=True)
+        siae_3 = SiaeFactory(kind=KIND_HANDICAP_LIST[0])
 
-        for siae in [self.siae_1, self.siae_2, self.siae_3]:
-            self.siae_activity_1 = SiaeActivityFactory(
+        for siae in [siae_1, siae_2, siae_3]:
+            siae_activity = SiaeActivityFactory(
                 siae=siae,
                 sector_group=self.sector.group,
                 with_zones_perimeter=True,
             )
-            self.siae_activity_1.sectors.add(self.sector)
-            self.siae_activity_1.locations.set([self.perimeter_department])
+            siae_activity.sectors.add(self.sector)
+            siae_activity.locations.set([self.perimeter_department])
 
-        self.token = "a" * 64
-        UserFactory(api_key=self.token)
-        self.authenticated_client = self.client_class(headers={"authorization": f"Bearer {self.token}"})
+        token = "a" * 64
+        UserFactory(api_key=token)
+        self.authenticated_client = self.client_class(headers={"authorization": f"Bearer {token}"})
 
     def test_invalid_sector(self):
         """Test with an invalid sector"""
