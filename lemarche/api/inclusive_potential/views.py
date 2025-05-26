@@ -42,8 +42,8 @@ class InclusivePotentialView(APIView):
             ca_values = [siae.ca or siae.api_entreprise_ca for siae in siaes if siae.ca or siae.api_entreprise_ca]
 
             if ca_values:
-                ca_average = sum(ca_values) / len(ca_values)
-                eco_dependency = round(budget / ca_average * 100, 2)
+                ca_average = round(sum(ca_values) / len(ca_values))
+                eco_dependency = round(budget / ca_average * 100)
 
         return Response(
             {

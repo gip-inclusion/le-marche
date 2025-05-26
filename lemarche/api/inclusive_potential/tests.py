@@ -50,9 +50,9 @@ class InclusivePotentialViewTests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_invalid_budget(self):
-        """Test with an invalid budget"""
-        response = self.authenticated_client.get(self.url, {"sector": self.sector.slug, "budget": "cent"})
+    def test_negative_budget(self):
+        """Test with a negative budget"""
+        response = self.authenticated_client.get(self.url, {"sector": self.sector.slug, "budget": -1})
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -96,5 +96,5 @@ class InclusivePotentialViewTests(TestCase):
 
         # siaes with ca: 200000 + 1000000 = 1200000 (2 siaes so avg = 600000)
         self.assertEqual(response.data["ca_average"], 600000)
-        # 100000 / 600000 * 100 = 16.67
-        self.assertEqual(response.data["eco_dependency"], 16.67)
+        # 100000 / 600000 * 100 = 16.67 -> round to 17
+        self.assertEqual(response.data["eco_dependency"], 17)
