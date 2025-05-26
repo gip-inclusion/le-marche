@@ -45,7 +45,6 @@ class InclusivePotentialView(APIView):
                 analysis_data["ca_average"] = round(sum(ca_values) / len(ca_values))
                 analysis_data["eco_dependency"] = round(budget / analysis_data["ca_average"] * 100)
 
-            recommendation = None
             if siaes_count > 30:
                 if "eco_dependency" in analysis_data and analysis_data["eco_dependency"] < 30:
                     recommendation = RECOMMENDATIONS["reservation"]
