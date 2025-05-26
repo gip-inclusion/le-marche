@@ -19,7 +19,7 @@ RECOMMENDATIONS = {
             "Après analyse, nous identifions {siaes_count} fournisseurs potentiels avec un taux de"
             "dépendance économique moyen de {eco_dependency}% et un chiffre d'affaires moyen de {ca_average}€.\n\n"
             "Votre projet d'achat a donc un très bon potentiel inclusif, mais il ne peut pas être totalement couvert "
-            "par un fournisseur inclusif seul car l'offre n'est pas suffisamment dimensionné pour répondre à "
+            "par un fournisseur inclusif seul car l'offre n'est pas suffisamment dimensionnée pour répondre à "
             "l'ensemble de votre projet.\n\n"
             "Cependant, nous vous recommandons d'allotir votre projet d'achat et d'en réserver un ou plusieurs lots "
             "pour n'en réserver qu'une partie à des fournisseurs inclusifs."

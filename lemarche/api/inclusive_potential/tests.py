@@ -116,12 +116,12 @@ class InclusivePotentialViewTests(TestCase):
     def test_recommendation_more_than_30_siaes(self):
         """
         Test with more than 30 siaes
-        Create 35 siaes with CA values take times but it's necessary for the calculation of ca average and eco dep
+        Create 31 siaes with CA values take times but it's necessary for the calculation of ca average and eco dep
         """
-        # Specific sector with 35 siaes for avoid random failure
+        # Specific sector with 31 siaes to avoid interference with existing SIAEs and avoid random failure
         specific_sector = SectorFactory(group=self.sector.group)
-        # Create 35 SIAEs with CA values
-        siaes = SiaeFactory.create_batch(35, ca=1000000)
+        # Create 31 SIAEs with CA values
+        siaes = SiaeFactory.create_batch(31, ca=1000000)
         for siae in siaes:
             siae_activity_1 = SiaeActivityFactory(
                 siae=siae,
@@ -134,7 +134,7 @@ class InclusivePotentialViewTests(TestCase):
         response = self.authenticated_client.get(self.url, {"sector": specific_sector.slug, "budget": 50000})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["potential_siaes"], 35)
+        self.assertEqual(response.data["potential_siaes"], 31)
         self.assertEqual(response.data["ca_average"], 1000000)
         self.assertEqual(response.data["eco_dependency"], 5.0)  # 50000 / 1000000 * 100
         self.assertEqual(response.data["recommendation"]["title"], "Réservation totale")
@@ -142,16 +142,16 @@ class InclusivePotentialViewTests(TestCase):
         response = self.authenticated_client.get(self.url, {"sector": specific_sector.slug, "budget": 500000})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["potential_siaes"], 35)
+        self.assertEqual(response.data["potential_siaes"], 31)
         self.assertEqual(response.data["ca_average"], 1000000)
         self.assertEqual(response.data["eco_dependency"], 50.0)  # 500000 / 1000000 * 100
         self.assertEqual(response.data["recommendation"]["title"], "Lot réservé")
 
-    def test_recommendation_more_than_10(self):
-        # Specific sector with 5 siaes for avoid random failure
+    def test_recommendation_more_than_10_siaes(self):
+        # Specific sector with 11 siaes
         specific_sector = SectorFactory(group=self.sector.group)
-        # Create 5 SIAEs with CA values
-        siaes = SiaeFactory.create_batch(5, ca=1000000)
+        # Create 11 SIAEs with CA values
+        siaes = SiaeFactory.create_batch(11, ca=1000000)
         for siae in siaes:
             siae_activity_1 = SiaeActivityFactory(
                 siae=siae,
@@ -164,11 +164,11 @@ class InclusivePotentialViewTests(TestCase):
         response = self.authenticated_client.get(self.url, {"sector": specific_sector.slug, "budget": 50000})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["potential_siaes"], 5)
-        self.assertEqual(response.data["recommendation"]["title"], "Clause sociale d'exécution")
+        self.assertEqual(response.data["potential_siaes"], 11)
+        self.assertEqual(response.data["recommendation"]["title"], "Lot réservé")
 
     def test_recommendation_no_siae(self):
-        # Specific sector with 0 siaes for avoid random failure
+        # Specific sector with 0 siaes
         specific_sector = SectorFactory(group=self.sector.group)
 
         response = self.authenticated_client.get(self.url, {"sector": specific_sector.slug, "budget": 50000})
