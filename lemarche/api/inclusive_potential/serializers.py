@@ -22,3 +22,10 @@ class InclusivePotentialQuerySerializer(serializers.Serializer):
             "does_not_exist": "Le périmètre avec ce slug n'existe pas.",
         },
     )
+    budget = serializers.IntegerField(
+        required=False,
+        min_value=0,
+        error_messages={
+            "min_value": "Le budget doit être un nombre positif.",
+        },
+    )
