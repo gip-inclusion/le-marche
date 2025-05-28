@@ -19,6 +19,38 @@ logger = logging.getLogger(__name__)
 ENV_NOT_ALLOWED = ("dev", "test")
 
 
+def handle_api_retry(exception, attempt, max_retries, retry_delay, operation_name, entity_id):
+    """
+    Helper function to handle API retry logic with exponential backoff
+
+    Args:
+        exception: The API exception that occurred
+        attempt: Current attempt number (0-based)
+        max_retries: Maximum number of retry attempts
+        retry_delay: Base delay in seconds between attempts
+        operation_name: Name of the operation for logging
+        entity_id: ID of the entity being processed
+
+    Returns:
+        tuple: (should_retry: bool, wait_time: int)
+    """
+    if exception.status == 429:  # Rate limiting
+        wait_time = retry_delay * (attempt + 1) * 2
+        logger.warning(f"Rate limit reached while {operation_name} {entity_id}, waiting {wait_time}s")
+        return True, wait_time
+
+    # For other errors
+    if attempt < max_retries - 1:
+        wait_time = retry_delay * (attempt + 1)
+        logger.warning(
+            f"Error {operation_name} {entity_id}, attempt {attempt+1}/{max_retries} in {wait_time}s: {exception}"
+        )
+        return True, wait_time
+    else:
+        logger.error(f"Failed after {max_retries} attempts to {operation_name} {entity_id}: {exception}")
+        return False, 0
+
+
 def get_config():
     config = sib_api_v3_sdk.Configuration()
     config.api_key["api-key"] = settings.BREVO_API_KEY
@@ -224,16 +256,20 @@ def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5
                     logger.error(f"Error retrieving contact ID: {lookup_error}")
 
             # Rate limiting - wait longer
-            if e.status == 429:
-                wait_time = retry_delay * (attempt + 1) * 2  # Exponential backoff
-                logger.warning(f"Rate limit reached, waiting {wait_time}s before retry ({attempt+1}/{max_retries})")
+            should_retry, wait_time = handle_api_retry(
+                e, attempt, max_retries, retry_delay, "creating contact", user.email
+            )
+            if should_retry:
                 time.sleep(wait_time)
                 continue
 
-            # Other errors
+            # Handle retry logic for other errors
             logger.error(f"Exception when calling Brevo->ContactsApi->create_contact (list_id : {list_id}): {e.body}")
-            if attempt < max_retries - 1:
-                wait_time = retry_delay * (attempt + 1)
+            should_retry, wait_time = handle_api_retry(
+                e, attempt, max_retries, retry_delay, "creating contact", user.email
+            )
+
+            if should_retry:
                 logger.info(f"Attempt {attempt+1}/{max_retries} failed, retrying in {wait_time}s...")
                 time.sleep(wait_time)
             else:
@@ -375,21 +411,21 @@ def create_or_update_company(siae, max_retries=3, retry_delay=5):
                     return create_or_update_company(siae, max_retries, retry_delay)
 
                 # In case of rate limiting, wait longer
-                if e.status == 429:
-                    wait_time = retry_delay * (attempt + 1) * 2
-                    logger.warning(f"Rate limit reached while updating company {siae.id}, waiting {wait_time}s")
+                should_retry, wait_time = handle_api_retry(
+                    e, attempt, max_retries, retry_delay, "updating company", siae.id
+                )
+                if should_retry:
                     time.sleep(wait_time)
                     continue
 
-                # For other errors
-                if attempt < max_retries - 1:
-                    wait_time = retry_delay * (attempt + 1)
-                    logger.warning(
-                        f"Error updating company {siae.id}, attempt {attempt+1}/{max_retries} in {wait_time}s: {e}"
-                    )
+                # Handle retry logic for other errors
+                should_retry, wait_time = handle_api_retry(
+                    e, attempt, max_retries, retry_delay, "updating company", siae.id
+                )
+
+                if should_retry:
                     time.sleep(wait_time)
                 else:
-                    logger.error(f"Failed after {max_retries} attempts to update company {siae.id}: {e}")
                     sync_log["status"] = "error"
                     sync_log["error"] = str(e)
                     siae.logs.append({"brevo_sync": sync_log})
@@ -429,21 +465,21 @@ def create_or_update_company(siae, max_retries=3, retry_delay=5):
                         pass
 
                 # Rate limiting
-                if e.status == 429:
-                    wait_time = retry_delay * (attempt + 1) * 2
-                    logger.warning(f"Rate limit reached while creating company {siae.id}, waiting {wait_time}s")
+                should_retry, wait_time = handle_api_retry(
+                    e, attempt, max_retries, retry_delay, "creating company", siae.id
+                )
+                if should_retry:
                     time.sleep(wait_time)
                     continue
 
-                # Other errors
-                if attempt < max_retries - 1:
-                    wait_time = retry_delay * (attempt + 1)
-                    logger.warning(
-                        f"Error creating company {siae.id}, attempt {attempt+1}/{max_retries} in {wait_time}s: {e}"
-                    )
+                # Handle retry logic for other errors
+                should_retry, wait_time = handle_api_retry(
+                    e, attempt, max_retries, retry_delay, "creating company", siae.id
+                )
+
+                if should_retry:
                     time.sleep(wait_time)
                 else:
-                    logger.error(f"Failed after {max_retries} attempts to create company {siae.id}: {e}")
                     sync_log["status"] = "error"
                     sync_log["error"] = str(e)
                     siae.logs.append({"brevo_sync": sync_log})
