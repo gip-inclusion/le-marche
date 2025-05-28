@@ -10,10 +10,7 @@ from lemarche.siaes.models import Siae
 
 class InclusivePotentialView(APIView):
 
-    @extend_schema(
-        parameters=[InclusivePotentialQuerySerializer],
-        responses={200: None},
-    )
+    @extend_schema(exclude=True)
     def get(self, request):  # noqa: C901
         serializer = InclusivePotentialQuerySerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -47,16 +44,17 @@ class InclusivePotentialView(APIView):
 
             if siaes_count > 30:
                 if "eco_dependency" in analysis_data and analysis_data["eco_dependency"] < 30:
-                    recommendation = RECOMMENDATIONS["reservation"]
+                    recommendation = RECOMMENDATIONS["reservation"].copy()
                 else:
-                    recommendation = RECOMMENDATIONS["lot"]
+                    recommendation = RECOMMENDATIONS["lot"].copy()
             elif siaes_count > 10:
-                recommendation = RECOMMENDATIONS["lot"]
+                recommendation = RECOMMENDATIONS["lot"].copy()
             elif siaes_count > 1:
-                recommendation = RECOMMENDATIONS["clause"]
+                recommendation = RECOMMENDATIONS["clause"].copy()
             else:
-                recommendation = RECOMMENDATIONS["aucun"]
+                recommendation = RECOMMENDATIONS["aucun"].copy()
 
+            # check if eco_dependency and ca_average exist as they are needed to format the explanation
             recommendation["explanation"] = (
                 recommendation["explanation"].format(
                     siaes_count=siaes_count,
