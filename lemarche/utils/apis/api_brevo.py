@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 ENV_NOT_ALLOWED = ("dev", "test")
 
 
-def handle_api_retry(exception, attempt, max_retries, retry_delay, operation_name, entity_id):
+def handle_api_retry(exception: ApiException, attempt, max_retries, retry_delay, operation_name, entity_id):
     """
     Helper function to handle API retry logic with exponential backoff
 
@@ -386,98 +386,56 @@ def create_or_update_company(siae, max_retries=3, retry_delay=5):
         "operation": "update" if siae.brevo_company_id else "create",
     }
 
-    if siae.brevo_company_id:  # update
-        for attempt in range(max_retries):
-            try:
+    is_update = bool(siae.brevo_company_id)
+
+    for attempt in range(max_retries):
+        try:
+            if is_update:
                 api_response = api_instance.companies_id_patch(siae.brevo_company_id, siae_brevo_company_body)
-                siae.logs.append({"brevo_sync": sync_log})
-                siae.save(update_fields=["logs"])
-                return True
-            except ApiException as e:
-                # If ID no longer exists in Brevo, try to create the company instead
-                if e.status == 404:
-                    logger.warning(
-                        f"Company {siae.id} (ID {siae.brevo_company_id}) not found in Brevo, attempting to create..."
-                    )
-                    siae.brevo_company_id = None
-                    siae.save(update_fields=["brevo_company_id"])
-                    return create_or_update_company(siae, max_retries, retry_delay)
-
-                # In case of rate limiting, wait longer
-                should_retry, wait_time = handle_api_retry(
-                    e, attempt, max_retries, retry_delay, "updating company", siae.id
-                )
-                if should_retry:
-                    time.sleep(wait_time)
-                    continue
-
-                # Handle retry logic for other errors
-                should_retry, wait_time = handle_api_retry(
-                    e, attempt, max_retries, retry_delay, "updating company", siae.id
-                )
-
-                if should_retry:
-                    time.sleep(wait_time)
-                else:
-                    sync_log["status"] = "error"
-                    sync_log["error"] = str(e)
-                    siae.logs.append({"brevo_sync": sync_log})
-                    siae.save(update_fields=["logs"])
-                    return False
-    else:  # create
-        for attempt in range(max_retries):
-            try:
+            else:
                 api_response = api_instance.companies_post(siae_brevo_company_body)
                 siae.brevo_company_id = api_response.id
-                sync_log["status"] = "success"
                 sync_log["brevo_company_id"] = siae.brevo_company_id
-                siae.logs.append({"brevo_sync": sync_log})
-                siae.save(update_fields=["brevo_company_id", "logs"])
 
-                # After creating the company, we can try to link the contacts
+            # Succès commun
+            sync_log["status"] = "success"
+            siae.logs.append({"brevo_sync": sync_log})
+
+            if is_update:
+                siae.save(update_fields=["logs"])
+            else:
+                siae.save(update_fields=["brevo_company_id", "logs"])
+                # Lier les contacts après création
                 try:
                     link_company_with_contact_list(siae)
                 except Exception as link_error:
                     logger.warning(f"Error linking company {siae.id} with its contacts: {link_error}")
 
-                return True
-            except ApiException as e:
-                # Check if company already exists
-                if e.status == 400:
-                    try:
-                        error_body = json.loads(e.body)
-                        if error_body.get("code") == "duplicate_parameter":
-                            logger.info(f"Company {siae.name} already exists in Brevo, cannot create it again")
-                            # We could try to find the existing company by name
-                            sync_log["status"] = "warning"
-                            sync_log["message"] = "Company exists in Brevo but unable to retrieve ID"
-                            siae.logs.append({"brevo_sync": sync_log})
-                            siae.save(update_fields=["logs"])
-                            return False
-                    except (json.JSONDecodeError, AttributeError):
-                        pass
+            return True
 
-                # Rate limiting
-                should_retry, wait_time = handle_api_retry(
-                    e, attempt, max_retries, retry_delay, "creating company", siae.id
+        except ApiException as e:
+            if is_update and e.status == 404:
+                logger.warning(
+                    f"Company {siae.id} (ID {siae.brevo_company_id}) not found in Brevo, attempting to create..."
                 )
-                if should_retry:
-                    time.sleep(wait_time)
-                    continue
+                # set the brevo_company_id to None to retry creation
+                siae.brevo_company_id = None
+                siae.save(update_fields=["brevo_company_id"])
+                return create_or_update_company(siae, max_retries, retry_delay)
 
-                # Handle retry logic for other errors
-                should_retry, wait_time = handle_api_retry(
-                    e, attempt, max_retries, retry_delay, "creating company", siae.id
-                )
+            should_retry, wait_time = handle_api_retry(
+                e, attempt, max_retries, retry_delay, f"{'updating' if is_update else 'creating'} company", siae.id
+            )
 
-                if should_retry:
-                    time.sleep(wait_time)
-                else:
-                    sync_log["status"] = "error"
-                    sync_log["error"] = str(e)
-                    siae.logs.append({"brevo_sync": sync_log})
-                    siae.save(update_fields=["logs"])
-                    return False
+            if should_retry:
+                time.sleep(wait_time)
+                continue
+            else:
+                sync_log["status"] = "error"
+                sync_log["error"] = str(e)
+                siae.logs.append({"brevo_sync": sync_log})
+                siae.save(update_fields=["logs"])
+                return False
 
     return False
 
