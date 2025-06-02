@@ -22,7 +22,14 @@ from formtools.wizard.views import SessionWizardView
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.forms import QuestionAnswerForm, SiaeSelectionForm
-from lemarche.tenders.models import QuestionAnswer, Tender, TenderQuestion, TenderSiae, TenderStepsData
+from lemarche.tenders.models import (
+    QuestionAnswer,
+    SuggestedQuestion,
+    Tender,
+    TenderQuestion,
+    TenderSiae,
+    TenderStepsData,
+)
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.utils import constants, settings_context_processors
@@ -122,6 +129,8 @@ class TenderCreateMultiStepView(SessionWizardView):
             kwargs["kind"] = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("kind")
             if self.instance.id:  # for draft
                 kwargs["questions_list"] = list(self.instance.questions_list())
+            else:  # for new Tender, display suggested questions first
+                kwargs["questions_list"] = [{"text": question.text} for question in SuggestedQuestion.objects.all()]
         if step == self.STEP_CONTACT:
             kwargs["kind"] = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("kind")
             detail_data = self.get_cleaned_data_for_step(self.STEP_DETAIL)
