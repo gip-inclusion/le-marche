@@ -22,38 +22,34 @@
             </button>
         </h3>
         <div class="fr-collapse" id="questions-accordion">
-            <div class="fr-grid-row fr-mb-4w">
-                <div class="fr-col-12">
-                    <div class="fr-mt-2v" x-show="questions.length > 0" x-cloak>
-                        <template x-for="(question, index) in questions" :key="index">
-                            <div class="fr-grid-row fr-mb-2w">
-                                <div class="fr-col-11">
-                                    <div class="fr-input-group mb-3" :key="index">
-                                        <input type="text"
-                                               x-model="question.text"
-                                               name="alpine-questions_list"
-                                               class="fr-input"/>
-                                    </div>
-                                </div>
-                                <div class="fr-col-1">
-                                    <button class="fr-btn fr-icon-delete-bin-line fr-btn--tertiary-no-outline"
-                                            type="button"
-                                            @click="removeQuestion(index)">Supprimer la question
-                                    </button>
-                                </div>
+            <div class="fr-mt-2v" x-show="questions.length > 0" x-cloak>
+                <template x-for="(question, index) in questions" :key="index">
+                    <div class="fr-grid-row fr-mb-2w">
+                        <div class="fr-col-11">
+                            <div class="fr-input-group mb-3" :key="index">
+                                <input type="text"
+                                       x-model="question.text"
+                                       name="alpine-questions_list"
+                                       class="fr-input"/>
                             </div>
-                        </template>
-                        <input type="hidden"
-                               name="detail-questions_list"
-                               :value="getValue()"
-                               value="form.questions_list">
+                        </div>
+                        <div class="fr-col-1">
+                            <button class="fr-btn fr-icon-delete-bin-line fr-btn--tertiary-no-outline"
+                                    type="button"
+                                    @click="removeQuestion(index)">Supprimer la question
+                            </button>
+                        </div>
                     </div>
-                    <button type="button"
-                            class="fr-btn fr-btn--tertiary"
-                            x-on:click="addNewQuestion()">Ajouter une question
-                    </button>
-                </div>
+                </template>
+                <input type="hidden"
+                       name="detail-questions_list"
+                       :value="getValue()"
+                       value="form.questions_list">
             </div>
+            <button type="button"
+                    class="fr-btn fr-btn--tertiary"
+                    x-on:click="addNewQuestion()">Ajouter une question
+                    </button>
         </div>
     </div>
     <div class="fr-grid-row fr-mb-4w">
