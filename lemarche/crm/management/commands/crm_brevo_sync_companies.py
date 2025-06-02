@@ -1,17 +1,11 @@
-import logging
-import time
 from datetime import timedelta
 
-from django.db import transaction
 from django.utils import timezone
 from tqdm import tqdm
 
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis import api_brevo
 from lemarche.utils.commands import BaseCommand
-
-
-logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -82,7 +76,6 @@ class Command(BaseCommand):
 
         if dry_run:
             self.stdout_info("Simulation mode enabled - no changes will be made")
-            return
 
         # Statistics for final report
         stats = {"created": 0, "updated": 0, "skipped": 0, "errors": 0, "extra_data_updated": 0, "total": total_siaes}
@@ -93,12 +86,9 @@ class Command(BaseCommand):
             batch_siaes = siaes_qs[batch_start:batch_end]
 
             for siae in batch_siaes:
-                retry_count = 0
-                success = False
-
                 # Prepare new data for extra_data
                 new_extra_data = {
-                    "completion_rate": siae.completion_rate if siae.completion_rate is not None else 0,
+                    "completion_rate": siae.completion_rate,
                     "tender_received": siae.tender_email_send_count_annotated,
                     "tender_interest": siae.tender_detail_contact_click_count_annotated,
                 }
@@ -106,18 +96,17 @@ class Command(BaseCommand):
                 # Update extra_data if necessary
                 extra_data_changed = False
                 if siae.extra_data.get("brevo_company_data") != new_extra_data:
-                    with transaction.atomic():
-                        siae.extra_data.update({"brevo_company_data": new_extra_data})
+                    siae.extra_data.update({"brevo_company_data": new_extra_data})
+                    if not dry_run:
                         siae.save(update_fields=["extra_data"])
-                        extra_data_changed = True
-                        stats["extra_data_updated"] += 1
+                    extra_data_changed = True
+                    stats["extra_data_updated"] += 1
 
-                # Synchronize with Brevo with retry mechanism
-                while retry_count < max_retries and not success:
                     try:
                         # If it's a new SIAE (without Brevo ID) or if extra_data has changed
                         if not siae.brevo_company_id or extra_data_changed:
-                            api_brevo.create_or_update_company(siae)
+                            if not dry_run:
+                                api_brevo.create_or_update_company(siae, max_retries=max_retries, retry_delay=5)
 
                             if siae.brevo_company_id:
                                 stats["updated"] += 1
@@ -126,32 +115,9 @@ class Command(BaseCommand):
                         else:
                             stats["skipped"] += 1
 
-                        success = True
-
                     except Exception as e:
-                        retry_count += 1
-                        wait_time = 2**retry_count  # Exponential backoff
-
-                        if retry_count >= max_retries:
-                            stats["errors"] += 1
-                            self.stdout_error(
-                                f"Failed after {max_retries} attempts for SIAE {siae.id} ({siae.name}): {str(e)}"
-                            )
-                        else:
-                            self.stdout_warning(
-                                f"Error synchronizing SIAE {siae.id}, "
-                                f"attempt {retry_count}/{max_retries} in {wait_time}s: {str(e)}"
-                            )
-                            time.sleep(wait_time)
-
-                # Pause to avoid API rate limiting
-                count = 0
-                for i, item in enumerate(batch_siaes):
-                    if item.id == siae.id:
-                        count = i
-                        break
-                if count % 10 == 0 and count > 0:
-                    time.sleep(1)
+                        stats["errors"] += 1
+                        self.stdout_error(f"Error processing {siae.id}: {str(e)}")
 
         # Final report
         self.stdout_info("-" * 80)
