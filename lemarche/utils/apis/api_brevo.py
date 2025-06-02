@@ -599,7 +599,9 @@ def create_or_update_company(siae, max_retries=3, retry_delay=5):
                 siae.save(update_fields=["brevo_company_id", "logs"])
                 # Link contacts after creation
                 try:
-                    link_company_with_contact_list(siae)
+                    link_company_with_contact_list(
+                        siae.brevo_company_id, list(siae.users.values_list("brevo_contact_id", flat=True))
+                    )
                 except Exception as link_error:
                     logger.warning(f"Error linking company {siae.id} with its contacts: {link_error}")
 
@@ -637,6 +639,107 @@ def create_or_update_company(siae, max_retries=3, retry_delay=5):
     raise CompanySyncError(
         f"Failed to {'update' if is_update else 'create'} company {siae.id} after {max_retries} attempts"
     )
+
+
+def create_or_update_buyer_company(company, max_retries=3, retry_delay=5):
+    """
+    Creates or updates a buyer company in Brevo CRM
+
+    Args:
+        company: Company (buyer) object to synchronize with Brevo
+        max_retries (int): Maximum number of retry attempts in case of error
+        retry_delay (int): Delay in seconds between retry attempts
+
+    Returns:
+        bool: True if operation was successful, False otherwise
+    """
+    api_client = get_api_client()
+    api_instance = sib_api_v3_sdk.CompaniesApi(api_client)
+
+    company_brevo_body = sib_api_v3_sdk.Body(
+        name=company.name,
+        attributes={
+            # default attributes
+            "domain": company.website,
+            "phone_number": "",  # Company model doesn't have phone
+            # custom attributes
+            "app_id": company.id,
+            "siae": False,  # This is a buyer company, not SIAE
+            "description": company.description,
+            "kind": "BUYER",  # Distinguish from SIAE
+            "siret": company.siret,
+            "app_admin_url": get_object_admin_url(company),
+            "nombre_utilisateurs": company.extra_data.get("brevo_company_data", {}).get("user_count"),
+            "nombre_besoins": company.extra_data.get("brevo_company_data", {}).get("user_tender_count"),
+            "email_domains": ",".join(company.email_domain_list) if company.email_domain_list else "",
+        },
+    )
+
+    sync_log = {
+        "date": datetime.now().isoformat(),
+        "operation": "update" if company.brevo_company_id else "create",
+    }
+
+    is_update = bool(company.brevo_company_id)
+
+    for attempt in range(max_retries):
+        try:
+            if is_update:
+                api_response = api_instance.companies_id_patch(company.brevo_company_id, company_brevo_body)
+            else:
+                api_response = api_instance.companies_post(company_brevo_body)
+                company.brevo_company_id = api_response.id
+                sync_log["brevo_company_id"] = company.brevo_company_id
+
+            # Succès commun
+            sync_log["status"] = "success"
+            company.logs.append({"brevo_sync": sync_log})
+
+            if is_update:
+                company.save(update_fields=["logs"])
+            else:
+                company.save(update_fields=["brevo_company_id", "logs"])
+                # Lier les contacts après création
+                try:
+                    link_company_with_contact_list(
+                        company.brevo_company_id, list(company.users.values_list("brevo_contact_id", flat=True))
+                    )
+                except Exception as link_error:
+                    logger.warning(f"Error linking buyer company {company.id} with its contacts: {link_error}")
+
+            return True
+
+        except ApiException as e:
+            if is_update and e.status == 404:
+                logger.warning(
+                    f"""Buyer company {company.id} (ID {company.brevo_company_id}) not found in Brevo,
+                    attempting to create..."""
+                )
+                # set the brevo_company_id to None to retry creation
+                company.brevo_company_id = None
+                company.save(update_fields=["brevo_company_id"])
+                return create_or_update_buyer_company(company, max_retries, retry_delay)
+
+            should_retry, wait_time = handle_api_retry(
+                e,
+                attempt,
+                max_retries,
+                retry_delay,
+                f"{'updating' if is_update else 'creating'} buyer company",
+                company.id,
+            )
+
+            if should_retry:
+                time.sleep(wait_time)
+                continue
+            else:
+                sync_log["status"] = "error"
+                sync_log["error"] = str(e)
+                company.logs.append({"brevo_sync": sync_log})
+                company.save(update_fields=["logs"])
+                return False
+
+    return False
 
 
 def create_deal(tender, owner_email: str):
@@ -724,7 +827,7 @@ def link_deal_with_contact_list(tender, contact_list: list = None):
             logger.error("Exception when calling Brevo->DealApi->crm_deals_link_unlink_id_patch: %s\n" % e)
 
 
-def link_company_with_contact_list(siae, contact_list: list = None):
+def link_company_with_contact_list(brevo_company_id: int, contact_list: list):
     """
     Links a Brevo company to a list of contacts. If no contact list is provided, it defaults
     to linking the company with the siae's users.
@@ -733,7 +836,7 @@ def link_company_with_contact_list(siae, contact_list: list = None):
     siae author's user(s) ID(s) to link contacts to the company in the Brevo CRM.
 
     Args:
-        siae (Siae): The siae object containing the Brevo company ID and author's contact ID.
+        brevo_company_id (int): The Brevo company ID to link contacts to.
         contact_list (list of int, optional): List of contact IDs to be linked with the company. Defaults to None.
 
     Raises:
@@ -745,10 +848,7 @@ def link_company_with_contact_list(siae, contact_list: list = None):
     if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
         try:
             # get brevo ids
-            brevo_crm_company_id = siae.brevo_company_id
-            # Default to the siae's user(s) ID(s) if no contact list is provided
-            if not contact_list:
-                contact_list = list(siae.users.values_list("brevo_contact_id", flat=True))
+            brevo_crm_company_id = brevo_company_id
 
             # cleanup
             contact_list = [id for id in contact_list if id is not None]
