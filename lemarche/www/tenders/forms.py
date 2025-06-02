@@ -125,13 +125,15 @@ class TenderCreateStepDetailForm(forms.ModelForm):
             "amount": forms.Select(attrs={"x-model": "formData.amount", "x-on:change": "getImpactMessage()"}),
         }
 
-    def __init__(self, kind, *args, **kwargs):
+    def __init__(self, kind, questions_list=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # required fields
         self.fields["deadline_date"].required = True
 
         if self.instance.deadline_date:
             self.initial["deadline_date"] = self.instance.deadline_date.isoformat()
+        if questions_list:
+            self.initial["questions_list"] = questions_list
 
         if self.instance.start_working_date:
             self.initial["start_working_date"] = self.instance.start_working_date.isoformat()
