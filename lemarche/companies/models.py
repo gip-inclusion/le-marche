@@ -49,6 +49,11 @@ class Company(models.Model):
         "Nombre de besoins déposés par les utilisateurs", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
     )
 
+    # Brevo CRM integration
+    brevo_company_id = models.CharField(verbose_name="Brevo company id", max_length=80, blank=True, null=True)
+    extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)
+    logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
+
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
