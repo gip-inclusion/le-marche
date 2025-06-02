@@ -1,6 +1,7 @@
 import logging
+from datetime import timedelta
 
-from django.db import transaction
+from django.utils import timezone
 from tqdm import tqdm
 
 from lemarche.users.models import User
@@ -23,7 +24,7 @@ class Command(BaseCommand):
 
     Usage:
     python manage.py crm_brevo_sync_contacts --kind-users=BUYER --brevo-list-id=10 --with-existing-contacts --dry-run
-    python manage.py crm_brevo_sync_contacts --kind-users=SIAE --brevo-list-id=23
+    python manage.py crm_brevo_sync_contacts --kind-users=SIAE
     python manage.py crm_brevo_sync_contacts --recently-updated --brevo-list-id=23
     """
 
@@ -33,7 +34,7 @@ class Command(BaseCommand):
             "--brevo-list-id",
             dest="brevo_list_id",
             type=int,
-            required=True,
+            required=False,
             help="Brevo list ID to synchronize with",
         )
         parser.add_argument(
@@ -78,10 +79,6 @@ class Command(BaseCommand):
             self.stdout_info(f"Filtering by user type: {kind_users}")
 
         if recently_updated:
-            from datetime import timedelta
-
-            from django.utils import timezone
-
             two_weeks_ago = timezone.now() - timedelta(weeks=2)
             users_qs = users_qs.filter(updated_at__gte=two_weeks_ago)
             self.stdout_info(f"Filtering by update date: users modified since {two_weeks_ago}")
@@ -94,7 +91,10 @@ class Command(BaseCommand):
         existing_contacts = {}
         if with_existing_contacts:
             self.stdout_info(f"Retrieving existing contacts from Brevo list (ID: {brevo_list_id})...")
-            existing_contacts = api_brevo.get_all_users_from_list(list_id=brevo_list_id, verbose=True)
+            if not brevo_list_id:
+                existing_contacts = api_brevo.get_all_users_from_list(verbose=True)
+            else:
+                existing_contacts = api_brevo.get_all_contacts(list_id=brevo_list_id, verbose=True)
             self.stdout_info(f"Existing contacts in Brevo list: {len(existing_contacts)}")
 
         if dry_run:
@@ -111,37 +111,36 @@ class Command(BaseCommand):
 
             for user in batch_users:
                 try:
-                    with transaction.atomic():
-                        brevo_contact_id = None
+                    brevo_contact_id = None
 
-                        # Check if user already exists in Brevo
-                        if with_existing_contacts:
-                            brevo_contact_id = existing_contacts.get(user.email)
+                    # Check if user already exists in Brevo
+                    if with_existing_contacts:
+                        brevo_contact_id = existing_contacts.get(user.email)
 
-                            # If ID is already correctly registered, skip this user
-                            if user.brevo_contact_id and user.brevo_contact_id == brevo_contact_id:
-                                self.stdout_debug(f"Contact {user.email} already up to date in Brevo")
-                                stats["skipped"] += 1
-                                continue
+                        # If ID is already correctly registered, skip this user
+                        if user.brevo_contact_id and user.brevo_contact_id == brevo_contact_id:
+                            self.stdout_info(f"Contact {user.id} already up to date in Brevo")
+                            stats["skipped"] += 1
+                            continue
 
-                        # If we found an existing Brevo ID, save it
-                        if brevo_contact_id:
-                            self.stdout_debug(f"Updating Brevo ID for {user.email}: {brevo_contact_id}")
-                            user.brevo_contact_id = brevo_contact_id
-                            user.save(update_fields=["brevo_contact_id"])
-                            stats["updated"] += 1
-                        # Otherwise, create a new contact in Brevo
+                    # If we found an existing Brevo ID, save it
+                    if brevo_contact_id:
+                        self.stdout_info(f"Updating Brevo ID for {user.id}: {brevo_contact_id}")
+                        user.brevo_contact_id = brevo_contact_id
+                        user.save(update_fields=["brevo_contact_id"])
+                        stats["updated"] += 1
+                    # Otherwise, create a new contact in Brevo
+                    else:
+                        self.stdout_info(f"Creating a new contact for {user.id}")
+                        result = api_brevo.create_contact(user=user, list_id=brevo_list_id)
+                        if result:
+                            stats["created"] += 1
                         else:
-                            self.stdout_debug(f"Creating a new contact for {user.email}")
-                            result = api_brevo.create_contact(user=user, list_id=brevo_list_id)
-                            if result:
-                                stats["created"] += 1
-                            else:
-                                stats["errors"] += 1
+                            stats["errors"] += 1
 
                 except Exception as e:
                     stats["errors"] += 1
-                    self.stdout_error(f"Error processing {user.email}: {str(e)}")
+                    self.stdout_error(f"Error processing {user.id}: {str(e)}")
 
         # Final report
         self.stdout_info("-" * 80)
