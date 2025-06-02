@@ -51,6 +51,26 @@ def handle_api_retry(exception: ApiException, attempt, max_retries, retry_delay,
         return False, 0
 
 
+def _get_error_body(exception):
+    """
+    Helper function to extract error body from ApiException
+
+    Args:
+        exception: The ApiException object
+
+    Returns:
+        dict: Parsed error body or empty dict if parsing fails
+    """
+    try:
+        if exception.body:  # Check if body is not None
+            return json.loads(exception.body)
+    except (json.JSONDecodeError, AttributeError):
+        logger.error(
+            f"Error decoding JSON response: {exception.body if hasattr(exception, 'body') else str(exception)}"
+        )
+    return {}
+
+
 def get_config():
     config = sib_api_v3_sdk.Configuration()
     config.api_key["api-key"] = settings.BREVO_API_KEY
@@ -236,13 +256,7 @@ def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5
             return True
         except ApiException as e:
             # Analyze error type
-            error_body = {}
-            try:
-                error_body = json.loads(e.body)
-            except (json.JSONDecodeError, AttributeError):
-                logger.error(f"Error decoding JSON response: {e.body if hasattr(e, 'body') else str(e)}")
-                pass
-
+            error_body = _get_error_body(e)
             # Contact already exists - try to retrieve existing ID
             if e.status == 400 and error_body.get("code") == "duplicate_parameter":
                 logger.info(f"Contact {user.id} already exists in Brevo, attempting to retrieve ID...")
@@ -329,7 +343,7 @@ def remove_contact_from_list(user, list_id: int):
         api_response = api_instance.remove_contact_from_list(list_id=list_id, contact_emails=contact_emails)
         logger.info(f"Success Brevo->ContactsApi->remove_contact_from_list: {api_response}")
     except ApiException as e:
-        error_body = json.loads(e.body)
+        error_body = _get_error_body(e)
         if error_body.get("message") == "Contact already removed from list and/or does not exist":
             logger.info("calling Brevo->ContactsApi->remove_contact_from_list: contact doesn't exist in this list")
         else:
