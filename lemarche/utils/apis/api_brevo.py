@@ -62,7 +62,7 @@ def get_api_client():
     return sib_api_v3_sdk.ApiClient(config)
 
 
-def get_all_contacts(limit_max=None, since_days=30, verbose=False):
+def get_all_contacts(limit_max=None, since_days=30, verbose=False, max_retries=3):
     """
     Retrieves all contacts from Brevo, with optional filtering by modification date
     and limiting the total number of contacts returned.
@@ -73,6 +73,8 @@ def get_all_contacts(limit_max=None, since_days=30, verbose=False):
         since_days (int, optional): Retrieve only contacts modified in the last X days.
             Defaults to 30.
         verbose (bool, optional): Whether to log detailed information. Defaults to False.
+        max_retries (int, optional): Maximum number of retry attempts in case of API errors.
+            Defaults to 3.
 
     Returns:
         dict: Dictionary mapping contact emails to their IDs
@@ -90,7 +92,6 @@ def get_all_contacts(limit_max=None, since_days=30, verbose=False):
     total_retrieved = 0
     is_finished = False
     retry_count = 0
-    max_retries = 3
 
     if verbose:
         logger.info(f"Retrieving contacts modified in the last {since_days} days")
@@ -231,7 +232,7 @@ def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5
             api_response = api_instance.create_contact(new_contact).to_dict()
             user.brevo_contact_id = api_response.get("id")
             user.save(update_fields=["brevo_contact_id"])
-            logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response}")
+            logger.info(f"Success Brevo->ContactsApi->create_contact: {user.brevo_contact_id}")
             return True
         except ApiException as e:
             # Analyze error type
@@ -239,16 +240,17 @@ def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5
             try:
                 error_body = json.loads(e.body)
             except (json.JSONDecodeError, AttributeError):
+                logger.error(f"Error decoding JSON response: {e.body if hasattr(e, 'body') else str(e)}")
                 pass
 
             # Contact already exists - try to retrieve existing ID
             if e.status == 400 and error_body.get("code") == "duplicate_parameter":
-                logger.info(f"Contact {user.email} already exists in Brevo, attempting to retrieve ID...")
+                logger.info(f"Contact {user.id} already exists in Brevo, attempting to retrieve ID...")
                 try:
                     # Search for contact by email
                     existing_contacts = get_contacts_by_email(user.email)
                     if existing_contacts:
-                        user.brevo_contact_id = existing_contacts.get(user.email)
+                        user.brevo_contact_id = existing_contacts.get("id")
                         user.save(update_fields=["brevo_contact_id"])
                         logger.info(f"Brevo ID retrieved for {user.email}: {user.brevo_contact_id}")
                         return True
@@ -257,23 +259,15 @@ def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5
 
             # Rate limiting - wait longer
             should_retry, wait_time = handle_api_retry(
-                e, attempt, max_retries, retry_delay, "creating contact", user.email
-            )
-            if should_retry:
-                time.sleep(wait_time)
-                continue
-
-            # Handle retry logic for other errors
-            logger.error(f"Exception when calling Brevo->ContactsApi->create_contact (list_id : {list_id}): {e.body}")
-            should_retry, wait_time = handle_api_retry(
-                e, attempt, max_retries, retry_delay, "creating contact", user.email
+                e, attempt, max_retries, retry_delay, "creating contact", user.id
             )
 
             if should_retry:
                 logger.info(f"Attempt {attempt+1}/{max_retries} failed, retrying in {wait_time}s...")
                 time.sleep(wait_time)
+                continue  # Retry the operation
             else:
-                logger.error(f"Failed after {max_retries} attempts for {user.email}")
+                logger.error(f"Failed after {max_retries} attempts for {user.id}")
                 return False
 
     return False
@@ -295,8 +289,7 @@ def get_contacts_by_email(email):
     try:
         # Search contacts by email
         response = api_instance.get_contact_info(email)
-        if hasattr(response, "id"):
-            return {email: response.id}
+        return response.to_dict()
     except ApiException as e:
         if e.status != 404:  # Ignore 404 errors (contact not found)
             logger.error(f"Error searching for contact by email {email}: {e}")
