@@ -4,7 +4,9 @@ from unittest.mock import MagicMock, patch
 from django.test import TestCase
 from sib_api_v3_sdk.rest import ApiException
 
+from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes.factories import SiaeFactory
+from lemarche.tenders.factories import TenderFactory
 from lemarche.users.factories import UserFactory
 from lemarche.utils.apis import api_brevo
 
@@ -184,3 +186,188 @@ class BrevoApiTest(TestCase):
         expected_date = datetime.now() - timedelta(days=15)
         # Allow for small time differences during test execution
         self.assertLess(abs((modified_since - expected_date).total_seconds()), 10)
+
+    @patch("lemarche.utils.apis.api_brevo.get_api_client")
+    def test_create_contact_success(self, mock_get_api_client):
+        """Test successful contact creation"""
+        mock_api_instance = MagicMock()
+        mock_client = MagicMock()
+        mock_get_api_client.return_value = mock_client
+
+        # Mock successful API response
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {"id": 12345}
+        mock_api_instance.create_contact.return_value = mock_response
+
+        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+            result = api_brevo.create_contact(self.user, list_id=1)
+
+        self.assertTrue(result)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.brevo_contact_id, 12345)
+        mock_api_instance.create_contact.assert_called_once()
+
+    @patch("lemarche.utils.apis.api_brevo.get_api_client")
+    def test_create_contact_with_tender(self, mock_get_api_client):
+        """Test contact creation with tender information"""
+
+        sector = SectorFactory(name="Informatique")
+        tender = TenderFactory(amount_exact=50000, kind="PRESTA", source="TALLY")  # Utiliser une valeur plus courte
+        tender.sectors.add(sector)
+
+        mock_api_instance = MagicMock()
+        mock_client = MagicMock()
+        mock_get_api_client.return_value = mock_client
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {"id": 12345}
+        mock_api_instance.create_contact.return_value = mock_response
+
+        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+            result = api_brevo.create_contact(self.user, list_id=1, tender=tender)
+
+        self.assertTrue(result)
+        # Verify that tender attributes were included in the call
+        call_args = mock_api_instance.create_contact.call_args[0][0]
+        self.assertEqual(call_args.attributes["MONTANT_BESOIN_ACHETEUR"], 50000)
+        self.assertEqual(call_args.attributes["TYPE_BESOIN_ACHETEUR"], "PRESTA")
+        self.assertEqual(call_args.attributes["TYPE_VERTICALE_ACHETEUR"], "Informatique")
+
+    def test_create_contact_already_has_brevo_id(self):
+        """Test contact creation when user already has Brevo ID"""
+        self.user.brevo_contact_id = 99999
+        self.user.save()
+
+        result = api_brevo.create_contact(self.user, list_id=1)
+
+        self.assertTrue(result)
+        # Aucun appel d'API ne devrait être fait
+
+    @patch("lemarche.utils.apis.api_brevo.get_contacts_by_email")
+    @patch("lemarche.utils.apis.api_brevo.get_api_client")
+    def test_create_contact_duplicate_error_with_recovery(self, mock_get_api_client, mock_get_contacts):
+        """Test handling of duplicate contact error with successful ID recovery"""
+        mock_api_instance = MagicMock()
+        mock_client = MagicMock()
+        mock_get_api_client.return_value = mock_client
+
+        # Mock duplicate error response
+        error_body = '{"code": "duplicate_parameter", "message": "Contact already exists"}'
+        duplicate_exception = ApiException(status=400, reason="Bad Request")
+        duplicate_exception.body = error_body
+        mock_api_instance.create_contact.side_effect = duplicate_exception
+
+        # Mock successful contact lookup
+        mock_get_contacts.return_value = {"id": 55555}
+
+        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+            result = api_brevo.create_contact(self.user, list_id=1)
+
+        self.assertTrue(result)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.brevo_contact_id, 55555)
+        mock_get_contacts.assert_called_once_with(self.user.email)
+
+    @patch("lemarche.utils.apis.api_brevo.time.sleep")
+    @patch("lemarche.utils.apis.api_brevo.get_api_client")
+    def test_create_contact_rate_limit_with_retry(self, mock_get_api_client, mock_sleep):
+        """Test retry mechanism for rate limiting"""
+        mock_api_instance = MagicMock()
+        mock_client = MagicMock()
+        mock_get_api_client.return_value = mock_client
+
+        # First call rate limited, second call succeeds
+        rate_limit_exception = ApiException(status=429, reason="Rate Limit")
+        rate_limit_exception.body = None  # Ajouter l'attribut body
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {"id": 77777}
+
+        mock_api_instance.create_contact.side_effect = [rate_limit_exception, mock_response]
+
+        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+            result = api_brevo.create_contact(self.user, list_id=1, max_retries=2)
+
+        self.assertTrue(result)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.brevo_contact_id, 77777)
+        self.assertEqual(mock_api_instance.create_contact.call_count, 2)
+        mock_sleep.assert_called_once()
+
+    @patch("lemarche.utils.apis.api_brevo.time.sleep")
+    @patch("lemarche.utils.apis.api_brevo.get_api_client")
+    def test_create_contact_max_retries_exceeded(self, mock_get_api_client, mock_sleep):
+        """Test behavior when max retries are exceeded"""
+        mock_api_instance = MagicMock()
+        mock_client = MagicMock()
+        mock_get_api_client.return_value = mock_client
+
+        # Always return server error
+        server_error = ApiException(status=500, reason="Internal Server Error")
+        server_error.body = None  # Ajouter l'attribut body
+        mock_api_instance.create_contact.side_effect = server_error
+
+        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+            result = api_brevo.create_contact(self.user, list_id=1, max_retries=2)
+
+        self.assertFalse(result)
+        self.user.refresh_from_db()
+        self.assertIsNone(self.user.brevo_contact_id)
+        self.assertEqual(mock_api_instance.create_contact.call_count, 2)  # max_retries = 2 tentatives
+        self.assertEqual(mock_sleep.call_count, 1)  # 1 retry seulement
+
+    @patch("lemarche.utils.apis.api_brevo.get_api_client")
+    def test_create_contact_malformed_error_response(self, mock_get_api_client):
+        """Test handling of malformed JSON error response"""
+        mock_api_instance = MagicMock()
+        mock_client = MagicMock()
+        mock_get_api_client.return_value = mock_client
+
+        # Mock error with malformed JSON body
+        error_exception = ApiException(status=400, reason="Bad Request")
+        error_exception.body = "invalid json"
+        mock_api_instance.create_contact.side_effect = error_exception
+
+        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+            result = api_brevo.create_contact(self.user, list_id=1, max_retries=1)
+
+        self.assertFalse(result)
+        self.user.refresh_from_db()
+        self.assertIsNone(self.user.brevo_contact_id)
+
+    @patch("lemarche.utils.apis.api_brevo.get_api_client")
+    def test_create_contact_verify_attributes(self, mock_get_api_client):
+        """Test that contact attributes are correctly set"""
+        self.user.last_name = "Dupont"
+        self.user.first_name = "Jean"
+        self.user.company_name = "ACME Corp"
+        self.user.phone = "+33123456789"
+        self.user.buyer_kind_detail = "ENTREPRISE"
+        self.user.save()
+
+        mock_api_instance = MagicMock()
+        mock_client = MagicMock()
+        mock_get_api_client.return_value = mock_client
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {"id": 88888}
+        mock_api_instance.create_contact.return_value = mock_response
+
+        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+            result = api_brevo.create_contact(self.user, list_id=1)
+
+        self.assertTrue(result)
+
+        # Verify the contact object passed to API
+        call_args = mock_api_instance.create_contact.call_args[0][0]
+        self.assertEqual(call_args.email, self.user.email)
+        self.assertEqual(call_args.list_ids, [1])
+        self.assertEqual(call_args.ext_id, str(self.user.id))
+        self.assertTrue(call_args.update_enabled)
+
+        # Verify attributes
+        attributes = call_args.attributes
+        self.assertEqual(attributes["NOM"], "Dupont")
+        self.assertEqual(attributes["PRENOM"], "Jean")
+        self.assertEqual(attributes["NOM_ENTREPRISE"], "Acme corp")
+        self.assertEqual(attributes["TYPE_ORGANISATION"], "ENTREPRISE")
+        self.assertEqual(attributes["SMS"], "+33123456789")
