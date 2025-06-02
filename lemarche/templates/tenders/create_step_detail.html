@@ -10,8 +10,8 @@
     {% csrf_token %}
     <div class="fr-grid-row fr-mb-4w">
         <div class="fr-col-12 fr-col-lg-7">
-            {% dsfr_form_field form.start_working_date %}
             {% dsfr_form_field form.deadline_date %}
+            {% dsfr_form_field form.start_working_date %}
             {% dsfr_form_field form.external_link %}
         </div>
     </div>
