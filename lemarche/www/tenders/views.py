@@ -120,7 +120,7 @@ class TenderCreateMultiStepView(SessionWizardView):
         kwargs = super().get_form_kwargs(step)
         if step == self.STEP_DETAIL:
             kwargs["kind"] = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("kind")
-            if self.instance.id:
+            if self.instance.id:  # for draft
                 kwargs["questions_list"] = list(self.instance.questions_list())
         if step == self.STEP_CONTACT:
             kwargs["kind"] = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("kind")
