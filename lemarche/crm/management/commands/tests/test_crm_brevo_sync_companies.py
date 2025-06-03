@@ -88,7 +88,7 @@ class CrmBrevoSyncCompaniesCommandTest(TransactionTestCase):
         mock_api_call.return_value = None
 
         out = StringIO()
-        call_command("crm_brevo_sync_companies", batch_size=2, stdout=out)
+        call_command("crm_brevo_sync_companies", stdout=out)
 
         # Verify command completed successfully with batching
         output = out.getvalue()
@@ -142,9 +142,8 @@ class CrmBrevoSyncCompaniesCommandTest(TransactionTestCase):
         parser = command.create_parser("test", "crm_brevo_sync_companies")
 
         # Test all arguments
-        options = parser.parse_args(["--recently-updated", "--batch-size=100", "--max-retries=5", "--dry-run"])
+        options = parser.parse_args(["--recently-updated", "--max-retries=5", "--dry-run"])
 
         self.assertTrue(options.recently_updated)
-        self.assertEqual(options.batch_size, 100)
         self.assertEqual(options.max_retries, 5)
         self.assertTrue(options.dry_run)
