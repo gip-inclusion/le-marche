@@ -167,17 +167,20 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{redirect_url}")
         # message should be displayed
         if user_kind != User.KIND_BUYER:
-            messages = self.driver.find_elements(By.CSS_SELECTOR, "div.fr-alert--success")[1]
-            self.assertTrue("Inscription validée" in messages.text)
-            return messages
+            message_list = [
+                message.text for message in self.driver.find_elements(By.CSS_SELECTOR, "div.fr-alert--success")
+            ]
+            return message_list
 
     def test_siae_submits_signup_form_success(self):
         self._complete_form(user_profile=self.SIAE, with_submit=True)
 
         # should redirect SIAE to dashboard
         messages = self._assert_signup_success(redirect_url=reverse("dashboard:home"), user_kind=User.KIND_SIAE)
-
-        self.assertTrue("Vous pouvez maintenant ajouter votre structure" in messages.text)
+        self.assertTrue(
+            "Vous pouvez maintenant ajouter votre structure en cliquant sur Ajouter une structure." in messages
+        )
+        self.assertTrue("Connexion avec siae@example.com réussie." in messages)
 
     def test_siae_submits_signup_form_error(self):
         user_profile = self.SIAE
@@ -257,7 +260,8 @@ class SignupFormTest(StaticLiveServerTestCase):
         scroll_to_and_click_element(self.driver, submit_element)
 
         # in fact because of LiveServer erasing migrations, "wagtail_serve" is a 404...
-        self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)))
+        messages = self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)))
+        self.assertTrue("Connexion avec partner@example.com réussie." in messages)
 
     def test_partner_submits_signup_form_error(self):
         user_profile = self.PARTNER
@@ -294,7 +298,8 @@ class SignupFormTest(StaticLiveServerTestCase):
         submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
         scroll_to_and_click_element(self.driver, submit_element)
 
-        self._assert_signup_success(redirect_url=next_url, user_kind=User.KIND_SIAE)
+        messages = self._assert_signup_success(redirect_url=next_url, user_kind=User.KIND_SIAE)
+        self.assertTrue("Connexion avec siae@example.com réussie." in messages)
 
     @classmethod
     def tearDownClass(cls):

@@ -36,7 +36,6 @@ class CustomLoginView(LoginView):
 class CustomSignupView(SuccessMessageMixin, SignupView):
     template_name = "account/signup.html"
     form_class = CustomSignupForm
-    success_message = "Inscription validée !"  # see get_success_message() below
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
