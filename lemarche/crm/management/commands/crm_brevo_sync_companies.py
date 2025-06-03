@@ -24,6 +24,17 @@ class Command(BaseCommand):
     python manage.py crm_brevo_sync_companies
     """
 
+    def __init__(self):
+        super().__init__()
+        self.stats = {
+            "created": 0,
+            "updated": 0,
+            "skipped": 0,
+            "errors": 0,
+            "extra_data_updated": 0,
+            "total": 0,
+        }
+
     def add_arguments(self, parser):
         parser.add_argument(
             "--recently-updated",
@@ -49,73 +60,90 @@ class Command(BaseCommand):
     ):
         self.stdout_info("-" * 80)
         self.stdout_info("SIAE synchronization script with Brevo CRM (companies)...")
+        # Build the queryset
+        siaes_qs = self._build_queryset(recently_updated)
 
-        # Step 1: Build the query and filter SIAEs
+        # Initialize statistics
+        self.stats["total"] = siaes_qs.count()
+
+        if dry_run:
+            self.stdout_info("Simulation mode enabled - no changes will be made")
+
+        # Process SIAEs
+        self._process_siaes(siaes_qs, dry_run, max_retries)
+
+        # Display final report
+        self._display_final_report()
+
+    def _build_queryset(self, recently_updated: bool):
+        """Build the queryset of SIAEs to process."""
         siaes_qs = Siae.objects.all()
         self.stdout_info(f"Total SIAEs in database: {Siae.objects.count()}")
 
-        # Update only recently modified SIAEs
         if recently_updated:
             two_weeks_ago = timezone.now() - timedelta(weeks=2)
             siaes_qs = siaes_qs.filter(updated_at__gte=two_weeks_ago)
             self.stdout_info(f"Recently modified SIAEs: {siaes_qs.count()}")
 
-        # Step 2: Add annotations for 90-day statistics
-        siaes_qs = siaes_qs.with_tender_stats(since_days=90)
+        return siaes_qs.with_tender_stats(since_days=90)  # type: ignore
 
-        # Final total of SIAEs to process
-        total_siaes = siaes_qs.count()
-
-        if dry_run:
-            self.stdout_info("Simulation mode enabled - no changes will be made")
-
-        # Statistics for final report
-        stats = {"created": 0, "updated": 0, "skipped": 0, "errors": 0, "extra_data_updated": 0, "total": total_siaes}
-
-        # Step 3: Process SIAEs in batches
+    def _process_siaes(self, siaes_qs, dry_run: bool, max_retries: int):
+        """Process each SIAE individually."""
         for siae in tqdm(siaes_qs.iterator(), total=siaes_qs.count(), desc="Synchronizing SIAEs"):
-            # Prepare new data for extra_data
-            new_extra_data = {
-                "completion_rate": siae.completion_rate,
-                "tender_received": siae.tender_email_send_count_annotated,
-                "tender_interest": siae.tender_detail_contact_click_count_annotated,
-            }
+            try:
+                self._process_single_siae(siae, dry_run, max_retries)
+            except Exception as e:
+                self.stats["errors"] += 1
+                self.stdout_error(f"Error processing {siae.id}: {str(e)}")
 
-            # Update extra_data if necessary
-            extra_data_changed = False
-            if siae.extra_data.get("brevo_company_data") != new_extra_data:
-                siae.extra_data.update({"brevo_company_data": new_extra_data})
-                if not dry_run:
-                    siae.save(update_fields=["extra_data"])
-                extra_data_changed = True
-                stats["extra_data_updated"] += 1
+    def _process_single_siae(self, siae, dry_run: bool, max_retries: int):
+        """Process a single SIAE."""
+        new_extra_data = self._prepare_extra_data(siae)
+        extra_data_changed = self._update_extra_data_if_needed(siae, new_extra_data, dry_run)
+        self._sync_with_brevo_if_needed(siae, extra_data_changed, dry_run, max_retries)
 
-                try:
-                    # If it's a new SIAE (without Brevo ID) or if extra_data has changed
-                    if not siae.brevo_company_id or extra_data_changed:
-                        if not dry_run:
-                            api_brevo.create_or_update_company(siae, max_retries=max_retries, retry_delay=5)
+    def _prepare_extra_data(self, siae) -> dict:
+        """Prepare new extra_data."""
+        return {
+            "completion_rate": siae.completion_rate,
+            "tender_received": siae.tender_email_send_count_annotated,
+            "tender_interest": siae.tender_detail_contact_click_count_annotated,
+        }
 
-                        if siae.brevo_company_id:
-                            stats["updated"] += 1
-                        else:
-                            stats["created"] += 1
-                    else:
-                        stats["skipped"] += 1
+    def _update_extra_data_if_needed(self, siae, new_extra_data: dict, dry_run: bool) -> bool:
+        """Update extra_data if needed and return whether changes were made."""
+        if siae.extra_data.get("brevo_company_data") != new_extra_data:
+            siae.extra_data.update({"brevo_company_data": new_extra_data})
+            if not dry_run:
+                siae.save(update_fields=["extra_data"])
+            self.stats["extra_data_updated"] += 1
+            return True
+        return False
 
-                except Exception as e:
-                    stats["errors"] += 1
-                    self.stdout_error(f"Error processing {siae.id}: {str(e)}")
+    def _sync_with_brevo_if_needed(self, siae, extra_data_changed: bool, dry_run: bool, max_retries: int):
+        """Synchronize with Brevo if needed."""
+        if not siae.brevo_company_id or extra_data_changed:
+            if not dry_run:
+                api_brevo.create_or_update_company(siae, max_retries=max_retries, retry_delay=5)
 
-        # Final report
+            if siae.brevo_company_id:
+                self.stats["updated"] += 1
+            else:
+                self.stats["created"] += 1
+        else:
+            self.stats["skipped"] += 1
+
+    def _display_final_report(self):
+        """Display final synchronization report."""
+        total_processed = self.stats["created"] + self.stats["updated"] + self.stats["skipped"] + self.stats["errors"]
         self.stdout_info("-" * 80)
         self.stdout_info("Synchronization completed! Results:")
         self.stdout_info(
-            "- Total processed: "
-            + f"{stats['created'] + stats['updated'] + stats['skipped'] + stats['errors']}/{stats['total']}"
+            f"""- Total processed:
+            {total_processed}/{self.stats['total']}"""
         )
-        self.stdout_info(f"- Created: {stats['created']}")
-        self.stdout_info(f"- Updated: {stats['updated']}")
-        self.stdout_info(f"- Skipped (already up to date): {stats['skipped']}")
-        self.stdout_info(f"- Extra data updated: {stats['extra_data_updated']}")
-        self.stdout_info(f"- Errors: {stats['errors']}")
+        self.stdout_info(f"- Created: {self.stats['created']}")
+        self.stdout_info(f"- Updated: {self.stats['updated']}")
+        self.stdout_info(f"- Skipped (already up to date): {self.stats['skipped']}")
+        self.stdout_info(f"- Extra data updated: {self.stats['extra_data_updated']}")
+        self.stdout_info(f"- Errors: {self.stats['errors']}")
