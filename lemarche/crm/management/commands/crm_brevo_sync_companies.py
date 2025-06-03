@@ -32,13 +32,6 @@ class Command(BaseCommand):
             help="Synchronize only recently modified SIAEs",
         )
         parser.add_argument(
-            "--batch-size",
-            dest="batch_size",
-            type=int,
-            default=50,
-            help="Number of companies to process per batch",
-        )
-        parser.add_argument(
             "--max-retries",
             dest="max_retries",
             type=int,
@@ -50,7 +43,6 @@ class Command(BaseCommand):
     def handle(
         self,
         recently_updated: bool = False,
-        batch_size: int = 50,
         max_retries: int = 3,
         dry_run: bool = False,
         **options,
@@ -81,43 +73,39 @@ class Command(BaseCommand):
         stats = {"created": 0, "updated": 0, "skipped": 0, "errors": 0, "extra_data_updated": 0, "total": total_siaes}
 
         # Step 3: Process SIAEs in batches
-        for batch_start in tqdm(range(0, total_siaes, batch_size), desc="Synchronizing SIAEs"):
-            batch_end = batch_start + batch_size
-            batch_siaes = siaes_qs[batch_start:batch_end]
+        for siae in tqdm(siaes_qs.iterator(), total=siaes_qs.count(), desc="Synchronizing SIAEs"):
+            # Prepare new data for extra_data
+            new_extra_data = {
+                "completion_rate": siae.completion_rate,
+                "tender_received": siae.tender_email_send_count_annotated,
+                "tender_interest": siae.tender_detail_contact_click_count_annotated,
+            }
 
-            for siae in batch_siaes:
-                # Prepare new data for extra_data
-                new_extra_data = {
-                    "completion_rate": siae.completion_rate,
-                    "tender_received": siae.tender_email_send_count_annotated,
-                    "tender_interest": siae.tender_detail_contact_click_count_annotated,
-                }
+            # Update extra_data if necessary
+            extra_data_changed = False
+            if siae.extra_data.get("brevo_company_data") != new_extra_data:
+                siae.extra_data.update({"brevo_company_data": new_extra_data})
+                if not dry_run:
+                    siae.save(update_fields=["extra_data"])
+                extra_data_changed = True
+                stats["extra_data_updated"] += 1
 
-                # Update extra_data if necessary
-                extra_data_changed = False
-                if siae.extra_data.get("brevo_company_data") != new_extra_data:
-                    siae.extra_data.update({"brevo_company_data": new_extra_data})
-                    if not dry_run:
-                        siae.save(update_fields=["extra_data"])
-                    extra_data_changed = True
-                    stats["extra_data_updated"] += 1
+                try:
+                    # If it's a new SIAE (without Brevo ID) or if extra_data has changed
+                    if not siae.brevo_company_id or extra_data_changed:
+                        if not dry_run:
+                            api_brevo.create_or_update_company(siae, max_retries=max_retries, retry_delay=5)
 
-                    try:
-                        # If it's a new SIAE (without Brevo ID) or if extra_data has changed
-                        if not siae.brevo_company_id or extra_data_changed:
-                            if not dry_run:
-                                api_brevo.create_or_update_company(siae, max_retries=max_retries, retry_delay=5)
-
-                            if siae.brevo_company_id:
-                                stats["updated"] += 1
-                            else:
-                                stats["created"] += 1
+                        if siae.brevo_company_id:
+                            stats["updated"] += 1
                         else:
-                            stats["skipped"] += 1
+                            stats["created"] += 1
+                    else:
+                        stats["skipped"] += 1
 
-                    except Exception as e:
-                        stats["errors"] += 1
-                        self.stdout_error(f"Error processing {siae.id}: {str(e)}")
+                except Exception as e:
+                    stats["errors"] += 1
+                    self.stdout_error(f"Error processing {siae.id}: {str(e)}")
 
         # Final report
         self.stdout_info("-" * 80)
