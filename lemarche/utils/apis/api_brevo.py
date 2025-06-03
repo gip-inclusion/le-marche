@@ -515,7 +515,7 @@ def create_or_update_company(siae, max_retries=3, retry_delay=5):
     for attempt in range(max_retries):
         try:
             if is_update:
-                api_response = api_instance.companies_id_patch(siae.brevo_company_id, siae_brevo_company_body)
+                api_instance.companies_id_patch(siae.brevo_company_id, siae_brevo_company_body)
             else:
                 api_response = api_instance.companies_post(siae_brevo_company_body)
                 siae.brevo_company_id = api_response.id
