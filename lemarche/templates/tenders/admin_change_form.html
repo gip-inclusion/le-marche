@@ -31,7 +31,7 @@ No need to repeat them under fieldsets!
 {% block after_related_objects %}
     {{ block.super }}
     {% if original %}
-        {% if not original.validated_at and original.status == "PUBLISHED" %}
+        {% if not original.validated_at and original.status == "SUBMITTED" %}
             <div class="submit-row">
                 <input type="submit"
                        class="button"
@@ -69,7 +69,7 @@ No need to repeat them under fieldsets!
                         </p>
                     {% endif %}
                 {% endif %}
-            {% elif original.status == "PUBLISHED" %}
+            {% elif original.status == "SUBMITTED" %}
                 <p>
                     <i>L'envoi des besoins 'validés' se fait toutes les 5 minutes, du Lundi au Vendredi, entre 9h et 17h</i>
                 </p>

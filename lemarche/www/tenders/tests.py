@@ -209,7 +209,7 @@ class TenderCreateViewTest(TestCase):
         tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
-        self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
+        self.assertEqual(tender.status, Tender.StatusChoices.STATUS_SUBMITTED)
         self.assertIsNotNone(tender.published_at)
         messages = list(get_messages(final_response.wsgi_request))
         self.assertEqual(len(messages), 1)
@@ -244,7 +244,7 @@ class TenderCreateViewTest(TestCase):
         tender: Tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
-        self.assertEqual(tender.status, tender_constants.STATUS_DRAFT)
+        self.assertEqual(tender.status, Tender.StatusChoices.STATUS_DRAFT)
         self.assertIsNone(tender.published_at)
         messages = list(get_messages(final_response.wsgi_request))
         self.assertEqual(len(messages), 1)
@@ -324,7 +324,7 @@ class TenderCreateViewTest(TestCase):
         tender.reset_modification_request()
         tender.save()
 
-        self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
+        self.assertEqual(tender.status, Tender.StatusChoices.STATUS_SUBMITTED)
         self.assertEqual(tender.email_sent_for_modification, False)
 
     def test_create_tender_with_attachment(self):
@@ -422,7 +422,7 @@ class TenderListViewTest(TestCase):
             author=cls.user_buyer_1,
             perimeters=[perimeter],
             kind=tender_constants.KIND_TENDER,
-            status=tender_constants.STATUS_REJECTED,
+            status=Tender.StatusChoices.STATUS_REJECTED,
         )
 
     def test_anonymous_user_cannot_list_tenders(self):
@@ -580,7 +580,7 @@ class TenderDetailViewTest(TestCase):
             response_kind=[tender_constants.RESPONSE_KIND_EMAIL],
             sectors=[sector_1],
             location=grenoble_perimeter,
-            status=tender_constants.STATUS_SENT,
+            status=Tender.StatusChoices.STATUS_SENT,
             first_sent_at=timezone.now(),
         )
         cls.tendersiae_1_1 = TenderSiae.objects.create(
@@ -613,14 +613,14 @@ class TenderDetailViewTest(TestCase):
         cls.tender_2 = TenderFactory(
             author=cls.user_buyer_1,
             contact_company_name="Another company",
-            status=tender_constants.STATUS_SENT,
+            status=Tender.StatusChoices.STATUS_SENT,
             first_sent_at=timezone.now(),
         )
         cls.tender_3_response_is_anonymous = TenderFactory(
             kind=tender_constants.KIND_TENDER,
             author=cls.user_buyer_1,
             contact_company_name="Another company",
-            status=tender_constants.STATUS_SENT,
+            status=Tender.StatusChoices.STATUS_SENT,
             first_sent_at=timezone.now(),
             response_is_anonymous=True,
         )
@@ -653,11 +653,11 @@ class TenderDetailViewTest(TestCase):
         cls.tender_5 = TenderFactory(
             kind=tender_constants.KIND_TENDER,
             author=cls.user_buyer_1,
-            status=tender_constants.STATUS_REJECTED,
+            status=Tender.StatusChoices.STATUS_REJECTED,
         )
 
     def test_anyone_can_view_sent_tenders(self):
-        for tender in Tender.objects.exclude(status=tender_constants.STATUS_REJECTED):
+        for tender in Tender.objects.exclude(status=Tender.StatusChoices.STATUS_REJECTED):
             # anonymous user
             url = reverse("tenders:detail", kwargs={"slug": tender.slug})
             response = self.client.get(url)
@@ -671,17 +671,17 @@ class TenderDetailViewTest(TestCase):
                 self.assertEqual(response.status_code, 200)
 
     def test_only_author_or_admin_can_view_non_sent_tender(self):
-        tender_draft = TenderFactory(author=self.user_buyer_1, status=tender_constants.STATUS_DRAFT)
-        tender_published = TenderFactory(
-            author=self.user_buyer_1, status=tender_constants.STATUS_PUBLISHED, published_at=timezone.now()
+        tender_draft = TenderFactory(author=self.user_buyer_1, status=Tender.StatusChoices.STATUS_DRAFT)
+        tender_submitted = TenderFactory(
+            author=self.user_buyer_1, status=Tender.StatusChoices.STATUS_SUBMITTED, published_at=timezone.now()
         )
         tender_validated_but_not_sent = TenderFactory(
             author=self.user_buyer_1,
-            status=tender_constants.STATUS_VALIDATED,
+            status=Tender.StatusChoices.STATUS_VALIDATED,
             published_at=timezone.now(),
             validated_at=timezone.now(),
         )
-        for tender in [tender_draft, tender_published, tender_validated_but_not_sent]:
+        for tender in [tender_draft, tender_submitted, tender_validated_but_not_sent]:
             # anonymous user
             url = reverse("tenders:detail", kwargs={"slug": tender.slug})
             response = self.client.get(url)

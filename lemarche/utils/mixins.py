@@ -6,7 +6,6 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from sesame.utils import get_user as sesame_get_user
 
-from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 
@@ -163,7 +162,7 @@ class TenderAuthorOrAdminRequiredIfNotSentMixin(UserPassesTestMixin):
         # user = self.request.user
         tender_slug = self.kwargs.get("slug")
         tender = get_object_or_404(Tender.objects.all(), slug=tender_slug)
-        if tender.status != tender_constants.STATUS_SENT:
+        if tender.status != Tender.StatusChoices.STATUS_SENT:
             return TenderAuthorOrAdminRequiredMixin.test_func(self)
         return True
 

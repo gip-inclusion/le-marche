@@ -38,10 +38,10 @@
                     <div id="tendersList" class="fr-tabs">
                         <ul class="fr-tabs__list" role="tablist">
                             {% url 'tenders:list' as TENDERS_LIST_URL %}
-                            {% url 'tenders:list' status=tender_constants.STATUS_DRAFT as TENDERS_DRAFT_LIST_URL %}
-                            {% url 'tenders:list' status=tender_constants.STATUS_PUBLISHED as TENDERS_PUBLISHED_LIST_URL %}
-                            {% url 'tenders:list' status=tender_constants.STATUS_SENT as TENDERS_SENT_LIST_URL %}
-                            {% url 'tenders:list' status=tender_constants.STATUS_REJECTED as TENDERS_REJECTED_LIST_URL %}
+                            {% url 'tenders:list' status=tender_statuses.STATUS_DRAFT as TENDERS_DRAFT_LIST_URL %}
+                            {% url 'tenders:list' status=tender_statuses.STATUS_SUBMITTED as TENDERS_SUBMITTED_LIST_URL %}
+                            {% url 'tenders:list' status=tender_statuses.STATUS_SENT as TENDERS_SENT_LIST_URL %}
+                            {% url 'tenders:list' status=tender_statuses.STATUS_REJECTED as TENDERS_REJECTED_LIST_URL %}
                             <li role="presentation">
                                 <button role="tab" class="fr-tabs__tab" aria-selected="{% if request.get_full_path == TENDERS_LIST_URL %}true{% else %}false{% endif %}"
                                     hx-push-url="true" hx-get="{{ TENDERS_LIST_URL }}" hx-target="#tendersList" hx-swap="outerHTML">
@@ -55,8 +55,8 @@
                                 </button>
                             </li>
                             <li role="presentation">
-                                <button role="tab" class="fr-tabs__tab" aria-selected="{% if request.get_full_path == TENDERS_PUBLISHED_LIST_URL %}true{% else %}false{% endif %}"
-                                    hx-push-url="true" hx-get="{{ TENDERS_PUBLISHED_LIST_URL }}" hx-target="#tendersList" hx-swap="outerHTML">
+                                <button role="tab" class="fr-tabs__tab" aria-selected="{% if request.get_full_path == TENDERS_SUBMITTED_LIST_URL %}true{% else %}false{% endif %}"
+                                    hx-push-url="true" hx-get="{{ TENDERS_SUBMITTED_LIST_URL }}" hx-target="#tendersList" hx-swap="outerHTML">
                                     En cours de validation
                                 </button>
                             </li>
@@ -94,7 +94,7 @@
                                         {% if request.get_full_path == TENDERS_DRAFT_LIST_URL %}
                                             Vous n'avez aucun besoin en brouillon pour le moment.
                                         {% endif %}
-                                        {% if request.get_full_path == TENDERS_PUBLISHED_LIST_URL %}
+                                        {% if request.get_full_path == TENDERS_SUBMITTED_LIST_URL %}
                                             Vous n'avez aucun besoin en cours de validation pour le moment.
                                         {% endif %}
                                         {% if request.get_full_path == TENDERS_SENT_LIST_URL %}

@@ -3,7 +3,6 @@ from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender
 from lemarche.www.tenders.tasks import send_tender_author_reject_message
 
@@ -15,7 +14,9 @@ class Command(BaseCommand):
         threshold_date = timezone.now() - timedelta(days=10)
         tenders_to_update = []
 
-        tenders_draft = Tender.objects.filter(status=tender_constants.STATUS_DRAFT, email_sent_for_modification=True)
+        tenders_draft = Tender.objects.filter(
+            status=Tender.StatusChoices.STATUS_DRAFT, email_sent_for_modification=True
+        )
         tenders_draft_count = tenders_draft.count()
 
         self.stdout.write(f"Besoin(s) à traiter : {tenders_draft_count}")
