@@ -123,10 +123,16 @@ class Command(BaseCommand):
     def _sync_with_brevo_if_needed(self, siae, extra_data_changed: bool, dry_run: bool, max_retries: int):
         """Synchronize with Brevo if needed."""
         if not siae.brevo_company_id or extra_data_changed:
+            is_created_or_updated = False
             if not dry_run:
-                api_brevo.create_or_update_company(siae, max_retries=max_retries, retry_delay=5)
+                is_created_or_updated = api_brevo.create_or_update_company(
+                    siae, max_retries=max_retries, retry_delay=5
+                )
 
-            if siae.brevo_company_id:
+            if not is_created_or_updated and not dry_run:
+                self.stats["errors"] += 1
+                self.stdout_error(f"Failed to create or update Brevo company for SIAE {siae.id}")
+            elif siae.brevo_company_id:
                 self.stats["updated"] += 1
             else:
                 self.stats["created"] += 1
