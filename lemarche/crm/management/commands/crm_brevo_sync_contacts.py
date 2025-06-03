@@ -64,6 +64,55 @@ class Command(BaseCommand):
             self.stdout_info(f"Existing contacts in Brevo list: {len(existing_contacts)}")
         return existing_contacts
 
+    def _get_current_list_id(self, user, brevo_list_id=None):
+        """Determine the current list ID based on user kind."""
+        if brevo_list_id:
+            return brevo_list_id
+        return settings.BREVO_CL_SIGNUP_BUYER_ID if user.kind == User.KIND_BUYER else settings.BREVO_CL_SIGNUP_SIAE_ID
+
+    def _should_skip_user(self, user, existing_contacts, with_existing_contacts):
+        """Check if user should be skipped."""
+        return (
+            with_existing_contacts
+            and user.brevo_contact_id
+            and user.brevo_contact_id == existing_contacts.get(user.email)
+        )
+
+    def _process_single_user(self, user, existing_contacts, brevo_list_id, dry_run, with_existing_contacts):
+        """Process a single user and return stats update."""
+        try:
+            # Check if user should be skipped
+            if self._should_skip_user(user, existing_contacts, with_existing_contacts):
+                self.stdout_info(f"Contact {user.pk} already up to date in Brevo")
+                return {"skipped": 1}
+
+            self.stdout_info(f"Processing user {user.pk}")
+            brevo_contact_id = existing_contacts.get(user.email)
+
+            # If we found an existing Brevo ID, save it
+            if brevo_contact_id:
+                self.stdout_info(f"Updating Brevo ID for {user.pk}: {brevo_contact_id}")
+                user.brevo_contact_id = brevo_contact_id
+                if not dry_run:
+                    user.save(update_fields=["brevo_contact_id"])
+                return {"updated": 1}
+            # Otherwise, create a new contact in Brevo
+            else:
+                self.stdout_info(f"Creating a new contact for {user.pk}")
+                current_list_id = self._get_current_list_id(user, brevo_list_id)
+                if not dry_run:
+                    result = api_brevo.create_contact(user=user, list_id=current_list_id)
+                    if result:
+                        self.stdout_info(f"Brevo contact created: {user.pk}")
+                        return {"created": 1}
+                    else:
+                        self.stdout_error(f"Failed to create contact for {user.pk}")
+                        return {"errors": 1}
+                return {"created": 1}  # dry_run case
+        except Exception as e:
+            self.stdout_error(f"Error processing {user.pk}: {str(e)}")
+            return {"errors": 1}
+
     def handle(
         self,
         dry_run: bool,
@@ -103,48 +152,9 @@ class Command(BaseCommand):
         stats = {"created": 0, "updated": 0, "skipped": 0, "errors": 0, "total": total_users}
 
         for user in tqdm(users_qs.iterator(), total=total_users, desc="Processing users"):
-            try:
-                brevo_contact_id = None
-
-                # Check if user already exists in Brevo
-                if with_existing_contacts:
-                    brevo_contact_id = existing_contacts.get(user.email)
-
-                    # If ID is already correctly registered, skip this user
-                    if user.brevo_contact_id and user.brevo_contact_id == brevo_contact_id:
-                        self.stdout_info(f"Contact {user.pk} already up to date in Brevo")
-                        stats["skipped"] += 1
-                        continue
-
-                # If we found an existing Brevo ID, save it
-                if brevo_contact_id:
-                    self.stdout_info(f"Updating Brevo ID for {user.pk}: {brevo_contact_id}")
-                    user.brevo_contact_id = brevo_contact_id
-                    if not dry_run:
-                        user.save(update_fields=["brevo_contact_id"])
-                    stats["updated"] += 1
-                # Otherwise, create a new contact in Brevo
-                else:
-                    self.stdout_info(f"Creating a new contact for {user.pk}")
-                    current_list_id = brevo_list_id
-                    if not current_list_id:
-                        current_list_id = (
-                            settings.BREVO_CL_SIGNUP_BUYER_ID
-                            if user.kind == User.KIND_BUYER
-                            else settings.BREVO_CL_SIGNUP_SIAE_ID
-                        )
-                    if not dry_run:
-                        result = api_brevo.create_contact(user=user, list_id=current_list_id)
-                        if result:
-                            stats["created"] += 1
-                            self.stdout_info(f"Brevo contact created: {user.pk}")
-                        else:
-                            stats["errors"] += 1
-                            self.stdout_error(f"Failed to create contact for {user.pk}")
-                            continue
-            except Exception as e:
-                stats["errors"] += 1
-                self.stdout_error(f"Error processing {user.pk}: {str(e)}")
+            result = self._process_single_user(user, existing_contacts, brevo_list_id, dry_run, with_existing_contacts)
+            for key, value in result.items():
+                stats[key] += value
 
         # Final report
         self.stdout_info("-" * 80)
