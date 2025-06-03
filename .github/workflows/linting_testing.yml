@@ -122,6 +122,9 @@ jobs:
       # collectstatic needed for selenium tests
       #----------------------------------------------
       - name: 🤹‍ Run Tests
+        env:
+          LANG: fr_FR.UTF-8
+          LC_ALL: fr_FR.UTF-8
         run: |
           source .venv/bin/activate
           python manage.py collectstatic
