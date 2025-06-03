@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -205,7 +207,8 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertTrue("Cette adresse e-mail est déjà utilisée." in alerts.text)
 
     @freeze_time("2025-03-05")
-    def test_buyer_submits_signup_form_success(self):
+    @patch("lemarche.utils.apis.api_brevo.create_contact")
+    def test_buyer_submits_signup_form_success(self, mock_create_contact):
         self._complete_form(user_profile=self.BUYER, with_submit=False)
 
         buyer_kind_detail_select_element = self.driver.find_element(By.CSS_SELECTOR, "select#id_buyer_kind_detail")
