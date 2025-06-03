@@ -105,7 +105,7 @@ class Command(BaseCommand):
     def _prepare_extra_data(self, siae) -> dict:
         """Prepare new extra_data."""
         return {
-            "completion_rate": siae.completion_rate,
+            "completion_rate": siae.completion_rate if siae.completion_rate is not None else 0,
             "tender_received": siae.tender_email_send_count_annotated,
             "tender_interest": siae.tender_detail_contact_click_count_annotated,
         }
