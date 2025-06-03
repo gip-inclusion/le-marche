@@ -33,7 +33,8 @@ class BrevoApiTest(TestCase):
         # Mock response data
         mock_response = MagicMock()
         mock_response.to_dict.return_value = {
-            "contacts": [{"email": "user1@example.com", "id": 1}, {"email": "user2@example.com", "id": 2}]
+            "contacts": [{"email": "user1@example.com", "id": 1}, {"email": "user2@example.com", "id": 2}],
+            "count": 2,
         }
         mock_api_instance.get_contacts.return_value = mock_response
 
@@ -46,29 +47,48 @@ class BrevoApiTest(TestCase):
 
     @patch("lemarche.utils.apis.api_brevo.get_api_client")
     def test_get_all_contacts_pagination(self, mock_get_api_client):
-        """Test pagination behavior"""
+        """Test pagination functionality"""
         mock_api_instance = MagicMock()
         mock_client = MagicMock()
         mock_get_api_client.return_value = mock_client
 
-        # Mock responses for pagination
-        responses = [
-            # First page - full page
-            {"contacts": [{"email": f"user{i}@example.com", "id": i} for i in range(1, 51)]},
-            # Second page - partial page (end of data)
-            {"contacts": [{"email": "user51@example.com", "id": 51}]},
-        ]
+        # Mock first page (5 contacts)
+        mock_response_page1 = MagicMock()
+        mock_response_page1.to_dict.return_value = {
+            "contacts": [{"email": f"user{i}@example.com", "id": i} for i in range(1, 6)],
+            "count": 8,  # Total available
+        }
 
-        mock_api_instance.get_contacts.side_effect = [
-            MagicMock(to_dict=lambda: responses[0]),
-            MagicMock(to_dict=lambda: responses[1]),
-        ]
+        # Mock second page (3 remaining contacts)
+        mock_response_page2 = MagicMock()
+        mock_response_page2.to_dict.return_value = {
+            "contacts": [{"email": f"user{i}@example.com", "id": i} for i in range(6, 9)],
+            "count": 8,
+        }
+
+        # Configure successive calls
+        mock_api_instance.get_contacts.side_effect = [mock_response_page1, mock_response_page2]
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            result = api_brevo.get_all_contacts()
+            result = api_brevo.get_all_contacts(page_limit=5)
 
-        self.assertEqual(len(result), 51)
+        # Verify that all contacts were retrieved
+        self.assertEqual(len(result), 8)
+        expected_result = {f"user{i}@example.com": i for i in range(1, 9)}
+        self.assertEqual(result, expected_result)
+
+        # Verify that the API was called 2 times with correct parameters
         self.assertEqual(mock_api_instance.get_contacts.call_count, 2)
+
+        # Verify parameters of first call (offset=0, limit=5)
+        first_call_args = mock_api_instance.get_contacts.call_args_list[0]
+        self.assertEqual(first_call_args[1]["offset"], 0)
+        self.assertEqual(first_call_args[1]["limit"], 5)
+
+        # Verify parameters of second call (offset=5, limit=5)
+        second_call_args = mock_api_instance.get_contacts.call_args_list[1]
+        self.assertEqual(second_call_args[1]["offset"], 5)
+        self.assertEqual(second_call_args[1]["limit"], 5)
 
     @patch("lemarche.utils.apis.api_brevo.get_api_client")
     def test_get_all_contacts_with_limit_max(self, mock_get_api_client):
@@ -79,7 +99,8 @@ class BrevoApiTest(TestCase):
 
         mock_response = MagicMock()
         mock_response.to_dict.return_value = {
-            "contacts": [{"email": f"user{i}@example.com", "id": i} for i in range(1, 6)]
+            "contacts": [{"email": f"user{i}@example.com", "id": i} for i in range(1, 6)],
+            "count": 100,  # Total available
         }
         mock_api_instance.get_contacts.return_value = mock_response
 
@@ -111,7 +132,7 @@ class BrevoApiTest(TestCase):
 
         self.assertEqual(len(result), 1)
         self.assertEqual(mock_api_instance.get_contacts.call_count, 2)
-        mock_sleep.assert_called_once_with(2)  # Exponential backoff
+        mock_sleep.assert_called_once_with(5)  # retry delay
 
     @patch("lemarche.utils.apis.api_brevo.time.sleep")
     @patch("lemarche.utils.apis.api_brevo.get_api_client")
@@ -154,7 +175,7 @@ class BrevoApiTest(TestCase):
         mock_get_api_client.return_value = mock_client
 
         mock_response = MagicMock()
-        mock_response.to_dict.return_value = {"contacts": []}
+        mock_response.to_dict.return_value = {"contacts": [], "count": 0}
         mock_api_instance.get_contacts.return_value = mock_response
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
@@ -312,8 +333,8 @@ class BrevoApiTest(TestCase):
         self.assertFalse(result)
         self.user.refresh_from_db()
         self.assertIsNone(self.user.brevo_contact_id)
-        self.assertEqual(mock_api_instance.create_contact.call_count, 2)  # max_retries = 2 tentatives
-        self.assertEqual(mock_sleep.call_count, 1)  # 1 retry seulement
+        self.assertEqual(mock_api_instance.create_contact.call_count, 3)  # 1 initial + 2 retries
+        self.assertEqual(mock_sleep.call_count, 2)  # 2 retries avec max_retries=2
 
     @patch("lemarche.utils.apis.api_brevo.get_api_client")
     def test_create_contact_malformed_error_response(self, mock_get_api_client):
