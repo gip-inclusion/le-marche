@@ -375,7 +375,7 @@ class TenderListView(LoginRequiredMixin, ListView):
             if user_kind == User.KIND_SIAE
             else tender_constants.KIND_PROJECT_DISPLAY
         )
-        context["tender_constants"] = tender_constants
+        context["tender_statuses"] = Tender.StatusChoices
         context["filter_form"] = self.filter_form
         context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
         return context
