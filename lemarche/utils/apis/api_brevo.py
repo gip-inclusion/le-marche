@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 ENV_NOT_ALLOWED = ("dev", "test")
 
 
-def handle_api_retry(exception: ApiException, attempt, max_retries, retry_delay, operation_name, entity_id):
+def handle_api_retry(exception: ApiException, attempt, max_retries, retry_delay, operation_name, entity_id=""):
     """
     Helper function to handle API retry logic with exponential backoff
 
@@ -29,7 +29,8 @@ def handle_api_retry(exception: ApiException, attempt, max_retries, retry_delay,
         max_retries: Maximum number of retry attempts
         retry_delay: Base delay in seconds between attempts
         operation_name: Name of the operation for logging
-        entity_id: ID of the entity being processed
+        entity_id (optional): ID of the entity being processed
+        defaults to an empty string
 
     Returns:
         tuple: (should_retry: bool, wait_time: int)
@@ -40,7 +41,7 @@ def handle_api_retry(exception: ApiException, attempt, max_retries, retry_delay,
         return True, wait_time
 
     # For other errors
-    if attempt < max_retries - 1:
+    if attempt < max_retries:
         wait_time = retry_delay * (attempt + 1)
         logger.warning(
             f"Error {operation_name} {entity_id}, attempt {attempt+1}/{max_retries} in {wait_time}s: {exception}"
@@ -82,7 +83,65 @@ def get_api_client():
     return sib_api_v3_sdk.ApiClient(config)
 
 
-def get_all_contacts(limit_max=None, since_days=30, verbose=False, max_retries=3):
+def _fetch_contacts_page(api_instance, limit, offset, modified_since):
+    """
+    Fetches a single page of contacts from Brevo API
+
+    Args:
+        api_instance: Brevo ContactsApi instance
+        limit: Number of contacts to fetch
+        offset: Offset for pagination
+        modified_since: Date filter for modifications
+
+    Returns:
+        tuple: (list: List of contacts from the API response, int: Total count of contacts)
+    """
+    api_response = api_instance.get_contacts(limit=limit, offset=offset, modified_since=modified_since).to_dict()
+    return api_response.get("contacts", []), api_response.get("count", 0)
+
+
+def _should_continue_pagination(contacts_count, current_limit, total_retrieved, limit_max):
+    """
+    Determines if pagination should continue
+
+    Args:
+        contacts_count: Number of contacts in current page
+        current_limit: Current page limit
+        total_retrieved: Total contacts retrieved so far
+        limit_max: Maximum limit (if specified)
+
+    Returns:
+        bool: Whether to continue pagination
+    """
+    # Si limit_max est défini et qu'on l'a atteint, on s'arrête
+    if limit_max is not None and total_retrieved >= limit_max:
+        return False
+
+    # Si on a reçu moins de contacts que demandé, c'est qu'on a atteint la fin
+    if contacts_count < current_limit:
+        return False
+
+    return True
+
+
+def _calculate_current_limit(limit_max, total_retrieved, page_limit):
+    """
+    Calculates the limit for current API request
+
+    Args:
+        limit_max: Maximum total contacts to retrieve
+        total_retrieved: Contacts already retrieved
+        page_limit: Default page size
+
+    Returns:
+        int: Limit for current request
+    """
+    if limit_max is not None and total_retrieved + page_limit > limit_max:
+        return limit_max - total_retrieved
+    return page_limit
+
+
+def get_all_contacts(limit_max=None, since_days=30, verbose=False, max_retries=3, retry_delay=5, page_limit=500):
     """
     Retrieves all contacts from Brevo, with optional filtering by modification date
     and limiting the total number of contacts returned.
@@ -95,6 +154,10 @@ def get_all_contacts(limit_max=None, since_days=30, verbose=False, max_retries=3
         verbose (bool, optional): Whether to log detailed information. Defaults to False.
         max_retries (int, optional): Maximum number of retry attempts in case of API errors.
             Defaults to 3.
+        retry_delay (int, optional): Delay in seconds between retry attempts.
+            Defaults to 5.
+        page_limit (int, optional): Number of contacts to retrieve per API call.
+            Defaults to 500.
 
     Returns:
         dict: Dictionary mapping contact emails to their IDs
@@ -102,86 +165,141 @@ def get_all_contacts(limit_max=None, since_days=30, verbose=False, max_retries=3
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
 
-    # Configuration for pagination
-    page_limit = 50  # Number of contacts per API request
-    offset = 0
-    modified_since = datetime.now() - timedelta(days=since_days)
+    config = _initialize_contacts_config(limit_max, since_days, page_limit, verbose)
 
-    # Result container
-    result = {}
-    total_retrieved = 0
-    is_finished = False
-    retry_count = 0
+    while not config["is_finished"]:
+        success = _fetch_contacts_batch(api_instance, config, max_retries, retry_delay, verbose)
+        if not success:
+            break
+
+    if verbose:
+        logger.info(f"Total contacts retrieved: {config['total_retrieved']}")
+
+    return config["result"]
+
+
+def _initialize_contacts_config(limit_max, since_days, page_limit, verbose):
+    """Initialize configuration for contact fetching"""
+    config = {
+        "offset": 0,
+        "modified_since": datetime.now() - timedelta(days=since_days),
+        "result": {},
+        "total_retrieved": 0,
+        "is_finished": False,
+        "retry_count": 0,
+        "limit_max": limit_max,
+        "page_limit": page_limit,
+    }
 
     if verbose:
         logger.info(f"Retrieving contacts modified in the last {since_days} days")
 
-    while not is_finished:
-        try:
-            # Apply limit_max if specified to avoid unnecessary API calls
-            if limit_max is not None and total_retrieved + page_limit > limit_max:
-                current_limit = limit_max - total_retrieved
-            else:
-                current_limit = page_limit
+    return config
 
-            if current_limit <= 0:
-                break
 
-            if verbose:
-                logger.info(f"Fetching contacts: limit={current_limit}, offset={offset}")
+def _fetch_contacts_batch(api_instance, config, max_retries, retry_delay, verbose):
+    """Fetch a single batch of contacts with error handling"""
+    try:
+        return _process_contacts_batch(api_instance, config, verbose)
+    except ApiException as e:
+        return _handle_contacts_api_error(e, config, max_retries, retry_delay, verbose)
+    except Exception as e:
+        logger.error(f"Unexpected error retrieving contacts: {e}")
+        return False
 
-            api_response = api_instance.get_contacts(
-                limit=current_limit, offset=offset, modified_since=modified_since
-            ).to_dict()
 
-            contacts = api_response.get("contacts", [])
+def _process_contacts_batch(api_instance, config, verbose):
+    """Process a single batch of contacts"""
+    current_limit = _calculate_current_limit(config["limit_max"], config["total_retrieved"], config["page_limit"])
 
-            if verbose:
-                logger.info(f"Retrieved {len(contacts)} contacts")
-
-            # Process retrieved contacts
-            for contact in contacts:
-                result[contact.get("email")] = contact.get("id")
-
-            total_retrieved += len(contacts)
-
-            # Determine if we should continue pagination
-            if len(contacts) < current_limit:
-                # No more contacts to retrieve
-                is_finished = True
-            elif limit_max is not None and total_retrieved >= limit_max:
-                # Reached the maximum limit
-                is_finished = True
-            else:
-                # Continue to next page
-                offset += current_limit
-
-            # Reset retry counter on successful request
-            retry_count = 0
-
-        except ApiException as e:
-            logger.error(f"Exception when calling ContactsApi->get_contacts: {e}")
-            retry_count += 1
-
-            if retry_count > max_retries:
-                logger.error("Max retries exceeded when fetching contacts. Returning partial results.")
-                break
-
-            # Exponential backoff
-            wait_time = 2**retry_count
-            if verbose:
-                logger.warning(f"API error, retrying in {wait_time}s (attempt {retry_count}/{max_retries})")
-
-            time.sleep(wait_time)
-
-        except Exception as e:
-            logger.error(f"Unexpected error retrieving contacts: {e}")
-            break
+    if current_limit <= 0:
+        config["is_finished"] = True
+        return True
 
     if verbose:
-        logger.info(f"Total contacts retrieved: {total_retrieved}")
+        logger.info(f"Fetching contacts: limit={current_limit}, offset={config['offset']}")
 
-    return result
+    contacts, total_count_users = _fetch_contacts_page(
+        api_instance, current_limit, config["offset"], config["modified_since"]
+    )
+
+    if verbose:
+        logger.info(f"Retrieved {len(contacts)}/{total_count_users} contacts")
+
+    # Process retrieved contacts
+    for contact in contacts:
+        config["result"][contact.get("email")] = contact.get("id")
+
+    config["total_retrieved"] += len(contacts)
+
+    # Determine if we should continue pagination
+    config["is_finished"] = not _should_continue_pagination(
+        len(contacts), current_limit, config["total_retrieved"], config["limit_max"]
+    )
+
+    if not config["is_finished"]:
+        config["offset"] += current_limit
+
+    # Reset retry counter on successful request
+    config["retry_count"] = 0
+    return True
+
+
+def _handle_contacts_api_error(exception, config, max_retries, retry_delay, verbose):
+    """Handle API errors during contact fetching"""
+    logger.error(f"Exception when calling ContactsApi->get_contacts: {exception}")
+
+    should_retry, wait_time = handle_api_retry(
+        exception, config["retry_count"], max_retries, retry_delay, "get all contacts"
+    )
+
+    if should_retry:
+        config["retry_count"] += 1
+        if verbose:
+            logger.info(f"Attempt {config['retry_count']}/{max_retries} failed, retrying in {wait_time}s...")
+        time.sleep(wait_time)
+        return True  # Continue the loop
+    else:
+        logger.error(f"Failed after {max_retries} attempts for get all contacts")
+        config["result"] = {}
+        return False  # Stop the loop
+
+
+def _additional_tender_attributes(tender):
+    """
+    Helper function to get additional attributes for a tender
+    Args:
+        tender: Tender object to extract attributes from
+
+    Returns:
+        dict: Dictionary of additional attributes for the tender
+    """
+    try:
+        first_sector = tender.sectors.first()
+        attributes = {
+            "MONTANT_BESOIN_ACHETEUR": tender.amount_int,
+            "TYPE_BESOIN_ACHETEUR": tender.kind,
+        }
+
+        # Check if there is one sector whose tender source is TALLY
+        if tender.source == tender_constants.SOURCE_TALLY and first_sector:
+            attributes["TYPE_VERTICALE_ACHETEUR"] = first_sector.name
+        else:
+            attributes["TYPE_VERTICALE_ACHETEUR"] = None
+
+        return attributes
+
+    except AttributeError as e:
+        logger.error(f"Attribute error: {e}")
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {e}")
+
+    # Return default values only if an exception occurred
+    return {
+        "MONTANT_BESOIN_ACHETEUR": None,
+        "TYPE_BESOIN_ACHETEUR": None,
+        "TYPE_VERTICALE_ACHETEUR": None,
+    }
 
 
 def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5):
@@ -203,7 +321,7 @@ def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
 
-    attributes = {
+    attributes: dict[str, str | None] = {
         "NOM": sanitize_to_send_by_email(user.last_name.capitalize()),
         "PRENOM": sanitize_to_send_by_email(user.first_name.capitalize()),
         "DATE_INSCRIPTION": user.created_at,
@@ -217,21 +335,7 @@ def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5
     }
 
     if tender:
-        try:
-            first_sector = tender.sectors.first()
-            attributes["MONTANT_BESOIN_ACHETEUR"] = tender.amount_int
-            attributes["TYPE_BESOIN_ACHETEUR"] = tender.kind
-
-            # Check if there is one sector whose tender source is TALLY
-            if tender.source == TenderSourcesChoices.SOURCE_TALLY and first_sector:
-                attributes["TYPE_VERTICALE_ACHETEUR"] = first_sector.name
-            else:
-                attributes["TYPE_VERTICALE_ACHETEUR"] = None
-
-        except AttributeError as e:
-            logger.error(f"Attribute error: {e}")
-        except Exception as e:
-            logger.error(f"An unexpected error occurred: {e}")
+        attributes |= _additional_tender_attributes(tender)
 
     new_contact = sib_api_v3_sdk.CreateContact(
         email=user.email,
@@ -247,7 +351,8 @@ def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5
         return True
 
     # Try to create the contact with retry mechanism
-    for attempt in range(max_retries):
+    attempt = 0
+    while attempt <= max_retries:
         try:
             api_response = api_instance.create_contact(new_contact).to_dict()
             user.brevo_contact_id = api_response.get("id")
@@ -260,31 +365,36 @@ def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5
             # Contact already exists - try to retrieve existing ID
             if e.status == 400 and error_body.get("code") == "duplicate_parameter":
                 logger.info(f"Contact {user.id} already exists in Brevo, attempting to retrieve ID...")
-                try:
-                    # Search for contact by email
-                    existing_contacts = get_contacts_by_email(user.email)
-                    if existing_contacts:
-                        user.brevo_contact_id = existing_contacts.get("id")
-                        user.save(update_fields=["brevo_contact_id"])
-                        logger.info(f"Brevo ID retrieved for {user.email}: {user.brevo_contact_id}")
-                        return True
-                except Exception as lookup_error:
-                    logger.error(f"Error retrieving contact ID: {lookup_error}")
-
+                return retrieve_brevo_contact_id(user)
             # Rate limiting - wait longer
-            should_retry, wait_time = handle_api_retry(
+            should_retry, retry_delay = handle_api_retry(
                 e, attempt, max_retries, retry_delay, "creating contact", user.id
             )
 
             if should_retry:
-                logger.info(f"Attempt {attempt+1}/{max_retries} failed, retrying in {wait_time}s...")
-                time.sleep(wait_time)
+                logger.info(f"Attempt {attempt+1}/{max_retries+1} failed, retrying in {retry_delay}s...")
+                time.sleep(retry_delay)
+                attempt += 1
                 continue  # Retry the operation
             else:
-                logger.error(f"Failed after {max_retries} attempts for {user.id}")
+                logger.error(f"Failed after {max_retries+1} attempts for {user.id}")
                 return False
 
     return False
+
+
+def retrieve_brevo_contact_id(user):
+    try:
+        # Search for contact by email
+        existing_contacts = get_contacts_by_email(user.email)
+        if existing_contacts:
+            user.brevo_contact_id = existing_contacts.get("id")
+            user.save(update_fields=["brevo_contact_id"])
+            logger.info(f"Brevo ID retrieved for {user.email}: {user.brevo_contact_id}")
+            return True
+    except Exception as lookup_error:
+        logger.error(f"Error retrieving contact ID: {lookup_error}")
+        return False
 
 
 def get_contacts_by_email(email):
@@ -579,7 +689,7 @@ def link_company_with_contact_list(siae, contact_list: list = None):
 
 
 def get_all_users_from_list(
-    list_id: int = settings.BREVO_CL_SIGNUP_BUYER_ID, limit=500, offset=0, max_retries=3, verbose=False
+    list_id: int = settings.BREVO_CL_SIGNUP_BUYER_ID, limit=500, offset=0, max_retries=3, retry_delay=5, verbose=False
 ):
     """
     Fetches all users from a specified Brevo CRM list, using pagination and retry strategies.
@@ -603,6 +713,7 @@ def get_all_users_from_list(
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
     result = {}
+
     is_finished = False
     retry_count = 0
     while not is_finished:
