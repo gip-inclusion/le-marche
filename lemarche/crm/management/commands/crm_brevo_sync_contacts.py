@@ -1,6 +1,7 @@
 import logging
 from datetime import timedelta
 
+from django.conf import settings
 from django.utils import timezone
 from tqdm import tqdm
 
@@ -49,14 +50,19 @@ class Command(BaseCommand):
             action="store_true",
             help="Synchronize only recently updated users",
         )
-        parser.add_argument(
-            "--batch-size",
-            dest="batch_size",
-            type=int,
-            default=50,
-            help="Number of users to process per batch",
-        )
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Simulation mode (no changes)")
+
+    def _fetch_existing_contacts(self, brevo_list_id, with_existing_contacts):
+        """Fetch existing contacts from Brevo if required."""
+        existing_contacts = {}
+        if with_existing_contacts:
+            self.stdout_info(f"Retrieving existing contacts from Brevo list (ID: {brevo_list_id})...")
+            if brevo_list_id:
+                existing_contacts = api_brevo.get_all_users_from_list(list_id=brevo_list_id, verbose=True)
+            else:
+                existing_contacts = api_brevo.get_all_contacts(verbose=True)
+            self.stdout_info(f"Existing contacts in Brevo list: {len(existing_contacts)}")
+        return existing_contacts
 
     def handle(
         self,
@@ -65,7 +71,6 @@ class Command(BaseCommand):
         brevo_list_id: int = None,
         with_existing_contacts: bool = False,
         recently_updated: bool = False,
-        batch_size: int = 50,
         **options,
     ):
         self.stdout_info("-" * 80)
@@ -88,59 +93,58 @@ class Command(BaseCommand):
         self.stdout_info(f"Total number of users to process: {total_users}")
 
         # Get existing contacts in Brevo if needed
-        existing_contacts = {}
-        if with_existing_contacts:
-            self.stdout_info(f"Retrieving existing contacts from Brevo list (ID: {brevo_list_id})...")
-            if not brevo_list_id:
-                existing_contacts = api_brevo.get_all_users_from_list(verbose=True)
-            else:
-                existing_contacts = api_brevo.get_all_contacts(list_id=brevo_list_id, verbose=True)
-            self.stdout_info(f"Existing contacts in Brevo list: {len(existing_contacts)}")
-
+        existing_contacts = (
+            self._fetch_existing_contacts(brevo_list_id, with_existing_contacts) if with_existing_contacts else {}
+        )
         if dry_run:
             self.stdout_info("Simulation mode enabled - no changes will be made")
-            return
 
         # Statistics for final report
         stats = {"created": 0, "updated": 0, "skipped": 0, "errors": 0, "total": total_users}
 
-        # Process users in batches to optimize performance
-        for batch_start in tqdm(range(0, total_users, batch_size), desc="Processing users"):
-            batch_end = batch_start + batch_size
-            batch_users = users_qs[batch_start:batch_end]
+        for user in tqdm(users_qs.iterator(), total=total_users, desc="Processing users"):
+            try:
+                brevo_contact_id = None
 
-            for user in batch_users:
-                try:
-                    brevo_contact_id = None
+                # Check if user already exists in Brevo
+                if with_existing_contacts:
+                    brevo_contact_id = existing_contacts.get(user.email)
 
-                    # Check if user already exists in Brevo
-                    if with_existing_contacts:
-                        brevo_contact_id = existing_contacts.get(user.email)
+                    # If ID is already correctly registered, skip this user
+                    if user.brevo_contact_id and user.brevo_contact_id == brevo_contact_id:
+                        self.stdout_info(f"Contact {user.pk} already up to date in Brevo")
+                        stats["skipped"] += 1
+                        continue
 
-                        # If ID is already correctly registered, skip this user
-                        if user.brevo_contact_id and user.brevo_contact_id == brevo_contact_id:
-                            self.stdout_info(f"Contact {user.id} already up to date in Brevo")
-                            stats["skipped"] += 1
-                            continue
-
-                    # If we found an existing Brevo ID, save it
-                    if brevo_contact_id:
-                        self.stdout_info(f"Updating Brevo ID for {user.id}: {brevo_contact_id}")
-                        user.brevo_contact_id = brevo_contact_id
+                # If we found an existing Brevo ID, save it
+                if brevo_contact_id:
+                    self.stdout_info(f"Updating Brevo ID for {user.pk}: {brevo_contact_id}")
+                    user.brevo_contact_id = brevo_contact_id
+                    if not dry_run:
                         user.save(update_fields=["brevo_contact_id"])
-                        stats["updated"] += 1
-                    # Otherwise, create a new contact in Brevo
-                    else:
-                        self.stdout_info(f"Creating a new contact for {user.id}")
-                        result = api_brevo.create_contact(user=user, list_id=brevo_list_id)
+                    stats["updated"] += 1
+                # Otherwise, create a new contact in Brevo
+                else:
+                    self.stdout_info(f"Creating a new contact for {user.pk}")
+                    current_list_id = brevo_list_id
+                    if not current_list_id:
+                        current_list_id = (
+                            settings.BREVO_CL_SIGNUP_BUYER_ID
+                            if user.kind == User.KIND_BUYER
+                            else settings.BREVO_CL_SIGNUP_SIAE_ID
+                        )
+                    if not dry_run:
+                        result = api_brevo.create_contact(user=user, list_id=current_list_id)
                         if result:
                             stats["created"] += 1
+                            self.stdout_info(f"Brevo contact created: {user.pk}")
                         else:
                             stats["errors"] += 1
-
-                except Exception as e:
-                    stats["errors"] += 1
-                    self.stdout_error(f"Error processing {user.id}: {str(e)}")
+                            self.stdout_error(f"Failed to create contact for {user.pk}")
+                            continue
+            except Exception as e:
+                stats["errors"] += 1
+                self.stdout_error(f"Error processing {user.pk}: {str(e)}")
 
         # Final report
         self.stdout_info("-" * 80)
