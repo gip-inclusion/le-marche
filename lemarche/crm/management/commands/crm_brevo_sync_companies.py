@@ -4,6 +4,7 @@ from django.db import transaction
 from django.utils import timezone
 from tqdm import tqdm
 
+from lemarche.companies.models import Company
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis import api_brevo
 from lemarche.utils.commands import BaseCommand
@@ -11,11 +12,12 @@ from lemarche.utils.commands import BaseCommand
 
 class Command(BaseCommand):
     """
-    Script for synchronizing companies (SIAE) with Brevo CRM
+    Script for synchronizing companies (SIAE and buyer companies) with Brevo CRM
 
     Features:
     - Complete or partial synchronization (recently modified companies)
-    - Tracks statistics over 90 days for Brevo
+    - Supports both SIAE and buyer Company synchronization
+    - Tracks statistics over 90 days for Brevo (SIAE only)
     - Robust error handling and recovery mechanism
     - Progress display
 
@@ -41,7 +43,7 @@ class Command(BaseCommand):
             "--recently-updated",
             dest="recently_updated",
             action="store_true",
-            help="Synchronize only recently modified SIAEs",
+            help="Synchronize only recently modified companies",
         )
         parser.add_argument(
             "--max-retries",
@@ -73,40 +75,71 @@ class Command(BaseCommand):
         )
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Simulation mode (no changes)")
 
+        parser.add_argument(
+            "--company-type",
+            dest="company_type",
+            type=str,
+            choices=["siae", "buyer", "all"],
+            default="all",
+            help="Type of companies to synchronize: siae, buyer, or all",
+        )
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Simulation mode (no changes)")
 
     def handle(
         self,
         recently_updated: bool = False,
         max_retries: int = 3,
+        company_type: str = "all",
         dry_run: bool = False,
         recently_updated_from_weeks: int = 2,
         **options,
     ):
         self.stdout_info("-" * 80)
         self.stdout_info("SIAE synchronization script with Brevo CRM (companies)...")
-        # Build the queryset
-        siaes_qs = self._build_queryset(recently_updated, recently_updated_from_weeks)
 
         if dry_run:
             self.stdout_info("Simulation mode enabled - no changes will be made")
+
         # Set variables for retries
         self.max_retries = max_retries
         self.retry_delay = 5  # milliseconds
-        # Process SIAEs
-        self._process_siaes(siaes_qs, dry_run)
+        self.recently_updated_from_weeks = recently_updated_from_weeks
+
+        if dry_run:
+            self.stdout_info("Simulation mode enabled - no changes will be made")
+
+        # Process SIAE companies
+        if company_type in ["siae", "all"]:
+            self.stdout_info("Processing SIAE companies...")
+            self._sync_siaes(recently_updated, max_retries, dry_run)
+
+        # Process buyer companies
+        if company_type in ["buyer", "all"]:
+            self.stdout_info("Processing buyer companies...")
+            self._sync_buyer_companies(recently_updated, max_retries, dry_run)
 
         # Display final report
         self._display_final_report()
 
-    def _build_queryset(self, recently_updated: bool, recently_updated_from_weeks):
+    def _sync_siaes(self, recently_updated: bool, max_retries: int, dry_run: bool):
+        """Synchronize SIAE companies with Brevo CRM"""
+        # Build the queryset
+        siaes_qs = self._build_siae_queryset(recently_updated)
+
+        # Initialize statistics
+        self.stats["total"] += siaes_qs.count()
+
+        # Process SIAEs
+        self._process_siaes(siaes_qs, dry_run)
+
+    def _build_siae_queryset(self, recently_updated: bool):
         """Build the queryset of SIAEs to process."""
         siaes_qs = Siae.objects.all()
         self.stats["total"] = siaes_qs.count()
         self.stdout_info(f"Total SIAEs in database: {self.stats['total']}")
 
         if recently_updated:
-            two_weeks_ago = timezone.now() - timedelta(weeks=recently_updated_from_weeks)
+            two_weeks_ago = timezone.now() - timedelta(weeks=self.recently_updated_from_weeks)
             siaes_qs = siaes_qs.filter(updated_at__gte=two_weeks_ago)
             self.stats["total"] = siaes_qs.count()
             self.stdout_info(f"Recently modified SIAEs: {self.stats['total']}")
@@ -121,7 +154,7 @@ class Command(BaseCommand):
                 self._process_single_siae(siae, dry_run)
             except Exception as e:
                 self.stats["errors"] += 1
-                self.stdout_error(f"Error processing {siae.id}: {str(e)}")
+                self.stdout_error(f"Error processing SIAE {siae.id}: {str(e)}")
 
     def _process_single_siae(self, siae, dry_run: bool):
         """Process a single SIAE."""
@@ -129,16 +162,16 @@ class Command(BaseCommand):
         extra_data_changed = self._update_extra_data_if_needed(siae, new_extra_data, dry_run)
         self._sync_with_brevo_if_needed(siae, extra_data_changed, dry_run)
 
-    def _prepare_extra_data(self, siae) -> dict:
-        """Prepare new extra_data."""
+    def _prepare_siae_extra_data(self, siae) -> dict:
+        """Prepare new extra_data for SIAE."""
         return {
-            "completion_rate": siae.completion_rate if siae.completion_rate is not None else 0,
+            "completion_rate": siae.completion_rate,
             "tender_received": siae.tender_email_send_count_annotated,
             "tender_interest": siae.tender_detail_contact_click_count_annotated,
         }
 
-    def _update_extra_data_if_needed(self, siae, new_extra_data: dict, dry_run: bool) -> bool:
-        """Update extra_data if needed and return whether changes were made."""
+    def _update_siae_extra_data_if_needed(self, siae, new_extra_data: dict, dry_run: bool) -> bool:
+        """Update SIAE extra_data if needed and return whether changes were made."""
         if siae.extra_data.get("brevo_company_data") != new_extra_data:
             siae.extra_data.update({"brevo_company_data": new_extra_data})
             if not dry_run:
@@ -147,21 +180,84 @@ class Command(BaseCommand):
             return True
         return False
 
-    def _sync_with_brevo_if_needed(self, siae, extra_data_changed: bool, dry_run: bool):
-        """Synchronize with Brevo if needed."""
+    def _sync_siae_with_brevo_if_needed(self, siae, extra_data_changed: bool, dry_run: bool, max_retries: int):
+        """Synchronize SIAE with Brevo if needed."""
         if not siae.brevo_company_id or extra_data_changed:
             if not dry_run:
-                try:
-                    api_brevo.create_or_update_company(
-                        siae, max_retries=self.max_retries, retry_delay=self.retry_delay
-                    )
-                    if siae.brevo_company_id:
-                        self.stats["updated"] += 1
-                    else:
-                        self.stats["created"] += 1
-                except api_brevo.CompanySyncError as e:
-                    self.stats["errors"] += 1
-                    self.stdout_error(f"Failed to create or update Brevo company for SIAE {siae.id}: {e}")
+                api_brevo.create_or_update_company(siae, max_retries=max_retries, retry_delay=5)
+
+            if siae.brevo_company_id:
+                self.stats["updated"] += 1
+            else:
+                self.stats["created"] += 1
+        else:
+            self.stats["skipped"] += 1
+
+    def _sync_buyer_companies(self, recently_updated: bool, max_retries: int, dry_run: bool):
+        """Synchronize buyer companies with Brevo CRM"""
+        # Build the queryset
+        companies_qs = self._build_buyer_company_queryset(recently_updated)
+
+        # Initialize statistics
+        self.stats["total"] += companies_qs.count()
+
+        # Process companies
+        self._process_buyer_companies(companies_qs, dry_run, max_retries)
+
+    def _build_buyer_company_queryset(self, recently_updated: bool):
+        """Build the queryset of buyer companies to process."""
+        companies_qs = Company.objects.all()
+        self.stdout_info(f"Total buyer companies in database: {Company.objects.count()}")
+
+        if recently_updated:
+            two_weeks_ago = timezone.now() - timedelta(weeks=2)
+            companies_qs = companies_qs.filter(updated_at__gte=two_weeks_ago)
+            self.stdout_info(f"Recently modified buyer companies: {companies_qs.count()}")
+
+        return companies_qs.with_user_stats()  # type: ignore
+
+    def _process_buyer_companies(self, companies_qs, dry_run: bool, max_retries: int):
+        """Process each buyer company individually."""
+        for company in companies_qs.iterator():
+            try:
+                self._process_single_buyer_company(company, dry_run, max_retries)
+            except Exception as e:
+                self.stats["errors"] += 1
+                self.stdout_error(f"Error processing buyer company {company.id}: {str(e)}")
+
+    def _process_single_buyer_company(self, company, dry_run: bool, max_retries: int):
+        """Process a single buyer company."""
+        new_extra_data = self._prepare_buyer_company_extra_data(company)
+        extra_data_changed = self._update_buyer_company_extra_data_if_needed(company, new_extra_data, dry_run)
+        self._sync_buyer_company_with_brevo_if_needed(company, extra_data_changed, dry_run, max_retries)
+
+    def _prepare_buyer_company_extra_data(self, company) -> dict:
+        """Prepare new extra_data for buyer company."""
+        return {
+            "user_count": company.user_count_annotated,
+            "tender_count": company.user_tender_count_annotated,
+        }
+
+    def _update_buyer_company_extra_data_if_needed(self, company, new_extra_data: dict, dry_run: bool) -> bool:
+        """Update buyer company extra_data if needed and return whether changes were made."""
+        if company.extra_data.get("brevo_company_data") != new_extra_data:
+            company.extra_data.update({"brevo_company_data": new_extra_data})
+            if not dry_run:
+                company.save(update_fields=["extra_data"])
+            self.stats["extra_data_updated"] += 1
+            return True
+        return False
+
+    def _sync_buyer_company_with_brevo_if_needed(
+        self, company, extra_data_changed: bool, dry_run: bool, max_retries: int
+    ):
+        """Synchronize buyer company with Brevo if needed."""
+        if not company.brevo_company_id or extra_data_changed:
+            if not dry_run:
+                api_brevo.create_or_update_buyer_company(company, max_retries=max_retries, retry_delay=5)
+
+            if company.brevo_company_id:
+                self.stats["updated"] += 1
             else:
                 # dry_run case
                 if siae.brevo_company_id:
@@ -176,10 +272,7 @@ class Command(BaseCommand):
         total_processed = self.stats["created"] + self.stats["updated"] + self.stats["skipped"] + self.stats["errors"]
         self.stdout_info("-" * 80)
         self.stdout_info("Synchronization completed! Results:")
-        self.stdout_info(
-            f"""- Total processed:
-            {total_processed}/{self.stats['total']}"""
-        )
+        self.stdout_info(f"- Total processed: {total_processed}/{self.stats['total']}")
         self.stdout_info(f"- Created: {self.stats['created']}")
         self.stdout_info(f"- Updated: {self.stats['updated']}")
         self.stdout_info(f"- Skipped (already up to date): {self.stats['skipped']}")
