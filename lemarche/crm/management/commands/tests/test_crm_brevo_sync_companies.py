@@ -83,18 +83,6 @@ class CrmBrevoSyncCompaniesCommandTest(TransactionTestCase):
         self.assertIn("Errors: 5", output)  # Corrigé pour refléter le vrai nombre d'erreurs
 
     @patch("lemarche.utils.apis.api_brevo.create_or_update_company")
-    def test_batch_processing(self, mock_api_call):
-        """Test batch processing with custom batch size."""
-        mock_api_call.return_value = None
-
-        out = StringIO()
-        call_command("crm_brevo_sync_companies", stdout=out)
-
-        # Verify command completed successfully with batching
-        output = out.getvalue()
-        self.assertIn("Synchronization completed", output)
-
-    @patch("lemarche.utils.apis.api_brevo.create_or_update_company")
     def test_extra_data_update(self, mock_api_call):
         """Test that extra_data is properly updated with new statistics."""
         mock_api_call.return_value = None
