@@ -43,6 +43,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         # selenium browser
         options = Options()
         options.add_argument("-headless")
+        options.set_preference("intl.accept_languages", "fr")
         cls.driver = webdriver.Firefox(options=options)
         cls.driver.implicitly_wait(1)
 
