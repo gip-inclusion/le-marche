@@ -52,12 +52,12 @@ def whitelist_recipient_list(recipient_list):
     return [email for email in recipient_list if (email and email.endswith("inclusion.gouv.fr"))]
 
 
-def add_to_contact_list(user, contact_type: str, tender=None):
+def add_to_contact_list(user, contact_type: str | int, tender=None):
     """Add user to contactlist
 
     Args:
         user (User): the user how will be added in the contact list
-        contact_type (String): "signup", OR "buyer_search" else raise ValueError
+        contact_type (String or Int): "signup", OR "buyer_search", or Brevo id directly else raise ValueError
     """
     if contact_type == "signup":
         if user.kind == user.KIND_BUYER:
@@ -66,6 +66,8 @@ def add_to_contact_list(user, contact_type: str, tender=None):
             api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_SIAE_ID)
     elif contact_type == "buyer_search":
         api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_BUYER_SEARCH_SIAE_LIST_ID)
+    elif isinstance(contact_type, int):
+        api_brevo.create_contact(user=user, list_id=contact_type)
     else:
         raise ValueError("type must be defined")
 

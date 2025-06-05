@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 
 from lemarche.companies.models import Company
 from lemarche.users.models import User
+from lemarche.utils.emails import add_to_contact_list
 
 
 class Command(BaseCommand):
@@ -21,12 +22,12 @@ class Command(BaseCommand):
             help="Slug de la société à qui appartient les acheteurs importés.",
         )
         parser.add_argument(
-            "--brevo-template_id",
+            "brevo_template_id",
             type=int,
             help="ID de la template de mail Brevo pour envoyer l'invitation aux acheteurs importés.",
         )
         parser.add_argument(
-            "--brevo-contact_id",
+            "brevo_contact_id",
             type=int,
             help="ID de la liste de contact Brevo à utiliser pour les acheteurs importés.",
         )
@@ -39,7 +40,7 @@ class Command(BaseCommand):
             imported_list = list(reader)
 
         for imported_user in imported_list:
-            User.objects.create_user(
+            user = User.objects.create_user(
                 email=imported_user["EMAIL"],
                 first_name=imported_user["FIRST_NAME"],
                 last_name=imported_user["LAST_NAME"],
@@ -52,3 +53,4 @@ class Command(BaseCommand):
                 accept_survey=True,
                 password=None,
             )
+            add_to_contact_list(user, contact_type=options["brevo_contact_id"])

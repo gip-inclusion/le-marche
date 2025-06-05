@@ -354,7 +354,9 @@ class UserBuyerImportTestCase(TestCase):
         cls.company = CompanyFactory(name="Grosse banque")
 
     def test_import_buyer(self):
-        call_command("import_buyers", "lemarche/fixtures/tests/acheteurs_bpce.csv", "grosse-banque", stdout=StringIO())
+        call_command(
+            "import_buyers", "lemarche/fixtures/tests/acheteurs_bpce.csv", "grosse-banque", 5, 5, stdout=StringIO()
+        )
 
         self.assertQuerySetEqual(
             User.objects.all(),
