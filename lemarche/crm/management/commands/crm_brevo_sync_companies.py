@@ -186,7 +186,7 @@ class Command(BaseCommand):
 
     def _process_buyer_companies(self, companies_qs, dry_run: bool, max_retries: int):
         """Process each buyer company individually."""
-        for company in tqdm(companies_qs.iterator(), total=companies_qs.count(), desc="Synchronizing buyer companies"):
+        for company in companies_qs.iterator():
             try:
                 self._process_single_buyer_company(company, dry_run, max_retries)
             except Exception as e:
