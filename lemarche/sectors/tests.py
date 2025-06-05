@@ -63,8 +63,8 @@ class SectorQuerysetModelTest(TestCase):
         cls.sector_2_2 = SectorFactory(name="Autre (Bricolage)", group=sector_group_2)
 
         cls.sector_3 = SectorFactory(name="Un secteur seul", group=None, tenders=[tender_1, tender_2])
-        SiaeActivityFactory(siae=siae_1, sectors=[cls.sector_3])
-        SiaeActivityFactory(siae=siae_2, sectors=[cls.sector_3])
+        SiaeActivityFactory(siae=siae_1, sector=cls.sector_3)
+        SiaeActivityFactory(siae=siae_2, sector=cls.sector_3)
 
     def test_form_filter_queryset(self):
         sectors = Sector.objects.form_filter_queryset()

@@ -26,34 +26,33 @@ class TestSendAuthorListOfSuperSiaesEmails(TestCase):
             is_active=True,
             kind=siae_constants.KIND_AI,
         )
-        siae1_activity = SiaeActivityFactory(
+        SiaeActivityFactory(
             siae=cls.siae1,
             presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
             with_country_perimeter=True,
+            sector=cls.sector,
         )
-        siae1_activity.sectors.add(cls.sector)
-
         cls.siae2 = SiaeFactory(
             is_active=True,
             kind=siae_constants.KIND_AI,
         )
-        siae2_activity = SiaeActivityFactory(
+        SiaeActivityFactory(
             siae=cls.siae2,
+            sector=cls.sector,
             presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
             with_country_perimeter=True,
         )
-        siae2_activity.sectors.add(cls.sector)
 
         cls.siae3 = SiaeFactory(
             is_active=True,
             kind=siae_constants.KIND_AI,
         )
-        siae3_activity = SiaeActivityFactory(
+        SiaeActivityFactory(
             siae=cls.siae3,
+            sector=cls.sector,
             presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
             with_country_perimeter=True,
         )
-        siae3_activity.sectors.add(cls.sector)
 
         cls.author = UserFactory(kind=User.KIND_BUYER)
         cls.tender_before = TenderFactory(

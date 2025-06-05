@@ -157,14 +157,12 @@ class SiaeEditActivitiesDeleteView(SiaeMemberRequiredMixin, SuccessMessageMixin,
         return reverse_lazy("dashboard_siaes:siae_edit_activities", args=[self.kwargs.get("slug")])
 
     def get_success_message(self, cleaned_data):
-        return mark_safe(f"Votre activité <strong>{self.object.sector_group}</strong> a été supprimée avec succès.")
+        return mark_safe(f"Votre activité <strong>{self.object.sector}</strong> a été supprimée avec succès.")
 
 
 class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, CreateView):
     template_name = "dashboard/siae_edit_activities_create.html"
     form_class = SiaeActivitiesCreateForm
-    # success_url = reverse_lazy("dashboard_siaes:siae_edit_activities")
-    # success_message = "Votre activité a été crée avec succès."
 
     def get(self, request, *args, **kwargs):
         self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
@@ -208,13 +206,12 @@ class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, CreateView):
         return reverse_lazy("dashboard_siaes:siae_edit_activities", args=[self.kwargs.get("slug")])
 
     def get_success_message(self, cleaned_data):
-        return mark_safe(f"Votre activité <strong>{cleaned_data['sector_group']}</strong> a été créée avec succès.")
+        return mark_safe(f"Votre activité <strong>{cleaned_data['sector']}</strong> a été créée avec succès.")
 
 
 class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     template_name = "dashboard/siae_edit_activities_create.html"
     form_class = SiaeActivitiesCreateForm
-    # success_url = reverse_lazy("dashboard_favorites:list_detail")
     success_message = "Votre activité a été modifiée avec succès."
 
     def get(self, request, *args, **kwargs):

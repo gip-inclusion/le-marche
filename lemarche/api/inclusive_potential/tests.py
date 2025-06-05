@@ -26,10 +26,9 @@ class InclusivePotentialViewTests(TestCase):
         for siae in [siae_1, siae_2, siae_3]:
             siae_activity = SiaeActivityFactory(
                 siae=siae,
-                sector_group=self.sector.group,
+                sector=self.sector,
                 with_zones_perimeter=True,
             )
-            siae_activity.sectors.add(self.sector)
             siae_activity.locations.set([self.perimeter_department])
 
         token = "a" * 64
@@ -125,10 +124,9 @@ class InclusivePotentialViewTests(TestCase):
         for siae in siaes:
             siae_activity_1 = SiaeActivityFactory(
                 siae=siae,
-                sector_group=specific_sector.group,
+                sector=specific_sector,
                 with_zones_perimeter=True,
             )
-            siae_activity_1.sectors.add(specific_sector)
             siae_activity_1.locations.set([self.perimeter_department])
 
         response = self.authenticated_client.get(self.url, {"sector": specific_sector.slug, "budget": 50000})
@@ -155,10 +153,9 @@ class InclusivePotentialViewTests(TestCase):
         for siae in siaes:
             siae_activity_1 = SiaeActivityFactory(
                 siae=siae,
-                sector_group=specific_sector.group,
+                sector=specific_sector,
                 with_zones_perimeter=True,
             )
-            siae_activity_1.sectors.add(specific_sector)
             siae_activity_1.locations.set([self.perimeter_department])
 
         response = self.authenticated_client.get(self.url, {"sector": specific_sector.slug, "budget": 50000})

@@ -1114,7 +1114,7 @@ class Siae(models.Model):
 
     def sector_groups_list_string(self, display_max=3):
         # Retrieve sectors from activities instead of directly from the sectors field
-        sectors_name_list = list(set(self.activities.values_list("sector_group__name", flat=True)))
+        sectors_name_list = list(set(self.activities.values_list("sector__group__name", flat=True)))
         if display_max and len(sectors_name_list) > display_max:
             sectors_name_list = sectors_name_list[:display_max]
             sectors_name_list.append("…")
@@ -1298,7 +1298,7 @@ class SiaeUserRequest(models.Model):
 
 class SiaeActivityQuerySet(models.QuerySet):
     def filter_sectors(self, sectors):
-        return self.filter(sectors__in=sectors)
+        return self.filter(sector__in=sectors)
 
     def geo_range_in_perimeter_list(self, perimeters: models.QuerySet, include_country_area=False):
         """
@@ -1400,14 +1400,14 @@ class SiaeActivityQuerySet(models.QuerySet):
 
         If tender specify a city and a distance, we filter on the Siae adress that are within the distance of the city.
         """
-        qs = self.prefetch_related("sectors").prefetch_related("locations")
+        qs = self.select_related("sector").prefetch_related("locations")
 
         # filter by presta_type
         if len(tender.presta_type):
             qs = qs.filter(presta_type__overlap=tender.presta_type)
 
         if tender.sectors.count():
-            qs = qs.filter_sectors(tender.sectors.all())
+            qs = qs.filter(sector__tenders__id=tender.id)
 
         # filter by perimeters
         if tender.is_country_area:  # for all country
@@ -1445,16 +1445,8 @@ class SiaeActivity(models.Model):
     siae = models.ForeignKey(
         "siaes.Siae", verbose_name="Structure", related_name="activities", on_delete=models.CASCADE
     )
-
-    sector_group = models.ForeignKey(
-        "sectors.SectorGroup",
-        verbose_name="Secteur d'activité",
-        related_name="siae_activities",
-        on_delete=models.PROTECT,
-        null=True,
-    )
-    sectors = models.ManyToManyField(
-        "sectors.Sector", verbose_name="Activités", related_name="siae_activities", blank=True
+    sector = models.ForeignKey(
+        "sectors.Sector", verbose_name="Activité", related_name="siae_activity", on_delete=models.CASCADE
     )
     presta_type = ChoiceArrayField(
         verbose_name="Type de prestation",
@@ -1522,7 +1514,7 @@ class SiaeOffer(models.Model):
 @receiver(post_delete, sender=SiaeActivity)
 def siae_activity_post_save(sender, instance, **kwargs):
     """Update sector_count when SiaeActivity is created or updated."""
-    instance.siae.sector_count = instance.siae.activities.values("sector_group").distinct().count()
+    instance.siae.sector_count = instance.siae.activities.values("sector__group").distinct().count()
     instance.siae.save()
 
 

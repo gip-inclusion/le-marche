@@ -199,24 +199,24 @@ class TenderModelMatchingTest(TestCase):
             is_active=True,
             kind=siae_constants.KIND_AI,
         )
-        siae_one_activity = SiaeActivityFactory(
+        SiaeActivityFactory(
             siae=cls.siae_one,
+            sector=cls.sector,
             presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
             with_country_perimeter=True,
         )
-        siae_one_activity.sectors.add(cls.sector)
 
         # siae found by presta_type
         cls.siae_two = SiaeFactory(
             is_active=True,
             kind=siae_constants.KIND_ESAT,
         )
-        siae_two_activity = SiaeActivityFactory(
+        SiaeActivityFactory(
             siae=cls.siae_two,
+            sector=cls.sector,
             presta_type=[siae_constants.PRESTA_BUILD],
             with_country_perimeter=True,
         )
-        siae_two_activity.sectors.add(cls.sector)
 
         # siae not found
         cls.siae_five = SiaeFactory()
@@ -886,28 +886,28 @@ class TenderAdminTest(TestCase):
             kind=siae_constants.KIND_AI,
             coords=coords_paris,
         )
-        siae_one_activity = SiaeActivityFactory(
-            siae=siae_one,
-            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
-            geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            geo_range_custom_distance=100,
-        )
 
         siae_two = SiaeFactory(
             is_active=True,
             kind=siae_constants.KIND_ESAT,
             coords=coords_paris,
         )
-        siae_two_activity = SiaeActivityFactory(
-            siae=siae_two,
-            presta_type=[siae_constants.PRESTA_BUILD],
-            geo_range=siae_constants.GEO_RANGE_CUSTOM,
-            geo_range_custom_distance=10,
-        )
 
         for i in range(5):
-            siae_one_activity.sectors.add(cls.sectors[i])
-            siae_two_activity.sectors.add(cls.sectors[i + 5])
+            SiaeActivityFactory(
+                siae=siae_one,
+                sector=cls.sectors[i],
+                presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
+                geo_range=siae_constants.GEO_RANGE_CUSTOM,
+                geo_range_custom_distance=100,
+            )
+            SiaeActivityFactory(
+                siae=siae_two,
+                sector=cls.sectors[i + 5],
+                presta_type=[siae_constants.PRESTA_BUILD],
+                geo_range=siae_constants.GEO_RANGE_CUSTOM,
+                geo_range_custom_distance=10,
+            )
 
         cls.tender = TenderFactory(
             sectors=cls.sectors[6:8],

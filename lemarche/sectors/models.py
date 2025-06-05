@@ -53,7 +53,7 @@ class SectorQuerySet(models.QuerySet):
         )
 
     def with_siae_stats(self):
-        return self.annotate(siae_count_annotated=Count("siae_activities__siae", distinct=True))
+        return self.annotate(siae_count_annotated=Count("siae_activity__siae", distinct=True))
 
     def with_tender_stats(self):
         return self.annotate(tender_count_annotated=Count("tenders", distinct=True))

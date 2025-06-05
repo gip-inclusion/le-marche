@@ -3,11 +3,11 @@
     <h3 class="fr-accordion__title">
         <button class="fr-accordion__btn"
                 aria-expanded="false"
-                aria-controls="accordion-activity-{{ activity.id }}">{{ activity.sector_group }}</button>
+                aria-controls="accordion-activity-{{ activity.id }}">{{ activity.sector.group }}</button>
     </h3>
     <div class="fr-collapse" id="accordion-activity-{{ activity.id }}">
         <ul>
-            {% siae_sectors_display activity display_max=6 output_format='li' %}
+            <li>{{ activity.sector }}</li>
         </ul>
         {% if activity.presta_type %}
             <p class="fr-mt-4w">
