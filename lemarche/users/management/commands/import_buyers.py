@@ -9,7 +9,10 @@ from lemarche.www.auth.tasks import send_new_user_password_reset_link
 
 
 class Command(BaseCommand):
-    """Import new buyers from a csv file."""
+    """Import new buyers from a csv file.
+    The file should respect these headers:
+        FIRST_NAME | LAST_NAME | EMAIL | PHONE | POSITION
+    """
 
     def add_arguments(self, parser):
         parser.add_argument(
