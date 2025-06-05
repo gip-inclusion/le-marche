@@ -39,8 +39,7 @@ def get_inclusive_potential_data(sector: str, perimeter: str, budget: int) -> tu
             handicap_siaes += 1
             employees_insertion_count += siae.employees_insertion_count or 0
 
-        if siae.super_badge:
-            siaes_with_super_badge += 1
+        siaes_with_super_badge += 1 if siae.super_badge else 0
 
         employees_permanent_count += siae.employees_permanent_count or 0
 
