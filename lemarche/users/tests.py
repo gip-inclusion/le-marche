@@ -351,13 +351,19 @@ class UserBuyerImportTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        CompanyFactory(name="Grosse banque")
+        cls.company = CompanyFactory(name="Grosse banque")
 
     def test_import_buyer(self):
         call_command("import_buyers", "lemarche/fixtures/tests/acheteurs_bpce.csv", "grosse-banque", stdout=StringIO())
 
         self.assertQuerySetEqual(
             User.objects.all(),
+            ["<User: dupont.lajoie@camping.fr>", "<User: françois.perrin@celc.test.fr>"],
+            ordered=False,
+            transform=lambda x: repr(x),
+        )
+        self.assertQuerySetEqual(
+            User.objects.filter(company=self.company, company_name=self.company.name),
             ["<User: dupont.lajoie@camping.fr>", "<User: françois.perrin@celc.test.fr>"],
             ordered=False,
             transform=lambda x: repr(x),
