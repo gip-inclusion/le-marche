@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand
 from lemarche.companies.models import Company
 from lemarche.users.models import User
 from lemarche.utils.emails import add_to_contact_list
+from lemarche.www.auth.tasks import send_new_user_password_reset_link
 
 
 class Command(BaseCommand):
@@ -22,9 +23,10 @@ class Command(BaseCommand):
             help="Slug de la société à qui appartient les acheteurs importés.",
         )
         parser.add_argument(
-            "brevo_template_id",
-            type=int,
-            help="ID de la template de mail Brevo pour envoyer l'invitation aux acheteurs importés.",
+            "brevo_template_code",
+            type=str,
+            help="Code de la template de mail Brevo enregistrée"
+            " dans la base pour envoyer l'invitation aux acheteurs importés.",
         )
         parser.add_argument(
             "brevo_contact_id",
@@ -53,4 +55,5 @@ class Command(BaseCommand):
                 accept_survey=True,
                 password=None,
             )
+            send_new_user_password_reset_link(user, template_code=options["brevo_template_code"])
             add_to_contact_list(user, contact_type=options["brevo_contact_id"])

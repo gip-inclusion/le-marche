@@ -11,6 +11,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from lemarche.companies.factories import CompanyFactory
+from lemarche.conversations.factories import TemplateTransactionalFactory
 from lemarche.conversations.models import TemplateTransactional, TemplateTransactionalSendLog
 from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.siaes.factories import SiaeFactory
@@ -352,10 +353,16 @@ class UserBuyerImportTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.company = CompanyFactory(name="Grosse banque")
+        TemplateTransactionalFactory(code="NEW_COMPANY")
 
     def test_import_buyer(self):
         call_command(
-            "import_buyers", "lemarche/fixtures/tests/acheteurs_bpce.csv", "grosse-banque", 5, 5, stdout=StringIO()
+            "import_buyers",
+            "lemarche/fixtures/tests/acheteurs_bpce.csv",
+            "grosse-banque",
+            "NEW_COMPANY",
+            5,
+            stdout=StringIO(),
         )
 
         self.assertQuerySetEqual(
