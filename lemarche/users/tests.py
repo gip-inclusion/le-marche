@@ -368,3 +368,9 @@ class UserBuyerImportTestCase(TestCase):
             ordered=False,
             transform=lambda x: repr(x),
         )
+        self.assertQuerySetEqual(
+            User.objects.filter(is_active=True),
+            ["<User: dupont.lajoie@camping.fr>", "<User: françois.perrin@celc.test.fr>"],
+            ordered=False,
+            transform=lambda x: repr(x),
+        )
