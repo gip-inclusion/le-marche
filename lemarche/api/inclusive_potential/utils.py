@@ -11,8 +11,8 @@ class PotentialData:
     insertion_siaes: int
     handicap_siaes: int
     siaes_with_super_badge: int
-    employees_insertion_count: int
-    employees_permanent_count: int
+    employees_insertion_average: int
+    employees_permanent_average: int
 
 
 def get_inclusive_potential_data(sector: str, perimeter: str, budget: int) -> tuple[PotentialData, dict]:
@@ -83,8 +83,8 @@ def get_inclusive_potential_data(sector: str, perimeter: str, budget: int) -> tu
             insertion_siaes=insertion_siaes,
             handicap_siaes=handicap_siaes,
             siaes_with_super_badge=siaes_with_super_badge,
-            employees_insertion_count=employees_insertion_count,
-            employees_permanent_count=employees_permanent_count,
+            employees_insertion_average=round(employees_insertion_count / siaes_count, 2) if siaes_count else 0,
+            employees_permanent_average=round(employees_permanent_count / siaes_count, 2) if siaes_count else 0,
         ),
         analysis_data,
     )

@@ -26,8 +26,8 @@ class InclusivePotentialView(APIView):
             "insertion_siaes": potential_data.insertion_siaes,
             "handicap_siaes": potential_data.handicap_siaes,
             "siaes_with_super_badge": potential_data.siaes_with_super_badge,
-            "employees_insertion": potential_data.employees_insertion_count,
-            "employees_permanent": potential_data.employees_permanent_count,
+            "employees_insertion_average": potential_data.employees_insertion_average,
+            "employees_permanent_average": potential_data.employees_permanent_average,
         }
         if budget:
             data.update(analysis_data)

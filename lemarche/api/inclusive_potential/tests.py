@@ -86,8 +86,8 @@ class InclusivePotentialViewTests(TestCase):
         self.assertEqual(response.data["insertion_siaes"], 2)
         self.assertEqual(response.data["handicap_siaes"], 1)
         self.assertEqual(response.data["siaes_with_super_badge"], 1)
-        self.assertEqual(response.data["employees_insertion"], 40)
-        self.assertEqual(response.data["employees_permanent"], 16)
+        self.assertEqual(response.data["employees_insertion_average"], 13.33)
+        self.assertEqual(response.data["employees_permanent_average"], 5.33)
 
         # if there is no budget, there is no recommendation
         self.assertNotIn("recommendation", response.data)
