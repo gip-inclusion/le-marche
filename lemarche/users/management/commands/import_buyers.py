@@ -1,6 +1,7 @@
 import csv
 
 from django.core.management.base import BaseCommand
+from django.db import IntegrityError
 
 from lemarche.companies.models import Company
 from lemarche.users.models import User
@@ -45,6 +46,20 @@ class Command(BaseCommand):
             imported_list = list(reader)
 
         for imported_user in imported_list:
+            self._import_user(
+                imported_user,
+                company,
+                brevo_template_code=options["brevo_template_code"],
+                brevo_contact_id=options["brevo_contact_id"],
+            )
+
+    def _import_user(self, imported_user: dict, company: Company, brevo_template_code: str, brevo_contact_id: int):
+        """
+        Create a new user and send a password reset link to it.
+        If the user already exists, update its company.
+        Always add to Brevo contact list.
+        """
+        try:
             user = User.objects.create_user(
                 email=imported_user["EMAIL"],
                 first_name=imported_user["FIRST_NAME"],
@@ -58,5 +73,15 @@ class Command(BaseCommand):
                 accept_survey=True,
                 password=None,
             )
-            send_new_user_password_reset_link(user, template_code=options["brevo_template_code"])
-            add_to_contact_list(user, contact_type=options["brevo_contact_id"])
+        except IntegrityError:  # email already exists
+            # Already registered users have their company updated
+            user = User.objects.get(email=imported_user["EMAIL"])
+            user.company = company
+            user.company_name = company.name
+            user.save(update_fields=["company", "company_name"])
+            self.stdout.write(f"L'acheteur {imported_user['EMAIL']} est déjà inscrit, entreprise mise à jour.")
+        else:  # new user, send password reset link
+            send_new_user_password_reset_link(user, template_code=brevo_template_code)
+            self.stdout.write(f"L'acheteur {imported_user['EMAIL']} à été inscrit avec succès.")
+        finally:  # add to Brevo contact list, even if user already exists or not
+            add_to_contact_list(user, contact_type=brevo_contact_id)
