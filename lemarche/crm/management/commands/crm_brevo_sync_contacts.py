@@ -3,7 +3,6 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.utils import timezone
-from tqdm import tqdm
 
 from lemarche.users.models import User
 from lemarche.utils.apis import api_brevo
@@ -126,7 +125,7 @@ class Command(BaseCommand):
         self.stdout_info("Synchronizing users with Brevo CRM...")
 
         # Build the user filtering query
-        users_qs = User.objects.all()
+        users_qs = User.objects.filter(is_anonymized=False, is_active=True)
 
         if kind_users:
             users_qs = users_qs.filter(kind=kind_users)
@@ -151,7 +150,8 @@ class Command(BaseCommand):
         # Statistics for final report
         stats = {"created": 0, "updated": 0, "skipped": 0, "errors": 0, "total": total_users}
 
-        for user in tqdm(users_qs.iterator(), total=total_users, desc="Processing users"):
+        # use .iterator to optimize the chunk processing of large querysets
+        for user in users_qs.iterator():
             result = self._process_single_user(user, existing_contacts, brevo_list_id, dry_run, with_existing_contacts)
             for key, value in result.items():
                 stats[key] += value
