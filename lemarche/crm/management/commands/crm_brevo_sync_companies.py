@@ -1,7 +1,6 @@
 from datetime import timedelta
 
 from django.utils import timezone
-from tqdm import tqdm
 
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis import api_brevo
@@ -78,18 +77,21 @@ class Command(BaseCommand):
     def _build_queryset(self, recently_updated: bool):
         """Build the queryset of SIAEs to process."""
         siaes_qs = Siae.objects.all()
-        self.stdout_info(f"Total SIAEs in database: {Siae.objects.count()}")
+        self.stats["total"] = siaes_qs.count()
+        self.stdout_info(f"Total SIAEs in database: {self.stats['total']}")
 
         if recently_updated:
             two_weeks_ago = timezone.now() - timedelta(weeks=2)
             siaes_qs = siaes_qs.filter(updated_at__gte=two_weeks_ago)
-            self.stdout_info(f"Recently modified SIAEs: {siaes_qs.count()}")
+            self.stats["total"] = siaes_qs.count()
+            self.stdout_info(f"Recently modified SIAEs: {self.stats['total']}")
 
         return siaes_qs.with_tender_stats(since_days=90)  # type: ignore
 
     def _process_siaes(self, siaes_qs, dry_run: bool, max_retries: int):
         """Process each SIAE individually."""
-        for siae in tqdm(siaes_qs.iterator(), total=siaes_qs.count(), desc="Synchronizing SIAEs"):
+        # use .iterator to optimize the chunk processing of large querysets
+        for siae in siaes_qs.iterator():
             try:
                 self._process_single_siae(siae, dry_run, max_retries)
             except Exception as e:
