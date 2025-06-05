@@ -82,6 +82,6 @@ class Command(BaseCommand):
             self.stdout.write(f"L'acheteur {imported_user['EMAIL']} est déjà inscrit, entreprise mise à jour.")
         else:  # new user, send password reset link
             send_new_user_password_reset_link(user, template_code=brevo_template_code)
-            self.stdout.write(f"L'acheteur {imported_user['EMAIL']} à été inscrit avec succès.")
+            self.stdout.write(f"L'acheteur {imported_user['EMAIL']} a été inscrit avec succès.")
         finally:  # add to Brevo contact list, even if user already exists or not
             add_to_contact_list(user, contact_type=brevo_contact_id)
