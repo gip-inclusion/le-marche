@@ -10,14 +10,19 @@
     {% csrf_token %}
     <div class="fr-grid-row fr-mb-4w">
         <div class="fr-col-12 fr-col-lg-7">
-            {% dsfr_form_field form.start_working_date %}
             {% dsfr_form_field form.deadline_date %}
+            {% dsfr_form_field form.start_working_date %}
             {% dsfr_form_field form.external_link %}
         </div>
     </div>
-    <div class="fr-grid-row fr-mb-4w" x-data="TenderQuestionForm">
-        <div class="fr-col-12 fr-col-lg-7">
-            <label for="id_detail-questions_list" class="fr-label">Questions à poser aux prestataires ciblés</label>
+    <div class="fr-accordion fr-col-lg-7 fr-mb-4w" x-data="TenderQuestionForm">
+        <h3 class="fr-accordion__title">
+            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="questions-accordion">
+                <span class="fr-icon-question-line fr-mr-1v" aria-hidden="true"></span>
+                Poser des questions aux fournisseurs ciblés
+            </button>
+        </h3>
+        <div class="fr-collapse" id="questions-accordion">
             <div class="fr-mt-2v" x-show="questions.length > 0" x-cloak>
                 <template x-for="(question, index) in questions" :key="index">
                     <div class="fr-grid-row fr-mb-2w">
@@ -26,13 +31,14 @@
                                 <input type="text"
                                        x-model="question.text"
                                        name="alpine-questions_list"
-                                       class="fr-input" />
+                                       class="fr-input"/>
                             </div>
                         </div>
                         <div class="fr-col-1">
                             <button class="fr-btn fr-icon-delete-bin-line fr-btn--tertiary-no-outline"
                                     type="button"
-                                    @click="removeQuestion(index)">Supprimer la question</button>
+                                    @click="removeQuestion(index)">Supprimer la question
+                            </button>
                         </div>
                     </div>
                 </template>
@@ -43,7 +49,8 @@
             </div>
             <button type="button"
                     class="fr-btn fr-btn--tertiary"
-                    x-on:click="addNewQuestion()">Ajouter une question</button>
+                    x-on:click="addNewQuestion()">Ajouter une question
+                    </button>
         </div>
     </div>
     <div class="fr-grid-row fr-mb-4w">
