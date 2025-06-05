@@ -1,16 +1,15 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path, reverse_lazy
 
-from lemarche.www.auth.views import LoginView, MeetingCalendarView, PasswordResetView, SignupView
+from lemarche.www.auth.views import CustomLoginView, CustomSignupView, MeetingCalendarView, PasswordResetView
 
 
 # https://docs.djangoproject.com/en/dev/topics/http/urls/#url-namespaces-and-included-urlconfs
 app_name = "auth"
 
 urlpatterns = [
-    path("login/", LoginView.as_view(), name="login"),
-    path("logout/", auth_views.LogoutView.as_view(template_name="auth/logged_out.html"), name="logout"),
-    path("signup/", SignupView.as_view(), name="signup"),
+    path("login/", CustomLoginView.as_view(), name="account_login"),
+    path("signup/", CustomSignupView.as_view(), name="account_signup"),
     path("rendez-vous/", MeetingCalendarView.as_view(), name="booking-meeting-view"),
     path("password-reset/", PasswordResetView.as_view(), name="password_reset"),
     path(

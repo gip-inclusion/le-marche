@@ -10,7 +10,7 @@ from selenium.webdriver.support.select import Select
 from lemarche.cms.snippets import Paragraph
 from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
-from lemarche.www.auth.forms import SignupForm
+from lemarche.www.auth.forms import CustomSignupForm
 
 
 def scroll_to_and_click_element(driver, element, click=True):
@@ -43,6 +43,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         # selenium browser
         options = Options()
         options.add_argument("-headless")
+        options.set_preference("intl.accept_languages", "fr")
         cls.driver = webdriver.Firefox(options=options)
         cls.driver.implicitly_wait(1)
 
@@ -111,7 +112,7 @@ class SignupFormTest(StaticLiveServerTestCase):
             "password2": EXAMPLE_PASSWORD,
         }
 
-    def _complete_form(self, user_profile: dict, signup_url=reverse("auth:signup"), with_submit=True):
+    def _complete_form(self, user_profile: dict, signup_url=reverse("account_signup"), with_submit=True):
         """the function allows you to go to the "signup" page and complete the user profile.
 
         Args:
@@ -167,17 +168,20 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{redirect_url}")
         # message should be displayed
         if user_kind != User.KIND_BUYER:
-            messages = self.driver.find_element(By.CSS_SELECTOR, "div.fr-alert--success")
-            self.assertTrue("Inscription validée" in messages.text)
-            return messages
+            message_list = [
+                message.text for message in self.driver.find_elements(By.CSS_SELECTOR, "div.fr-alert--success")
+            ]
+            return message_list
 
     def test_siae_submits_signup_form_success(self):
         self._complete_form(user_profile=self.SIAE, with_submit=True)
 
         # should redirect SIAE to dashboard
         messages = self._assert_signup_success(redirect_url=reverse("dashboard:home"), user_kind=User.KIND_SIAE)
-
-        self.assertTrue("Vous pouvez maintenant ajouter votre structure" in messages.text)
+        self.assertIn(
+            "Vous pouvez maintenant ajouter votre structure en cliquant sur Ajouter une structure.", messages
+        )
+        self.assertIn("Connexion avec siae@example.com réussie.", messages)
 
     def test_siae_submits_signup_form_error(self):
         user_profile = self.SIAE
@@ -186,7 +190,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._complete_form(user_profile=user_profile, with_submit=True)
 
         # should not submit form (last_name field is required)
-        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('account_signup')}")
 
     def test_siae_submits_signup_form_email_already_exists(self):
         UserFactory(email=self.SIAE["email"], kind=User.KIND_SIAE)
@@ -195,7 +199,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._complete_form(user_profile=user_profile, with_submit=True)
 
         # should not submit form (email field already used)
-        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('account_signup')}")
 
         alerts = self.driver.find_element(By.CSS_SELECTOR, "form")
         self.assertTrue("Cette adresse e-mail est déjà utilisée." in alerts.text)
@@ -245,7 +249,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._complete_form(user_profile=user_profile, with_submit=True)
 
         # should not submit form (position field is required)
-        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('account_signup')}")
 
     def test_partner_submits_signup_form_success(self):
         self._complete_form(user_profile=self.PARTNER, with_submit=False)
@@ -256,7 +260,9 @@ class SignupFormTest(StaticLiveServerTestCase):
         submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
         scroll_to_and_click_element(self.driver, submit_element)
 
-        self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)))
+        # in fact because of LiveServer erasing migrations, "wagtail_serve" is a 404...
+        messages = self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)))
+        self.assertIn("Connexion avec partner@example.com réussie.", messages)
 
     def test_partner_submits_signup_form_error(self):
         user_profile = self.PARTNER
@@ -265,7 +271,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._complete_form(user_profile=user_profile, with_submit=True)
 
         # should not submit form (company_name field is required)
-        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('account_signup')}")
 
     # TODO: problem with this test
     # def test_individual_submits_signup_form_success(self):
@@ -281,19 +287,20 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._complete_form(user_profile=user_profile, with_submit=True)
 
         # should not submit form (last_name field is required)
-        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('account_signup')}")
 
     def test_user_submits_signup_form_with_next_param_success_and_redirect(self):
         next_url = f"{reverse('siae:search_results')}?kind=ESAT"
         self._complete_form(
             user_profile=self.SIAE,
-            signup_url=f"{reverse('auth:signup')}?next={next_url}",
+            signup_url=f"{reverse('account_signup')}?next={next_url}",
             with_submit=False,
         )
         submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
         scroll_to_and_click_element(self.driver, submit_element)
 
-        self._assert_signup_success(redirect_url=next_url, user_kind=User.KIND_SIAE)
+        messages = self._assert_signup_success(redirect_url=next_url, user_kind=User.KIND_SIAE)
+        self.assertIn("Connexion avec siae@example.com réussie.", messages)
 
     @classmethod
     def tearDownClass(cls):
@@ -301,7 +308,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         super().tearDownClass()
 
 
-class SignupSimpleTestcase(TestCase):
+class SignupFormTestcase(TestCase):
     """Without integration testing"""
 
     def setUp(self):
@@ -321,7 +328,7 @@ class SignupSimpleTestcase(TestCase):
         self.form_data["kind"] = User.KIND_BUYER
         self.form_data["email"] = "buyer@gmail.com"
 
-        form = SignupForm(data=self.form_data)
+        form = CustomSignupForm(data=self.form_data)
         self.assertFalse(form.is_valid())
         self.assertIn("email", form.errors)
 
@@ -330,7 +337,7 @@ class SignupSimpleTestcase(TestCase):
         self.form_data["kind"] = User.KIND_INDIVIDUAL
         self.form_data["email"] = "buyer@gmail.com"
 
-        form = SignupForm(data=self.form_data)
+        form = CustomSignupForm(data=self.form_data)
         self.assertTrue(form.is_valid())
 
     def test_professional_email_buyer(self):
@@ -338,7 +345,7 @@ class SignupSimpleTestcase(TestCase):
         self.form_data["kind"] = User.KIND_INDIVIDUAL
         self.form_data["email"] = "buyer@veryprofessional.com"
 
-        form = SignupForm(data=self.form_data)
+        form = CustomSignupForm(data=self.form_data)
         self.assertTrue(form.is_valid())
 
 
@@ -375,7 +382,7 @@ class SignupMeetingTestCase(TestCase):
         with the magic link"""
         self.assertEqual(User.objects.count(), 0)
 
-        post_response = self.client.post(path=f"{reverse('auth:signup')}?skip_meeting=true", data=self.form_data)
+        post_response = self.client.post(path=f"{reverse('account_signup')}?skip_meeting=true", data=self.form_data)
         self.assertEqual(post_response.status_code, 302)
         self.assertTrue(User.objects.get().is_onboarded)
 
@@ -383,7 +390,7 @@ class SignupMeetingTestCase(TestCase):
         """View should redirect to meeting"""
         self.assertEqual(User.objects.count(), 0)
 
-        post_response = self.client.post(path=reverse("auth:signup"), data=self.form_data)
+        post_response = self.client.post(path=reverse("account_signup"), data=self.form_data)
         self.assertEqual(post_response.status_code, 302)
         self.assertFalse(User.objects.get().is_onboarded)
         self.assertRedirects(post_response, reverse("auth:booking-meeting-view"))
@@ -407,9 +414,9 @@ class LoginFormTest(StaticLiveServerTestCase):
     def test_siae_user_can_sign_in_and_is_redirected_to_dashboard(self):
         user_siae = UserFactory(email="siae5@example.com", kind=User.KIND_SIAE)
         driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:login')}")
+        driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
-        driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys(user_siae.email)
+        driver.find_element(By.CSS_SELECTOR, "input#id_login").send_keys(user_siae.email)
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys(DEFAULT_PASSWORD)
 
         driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
@@ -420,9 +427,9 @@ class LoginFormTest(StaticLiveServerTestCase):
     def test_non_siae_user_can_sign_in_and_is_redirected_to_home(self):
         user_buyer = UserFactory(email="buyer5@example.com", kind=User.KIND_BUYER)
         driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:login')}")
+        driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
-        driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys(user_buyer.email)
+        driver.find_element(By.CSS_SELECTOR, "input#id_login").send_keys(user_buyer.email)
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys(DEFAULT_PASSWORD)
 
         driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
@@ -433,9 +440,9 @@ class LoginFormTest(StaticLiveServerTestCase):
     def test_user_can_sign_in_with_email_containing_capital_letters(self):
         UserFactory(email="siae5@example.com", kind=User.KIND_SIAE)
         driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:login')}")
+        driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
-        driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys("SIAE5@example.com")
+        driver.find_element(By.CSS_SELECTOR, "input#id_login").send_keys("SIAE5@example.com")
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys(DEFAULT_PASSWORD)
 
         driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
@@ -443,33 +450,33 @@ class LoginFormTest(StaticLiveServerTestCase):
     def test_user_wrong_credentials_should_see_error_message(self):
         user_siae = UserFactory(email="siae5@example.com", kind=User.KIND_SIAE)
         driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:login')}")
+        driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
-        driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys(user_siae.email)
+        driver.find_element(By.CSS_SELECTOR, "input#id_login").send_keys(user_siae.email)
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys("password")
 
         driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
 
         # should not submit form
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:login')}")
+        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('account_login')}")
         # error message should be displayed
         messages = driver.find_element(By.CSS_SELECTOR, "section.fr-input-group--error")
-        self.assertTrue("Saisissez un Adresse e-mail et un mot de passe valides" in messages.text)
+        self.assertTrue("L’adresse e-mail ou le mot de passe sont incorrects." in messages.text)
 
     def test_user_empty_credentials_should_see_password_reset_message(self):
         existing_user = UserFactory(email="existing-user@example.com", password="")
         # only way to have an empty password field
         User.objects.filter(id=existing_user.id).update(password="")
         driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:login')}")
+        driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
-        driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys("existing-user@example.com")
+        driver.find_element(By.CSS_SELECTOR, "input#id_login").send_keys("existing-user@example.com")
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys("password")
 
         driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
 
         # should not submit form
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:login')}")
+        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('account_login')}")
         # # new-user-without-password-login-message message should be displayed
         messages = driver.find_element(By.CSS_SELECTOR, "div#new-user-without-password-login-message")
         self.assertTrue("pas encore défini de mot de passe" in messages.text)

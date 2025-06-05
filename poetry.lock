@@ -610,6 +610,28 @@ files = [
 ]
 
 [[package]]
+name = "django-allauth"
+version = "65.7.0"
+description = "Integrated set of Django applications addressing authentication, registration, account management as well as 3rd party (social) account authentication."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "django_allauth-65.7.0.tar.gz", hash = "sha256:eb060692150f39e1529893c2de5f9b46e1dab51153ff6cca7ad72c7c125259ea"},
+]
+
+[package.dependencies]
+asgiref = ">=3.8.1"
+Django = ">=4.2.16"
+
+[package.extras]
+mfa = ["fido2 (>=1.1.2)", "qrcode (>=7.0.0)"]
+openid = ["python3-openid (>=3.0.8)"]
+saml = ["python3-saml (>=1.15.0,<2.0.0)"]
+socialaccount = ["pyjwt[crypto] (>=1.7)", "requests (>=2.0.0)", "requests-oauthlib (>=0.3.0)"]
+steam = ["python3-openid (>=3.0.8)"]
+
+[[package]]
 name = "django-anymail"
 version = "12.0"
 description = "Django email backends and webhooks for Amazon SES, Brevo,  MailerSend, Mailgun, Mailjet, Mandrill, Postal, Postmark, Resend,  SendGrid, SparkPost and Unisender Go  (EmailBackend, transactional email tracking and inbound email signals)"
@@ -3323,4 +3345,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10.4"
-content-hash = "435a1ef2d29bdcf50c714d80358fb116d6b281e7b2295e33b1b9dde65be6d0be"
+content-hash = "71c97015fb20c48b0ce2021074d05d633a11d311f9706064a1c15f58db258f89"

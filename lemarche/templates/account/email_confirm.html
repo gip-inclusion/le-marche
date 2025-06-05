@@ -1,0 +1,50 @@
+{% extends "layouts/base.html" %}
+
+{% load i18n %}
+{% load account %}
+{% load allauth %}
+{% load dsfr_tags process_dict %}
+
+{% block page_title %}Confirmation e-mail{{ block.super }}{% endblock page_title %}
+
+{% block breadcrumb %}
+    {% process_dict root_dir=HOME_PAGE_PATH current="Confirmation e-mail" as breadcrumb_data %}
+    {% dsfr_breadcrumb breadcrumb_data %}
+{% endblock breadcrumb %}
+
+{% block content %}
+    <div class="fr-container fr-container--fluid fr-mb-md-14v">
+        <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+        {% element h1 %}
+            {% trans "Confirm Email Address" %}
+        {% endelement %}
+        {% if confirmation %}
+            {% user_display confirmation.email_address.user.full_name as user_display %}
+            {% if can_confirm %}
+                {% element p %}
+                    {% blocktrans with confirmation.email_address.email as email %}Please confirm that <a href="mailto:{{ email }}">{{ email }}</a> is an email address for user {{ user_display }}.{% endblocktrans %}
+                {% endelement %}
+                {% url 'account_confirm_email' confirmation.key as action_url %}
+                {% element form method="post" action=action_url %}
+                    {% slot actions %}
+                        {% csrf_token %}
+                        {{ redirect_field }}
+                        {% dsfr_button label="Confirmer" %}
+                    {% endslot %}
+                {% endelement %}
+            {% else %}
+                {% element p %}
+                    {% blocktrans %}Unable to confirm {{ email }} because it is already confirmed by a different account.{% endblocktrans %}
+                {% endelement %}
+            {% endif %}
+        {% else %}
+            {% url 'account_email' as email_url %}
+            {% element p %}
+                {% blocktrans %}This email confirmation link expired or is invalid. Please <a href="{{ email_url }}">issue a new email confirmation request</a>.{% endblocktrans %}
+            {% endelement %}
+        {% endif %}
+        </div>
+        </div>
+    </div>
+{% endblock content %}

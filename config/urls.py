@@ -14,7 +14,8 @@ urlpatterns = [
     path("admin/", admin_site.urls),
     path("api/", include("lemarche.api.urls")),
     path("django_shepherd/", include("lemarche.django_shepherd.urls")),
-    path("accounts/", include("lemarche.www.auth.urls")),
+    path("accounts/", include("lemarche.www.auth.urls")),  # override allauth urls
+    path("accounts/", include("allauth.urls")),
     path("besoins/", include("lemarche.www.tenders.urls")),
     path("prestataires/", include("lemarche.www.siaes.urls")),
     path("profil/", include("lemarche.www.dashboard.urls")),
