@@ -344,3 +344,21 @@ class UserAdminTestCase(TestCase):
 
         messages_strings = [str(message) for message in get_messages(response_confirm.wsgi_request)]
         self.assertIn("L'anonymisation s'est déroulée avec succès", messages_strings)
+
+
+class UserBuyerImportTestCase(TestCase):
+    """Test the import_buyers management command"""
+
+    @classmethod
+    def setUpTestData(cls):
+        CompanyFactory(name="Grosse banque")
+
+    def test_import_buyer(self):
+        call_command("import_buyers", "lemarche/fixtures/tests/acheteurs_bpce.csv", "grosse-banque", stdout=StringIO())
+
+        self.assertQuerySetEqual(
+            User.objects.all(),
+            ["<User: dupont.lajoie@camping.fr>", "<User: françois.perrin@celc.test.fr>"],
+            ordered=False,
+            transform=lambda x: repr(x),
+        )

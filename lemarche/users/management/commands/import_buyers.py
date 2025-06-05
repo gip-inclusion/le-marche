@@ -2,6 +2,7 @@ import csv
 
 from django.core.management.base import BaseCommand
 
+from lemarche.companies.models import Company
 from lemarche.users.models import User
 
 
@@ -15,6 +16,11 @@ class Command(BaseCommand):
             help="Fichier csv contenant les acheteurs à importer.",
         )
         parser.add_argument(
+            "company_slug",
+            type=str,
+            help="Slug de la société à qui appartient les acheteurs importés.",
+        )
+        parser.add_argument(
             "--brevo-template_id",
             type=int,
             help="ID de la template de mail Brevo pour envoyer l'invitation aux acheteurs importés.",
@@ -26,6 +32,8 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        company = Company.objects.get(slug=options["company_slug"])
+
         with open(options["filename"], "r", encoding="utf-8") as csvfile:
             reader = csv.DictReader(csvfile)
             imported_list = list(reader)
@@ -37,7 +45,8 @@ class Command(BaseCommand):
                 last_name=imported_user["LAST_NAME"],
                 phone=imported_user["PHONE"],
                 kind=User.KIND_BUYER,
-                # company_name=imported_user["Nom de la société"],
+                company=company,
+                company_name=company.name,
                 position=imported_user["POSITION"],
                 accept_rgpd=True,
                 accept_survey=True,
