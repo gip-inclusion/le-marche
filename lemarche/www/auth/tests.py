@@ -226,7 +226,8 @@ class SignupFormTest(StaticLiveServerTestCase):
         # assert Brevo contact creation
         mock_create_contact.assert_called_once()
 
-    def test_buyer_submits_signup_form_success_extra_data(self):
+    @patch("lemarche.utils.apis.api_brevo.create_contact")
+    def test_buyer_submits_signup_form_success_extra_data(self, mock_create_contact):
         self._complete_form(user_profile=self.BUYER, with_submit=False)
 
         buyer_kind_detail_select_element = self.driver.find_element(By.CSS_SELECTOR, "select#id_buyer_kind_detail")
