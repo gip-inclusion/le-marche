@@ -384,6 +384,7 @@ class UserBuyerImportTestCase(TransactionTestCase):
         )
 
     def test_already_registered_buyer(self):
+        """Existing buyer should have its company updated add be added to the brevo contact list"""
         UserFactory(email="dupont.lajoie@camping.fr")
 
         call_command(
