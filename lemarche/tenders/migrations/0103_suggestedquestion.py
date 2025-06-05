@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("tenders", "0101_remove_tender_marche_benefits"),
+        ("tenders", "0102_alter_tender_status"),
     ]
 
     operations = [
