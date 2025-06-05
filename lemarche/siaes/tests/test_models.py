@@ -667,29 +667,26 @@ class SiaeFilterWithPotentialThroughActivitiesTest(TestCase):
 
         cls.siae_activity_1 = SiaeActivityFactory(
             siae=cls.siae_1,
-            sector_group=cls.sector_1.group,
+            sector=cls.sector_1,
             presta_type=[siae_constants.PRESTA_BUILD],
             with_zones_perimeter=True,
         )
-        cls.siae_activity_1.sectors.add(cls.sector_1)
         cls.siae_activity_1.locations.set([cls.perimeter_1])
 
         cls.siae_activity_2 = SiaeActivityFactory(
             siae=cls.siae_2,
-            sector_group=cls.sector_2.group,
+            sector=cls.sector_2,
             presta_type=[siae_constants.PRESTA_BUILD],
             with_zones_perimeter=True,
         )
-        cls.siae_activity_2.sectors.add(cls.sector_2)
         cls.siae_activity_2.locations.set([cls.perimeter_2])
 
         cls.siae_activity_3 = SiaeActivityFactory(
             siae=cls.siae_3,
-            sector_group=cls.sector_1.group,
+            sector=cls.sector_1,
             presta_type=[siae_constants.PRESTA_BUILD],
             with_zones_perimeter=True,
         )
-        cls.siae_activity_3.sectors.add(cls.sector_1)
         cls.siae_activity_3.locations.set([cls.perimeter_2])
 
     def test_filter_with_potential_through_activities_with_sector(self):
