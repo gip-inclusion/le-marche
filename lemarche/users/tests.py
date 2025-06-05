@@ -7,7 +7,7 @@ from django.contrib.messages import get_messages
 from django.core.management import call_command
 from django.core.validators import validate_email
 from django.db.models import F
-from django.test import TestCase, override_settings
+from django.test import TestCase, TransactionTestCase, override_settings
 from django.urls import reverse
 
 from lemarche.companies.factories import CompanyFactory
@@ -347,12 +347,11 @@ class UserAdminTestCase(TestCase):
         self.assertIn("L'anonymisation s'est déroulée avec succès", messages_strings)
 
 
-class UserBuyerImportTestCase(TestCase):
+class UserBuyerImportTestCase(TransactionTestCase):
     """Test the import_buyers management command"""
 
-    @classmethod
-    def setUpTestData(cls):
-        cls.company = CompanyFactory(name="Grosse banque")
+    def setUp(self):
+        self.company = CompanyFactory(name="Grosse banque")
         TemplateTransactionalFactory(code="NEW_COMPANY")
 
     def test_import_buyer(self):
@@ -362,7 +361,7 @@ class UserBuyerImportTestCase(TestCase):
             "grosse-banque",
             "NEW_COMPANY",
             5,
-            stdout=StringIO(),
+            stdout=StringIO(),  # avoid polluting the logs in test execution
         )
 
         self.assertQuerySetEqual(
@@ -383,3 +382,28 @@ class UserBuyerImportTestCase(TestCase):
             ordered=False,
             transform=lambda x: repr(x),
         )
+
+    def test_already_registered_buyer(self):
+        UserFactory(email="dupont.lajoie@camping.fr")
+
+        call_command(
+            "import_buyers",
+            "lemarche/fixtures/tests/acheteurs_bpce.csv",
+            "grosse-banque",
+            "NEW_COMPANY",
+            5,
+            stdout=StringIO(),
+        )
+
+        self.assertQuerySetEqual(
+            User.objects.all(),
+            ["<User: dupont.lajoie@camping.fr>", "<User: françois.perrin@celc.test.fr>"],
+            ordered=False,
+            transform=lambda x: repr(x),
+        )
+
+        duplicated_user = User.objects.get(email="dupont.lajoie@camping.fr")
+        self.assertEqual(duplicated_user.company, self.company)
+        self.assertEqual(duplicated_user.company_name, self.company.name)
+
+        # todo check that contactlist is called but no inscription link is sent
