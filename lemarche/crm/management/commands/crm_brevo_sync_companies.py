@@ -61,4 +61,4 @@ class Command(BaseCommand):
             if (index % 10) == 0:  # avoid API rate-limiting
                 time.sleep(1)
             if (index % 500) == 0:
-                print(f"{index}...")
+                self.stdout.write(f"{index}...")

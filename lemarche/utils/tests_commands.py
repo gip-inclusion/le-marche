@@ -1,3 +1,4 @@
+from io import StringIO
 from unittest.mock import patch
 
 from django.core.files.storage import default_storage
@@ -26,7 +27,7 @@ class AntivirusScanCommandTest(TransactionTestCase):
         mock_shutil_chown.return_value = None
         mock_os_chmod.return_value = None
 
-        call_command("antivirus_scan")
+        call_command("antivirus_scan", stdout=StringIO())
 
         # Check that the scan command was called
         self.assertEqual(mock_subprocess_run.call_count, 1)
@@ -48,7 +49,7 @@ class AntivirusScanCommandTest(TransactionTestCase):
 
         attachment = self.tender.attachment_one
 
-        call_command("antivirus_scan")
+        call_command("antivirus_scan", stdout=StringIO())
 
         # Check that the scan command was called
         self.assertEqual(mock_subprocess_run.call_count, 1)
