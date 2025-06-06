@@ -450,7 +450,7 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
         mock_requests_get.return_value.json.return_value = self.mock_return_value
 
         # Wet run
-        call_command("update_api_entreprise_fields", wet_run=True, stdout=StringIO())
+        call_command("update_api_entreprise_fields", wet_run=True, stdout=None)
         self.siae.refresh_from_db()
         self.assertEqual(self.siae.api_entreprise_employees, "250 à 499 salariés")
         self.assertEqual(self.siae.api_entreprise_employees_year_reference, "2024")
@@ -492,7 +492,7 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
         self.mock_return_value["results"][0]["finances"] = None
         mock_requests_get.return_value.json.return_value = self.mock_return_value
 
-        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=StringIO())
+        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=None)
         self.siae.refresh_from_db()
         self.assertEqual(self.siae.api_entreprise_employees, "250 à 499 salariés")
         self.assertIsNone(self.siae.api_entreprise_ca)
@@ -510,7 +510,7 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
         }
         mock_requests_get.return_value.json.return_value = self.mock_return_value
 
-        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=StringIO())
+        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=None)
         self.siae.refresh_from_db()
         self.assertEqual(self.siae.api_entreprise_ca, 12345678)
 
@@ -526,7 +526,7 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
         }
         mock_requests_get.return_value.json.return_value = self.mock_return_value
 
-        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=StringIO())
+        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=None)
         self.siae.refresh_from_db()
         self.assertEqual(self.siae.api_entreprise_ca, 12345678)
 
