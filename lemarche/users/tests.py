@@ -384,17 +384,23 @@ class UserBuyerImportTestCase(TransactionTestCase):
         )
 
     def test_already_registered_buyer(self):
-        """Existing buyer should have its company updated add be added to the brevo contact list"""
+        """
+        Existing buyer should have its company updated add be added to the brevo contact list
+        The 2 buyers should be added to contact list, but no inscription list should be sent
+        to the duplicated one.
+        """
         UserFactory(email="dupont.lajoie@camping.fr")
 
-        call_command(
-            "import_buyers",
-            "lemarche/fixtures/tests/acheteurs_bpce.csv",
-            "grosse-banque",
-            "NEW_COMPANY",
-            5,
-            stdout=StringIO(),
-        )
+        with patch("lemarche.utils.emails.add_to_contact_list") as mock_add_to_contact_list:
+            call_command(
+                "import_buyers",
+                "lemarche/fixtures/tests/acheteurs_bpce.csv",
+                "grosse-banque",
+                "NEW_COMPANY",
+                5,
+                stdout=StringIO(),
+            )
+            self.assertEqual(mock_add_to_contact_list.call_count, 2)
 
         self.assertQuerySetEqual(
             User.objects.all(),
@@ -406,8 +412,6 @@ class UserBuyerImportTestCase(TransactionTestCase):
         duplicated_user = User.objects.get(email="dupont.lajoie@camping.fr")
         self.assertEqual(duplicated_user.company, self.company)
         self.assertEqual(duplicated_user.company_name, self.company.name)
-
-        # todo check that contactlist is called but no inscription link is sent
 
     def test_email_dns_added(self):
         """Ensure that email domains are added to the company's email_domain_list, without duplicates."""
