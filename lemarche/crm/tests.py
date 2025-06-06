@@ -1,5 +1,4 @@
 from datetime import timedelta
-from io import StringIO
 from unittest.mock import patch
 
 from django.core.management import call_command
@@ -105,7 +104,7 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
     @patch("lemarche.utils.apis.api_brevo.create_or_update_company")
     def test_new_siaes_are_synced_in_brevo(self, mock_create_or_update_company):
         """Test new siaes are synced in brevo"""
-        call_command("crm_brevo_sync_companies", stdout=StringIO())
+        call_command("crm_brevo_sync_companies", stdout=None)
 
         self.assertEqual(mock_create_or_update_company.call_count, 3)
 
@@ -130,7 +129,7 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
         self.siae_with_user.extra_data = initial_extra_data
         self.siae_with_user.save(update_fields=["extra_data"])
 
-        call_command("crm_brevo_sync_companies", recently_updated=True, stdout=StringIO())
+        call_command("crm_brevo_sync_companies", recently_updated=True, stdout=None)
 
         self.siae_with_user.refresh_from_db()
 
@@ -152,7 +151,7 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
 
     def test_siae_extra_data_is_not_updated_if_no_changes(self):
         """Test siae.extra_data is not updated if no changes."""
-        call_command("crm_brevo_sync_companies", recently_updated=True, stdout=StringIO())
+        call_command("crm_brevo_sync_companies", recently_updated=True, stdout=None)
 
         self.siae_with_brevo_id.refresh_from_db()
         self.assertEqual(
@@ -170,7 +169,7 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
             detail_contact_click_date=now,
         )
 
-        call_command("crm_brevo_sync_companies", recently_updated=True, stdout=StringIO())
+        call_command("crm_brevo_sync_companies", recently_updated=True, stdout=None)
 
         self.siae_with_brevo_id_all_stats = (
             Siae.objects.with_tender_stats().filter(id=self.siae_with_brevo_id.id).first()
