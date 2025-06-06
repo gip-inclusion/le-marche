@@ -391,7 +391,12 @@ class UserBuyerImportTestCase(TransactionTestCase):
         """
         UserFactory(email="dupont.lajoie@camping.fr")
 
-        with patch("lemarche.utils.emails.add_to_contact_list") as mock_add_to_contact_list:
+        with (
+            patch("lemarche.utils.emails.add_to_contact_list") as mock_add_to_contact_list,
+            patch(
+                "lemarche.www.auth.tasks.send_new_user_password_reset_link"
+            ) as mock_send_new_user_password_reset_link,
+        ):
             call_command(
                 "import_buyers",
                 "lemarche/fixtures/tests/acheteurs_bpce.csv",
@@ -401,6 +406,7 @@ class UserBuyerImportTestCase(TransactionTestCase):
                 stdout=StringIO(),
             )
             self.assertEqual(mock_add_to_contact_list.call_count, 2)
+            self.assertEqual(mock_send_new_user_password_reset_link.call_count, 1)
 
         self.assertQuerySetEqual(
             User.objects.all(),
