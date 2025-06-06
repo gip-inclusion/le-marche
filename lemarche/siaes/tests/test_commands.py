@@ -55,7 +55,7 @@ class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
         # Run command
         os.environ["API_EMPLOIS_INCLUSION_TOKEN"] = "test"
         with self.assertNoLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion"):
-            call_command("sync_with_emplois_inclusion")
+            call_command("sync_with_emplois_inclusion", stdout=None)
 
         # Verify SIAE was created
         self.assertEqual(Siae.objects.count(), 1)
@@ -102,7 +102,7 @@ class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
         # Run command
         os.environ["API_EMPLOIS_INCLUSION_TOKEN"] = "test"
         with self.assertNoLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion"):
-            call_command("sync_with_emplois_inclusion")
+            call_command("sync_with_emplois_inclusion", stdout=None)
 
         # Verify SIAE was updated
         self.assertEqual(Siae.objects.count(), 1)
@@ -119,7 +119,7 @@ class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
 
         # Run command
         with self.assertNoLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion"):
-            call_command("sync_with_emplois_inclusion")
+            call_command("sync_with_emplois_inclusion", stdout=None)
 
         # Verify SIAE was updated
         self.assertEqual(Siae.objects.count(), 1)
@@ -162,7 +162,7 @@ class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
         # Run command (should not raise exception)
         os.environ["API_EMPLOIS_INCLUSION_TOKEN"] = "test"
         with self.assertLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion", level="ERROR") as log:
-            call_command("sync_with_emplois_inclusion")
+            call_command("sync_with_emplois_inclusion", stdout=None)
 
         # Verify warning was logged
         self.assertIn("Brand name is already used by another SIAE during creation", log.output[0])
@@ -233,7 +233,7 @@ class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
         # Run command (should not raise exception)
         os.environ["API_EMPLOIS_INCLUSION_TOKEN"] = "test"
         with self.assertLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion", level="ERROR") as log:
-            call_command("sync_with_emplois_inclusion")
+            call_command("sync_with_emplois_inclusion", stdout=None)
 
         # Verify warning was logged
         self.assertIn("Brand name is already used by another SIAE during update", log.output[0])
@@ -298,7 +298,7 @@ class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
         ]
         os.environ["API_EMPLOIS_INCLUSION_TOKEN"] = "test"
         with self.assertLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion", level="ERROR") as log:
-            call_command("sync_with_emplois_inclusion")
+            call_command("sync_with_emplois_inclusion", stdout=None)
 
         self.assertIn("Kind not supported: FAKE", log.output[0])
 
@@ -344,7 +344,7 @@ class SiaeUpdateCountFieldsCommandTest(TransactionTestCase):
         self.assertEqual(siae_2.user_count, 0)
         self.assertEqual(siae_2.sector_count, 0)
 
-        call_command("update_siae_count_fields")
+        call_command("update_siae_count_fields", stdout=StringIO())
         siae_1.refresh_from_db()
         self.assertEqual(siae_1.user_count, 3)
         self.assertEqual(siae_1.sector_count, 2)
@@ -370,7 +370,7 @@ class SiaeUpdateCountFieldsCommandTest(TransactionTestCase):
             siae_not_updated.users.add(user)
         SiaeActivityFactory.create_batch(2, siae=siae_not_updated)
 
-        call_command("update_siae_count_fields", id=siae_to_update.id)
+        call_command("update_siae_count_fields", id=siae_to_update.id, stdout=StringIO())
         siae_to_update.refresh_from_db()
         self.assertEqual(siae_to_update.user_count, 3)
         self.assertEqual(siae_to_update.sector_count, 2)
@@ -544,5 +544,5 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
             "total_pages": 1,
         }
         out = StringIO()
-        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, sttdout=out)
+        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=out)
         self.assertIn("SIRET not found", out.getvalue())
