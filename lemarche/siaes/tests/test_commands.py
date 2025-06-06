@@ -55,7 +55,7 @@ class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
         # Run command
         os.environ["API_EMPLOIS_INCLUSION_TOKEN"] = "test"
         with self.assertNoLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion"):
-            call_command("sync_with_emplois_inclusion", stdout=None)
+            call_command("sync_with_emplois_inclusion", stdout=StringIO())
 
         # Verify SIAE was created
         self.assertEqual(Siae.objects.count(), 1)
@@ -102,7 +102,7 @@ class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
         # Run command
         os.environ["API_EMPLOIS_INCLUSION_TOKEN"] = "test"
         with self.assertNoLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion"):
-            call_command("sync_with_emplois_inclusion", stdout=None)
+            call_command("sync_with_emplois_inclusion", stdout=StringIO())
 
         # Verify SIAE was updated
         self.assertEqual(Siae.objects.count(), 1)
@@ -119,7 +119,7 @@ class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
 
         # Run command
         with self.assertNoLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion"):
-            call_command("sync_with_emplois_inclusion", stdout=None)
+            call_command("sync_with_emplois_inclusion", stdout=StringIO())
 
         # Verify SIAE was updated
         self.assertEqual(Siae.objects.count(), 1)
@@ -162,7 +162,7 @@ class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
         # Run command (should not raise exception)
         os.environ["API_EMPLOIS_INCLUSION_TOKEN"] = "test"
         with self.assertLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion", level="ERROR") as log:
-            call_command("sync_with_emplois_inclusion", stdout=None)
+            call_command("sync_with_emplois_inclusion", stdout=StringIO())
 
         # Verify warning was logged
         self.assertIn("Brand name is already used by another SIAE during creation", log.output[0])
@@ -233,7 +233,7 @@ class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
         # Run command (should not raise exception)
         os.environ["API_EMPLOIS_INCLUSION_TOKEN"] = "test"
         with self.assertLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion", level="ERROR") as log:
-            call_command("sync_with_emplois_inclusion", stdout=None)
+            call_command("sync_with_emplois_inclusion", stdout=StringIO())
 
         # Verify warning was logged
         self.assertIn("Brand name is already used by another SIAE during update", log.output[0])
@@ -298,7 +298,7 @@ class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
         ]
         os.environ["API_EMPLOIS_INCLUSION_TOKEN"] = "test"
         with self.assertLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion", level="ERROR") as log:
-            call_command("sync_with_emplois_inclusion", stdout=None)
+            call_command("sync_with_emplois_inclusion", stdout=StringIO())
 
         self.assertIn("Kind not supported: FAKE", log.output[0])
 
@@ -450,7 +450,7 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
         mock_requests_get.return_value.json.return_value = self.mock_return_value
 
         # Wet run
-        call_command("update_api_entreprise_fields", wet_run=True, stdout=None)
+        call_command("update_api_entreprise_fields", wet_run=True, stdout=StringIO())
         self.siae.refresh_from_db()
         self.assertEqual(self.siae.api_entreprise_employees, "250 à 499 salariés")
         self.assertEqual(self.siae.api_entreprise_employees_year_reference, "2024")
@@ -492,7 +492,7 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
         self.mock_return_value["results"][0]["finances"] = None
         mock_requests_get.return_value.json.return_value = self.mock_return_value
 
-        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=None)
+        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=StringIO())
         self.siae.refresh_from_db()
         self.assertEqual(self.siae.api_entreprise_employees, "250 à 499 salariés")
         self.assertIsNone(self.siae.api_entreprise_ca)
@@ -510,7 +510,7 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
         }
         mock_requests_get.return_value.json.return_value = self.mock_return_value
 
-        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=None)
+        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=StringIO())
         self.siae.refresh_from_db()
         self.assertEqual(self.siae.api_entreprise_ca, 12345678)
 
@@ -526,7 +526,7 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
         }
         mock_requests_get.return_value.json.return_value = self.mock_return_value
 
-        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=None)
+        call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=StringIO())
         self.siae.refresh_from_db()
         self.assertEqual(self.siae.api_entreprise_ca, 12345678)
 
