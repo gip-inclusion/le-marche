@@ -410,6 +410,7 @@ class UserBuyerImportTestCase(TransactionTestCase):
         # todo check that contactlist is called but no inscription link is sent
 
     def test_email_dns_added(self):
+        """Ensure that email domains are added to the company's email_domain_list, without duplicates."""
         self.assertEqual(self.company.email_domain_list, [])
         call_command(
             "import_buyers",
@@ -422,4 +423,14 @@ class UserBuyerImportTestCase(TransactionTestCase):
         self.company.refresh_from_db()
         self.assertEqual(self.company.email_domain_list, ["camping.fr", "celc.test.fr"])
 
-        # todo check no duplicates is possible
+        # Check that no duplicates are added
+        call_command(
+            "import_buyers",
+            "lemarche/fixtures/tests/acheteurs_bpce.csv",
+            "grosse-banque",
+            "NEW_COMPANY",
+            5,
+            stdout=StringIO(),
+        )
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.email_domain_list, ["camping.fr", "celc.test.fr"])
