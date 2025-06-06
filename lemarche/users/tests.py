@@ -7,10 +7,11 @@ from django.contrib.messages import get_messages
 from django.core.management import call_command
 from django.core.validators import validate_email
 from django.db.models import F
-from django.test import TestCase, override_settings
+from django.test import TestCase, TransactionTestCase, override_settings
 from django.urls import reverse
 
 from lemarche.companies.factories import CompanyFactory
+from lemarche.conversations.factories import TemplateTransactionalFactory
 from lemarche.conversations.models import TemplateTransactional, TemplateTransactionalSendLog
 from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.siaes.factories import SiaeFactory
@@ -344,3 +345,102 @@ class UserAdminTestCase(TestCase):
 
         messages_strings = [str(message) for message in get_messages(response_confirm.wsgi_request)]
         self.assertIn("L'anonymisation s'est déroulée avec succès", messages_strings)
+
+
+class UserBuyerImportTestCase(TransactionTestCase):
+    """Test the import_buyers management command"""
+
+    def setUp(self):
+        self.company = CompanyFactory(name="Grosse banque")
+        TemplateTransactionalFactory(code="NEW_COMPANY")
+
+    def test_import_buyer(self):
+        call_command(
+            "import_buyers",
+            "lemarche/fixtures/tests/acheteurs_bpce.csv",
+            "grosse-banque",
+            "NEW_COMPANY",
+            5,
+            stdout=StringIO(),  # avoid polluting the logs in test execution
+        )
+
+        self.assertQuerySetEqual(
+            User.objects.all(),
+            ["<User: dupont.lajoie@camping.fr>", "<User: françois.perrin@celc.test.fr>"],
+            ordered=False,
+            transform=lambda x: repr(x),
+        )
+        self.assertQuerySetEqual(
+            User.objects.filter(company=self.company, company_name=self.company.name),
+            ["<User: dupont.lajoie@camping.fr>", "<User: françois.perrin@celc.test.fr>"],
+            ordered=False,
+            transform=lambda x: repr(x),
+        )
+        self.assertQuerySetEqual(
+            User.objects.filter(is_active=True),
+            ["<User: dupont.lajoie@camping.fr>", "<User: françois.perrin@celc.test.fr>"],
+            ordered=False,
+            transform=lambda x: repr(x),
+        )
+
+    def test_already_registered_buyer(self):
+        """
+        Existing buyer should have its company updated add be added to the brevo contact list
+        The 2 buyers should be added to contact list, but no inscription list should be sent
+        to the duplicated one.
+        """
+        UserFactory(email="dupont.lajoie@camping.fr")
+
+        with (
+            patch("lemarche.utils.emails.add_to_contact_list") as mock_add_to_contact_list,
+            patch(
+                "lemarche.www.auth.tasks.send_new_user_password_reset_link"
+            ) as mock_send_new_user_password_reset_link,
+        ):
+            call_command(
+                "import_buyers",
+                "lemarche/fixtures/tests/acheteurs_bpce.csv",
+                "grosse-banque",
+                "NEW_COMPANY",
+                5,
+                stdout=StringIO(),
+            )
+            self.assertEqual(mock_add_to_contact_list.call_count, 2)
+            self.assertEqual(mock_send_new_user_password_reset_link.call_count, 1)
+
+        self.assertQuerySetEqual(
+            User.objects.all(),
+            ["<User: dupont.lajoie@camping.fr>", "<User: françois.perrin@celc.test.fr>"],
+            ordered=False,
+            transform=lambda x: repr(x),
+        )
+
+        duplicated_user = User.objects.get(email="dupont.lajoie@camping.fr")
+        self.assertEqual(duplicated_user.company, self.company)
+        self.assertEqual(duplicated_user.company_name, self.company.name)
+
+    def test_email_dns_added(self):
+        """Ensure that email domains are added to the company's email_domain_list, without duplicates."""
+        self.assertEqual(self.company.email_domain_list, [])
+        call_command(
+            "import_buyers",
+            "lemarche/fixtures/tests/acheteurs_bpce.csv",
+            "grosse-banque",
+            "NEW_COMPANY",
+            5,
+            stdout=StringIO(),
+        )
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.email_domain_list, ["camping.fr", "celc.test.fr"])
+
+        # Check that no duplicates are added
+        call_command(
+            "import_buyers",
+            "lemarche/fixtures/tests/acheteurs_bpce.csv",
+            "grosse-banque",
+            "NEW_COMPANY",
+            5,
+            stdout=StringIO(),
+        )
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.email_domain_list, ["camping.fr", "celc.test.fr"])

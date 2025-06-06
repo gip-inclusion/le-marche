@@ -81,7 +81,7 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         # Check before adding logs or resetting modification request
         tender.reset_modification_request()
 
-        add_to_contact_list(user=user, type="signup", tender=tender)
+        add_to_contact_list(user=user, contact_type="signup", tender=tender)
 
 
 class TenderKindViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

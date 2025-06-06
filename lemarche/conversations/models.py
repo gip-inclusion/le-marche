@@ -222,9 +222,7 @@ class TemplateTransactionalQuerySet(models.QuerySet):
 
 class TemplateTransactional(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
-    code = models.CharField(
-        verbose_name="Nom technique", max_length=255, unique=True, db_index=True, blank=True, null=True
-    )
+    code = models.CharField(verbose_name="Nom technique", max_length=255, unique=True, db_index=True)
     description = models.TextField(verbose_name="Description", blank=True)
     group = models.ForeignKey("EmailGroup", on_delete=models.CASCADE, null=True)
     brevo_id = models.IntegerField(verbose_name="Identifiant Brevo", unique=True, db_index=True, blank=True, null=True)

@@ -135,7 +135,7 @@ class TenderCreateViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, type, tender: None)
+    @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, contact_type, tender: None)
     def test_tender_wizard_form_all_good_authenticated(self):
         tenders_step_data = self._generate_fake_data_form()
         self.client.force_login(self.user_buyer)
@@ -202,7 +202,7 @@ class TenderCreateViewTest(TestCase):
         with self.assertRaises(AssertionError):
             self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
 
-    @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, type, tender: None)
+    @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, contact_type, tender: None)
     def test_tender_wizard_form_all_good_anonymous(self):
         tenders_step_data = self._generate_fake_data_form()
         final_response = self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
@@ -220,7 +220,7 @@ class TenderCreateViewTest(TestCase):
             ),
         )
 
-    @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, type, tender: None)
+    @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, contact_type, tender: None)
     def test_tender_wizard_form_all_good_perimeters(self):
         self.client.force_login(self.user_buyer)
         tenders_step_data = self._generate_fake_data_form()
@@ -237,7 +237,7 @@ class TenderCreateViewTest(TestCase):
         self.assertEqual(len(tender_list_sector_slug), tenders_sectors.count())
         self.assertEqual(tender_list_sector_slug.sort(), self.sectors.sort())
 
-    @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, type, tender: None)
+    @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, contact_type, tender: None)
     def test_tender_wizard_form_draft(self):
         tenders_step_data = self._generate_fake_data_form(_step_5={"is_draft": "1"})
         final_response = self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
@@ -255,7 +255,7 @@ class TenderCreateViewTest(TestCase):
             ),
         )
 
-    @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, type, tender: None)
+    @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, contact_type, tender: None)
     def test_tender_wizard_form_questions_list(self):
         initial_data_questions_list = [
             {"text": "Avez-vous suffisamment d'effectifs ? "},
@@ -282,7 +282,7 @@ class TenderCreateViewTest(TestCase):
 
         # Check arguments like user, type, and source
         self.assertEqual(kwargs["user"], user)
-        self.assertEqual(kwargs["type"], "signup")
+        self.assertEqual(kwargs["contact_type"], "signup")
         # Verify that `tender` is an instance of Tender
         self.assertIsInstance(
             kwargs.get("tender"), Tender, "Expected an instance of Tender for the 'tender' argument."
@@ -308,7 +308,7 @@ class TenderCreateViewTest(TestCase):
             attributes["TYPE_VERTICALE_ACHETEUR"], "Expected TYPE_VERTICALE_ACHETEUR to be None for non-TALLY sources"
         )
 
-    @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, type, tender: None)
+    @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, contact_type, tender: None)
     def test_send_tender_author_modification_request(self):
         """Test the tender updae url in 'send_tender_author_modification_request' function"""
         tender, _ = self.setup_mock_user_and_tender_creation(user=self.user_buyer)
@@ -317,7 +317,7 @@ class TenderCreateViewTest(TestCase):
 
         self.assertEqual(tender_update_url, expected_url)
 
-    @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, type, tender: None)
+    @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, contact_type, tender: None)
     def test_reset_modification_request(self):
         """Test 'reset_modification_request' method to check tender fields updates"""
         tender, _ = self.setup_mock_user_and_tender_creation(user=self.user_buyer)
