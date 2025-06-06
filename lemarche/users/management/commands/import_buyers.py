@@ -52,8 +52,11 @@ class Command(BaseCommand):
                 brevo_template_code=options["brevo_template_code"],
                 brevo_contact_id=options["brevo_contact_id"],
             )
+            self._add_email_dns_to_company(email=imported_user["EMAIL"], company=company)
 
-    def _import_user(self, imported_user: dict, company: Company, brevo_template_code: str, brevo_contact_id: int):
+    def _import_user(
+        self, imported_user: dict, company: Company, brevo_template_code: str, brevo_contact_id: int
+    ) -> None:
         """
         Create a new user and send a password reset link to it.
         If the user already exists, update its company.
@@ -85,3 +88,14 @@ class Command(BaseCommand):
             self.stdout.write(f"L'acheteur {imported_user['EMAIL']} a été inscrit avec succès.")
         finally:  # add to Brevo contact list, even if user already exists or not
             add_to_contact_list(user, contact_type=brevo_contact_id)
+
+    def _add_email_dns_to_company(self, email: str, company: Company) -> None:
+        """If the email domain is not already in the company's email_domain_list, add it."""
+        email_dns = email.split("@")[1]
+        if email_dns not in company.email_domain_list:
+            company.email_domain_list.append(email_dns)
+            company.save(update_fields=["email_domain_list"])
+            self.stdout.write(
+                f"Le nom de domaine email {email_dns}"
+                f" a été ajoutée à la liste des domaines de l'entreprise {company.name}."
+            )
