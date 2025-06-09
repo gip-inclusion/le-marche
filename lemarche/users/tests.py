@@ -476,3 +476,6 @@ class UserBuyerImportTestCase(TestCase):
             ordered=False,
             transform=lambda x: repr(x),
         )
+
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.email_domain_list, ["celc.test.fr"])
