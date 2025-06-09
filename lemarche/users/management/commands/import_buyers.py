@@ -1,7 +1,7 @@
 import csv
 
 from django.core.management.base import BaseCommand
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 
 from lemarche.companies.models import Company
 from lemarche.users.models import User
@@ -46,13 +46,17 @@ class Command(BaseCommand):
             imported_list = list(reader)
 
         for imported_user in imported_list:
-            self._import_user(
-                imported_user,
-                company,
-                brevo_template_code=options["brevo_template_code"],
-                brevo_contact_id=options["brevo_contact_id"],
-            )
-            self._add_email_dns_to_company(email=imported_user["EMAIL"], company=company)
+            try:
+                with transaction.atomic():
+                    self._import_user(
+                        imported_user,
+                        company,
+                        brevo_template_code=options["brevo_template_code"],
+                        brevo_contact_id=options["brevo_contact_id"],
+                    )
+                    self._add_email_dns_to_company(email=imported_user["EMAIL"], company=company)
+            except Exception as e:
+                self.stdout.write(f"Erreur lors de l'import de l'acheteur {imported_user['EMAIL']}: {e}")
 
     def _import_user(
         self, imported_user: dict, company: Company, brevo_template_code: str, brevo_contact_id: int
@@ -63,19 +67,20 @@ class Command(BaseCommand):
         Always add to Brevo contact list.
         """
         try:
-            user = User.objects.create_user(
-                email=imported_user["EMAIL"],
-                first_name=imported_user["FIRST_NAME"],
-                last_name=imported_user["LAST_NAME"],
-                phone=imported_user["PHONE"],
-                kind=User.KIND_BUYER,
-                company=company,
-                company_name=company.name,
-                position=imported_user["POSITION"],
-                accept_rgpd=True,
-                accept_survey=True,
-                password=None,
-            )
+            with transaction.atomic():
+                user = User.objects.create_user(
+                    email=imported_user["EMAIL"],
+                    first_name=imported_user["FIRST_NAME"],
+                    last_name=imported_user["LAST_NAME"],
+                    phone=imported_user["PHONE"],
+                    kind=User.KIND_BUYER,
+                    company=company,
+                    company_name=company.name,
+                    position=imported_user["POSITION"],
+                    accept_rgpd=True,
+                    accept_survey=True,
+                    password=None,
+                )
         except IntegrityError:  # email already exists
             # Already registered users have their company updated
             user = User.objects.get(email=imported_user["EMAIL"])

@@ -7,7 +7,7 @@ from django.contrib.messages import get_messages
 from django.core.management import call_command
 from django.core.validators import validate_email
 from django.db.models import F
-from django.test import TestCase, TransactionTestCase, override_settings
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from lemarche.companies.factories import CompanyFactory
@@ -347,7 +347,7 @@ class UserAdminTestCase(TestCase):
         self.assertIn("L'anonymisation s'est déroulée avec succès", messages_strings)
 
 
-class UserBuyerImportTestCase(TransactionTestCase):
+class UserBuyerImportTestCase(TestCase):
     """Test the import_buyers management command"""
 
     def setUp(self):
@@ -390,7 +390,7 @@ class UserBuyerImportTestCase(TransactionTestCase):
         to the duplicated one.
         """
         UserFactory(email="dupont.lajoie@camping.fr")
-
+        out = StringIO()
         with (
             patch("lemarche.utils.emails.add_to_contact_list") as mock_add_to_contact_list,
             patch(
@@ -403,7 +403,7 @@ class UserBuyerImportTestCase(TransactionTestCase):
                 "grosse-banque",
                 "NEW_COMPANY",
                 5,
-                stdout=StringIO(),
+                stdout=out,
             )
             self.assertEqual(mock_add_to_contact_list.call_count, 2)
             self.assertEqual(mock_send_new_user_password_reset_link.call_count, 1)
@@ -418,6 +418,8 @@ class UserBuyerImportTestCase(TransactionTestCase):
         duplicated_user = User.objects.get(email="dupont.lajoie@camping.fr")
         self.assertEqual(duplicated_user.company, self.company)
         self.assertEqual(duplicated_user.company_name, self.company.name)
+        self.assertIn("L'acheteur dupont.lajoie@camping.fr est déjà inscrit, entreprise mise à jour.", out.getvalue())
+        self.assertIn("L'acheteur françois.perrin@celc.test.fr a été inscrit avec succès.", out.getvalue())
 
     def test_email_dns_added(self):
         """Ensure that email domains are added to the company's email_domain_list, without duplicates."""
