@@ -392,9 +392,9 @@ class UserBuyerImportTestCase(TestCase):
         UserFactory(email="dupont.lajoie@camping.fr")
         out = StringIO()
         with (
-            patch("lemarche.utils.emails.add_to_contact_list") as mock_add_to_contact_list,
+            patch("lemarche.users.management.commands.import_buyers.add_to_contact_list") as mock_add_to_contact_list,
             patch(
-                "lemarche.www.auth.tasks.send_new_user_password_reset_link"
+                "lemarche.users.management.commands.import_buyers.send_new_user_password_reset_link"
             ) as mock_send_new_user_password_reset_link,
         ):
             call_command(
@@ -446,3 +446,33 @@ class UserBuyerImportTestCase(TestCase):
         )
         self.company.refresh_from_db()
         self.assertEqual(self.company.email_domain_list, ["camping.fr", "celc.test.fr"])
+
+    def test_rollback_on_error(self):
+        """
+        Simulate an exception when calling add_to_contact_list for dupont.lajoie@camping.fr.
+        This user should not have his information saved on database, but the other users should
+        """
+
+        def bad_thing_happenned(user, contact_type):
+            if user.email == "dupont.lajoie@camping.fr":
+                raise Exception("Not you !")
+
+        with patch(
+            "lemarche.users.management.commands.import_buyers.add_to_contact_list", side_effect=bad_thing_happenned
+        ):
+            call_command(
+                "import_buyers",
+                "lemarche/fixtures/tests/acheteurs_bpce.csv",
+                "grosse-banque",
+                "NEW_COMPANY",
+                5,
+                stdout=StringIO(),
+            )
+
+        # dupont.lajoie@camping.fr is not saved
+        self.assertQuerySetEqual(
+            User.objects.all(),
+            ["<User: françois.perrin@celc.test.fr>"],
+            ordered=False,
+            transform=lambda x: repr(x),
+        )
