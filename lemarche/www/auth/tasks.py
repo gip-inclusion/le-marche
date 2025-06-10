@@ -41,8 +41,8 @@ def send_signup_notification_email(user):
     )
 
 
-def send_new_user_password_reset_link(user: User):
-    email_template = TemplateTransactional.objects.get(code="NEW_USER_PASSWORD_RESET")
+def send_new_user_password_reset_link(user: User, template_code: str = "NEW_USER_PASSWORD_RESET"):
+    email_template = TemplateTransactional.objects.get(code=template_code)
     recipient_list = whitelist_recipient_list([user.email])
     if len(recipient_list):
         recipient_email = recipient_list[0]

@@ -147,8 +147,7 @@ class TemplateTransactionalAdmin(admin.ModelAdmin):
         "updated_at",
     ]
     search_fields = ["id", "name", "code", "brevo_id"]
-
-    readonly_fields = ["code", "template_transactional_send_log_count_with_link", "created_at", "updated_at"]
+    # readonly_fields are defined on get_readonly_fields
 
     fieldsets = (
         (None, {"fields": ("name", "code", "description", "group")}),
@@ -156,6 +155,13 @@ class TemplateTransactionalAdmin(admin.ModelAdmin):
         ("Stats", {"fields": ("template_transactional_send_log_count_with_link",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
+
+    def get_readonly_fields(self, request, obj=None):
+        """'code' should be readonly when editing an existing object, but not when creating a new one."""
+        readonly_fields = ["code", "template_transactional_send_log_count_with_link", "created_at", "updated_at"]
+        if not obj:  # create
+            readonly_fields.remove("code")
+        return readonly_fields
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

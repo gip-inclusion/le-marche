@@ -11,6 +11,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from lemarche.companies.factories import CompanyFactory
+from lemarche.conversations.factories import TemplateTransactionalFactory
 from lemarche.conversations.models import TemplateTransactional, TemplateTransactionalSendLog
 from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.siaes.factories import SiaeFactory
@@ -344,3 +345,137 @@ class UserAdminTestCase(TestCase):
 
         messages_strings = [str(message) for message in get_messages(response_confirm.wsgi_request)]
         self.assertIn("L'anonymisation s'est déroulée avec succès", messages_strings)
+
+
+class UserBuyerImportTestCase(TestCase):
+    """Test the import_buyers management command"""
+
+    def setUp(self):
+        self.company = CompanyFactory(name="Grosse banque")
+        TemplateTransactionalFactory(code="USER_IMPORT_BUYERS_BANQUE")
+
+    def test_import_buyer(self):
+        call_command(
+            "import_buyers",
+            "lemarche/fixtures/tests/acheteurs_import.csv",
+            "grosse-banque",
+            "USER_IMPORT_BUYERS_BANQUE",
+            5,
+            stdout=StringIO(),  # avoid polluting the logs in test execution
+        )
+
+        self.assertQuerySetEqual(
+            User.objects.all(),
+            ["<User: dupont.lajoie@camping.fr>", "<User: françois.perrin@celc.test.fr>"],
+            ordered=False,
+            transform=lambda x: repr(x),
+        )
+        self.assertQuerySetEqual(
+            User.objects.filter(company=self.company, company_name=self.company.name),
+            ["<User: dupont.lajoie@camping.fr>", "<User: françois.perrin@celc.test.fr>"],
+            ordered=False,
+            transform=lambda x: repr(x),
+        )
+        self.assertQuerySetEqual(
+            User.objects.filter(is_active=True),
+            ["<User: dupont.lajoie@camping.fr>", "<User: françois.perrin@celc.test.fr>"],
+            ordered=False,
+            transform=lambda x: repr(x),
+        )
+
+    def test_already_registered_buyer(self):
+        """
+        Existing buyer should have its company updated add be added to the brevo contact list
+        The 2 buyers should be added to contact list, but no inscription list should be sent
+        to the duplicated one.
+        """
+        UserFactory(email="dupont.lajoie@camping.fr")
+        out = StringIO()
+        with (
+            patch("lemarche.users.management.commands.import_buyers.add_to_contact_list") as mock_add_to_contact_list,
+            patch(
+                "lemarche.users.management.commands.import_buyers.send_new_user_password_reset_link"
+            ) as mock_send_new_user_password_reset_link,
+        ):
+            call_command(
+                "import_buyers",
+                "lemarche/fixtures/tests/acheteurs_import.csv",
+                "grosse-banque",
+                "USER_IMPORT_BUYERS_BANQUE",
+                5,
+                stdout=out,
+            )
+            self.assertEqual(mock_add_to_contact_list.call_count, 2)
+            self.assertEqual(mock_send_new_user_password_reset_link.call_count, 1)
+
+        self.assertQuerySetEqual(
+            User.objects.all(),
+            ["<User: dupont.lajoie@camping.fr>", "<User: françois.perrin@celc.test.fr>"],
+            ordered=False,
+            transform=lambda x: repr(x),
+        )
+
+        duplicated_user = User.objects.get(email="dupont.lajoie@camping.fr")
+        self.assertEqual(duplicated_user.company, self.company)
+        self.assertEqual(duplicated_user.company_name, self.company.name)
+        self.assertIn("L'acheteur dupont.lajoie@camping.fr est déjà inscrit, entreprise mise à jour.", out.getvalue())
+        self.assertIn("L'acheteur françois.perrin@celc.test.fr a été inscrit avec succès.", out.getvalue())
+
+    def test_email_dns_added(self):
+        """Ensure that email domains are added to the company's email_domain_list, without duplicates."""
+        self.assertEqual(self.company.email_domain_list, [])
+        call_command(
+            "import_buyers",
+            "lemarche/fixtures/tests/acheteurs_import.csv",
+            "grosse-banque",
+            "USER_IMPORT_BUYERS_BANQUE",
+            5,
+            stdout=StringIO(),
+        )
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.email_domain_list, ["camping.fr", "celc.test.fr"])
+
+        # Check that no duplicates are added
+        call_command(
+            "import_buyers",
+            "lemarche/fixtures/tests/acheteurs_import.csv",
+            "grosse-banque",
+            "USER_IMPORT_BUYERS_BANQUE",
+            5,
+            stdout=StringIO(),
+        )
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.email_domain_list, ["camping.fr", "celc.test.fr"])
+
+    def test_rollback_on_error(self):
+        """
+        Simulate an exception when calling add_to_contact_list for dupont.lajoie@camping.fr.
+        This user should not have his information saved on database, but the other users should
+        """
+
+        def bad_thing_happenned(user, contact_type):
+            if user.email == "dupont.lajoie@camping.fr":
+                raise Exception("Not you !")
+
+        with patch(
+            "lemarche.users.management.commands.import_buyers.add_to_contact_list", side_effect=bad_thing_happenned
+        ):
+            call_command(
+                "import_buyers",
+                "lemarche/fixtures/tests/acheteurs_import.csv",
+                "grosse-banque",
+                "USER_IMPORT_BUYERS_BANQUE",
+                5,
+                stdout=StringIO(),
+            )
+
+        # dupont.lajoie@camping.fr is not saved
+        self.assertQuerySetEqual(
+            User.objects.all(),
+            ["<User: françois.perrin@celc.test.fr>"],
+            ordered=False,
+            transform=lambda x: repr(x),
+        )
+
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.email_domain_list, ["celc.test.fr"])
