@@ -1,4 +1,5 @@
 import json
+from io import StringIO
 
 from django.core.management import call_command
 from django.test import Client, TestCase
@@ -38,7 +39,7 @@ class CreateContentPagesCommandTest(TestCase):
         with open("lemarche/fixtures/cms_content_pages.json") as f:
             pages_data = json.load(f)
 
-        call_command("create_content_pages")
+        call_command("create_content_pages", stdout=StringIO())
 
         for page_data in pages_data:
             slug = page_data["slug"]
@@ -64,7 +65,7 @@ class CreateContentPagesCommandTest(TestCase):
         """Test the command does not create duplicate pages"""
         self.home_page.add_child(instance=ContentPage(slug="mentions-legales", title="Mentions légales"))
 
-        call_command("create_content_pages")
+        call_command("create_content_pages", stdout=StringIO())
 
         self.assertEqual(
             ContentPage.objects.filter(slug="mentions-legales").count(),

@@ -293,7 +293,6 @@ class UpdateTenderCountFieldsCommandTest(TestCase):
 
         std_out = StringIO()
         call_command("update_tender_count_fields", stdout=std_out)
-        print(std_out.getvalue())
         self.assertIn("Done! Processed 1 tenders", std_out.getvalue())
 
         tender.refresh_from_db()
