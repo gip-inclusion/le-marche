@@ -352,14 +352,14 @@ class UserBuyerImportTestCase(TestCase):
 
     def setUp(self):
         self.company = CompanyFactory(name="Grosse banque")
-        TemplateTransactionalFactory(code="NEW_COMPANY")
+        TemplateTransactionalFactory(code="USER_IMPORT_BUYERS_BANQUE")
 
     def test_import_buyer(self):
         call_command(
             "import_buyers",
             "lemarche/fixtures/tests/acheteurs_import.csv",
             "grosse-banque",
-            "NEW_COMPANY",
+            "USER_IMPORT_BUYERS_BANQUE",
             5,
             stdout=StringIO(),  # avoid polluting the logs in test execution
         )
@@ -401,7 +401,7 @@ class UserBuyerImportTestCase(TestCase):
                 "import_buyers",
                 "lemarche/fixtures/tests/acheteurs_import.csv",
                 "grosse-banque",
-                "NEW_COMPANY",
+                "USER_IMPORT_BUYERS_BANQUE",
                 5,
                 stdout=out,
             )
@@ -428,7 +428,7 @@ class UserBuyerImportTestCase(TestCase):
             "import_buyers",
             "lemarche/fixtures/tests/acheteurs_import.csv",
             "grosse-banque",
-            "NEW_COMPANY",
+            "USER_IMPORT_BUYERS_BANQUE",
             5,
             stdout=StringIO(),
         )
@@ -440,7 +440,7 @@ class UserBuyerImportTestCase(TestCase):
             "import_buyers",
             "lemarche/fixtures/tests/acheteurs_import.csv",
             "grosse-banque",
-            "NEW_COMPANY",
+            "USER_IMPORT_BUYERS_BANQUE",
             5,
             stdout=StringIO(),
         )
@@ -464,7 +464,7 @@ class UserBuyerImportTestCase(TestCase):
                 "import_buyers",
                 "lemarche/fixtures/tests/acheteurs_import.csv",
                 "grosse-banque",
-                "NEW_COMPANY",
+                "USER_IMPORT_BUYERS_BANQUE",
                 5,
                 stdout=StringIO(),
             )

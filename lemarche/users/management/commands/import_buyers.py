@@ -27,7 +27,7 @@ class Command(BaseCommand):
             help="Slug de la société à qui appartient les acheteurs importés.",
         )
         parser.add_argument(
-            "brevo_template_code",
+            "template_code",
             type=str,
             help="Code de la template de mail Brevo enregistrée"
             " dans la base pour envoyer l'invitation aux acheteurs importés.",
@@ -51,16 +51,14 @@ class Command(BaseCommand):
                     self._import_user(
                         imported_user,
                         company,
-                        brevo_template_code=options["brevo_template_code"],
+                        template_code=options["template_code"],
                         brevo_contact_id=options["brevo_contact_id"],
                     )
                     self._add_email_dns_to_company(email=imported_user["EMAIL"], company=company)
             except Exception as e:
                 self.stdout.write(f"Erreur lors de l'import de l'acheteur {imported_user['EMAIL']}: {e}")
 
-    def _import_user(
-        self, imported_user: dict, company: Company, brevo_template_code: str, brevo_contact_id: int
-    ) -> None:
+    def _import_user(self, imported_user: dict, company: Company, template_code: str, brevo_contact_id: int) -> None:
         """
         Create a new user and send a password reset link to it.
         If the user already exists, update its company.
@@ -89,7 +87,7 @@ class Command(BaseCommand):
             user.save(update_fields=["company", "company_name"])
             self.stdout.write(f"L'acheteur {imported_user['EMAIL']} est déjà inscrit, entreprise mise à jour.")
         else:  # new user, send password reset link
-            send_new_user_password_reset_link(user, template_code=brevo_template_code)
+            send_new_user_password_reset_link(user, template_code=template_code)
             self.stdout.write(f"L'acheteur {imported_user['EMAIL']} a été inscrit avec succès.")
         finally:  # add to Brevo contact list, even if user already exists or not
             add_to_contact_list(user, contact_type=brevo_contact_id)
