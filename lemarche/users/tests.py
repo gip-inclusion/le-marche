@@ -357,7 +357,7 @@ class UserBuyerImportTestCase(TestCase):
     def test_import_buyer(self):
         call_command(
             "import_buyers",
-            "lemarche/fixtures/tests/acheteurs_bpce.csv",
+            "lemarche/fixtures/tests/acheteurs_import.csv",
             "grosse-banque",
             "NEW_COMPANY",
             5,
@@ -399,7 +399,7 @@ class UserBuyerImportTestCase(TestCase):
         ):
             call_command(
                 "import_buyers",
-                "lemarche/fixtures/tests/acheteurs_bpce.csv",
+                "lemarche/fixtures/tests/acheteurs_import.csv",
                 "grosse-banque",
                 "NEW_COMPANY",
                 5,
@@ -426,7 +426,7 @@ class UserBuyerImportTestCase(TestCase):
         self.assertEqual(self.company.email_domain_list, [])
         call_command(
             "import_buyers",
-            "lemarche/fixtures/tests/acheteurs_bpce.csv",
+            "lemarche/fixtures/tests/acheteurs_import.csv",
             "grosse-banque",
             "NEW_COMPANY",
             5,
@@ -438,7 +438,7 @@ class UserBuyerImportTestCase(TestCase):
         # Check that no duplicates are added
         call_command(
             "import_buyers",
-            "lemarche/fixtures/tests/acheteurs_bpce.csv",
+            "lemarche/fixtures/tests/acheteurs_import.csv",
             "grosse-banque",
             "NEW_COMPANY",
             5,
@@ -462,7 +462,7 @@ class UserBuyerImportTestCase(TestCase):
         ):
             call_command(
                 "import_buyers",
-                "lemarche/fixtures/tests/acheteurs_bpce.csv",
+                "lemarche/fixtures/tests/acheteurs_import.csv",
                 "grosse-banque",
                 "NEW_COMPANY",
                 5,
