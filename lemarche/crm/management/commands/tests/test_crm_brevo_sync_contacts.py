@@ -1,8 +1,11 @@
+from datetime import timedelta
 from io import StringIO
 from unittest.mock import patch
 
+import freezegun
 from django.core.management import call_command
 from django.test import TransactionTestCase
+from django.utils import timezone
 
 from lemarche.crm.management.commands.crm_brevo_sync_contacts import Command
 from lemarche.users.factories import UserFactory
@@ -24,7 +27,6 @@ class CrmBrevoSyncContactsCommandTest(TransactionTestCase):
     @patch("lemarche.utils.apis.api_brevo.create_contact")
     def test_sync_contacts_basic(self, mock_create_contact):
         """Test basic synchronization without filters."""
-        mock_create_contact.return_value = True
 
         out = StringIO()
         call_command("crm_brevo_sync_contacts", stdout=out)
@@ -39,7 +41,6 @@ class CrmBrevoSyncContactsCommandTest(TransactionTestCase):
     @patch("lemarche.utils.apis.api_brevo.create_contact")
     def test_sync_contacts_with_kind_filter(self, mock_create_contact):
         """Test synchronization with user kind filter."""
-        mock_create_contact.return_value = True
 
         out = StringIO()
         call_command("crm_brevo_sync_contacts", kind_users="BUYER", stdout=out)
@@ -56,7 +57,6 @@ class CrmBrevoSyncContactsCommandTest(TransactionTestCase):
     def test_sync_contacts_with_existing_contacts(self, mock_create_contact, mock_get_all_users_from_list):
         """Test synchronization checking existing contacts in Brevo."""
         mock_get_all_users_from_list.return_value = {"user1@example.com": 456, "user2@example.com": 789}
-        mock_create_contact.return_value = True
 
         out = StringIO()
         call_command("crm_brevo_sync_contacts", with_existing_contacts=True, brevo_list_id=10, stdout=out)
@@ -80,7 +80,6 @@ class CrmBrevoSyncContactsCommandTest(TransactionTestCase):
     def test_sync_contacts_with_existing_contacts_no_list_id(self, mock_create_contact, mock_get_all_contacts):
         """Test synchronization with existing contacts but no specific list ID."""
         mock_get_all_contacts.return_value = {"user1@example.com": 456}
-        mock_create_contact.return_value = True
 
         out = StringIO()
         call_command("crm_brevo_sync_contacts", with_existing_contacts=True, stdout=out)
@@ -103,17 +102,13 @@ class CrmBrevoSyncContactsCommandTest(TransactionTestCase):
 
     @patch("django.utils.timezone.now")
     @patch("lemarche.utils.apis.api_brevo.create_contact")
+    @freezegun.freeze_time("2023-12-01 12:0:0")
     def test_sync_contacts_recently_updated(self, mock_create_contact, mock_now):
         """Test synchronization of recently updated users only."""
-        from datetime import datetime, timedelta
-
-        from django.utils import timezone
-
-        # Mock current time
-        current_time = timezone.make_aware(datetime(2023, 12, 1, 12, 0, 0))
-        mock_now.return_value = current_time
 
         # Update one user recently
+        current_time = timezone.now()
+
         recent_time = current_time - timedelta(days=5)
         self.user1.updated_at = recent_time
         self.user1.save()
@@ -122,8 +117,6 @@ class CrmBrevoSyncContactsCommandTest(TransactionTestCase):
         old_time = current_time - timedelta(days=30)
         self.user2.updated_at = old_time
         self.user2.save()
-
-        mock_create_contact.return_value = True
 
         out = StringIO()
         call_command("crm_brevo_sync_contacts", recently_updated=True, stdout=out)
@@ -156,7 +149,6 @@ class CrmBrevoSyncContactsCommandTest(TransactionTestCase):
     @patch("lemarche.utils.apis.api_brevo.create_contact")
     def test_sync_contacts_batch_processing(self, mock_create_contact):
         """Test batch processing functionality."""
-        mock_create_contact.return_value = True
 
         out = StringIO()
         call_command("crm_brevo_sync_contacts", stdout=out)
@@ -170,7 +162,6 @@ class CrmBrevoSyncContactsCommandTest(TransactionTestCase):
         """Test skipping users already correctly synced."""
         # Mock existing contact that matches user4's brevo_contact_id
         mock_get_all_users_from_list.return_value = {"user4@example.com": 123}  # Same as user4.brevo_contact_id
-        mock_create_contact.return_value = True
 
         out = StringIO()
         call_command("crm_brevo_sync_contacts", with_existing_contacts=True, brevo_list_id=10, stdout=out)
@@ -204,7 +195,6 @@ class CrmBrevoSyncContactsCommandTest(TransactionTestCase):
     @patch("lemarche.utils.apis.api_brevo.create_contact")
     def test_sync_contacts_api_failure(self, mock_create_contact):
         """Test handling of API create contact failure."""
-        mock_create_contact.return_value = False  # API call failed
 
         out = StringIO()
         call_command("crm_brevo_sync_contacts", stdout=out)

@@ -20,7 +20,6 @@ class Command(BaseCommand):
     - Synchronizes users of a specific type with Brevo
     - Can check existing contacts before creating new ones
     - Automatic error handling and retries
-    - Progress displayed with tqdm
 
     Usage:
     python manage.py crm_brevo_sync_contacts --kind-users=BUYER --brevo-list-id=10 --with-existing-contacts --dry-run
@@ -52,14 +51,21 @@ class Command(BaseCommand):
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Simulation mode (no changes)")
 
     def _fetch_existing_contacts(self, brevo_list_id, with_existing_contacts):
-        """Fetch existing contacts from Brevo if required."""
+        """Fetch existing contacts from Brevo if required.
+        args:
+            brevo_list_id (int): ID of the Brevo list to check.
+            with_existing_contacts (bool): Whether to fetch existing contacts.
+        returns:
+            dict: Dictionary of existing contacts with email as key and Brevo contact ID as value.
+            example: {"user@email.com": 13}
+        """
         existing_contacts = {}
         if with_existing_contacts:
             self.stdout_info(f"Retrieving existing contacts from Brevo list (ID: {brevo_list_id})...")
             if brevo_list_id:
-                existing_contacts = api_brevo.get_all_users_from_list(list_id=brevo_list_id, verbose=True)
+                existing_contacts = api_brevo.get_all_users_from_list(list_id=brevo_list_id)
             else:
-                existing_contacts = api_brevo.get_all_contacts(verbose=True)
+                existing_contacts = api_brevo.get_all_contacts()
             self.stdout_info(f"Existing contacts in Brevo list: {len(existing_contacts)}")
         return existing_contacts
 
@@ -141,9 +147,8 @@ class Command(BaseCommand):
         self.stdout_info(f"Total number of users to process: {total_users}")
 
         # Get existing contacts in Brevo if needed
-        existing_contacts = (
-            self._fetch_existing_contacts(brevo_list_id, with_existing_contacts) if with_existing_contacts else {}
-        )
+        existing_contacts = self._fetch_existing_contacts(brevo_list_id, with_existing_contacts)
+
         if dry_run:
             self.stdout_info("Simulation mode enabled - no changes will be made")
 
