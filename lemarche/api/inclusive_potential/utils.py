@@ -1,6 +1,12 @@
 from dataclasses import dataclass
 
-from lemarche.api.inclusive_potential.constants import RECOMMENDATIONS
+from lemarche.api.inclusive_potential.constants import (
+    LIMIT_FOR_CLAUSE,
+    LIMIT_FOR_ECO_DEPENDENCY,
+    LIMIT_FOR_LOT,
+    LIMIT_FOR_RESERVATION,
+    RECOMMENDATIONS,
+)
 from lemarche.siaes.constants import KIND_HANDICAP_LIST, KIND_INSERTION_LIST
 from lemarche.siaes.models import Siae
 
@@ -52,14 +58,14 @@ def get_inclusive_potential_data(sector: str, perimeter: str, budget: int) -> tu
             analysis_data["ca_average"] = round(sum(ca_values) / len(ca_values))
             analysis_data["eco_dependency"] = round(budget / analysis_data["ca_average"] * 100)
 
-        if siaes_count > 30:
-            if "eco_dependency" in analysis_data and analysis_data["eco_dependency"] < 30:
+        if siaes_count > LIMIT_FOR_RESERVATION:
+            if "eco_dependency" in analysis_data and analysis_data["eco_dependency"] < LIMIT_FOR_ECO_DEPENDENCY:
                 recommendation = RECOMMENDATIONS["reservation"].copy()
             else:
                 recommendation = RECOMMENDATIONS["lot"].copy()
-        elif siaes_count > 10:
+        elif siaes_count > LIMIT_FOR_LOT:
             recommendation = RECOMMENDATIONS["lot"].copy()
-        elif siaes_count > 1:
+        elif siaes_count > LIMIT_FOR_CLAUSE:
             recommendation = RECOMMENDATIONS["clause"].copy()
         else:
             recommendation = RECOMMENDATIONS["aucun"].copy()
