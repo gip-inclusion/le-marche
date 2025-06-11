@@ -32,12 +32,14 @@ def get_inclusive_potential_data(sector: str, perimeter: str, budget: int) -> tu
 
     # Calculate the number of siaes by kind and the number of employees
     # Prefer to loop over siaes rather than using querysets to avoid lots of big queries
+    siaes_count = 0
     insertion_siaes = 0
     handicap_siaes = 0
     siaes_with_super_badge = 0
     employees_insertion_count = 0
     employees_permanent_count = 0
     for siae in siaes:
+        siaes_count += 1
         if siae.kind in KIND_INSERTION_LIST:
             insertion_siaes += 1
             employees_insertion_count += siae.c2_etp_count or 0
@@ -49,7 +51,6 @@ def get_inclusive_potential_data(sector: str, perimeter: str, budget: int) -> tu
 
         employees_permanent_count += siae.employees_permanent_count or 0
 
-    siaes_count = siaes.count()
     analysis_data = {}
     if budget:
         # Get all valid CA values from siaes and calculate the average manually to avoid to many fat queries
