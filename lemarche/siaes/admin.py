@@ -210,7 +210,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
         + [f"{field}_last_updated" for field in Siae.TRACK_UPDATE_FIELDS if field not in ("address")]
         + [
             "siren",
-            "sector_count_with_link",
+            "sector_count",
             "network_count_with_link",
             "group_count_with_link",
             "activity_count_with_link",
@@ -289,7 +289,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
             {
                 "fields": (
                     "description",
-                    "sector_count_with_link",
+                    "sector_count",
                     "activity_count_with_link",
                     "offer_count_with_link",
                     "label_count_with_link",
@@ -502,13 +502,6 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
 
     user_count_with_link.short_description = User._meta.verbose_name_plural
     user_count_with_link.admin_order_field = "user_count"
-
-    def sector_count_with_link(self, siae):
-        url = reverse("admin:sector_sector_changelist") + f"?siaes__in={siae.id}"
-        return format_html(f'<a href="{url}">{siae.sector_count}</a>')
-
-    sector_count_with_link.short_description = "Secteurs"
-    sector_count_with_link.admin_order_field = "sector_count"
 
     def network_count_with_link(self, siae):
         url = reverse("admin:networks_network_changelist") + f"?siaes__in={siae.id}"
