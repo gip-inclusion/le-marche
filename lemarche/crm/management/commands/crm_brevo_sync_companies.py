@@ -19,7 +19,6 @@ class Command(BaseCommand):
 
     Usage:
     python manage.py crm_brevo_sync_companies --recently-updated
-    python manage.py crm_brevo_sync_companies --batch-size=50 --dry-run
     python manage.py crm_brevo_sync_companies
     """
 
@@ -48,6 +47,14 @@ class Command(BaseCommand):
             default=3,
             help="Maximum number of retry attempts in case of API error",
         )
+        parser.add_argument(
+            "--recently-updated-from-weeks",
+            dest="recently_updated_from_weeks",
+            type=int,
+            default=2,
+            help="Synchronize only recently modified SIAEs from the last X weeks (default: 2 weeks)",
+        )
+
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Simulation mode (no changes)")
 
     def handle(
@@ -55,15 +62,13 @@ class Command(BaseCommand):
         recently_updated: bool = False,
         max_retries: int = 3,
         dry_run: bool = False,
+        recently_updated_from_weeks: int = 2,
         **options,
     ):
         self.stdout_info("-" * 80)
         self.stdout_info("SIAE synchronization script with Brevo CRM (companies)...")
         # Build the queryset
-        siaes_qs = self._build_queryset(recently_updated)
-
-        # Initialize statistics
-        self.stats["total"] = siaes_qs.count()
+        siaes_qs = self._build_queryset(recently_updated, recently_updated_from_weeks)
 
         if dry_run:
             self.stdout_info("Simulation mode enabled - no changes will be made")
@@ -74,21 +79,21 @@ class Command(BaseCommand):
         # Display final report
         self._display_final_report()
 
-    def _build_queryset(self, recently_updated: bool):
+    def _build_queryset(self, recently_updated: bool, recently_updated_from_weeks):
         """Build the queryset of SIAEs to process."""
         siaes_qs = Siae.objects.all()
         self.stats["total"] = siaes_qs.count()
         self.stdout_info(f"Total SIAEs in database: {self.stats['total']}")
 
         if recently_updated:
-            two_weeks_ago = timezone.now() - timedelta(weeks=2)
+            two_weeks_ago = timezone.now() - timedelta(weeks=recently_updated_from_weeks)
             siaes_qs = siaes_qs.filter(updated_at__gte=two_weeks_ago)
             self.stats["total"] = siaes_qs.count()
             self.stdout_info(f"Recently modified SIAEs: {self.stats['total']}")
 
         return siaes_qs.with_tender_stats(since_days=90)  # type: ignore
 
-    def _process_siaes(self, siaes_qs, dry_run: bool, max_retries: int):
+    def _process_siaes(self, siaes_qs, dry_run: bool, max_retries: int) -> None:
         """Process each SIAE individually."""
         # use .iterator to optimize the chunk processing of large querysets
         for siae in siaes_qs.iterator():
