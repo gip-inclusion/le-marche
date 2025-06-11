@@ -1,3 +1,8 @@
+LIMIT_FOR_RESERVATION = 30
+LIMIT_FOR_LOT = 10
+LIMIT_FOR_CLAUSE = 1
+LIMIT_FOR_ECO_DEPENDENCY = 30
+
 RECOMMENDATIONS = {
     "reservation": {
         "title": "Réservation totale",

@@ -19,9 +19,17 @@ class InclusivePotentialViewTests(TestCase):
             name="Paris", kind=Perimeter.KIND_DEPARTMENT, insee_code="75", region_code="11"
         )
 
-        siae_1 = SiaeFactory(kind=KIND_INSERTION_LIST[0], api_entreprise_ca=200000)
-        siae_2 = SiaeFactory(kind=KIND_INSERTION_LIST[1], super_badge=True, ca=1000000, api_entreprise_ca=500000)
-        siae_3 = SiaeFactory(kind=KIND_HANDICAP_LIST[0])
+        siae_1 = SiaeFactory(kind=KIND_INSERTION_LIST[0], api_entreprise_ca=200000, c2_etp_count=10)
+        siae_2 = SiaeFactory(
+            kind=KIND_INSERTION_LIST[1],
+            super_badge=True,
+            ca=1000000,
+            api_entreprise_ca=500000,
+            c2_etp_count=20,
+            employees_insertion_count=15,  # will be ignored by the calculation because use c2_etp_count instead
+            employees_permanent_count=9,
+        )
+        siae_3 = SiaeFactory(kind=KIND_HANDICAP_LIST[0], employees_insertion_count=10, employees_permanent_count=7)
 
         for siae in [siae_1, siae_2, siae_3]:
             siae_activity = SiaeActivityFactory(
@@ -78,6 +86,8 @@ class InclusivePotentialViewTests(TestCase):
         self.assertEqual(response.data["insertion_siaes"], 2)
         self.assertEqual(response.data["handicap_siaes"], 1)
         self.assertEqual(response.data["siaes_with_super_badge"], 1)
+        self.assertEqual(response.data["employees_insertion_average"], 13.33)
+        self.assertEqual(response.data["employees_permanent_average"], 5.33)
 
         # if there is no budget, there is no recommendation
         self.assertNotIn("recommendation", response.data)
