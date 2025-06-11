@@ -357,7 +357,7 @@ def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5
             # Contact already exists - try to retrieve existing ID
             if e.status == 400 and error_body.get("code") == "duplicate_parameter":
                 logger.info(f"Contact {user.id} already exists in Brevo, attempting to retrieve ID...")
-                return retrieve_brevo_contact_id(user)
+                return retrieve_and_update_user_brevo_contact_id(user)
             # Rate limiting - wait longer
             should_retry, retry_delay = handle_api_retry(
                 e, attempt, max_retries, retry_delay, "creating contact", user.id
@@ -374,7 +374,7 @@ def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5
     return False
 
 
-def retrieve_brevo_contact_id(user):
+def retrieve_and_update_user_brevo_contact_id(user):
     try:
         # Search for contact by email
         existing_contacts = get_contacts_by_email(user.email)
