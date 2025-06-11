@@ -27,7 +27,7 @@ class CrmBrevoSyncCompaniesCommandTest(TransactionTestCase):
         # SIAE not recently updated
         self.siae5 = SiaeFactory(name="Company 5", extra_data={}, updated_at=timezone.now() - timedelta(days=10))
 
-    @patch("lemarche.utils.apis.api_brevo.create_or_update_company")
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_company")
     def test_sync_all_companies_success(self, mock_api_call):
         """Test successful synchronization of all companies."""
 
@@ -39,7 +39,7 @@ class CrmBrevoSyncCompaniesCommandTest(TransactionTestCase):
         output = out.getvalue()
         self.assertIn("Synchronization completed", output)
 
-    @patch("lemarche.utils.apis.api_brevo.create_or_update_company")
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_company")
     def test_sync_recently_updated_only(self, mock_api_call):
         """Test synchronization of only recently updated companies."""
 
@@ -51,7 +51,7 @@ class CrmBrevoSyncCompaniesCommandTest(TransactionTestCase):
         self.assertIn("Recently modified SIAEs", output)
         self.assertIn("Synchronization completed", output)
 
-    @patch("lemarche.utils.apis.api_brevo.create_or_update_company")
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_company")
     def test_dry_run_mode(self, mock_api_call):
         """Test dry run mode doesn't make actual changes."""
         out = StringIO()
@@ -62,7 +62,10 @@ class CrmBrevoSyncCompaniesCommandTest(TransactionTestCase):
         output = out.getvalue()
         self.assertIn("Simulation mode enabled", output)
 
-    @patch("lemarche.utils.apis.api_brevo.create_or_update_company", side_effect=Exception("API Error"))
+    @patch(
+        "lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_company",
+        side_effect=Exception("API Error"),
+    )
     def test_api_error_handling(self, mock_api_call):
         """Test proper error handling when API calls fail."""
 
@@ -73,7 +76,7 @@ class CrmBrevoSyncCompaniesCommandTest(TransactionTestCase):
         self.assertIn("Error processing", output)
         self.assertIn("Errors: 5", output)
 
-    @patch("lemarche.utils.apis.api_brevo.create_or_update_company")
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_company")
     def test_batch_processing(self, mock_api_call):
         """Test batch processing with custom batch size."""
 
@@ -84,7 +87,7 @@ class CrmBrevoSyncCompaniesCommandTest(TransactionTestCase):
         output = out.getvalue()
         self.assertIn("Synchronization completed", output)
 
-    @patch("lemarche.utils.apis.api_brevo.create_or_update_company")
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_company")
     def test_extra_data_update(self, mock_api_call):
         """Test that extra_data is properly updated with new statistics."""
 
@@ -102,7 +105,7 @@ class CrmBrevoSyncCompaniesCommandTest(TransactionTestCase):
         self.assertIn("tender_received", brevo_data)
         self.assertIn("tender_interest", brevo_data)
 
-    @patch("lemarche.utils.apis.api_brevo.create_or_update_company")
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_company")
     def test_skip_unchanged_data(self, mock_api_call):
         """Test that SIAEs with unchanged data are skipped."""
         self.siae3.extra_data = {
