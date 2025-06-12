@@ -103,6 +103,7 @@ class TenderCreateApiTest(TestCase):
         )
         self.assertEqual(response.status_code, 401)
 
+    @patch("lemarche.api.tenders.views.add_to_contact_list")
     def test_user_with_valid_api_key_can_create_tender(self):
         # test with other email
         tender_data = TENDER_JSON.copy()
@@ -238,15 +239,15 @@ class TenderCreateApiTest(TestCase):
         )
         self.assertEqual(kwargs.get("tender").constraints_title, "tally_instruction")
 
-    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.CreateContact")
+    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.ContactsApi")
     def test_create_contact_call_has_user_buyer_attributes(self, mock_create_contact):
         """Test CreateContact call contains user buyer attributes"""
+
         extra_data = {"source": "TALLY"}
         _, tender, user = self.setup_mock_user_and_tender_creation(
             title="Test tally", user=self.user_buyer, extra_data=extra_data
         )
         sectors = tender.sectors.all()
-
         mock_create_contact.assert_called_once()
         args, kwargs = mock_create_contact.call_args
         attributes = kwargs["attributes"]
@@ -259,6 +260,7 @@ class TenderCreateApiTest(TestCase):
         if sectors.exists():
             attributes["TYPE_VERTICALE_ACHETEUR"] = sectors.first().name
 
+    @patch("lemarche.api.tenders.views.add_to_contact_list")
     def test_reset_modification_request(self):
         """Test 'reset_modification_request' method to check tender fields updates"""
         extra_data = {"source": "TALLY"}
@@ -271,6 +273,7 @@ class TenderCreateApiTest(TestCase):
         self.assertEqual(tender.status, Tender.StatusChoices.STATUS_SUBMITTED)
         self.assertEqual(tender.email_sent_for_modification, False)
 
+    @patch("lemarche.api.tenders.views.add_to_contact_list")
     def test_create_tender_with_different_contact_data(self):
         tender_data = TENDER_JSON.copy()
         tender_data["title"] = "Test tally contact"
@@ -354,6 +357,7 @@ class TenderCreateApiPartnerTest(TestCase):
             tender_source=TenderSourcesChoices.SOURCE_API,
         )
 
+    @patch("lemarche.api.tenders.views.add_to_contact_list")
     def test_partner_approch_can_create_tender(self):
         with self.settings(PARTNER_APPROCH_USER_ID=self.user_partner_with_token.id):
             # new tender
@@ -372,6 +376,7 @@ class TenderCreateApiPartnerTest(TestCase):
             self.assertEqual(tender.author, self.user_partner_with_token)
             self.assertEqual(tender.partner_approch_id, 123)
 
+    @patch("lemarche.api.tenders.views.add_to_contact_list")
     def test_partner_approch_can_update_tender(self):
         with self.settings(PARTNER_APPROCH_USER_ID=self.user_partner_with_token.id):
             existing_tender_partner_data = {
@@ -404,6 +409,7 @@ class TenderCreateApiPartnerTest(TestCase):
             self.assertEqual(Tender.objects.first().title, "Test changed")
             self.assertEqual(Tender.objects.first().deadline_date.strftime("%Y-%m-%d"), "2024-12-31")
 
+    @patch("lemarche.api.tenders.views.add_to_contact_list")
     def test_partner_approch_new_tender_if_kind_changes(self):
         with self.settings(PARTNER_APPROCH_USER_ID=self.user_partner_with_token.id):
             existing_tender_partner_data = {

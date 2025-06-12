@@ -335,6 +335,7 @@ class TenderCreateViewTest(TestCase):
         self.assertEqual(tender.status, Tender.StatusChoices.STATUS_SUBMITTED)
         self.assertEqual(tender.email_sent_for_modification, False)
 
+    @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, type, tender: None)
     def test_create_tender_with_attachment(self):
         """Test create tender with attachments"""
 
