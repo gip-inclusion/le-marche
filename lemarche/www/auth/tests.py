@@ -390,7 +390,8 @@ class SignupMeetingTestCase(TestCase):
             defaults={"title": "Numéro tel"},
         )
 
-    def test_magic_link_test_case(self):
+    @patch("lemarche.utils.apis.api_brevo.create_contact")
+    def test_magic_link_test_case(self, mock_create_contact):
         """View should not redirect to meeting if the User is signing up
         with the magic link"""
         self.assertEqual(User.objects.count(), 0)
@@ -399,7 +400,8 @@ class SignupMeetingTestCase(TestCase):
         self.assertEqual(post_response.status_code, 302)
         self.assertTrue(User.objects.get().is_onboarded)
 
-    def test_meeting_redirect(self):
+    @patch("lemarche.utils.apis.api_brevo.create_contact")
+    def test_meeting_redirect(self, mock_create_contact):
         """View should redirect to meeting"""
         self.assertEqual(User.objects.count(), 0)
 
