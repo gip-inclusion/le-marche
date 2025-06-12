@@ -1,3 +1,4 @@
+import logging
 import re
 
 from django.conf import settings
@@ -6,6 +7,9 @@ from huey.contrib.djhuey import task
 
 from lemarche.utils.apis import api_brevo
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
+
+
+logger = logging.getLogger(__name__)
 
 
 GENERIC_EMAIL_DOMAIN_SUFFIX_LIST = [
@@ -57,19 +61,26 @@ def add_to_contact_list(user, contact_type: str | int, tender=None):
 
     Args:
         user (User): the user how will be added in the contact list
-        contact_type (String or Int): "signup", OR "buyer_search", or Brevo id directly else raise ValueError
+        type (String): "signup", OR "buyer_search" else raise ValueError
+        tender: Optional tender object for buyer signup
+
+    Raises:
+        api_brevo.ContactCreationError: When contact creation fails
+        ValueError: When type is not valid
     """
-    if contact_type == "signup":
-        if user.kind == user.KIND_BUYER:
-            api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_BUYER_ID, tender=tender)
-        elif user.kind == user.KIND_SIAE:
-            api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_SIAE_ID)
-    elif contact_type == "buyer_search":
-        api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_BUYER_SEARCH_SIAE_LIST_ID)
-    elif isinstance(contact_type, int):
-        api_brevo.create_contact(user=user, list_id=contact_type)
-    else:
-        raise ValueError("type must be defined")
+    try:
+        if type == "signup":
+            if user.kind == user.KIND_BUYER:
+                api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_BUYER_ID, tender=tender)
+            elif user.kind == user.KIND_SIAE:
+                api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_SIAE_ID)
+        elif type == "buyer_search":
+            api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_BUYER_SEARCH_SIAE_LIST_ID)
+        else:
+            raise ValueError("type must be defined")
+    except api_brevo.ContactCreationError as e:
+        logger.error(f"Failed to add user {user.id} to contact list: {e}")
+        raise
 
 
 def update_contact_email_blacklisted(email, email_blacklisted: bool):

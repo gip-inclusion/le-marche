@@ -191,9 +191,13 @@ class CrmBrevoSyncContactsCommandTest(TransactionTestCase):
         self.assertTrue(args.recently_updated)
         self.assertTrue(args.dry_run)
 
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_contacts.api_brevo.create_contact", return_value=False)
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_contacts.api_brevo.create_contact")
     def test_sync_contacts_api_failure(self, mock_create_contact):
         """Test handling of API create contact failure."""
+        from lemarche.utils.apis.api_brevo import ContactCreationError
+
+        # Mock create_contact to raise an exception
+        mock_create_contact.side_effect = ContactCreationError("API failure")
 
         out = StringIO()
         call_command("crm_brevo_sync_contacts", stdout=out)

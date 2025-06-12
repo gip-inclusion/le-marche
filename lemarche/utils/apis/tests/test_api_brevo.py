@@ -221,9 +221,8 @@ class BrevoApiTest(TestCase):
         mock_api_instance.create_contact.return_value = mock_response
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            result = api_brevo.create_contact(self.user, list_id=1)
+            api_brevo.create_contact(self.user, list_id=1)
 
-        self.assertTrue(result)
         self.user.refresh_from_db()
         self.assertEqual(self.user.brevo_contact_id, 12345)
         mock_api_instance.create_contact.assert_called_once()
@@ -245,9 +244,8 @@ class BrevoApiTest(TestCase):
         mock_api_instance.create_contact.return_value = mock_response
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            result = api_brevo.create_contact(self.user, list_id=1, tender=tender)
+            api_brevo.create_contact(self.user, list_id=1, tender=tender)
 
-        self.assertTrue(result)
         # Verify that tender attributes were included in the call
         call_args = mock_api_instance.create_contact.call_args[0][0]
         self.assertEqual(call_args.attributes["MONTANT_BESOIN_ACHETEUR"], 50000)
@@ -259,10 +257,8 @@ class BrevoApiTest(TestCase):
         self.user.brevo_contact_id = 99999
         self.user.save()
 
-        result = api_brevo.create_contact(self.user, list_id=1)
-
-        self.assertTrue(result)
-        # Aucun appel d'API ne devrait être fait
+        # Should not raise any exception
+        api_brevo.create_contact(self.user, list_id=1)
 
     @patch("lemarche.utils.apis.api_brevo.get_contacts_by_email")
     @patch("lemarche.utils.apis.api_brevo.get_api_client")
@@ -282,9 +278,8 @@ class BrevoApiTest(TestCase):
         mock_get_contacts.return_value = {"id": 55555}
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            result = api_brevo.create_contact(self.user, list_id=1)
+            api_brevo.create_contact(self.user, list_id=1)
 
-        self.assertTrue(result)
         self.user.refresh_from_db()
         self.assertEqual(self.user.brevo_contact_id, 55555)
         mock_get_contacts.assert_called_once_with(self.user.email)
@@ -306,9 +301,8 @@ class BrevoApiTest(TestCase):
         mock_api_instance.create_contact.side_effect = [rate_limit_exception, mock_response]
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            result = api_brevo.create_contact(self.user, list_id=1, max_retries=2)
+            api_brevo.create_contact(self.user, list_id=1, max_retries=2)
 
-        self.assertTrue(result)
         self.user.refresh_from_db()
         self.assertEqual(self.user.brevo_contact_id, 77777)
         self.assertEqual(mock_api_instance.create_contact.call_count, 2)
@@ -328,9 +322,9 @@ class BrevoApiTest(TestCase):
         mock_api_instance.create_contact.side_effect = server_error
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            result = api_brevo.create_contact(self.user, list_id=1, max_retries=2)
+            with self.assertRaises(api_brevo.ContactCreationError):
+                api_brevo.create_contact(self.user, list_id=1, max_retries=2)
 
-        self.assertFalse(result)
         self.user.refresh_from_db()
         self.assertIsNone(self.user.brevo_contact_id)
         self.assertEqual(mock_api_instance.create_contact.call_count, 3)  # 1 initial + 2 retries
@@ -349,9 +343,9 @@ class BrevoApiTest(TestCase):
         mock_api_instance.create_contact.side_effect = error_exception
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            result = api_brevo.create_contact(self.user, list_id=1, max_retries=1)
+            with self.assertRaises(api_brevo.ContactCreationError):
+                api_brevo.create_contact(self.user, list_id=1, max_retries=1)
 
-        self.assertFalse(result)
         self.user.refresh_from_db()
         self.assertIsNone(self.user.brevo_contact_id)
 
@@ -374,9 +368,7 @@ class BrevoApiTest(TestCase):
         mock_api_instance.create_contact.return_value = mock_response
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            result = api_brevo.create_contact(self.user, list_id=1)
-
-        self.assertTrue(result)
+            api_brevo.create_contact(self.user, list_id=1)
 
         # Verify the contact object passed to API
         call_args = mock_api_instance.create_contact.call_args[0][0]
