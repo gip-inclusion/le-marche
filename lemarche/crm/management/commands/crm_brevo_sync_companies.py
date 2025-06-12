@@ -158,9 +158,9 @@ class Command(BaseCommand):
 
     def _process_single_siae(self, siae, dry_run: bool):
         """Process a single SIAE."""
-        new_extra_data = self._prepare_extra_data(siae)
-        extra_data_changed = self._update_extra_data_if_needed(siae, new_extra_data, dry_run)
-        self._sync_with_brevo_if_needed(siae, extra_data_changed, dry_run)
+        new_extra_data = self._prepare_siae_extra_data(siae)
+        extra_data_changed = self._update_siae_extra_data_if_needed(siae, new_extra_data, dry_run)
+        self._sync_siae_with_brevo_if_needed(siae, extra_data_changed, dry_run, self.max_retries)
 
     def _prepare_siae_extra_data(self, siae) -> dict:
         """Prepare new extra_data for SIAE."""
@@ -259,11 +259,7 @@ class Command(BaseCommand):
             if company.brevo_company_id:
                 self.stats["updated"] += 1
             else:
-                # dry_run case
-                if siae.brevo_company_id:
-                    self.stats["updated"] += 1
-                else:
-                    self.stats["created"] += 1
+                self.stats["created"] += 1
         else:
             self.stats["skipped"] += 1
 
