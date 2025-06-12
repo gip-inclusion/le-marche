@@ -19,13 +19,37 @@ logger = logging.getLogger(__name__)
 ENV_NOT_ALLOWED = ("dev", "test")
 
 
-class ContactsFetchError(Exception):
+class BrevoApiError(Exception):
     """Exception raised when contacts fetching fails after all retries"""
 
     def __init__(self, message, original_exception=None):
         self.message = message
         self.original_exception = original_exception
         super().__init__(self.message)
+
+
+class ContactsFetchError(BrevoApiError):
+    """Exception raised when contacts fetching fails after all retries"""
+
+    pass
+
+
+class ContactCreationError(BrevoApiError):
+    """Exception raised when contact creation fails after all retries"""
+
+    pass
+
+
+class CompanySyncError(BrevoApiError):
+    """Exception raised when company synchronization fails after all retries"""
+
+    pass
+
+
+class ContactRetrievalError(BrevoApiError):
+    """Exception raised when contact retrieval by email fails"""
+
+    pass
 
 
 def handle_api_retry(exception: ApiException, attempt, max_retries, retry_delay, operation_name, entity_id=""):
@@ -342,9 +366,7 @@ def _additional_tender_attributes(tender):
 
 def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5):
     """
-    Brevo docs
-    - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CreateContact.md
-    - API: https://developers.brevo.com/reference/createcontact
+    Create or update a contact in Brevo
 
     Args:
         user: User object to send to Brevo
@@ -353,8 +375,8 @@ def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5
         max_retries (int): Maximum number of retry attempts in case of error
         retry_delay (int): Delay in seconds between retry attempts
 
-    Returns:
-        bool: True if contact was successfully created/updated, False otherwise
+    Raises:
+        ContactCreationError: When contact creation fails after all retries
     """
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
@@ -386,7 +408,7 @@ def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5
     # If user already has a Brevo ID, no need to create a new contact
     if user.brevo_contact_id:
         logger.info(f"Contact {user.email} already exists in Brevo with ID: {user.brevo_contact_id}")
-        return True
+        return
 
     attempt = 0
     while attempt <= max_retries:
@@ -395,14 +417,15 @@ def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5
             user.brevo_contact_id = api_response.get("id")
             user.save(update_fields=["brevo_contact_id"])
             logger.info(f"Success Brevo->ContactsApi->create_contact: {user.brevo_contact_id}")
-            return True
+            return
         except ApiException as e:
             # Analyze error type
             error_body = _get_error_body(e)
             # Contact already exists - try to retrieve existing ID
             if e.status == 400 and error_body.get("code") == "duplicate_parameter":
                 logger.info(f"Contact {user.id} already exists in Brevo, attempting to retrieve ID...")
-                return retrieve_and_update_user_brevo_contact_id(user)
+                retrieve_and_update_user_brevo_contact_id(user)
+                return
             # Rate limiting - wait longer
             should_retry, retry_delay = handle_api_retry(
                 e, attempt, max_retries, retry_delay, "creating contact", user.id
@@ -414,13 +437,24 @@ def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5
                 attempt += 1
                 continue  # Retry the operation
             else:
-                logger.error(f"Failed after {max_retries+1} attempts for {user.id}")
-                return False
+                logger.error(f"Failed after {max_retries + 1} attempts for {user.id}")
+                raise ContactCreationError(
+                    f"Failed to create contact for user {user.id} after {max_retries + 1} attempts", e
+                )
 
-    return False
+    raise ContactCreationError(f"Failed to create contact for user {user.id} after {max_retries + 1} attempts")
 
 
 def retrieve_and_update_user_brevo_contact_id(user):
+    """
+    Retrieve and update user's Brevo contact ID by email
+
+    Args:
+        user: User object to update
+
+    Raises:
+        ContactRetrievalError: When contact retrieval fails
+    """
     try:
         # Search for contact by email
         existing_contacts = get_contacts_by_email(user.email)
@@ -428,10 +462,11 @@ def retrieve_and_update_user_brevo_contact_id(user):
             user.brevo_contact_id = existing_contacts.get("id")
             user.save(update_fields=["brevo_contact_id"])
             logger.info(f"Brevo ID retrieved for {user.email}: {user.brevo_contact_id}")
-            return True
+        else:
+            raise ContactRetrievalError(f"No contact found for email {user.email}")
     except Exception as lookup_error:
         logger.error(f"Error retrieving contact ID: {lookup_error}")
-        return False
+        raise ContactRetrievalError(f"Error retrieving contact ID for {user.email}", lookup_error)
 
 
 def get_contacts_by_email(email):
@@ -499,19 +534,15 @@ def remove_contact_from_list(user, list_id: int):
 
 def create_or_update_company(siae, max_retries=3, retry_delay=5):
     """
-    Creates or updates a company in Brevo CRM
-
-    Brevo docs
-    - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CompaniesApi.md
-    - API: https://developers.brevo.com/reference/post_companies
+    Create or update a company in Brevo CRM
 
     Args:
         siae: SIAE (company) object to synchronize with Brevo
         max_retries (int): Maximum number of retry attempts in case of error
         retry_delay (int): Delay in seconds between retry attempts
 
-    Returns:
-        bool: True if operation was successful, False otherwise
+    Raises:
+        CompanySyncError: When company synchronization fails after all retries
     """
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.CompaniesApi(api_client)
@@ -558,7 +589,7 @@ def create_or_update_company(siae, max_retries=3, retry_delay=5):
                 siae.brevo_company_id = api_response.id
                 sync_log["brevo_company_id"] = siae.brevo_company_id
 
-            # Succès commun
+            # Success
             sync_log["status"] = "success"
             siae.logs.append({"brevo_sync": sync_log})
 
@@ -566,13 +597,13 @@ def create_or_update_company(siae, max_retries=3, retry_delay=5):
                 siae.save(update_fields=["logs"])
             else:
                 siae.save(update_fields=["brevo_company_id", "logs"])
-                # Lier les contacts après création
+                # Link contacts after creation
                 try:
                     link_company_with_contact_list(siae)
                 except Exception as link_error:
                     logger.warning(f"Error linking company {siae.id} with its contacts: {link_error}")
 
-            return True
+            return
 
         except ApiException as e:
             if is_update and e.status == 404:
@@ -582,7 +613,8 @@ def create_or_update_company(siae, max_retries=3, retry_delay=5):
                 # set the brevo_company_id to None to retry creation
                 siae.brevo_company_id = None
                 siae.save(update_fields=["brevo_company_id"])
-                return create_or_update_company(siae, max_retries, retry_delay)
+                create_or_update_company(siae, max_retries, retry_delay)
+                return
 
             should_retry, wait_time = handle_api_retry(
                 e, attempt, max_retries, retry_delay, f"{'updating' if is_update else 'creating'} company", siae.id
@@ -596,9 +628,15 @@ def create_or_update_company(siae, max_retries=3, retry_delay=5):
                 sync_log["error"] = str(e)
                 siae.logs.append({"brevo_sync": sync_log})
                 siae.save(update_fields=["logs"])
-                return False
+                raise CompanySyncError(
+                    f"Failed to {'update' if is_update else 'create'} company {siae.id} "
+                    f"after {max_retries} attempts",
+                    e,
+                )
 
-    return False
+    raise CompanySyncError(
+        f"Failed to {'update' if is_update else 'create'} company {siae.id} after {max_retries} attempts"
+    )
 
 
 def create_deal(tender, owner_email: str):

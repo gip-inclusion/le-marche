@@ -72,9 +72,11 @@ class Command(BaseCommand):
 
         if dry_run:
             self.stdout_info("Simulation mode enabled - no changes will be made")
-
+        # Set variables for retries
+        self.max_retries = max_retries
+        self.retry_delay = 5  # milliseconds
         # Process SIAEs
-        self._process_siaes(siaes_qs, dry_run, max_retries)
+        self._process_siaes(siaes_qs, dry_run)
 
         # Display final report
         self._display_final_report()
@@ -93,21 +95,21 @@ class Command(BaseCommand):
 
         return siaes_qs.with_tender_stats(since_days=90)  # type: ignore
 
-    def _process_siaes(self, siaes_qs, dry_run: bool, max_retries: int) -> None:
+    def _process_siaes(self, siaes_qs, dry_run: bool) -> None:
         """Process each SIAE individually."""
         # use .iterator to optimize the chunk processing of large querysets
         for siae in siaes_qs.iterator():
             try:
-                self._process_single_siae(siae, dry_run, max_retries)
+                self._process_single_siae(siae, dry_run)
             except Exception as e:
                 self.stats["errors"] += 1
                 self.stdout_error(f"Error processing {siae.id}: {str(e)}")
 
-    def _process_single_siae(self, siae, dry_run: bool, max_retries: int):
+    def _process_single_siae(self, siae, dry_run: bool):
         """Process a single SIAE."""
         new_extra_data = self._prepare_extra_data(siae)
         extra_data_changed = self._update_extra_data_if_needed(siae, new_extra_data, dry_run)
-        self._sync_with_brevo_if_needed(siae, extra_data_changed, dry_run, max_retries)
+        self._sync_with_brevo_if_needed(siae, extra_data_changed, dry_run)
 
     def _prepare_extra_data(self, siae) -> dict:
         """Prepare new extra_data."""
@@ -127,22 +129,27 @@ class Command(BaseCommand):
             return True
         return False
 
-    def _sync_with_brevo_if_needed(self, siae, extra_data_changed: bool, dry_run: bool, max_retries: int):
+    def _sync_with_brevo_if_needed(self, siae, extra_data_changed: bool, dry_run: bool):
         """Synchronize with Brevo if needed."""
         if not siae.brevo_company_id or extra_data_changed:
-            is_created_or_updated = False
             if not dry_run:
-                is_created_or_updated = api_brevo.create_or_update_company(
-                    siae, max_retries=max_retries, retry_delay=5
-                )
-
-            if not is_created_or_updated and not dry_run:
-                self.stats["errors"] += 1
-                self.stdout_error(f"Failed to create or update Brevo company for SIAE {siae.id}")
-            elif siae.brevo_company_id:
-                self.stats["updated"] += 1
+                try:
+                    api_brevo.create_or_update_company(
+                        siae, max_retries=self.max_retries, retry_delay=self.retry_delay
+                    )
+                    if siae.brevo_company_id:
+                        self.stats["updated"] += 1
+                    else:
+                        self.stats["created"] += 1
+                except api_brevo.CompanySyncError as e:
+                    self.stats["errors"] += 1
+                    self.stdout_error(f"Failed to create or update Brevo company for SIAE {siae.id}: {e}")
             else:
-                self.stats["created"] += 1
+                # dry_run case
+                if siae.brevo_company_id:
+                    self.stats["updated"] += 1
+                else:
+                    self.stats["created"] += 1
         else:
             self.stats["skipped"] += 1
 
