@@ -1331,3 +1331,11 @@ class QuestionAnswer(models.Model):
 
     def __str__(self):
         return f"{self.pk}-{self.answer}"
+
+
+class SuggestedQuestion(models.Model):
+    text = models.TextField(verbose_name="Texte de la question")
+
+    class Meta:
+        verbose_name = "Question suggérée"
+        verbose_name_plural = "Questions suggérées"

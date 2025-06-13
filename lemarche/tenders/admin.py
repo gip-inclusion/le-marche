@@ -23,6 +23,7 @@ from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import (
     PartnerShareTender,
     QuestionAnswer,
+    SuggestedQuestion,
     Tender,
     TenderQuestion,
     TenderSiae,
@@ -838,6 +839,11 @@ class TenderQuestionAdmin(admin.ModelAdmin):
 class QuestionAnswerAdmin(admin.ModelAdmin):
     list_display = ["id", "answer", "question", "siae"]
     search_fields = ["id", "answer", "question", "siae"]
+
+
+@admin.register(SuggestedQuestion, site=admin_site)
+class SuggestedQuestionAdmin(admin.ModelAdmin):
+    list_display = ["id", "text"]
 
 
 class PartnerShareTenderNoteInline(GenericTabularInline):

@@ -1,0 +1,37 @@
+[
+{
+    "model": "tenders.suggestedquestion",
+    "pk": 1,
+    "fields": {
+        "text": "Quels sont vos délais de production et/ou de livraison ?"
+    }
+},
+{
+    "model": "tenders.suggestedquestion",
+    "pk": 2,
+    "fields": {
+        "text": "Quelle est votre capacité de production ?"
+    }
+},
+{
+    "model": "tenders.suggestedquestion",
+    "pk": 3,
+    "fields": {
+        "text": "Dans quelles zones géographiques intervenez-vous ?"
+    }
+},
+{
+    "model": "tenders.suggestedquestion",
+    "pk": 4,
+    "fields": {
+        "text": "Avez-vous déjà réalisé ce type de prestation ? Des références clients à partager ?"
+    }
+},
+{
+    "model": "tenders.suggestedquestion",
+    "pk": 5,
+    "fields": {
+        "text": "Présentez-nous brièvement votre structure (effectifs, activités, chiffre d’affaires…)"
+    }
+}
+]
