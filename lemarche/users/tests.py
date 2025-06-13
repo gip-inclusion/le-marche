@@ -354,7 +354,8 @@ class UserBuyerImportTestCase(TestCase):
         self.company = CompanyFactory(name="Grosse banque")
         TemplateTransactionalFactory(code="USER_IMPORT_BUYERS_BANQUE")
 
-    def test_import_buyer(self):
+    @patch("lemarche.users.management.commands.import_buyers.add_to_contact_list")
+    def test_import_buyer(self, mock_add_to_contact_list):
         call_command(
             "import_buyers",
             "lemarche/fixtures/tests/acheteurs_import.csv",
@@ -421,7 +422,8 @@ class UserBuyerImportTestCase(TestCase):
         self.assertIn("L'acheteur dupont.lajoie@camping.fr est déjà inscrit, entreprise mise à jour.", out.getvalue())
         self.assertIn("L'acheteur françois.perrin@celc.test.fr a été inscrit avec succès.", out.getvalue())
 
-    def test_email_dns_added(self):
+    @patch("lemarche.users.management.commands.import_buyers.add_to_contact_list")
+    def test_email_dns_added(self, mock_add_to_contact_list):
         """Ensure that email domains are added to the company's email_domain_list, without duplicates."""
         self.assertEqual(self.company.email_domain_list, [])
         call_command(
