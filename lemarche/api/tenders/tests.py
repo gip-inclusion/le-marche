@@ -7,6 +7,7 @@ from django.urls import reverse
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.sectors.factories import SectorFactory
 from lemarche.tenders import constants as tender_constants
+from lemarche.tenders.enums import TenderSourcesChoices
 from lemarche.tenders.factories import TenderFactory
 from lemarche.tenders.models import Tender
 from lemarche.users import constants as user_constants
@@ -103,7 +104,7 @@ class TenderCreateApiTest(TestCase):
         self.assertEqual(User.objects.count(), 3 + 1)  # created a new user
         self.assertEqual(tender.author.email, USER_CONTACT_EMAIL)
         self.assertEqual(tender.status, Tender.StatusChoices.STATUS_SUBMITTED)
-        self.assertEqual(tender.source, tender_constants.SOURCE_API)
+        self.assertEqual(tender.source, TenderSourcesChoices.SOURCE_API)
         self.assertIsNotNone(tender.import_raw_object)
         self.assertEqual(tender.import_raw_object["title"], "Test author 1")
         # test with own email
@@ -122,7 +123,7 @@ class TenderCreateApiTest(TestCase):
         self.assertEqual(User.objects.count(), 4)  # did not create a new user
         self.assertEqual(tender.author, self.user_with_token)
         self.assertEqual(tender.status, Tender.StatusChoices.STATUS_SUBMITTED)
-        self.assertEqual(tender.source, tender_constants.SOURCE_API)
+        self.assertEqual(tender.source, TenderSourcesChoices.SOURCE_API)
         self.assertIsNotNone(tender.import_raw_object)
         self.assertEqual(tender.import_raw_object["title"], "Test author 2")
 
@@ -212,7 +213,7 @@ class TenderCreateApiTest(TestCase):
         args, kwargs = mock_add_to_contact_list.call_args
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(tender.source, tender_constants.SOURCE_TALLY)
+        self.assertEqual(tender.source, TenderSourcesChoices.SOURCE_TALLY)
         # Check other arguments like user, type, and source
         self.assertEqual(kwargs["user"], user)
         self.assertEqual(kwargs["contact_type"], "signup")
@@ -270,7 +271,7 @@ class TenderCreateApiTest(TestCase):
         )
         self.assertEqual(response.status_code, 201)
         tender = Tender.objects.get(title="Test tally contact")
-        self.assertEqual(tender.source, tender_constants.SOURCE_TALLY)
+        self.assertEqual(tender.source, TenderSourcesChoices.SOURCE_TALLY)
         author = tender.author
         self.assertEqual(author.email, "contact@example.com")
         self.assertEqual(author.kind, user_constants.KIND_BUYER)

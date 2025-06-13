@@ -7,7 +7,7 @@ from django.conf import settings
 from huey.contrib.djhuey import task
 from sib_api_v3_sdk.rest import ApiException
 
-from lemarche.tenders import constants as tender_constants
+from lemarche.tenders.enums import TenderSourcesChoices
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 from lemarche.utils.data import sanitize_to_send_by_email
 from lemarche.utils.urls import get_object_admin_url, get_object_share_url
@@ -58,7 +58,7 @@ def create_contact(user, list_id: int, tender=None):
             attributes["TYPE_BESOIN_ACHETEUR"] = tender.kind
 
             # Check if there is one sector whose tender source is TALLY
-            if tender.source == tender_constants.SOURCE_TALLY and first_sector:
+            if tender.source == TenderSourcesChoices.SOURCE_TALLY and first_sector:
                 attributes["TYPE_VERTICALE_ACHETEUR"] = first_sector.name
             else:
                 attributes["TYPE_VERTICALE_ACHETEUR"] = None
