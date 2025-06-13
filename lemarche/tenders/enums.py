@@ -28,3 +28,10 @@ class SurveyDoesNotExistQuestionChoices(models.TextChoices):
         "LS",
         "Sourcing local et salons professionnels (Recherche locale, salons, événements professionnels)",
     )
+
+
+class TenderSourcesChoices(models.TextChoices):
+    SOURCE_FORM = "FORM", "Formulaire"
+    SOURCE_STAFF_C4_CREATED = "STAFF_C4_CREATED", "Staff Marché (via l'Admin)"
+    SOURCE_API = "API", "API"
+    SOURCE_TALLY = "TALLY", "TALLY"
