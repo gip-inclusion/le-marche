@@ -32,7 +32,7 @@ from lemarche.perimeters.models import Perimeter
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
+from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices, TenderSourcesChoices
 from lemarche.tenders.utils import find_amount_ranges
 from lemarche.users.models import User
 from lemarche.utils.constants import ADMIN_FIELD_HELP_TEXT, AUTO_FIELD_HELP_TEXT, RECALCULATED_FIELD_HELP_TEXT
@@ -678,8 +678,8 @@ class Tender(models.Model):
     source = models.CharField(
         verbose_name="Source",
         max_length=20,
-        choices=tender_constants.SOURCE_CHOICES,
-        default=tender_constants.SOURCE_FORM,
+        choices=TenderSourcesChoices.choices,
+        default=TenderSourcesChoices.SOURCE_FORM,
     )
     version = models.PositiveIntegerField(verbose_name="Version", default=1)
     extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)

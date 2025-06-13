@@ -9,7 +9,7 @@ from sesame.utils import get_query_string as sesame_get_query_string
 
 from lemarche.conversations.models import TemplateTransactional
 from lemarche.siaes.models import Siae
-from lemarche.tenders import constants as tender_constants
+from lemarche.tenders.enums import TenderSourcesChoices
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils import constants
@@ -64,7 +64,7 @@ def send_tender_emails_to_siaes(tender: Tender):
 
     previous email_subject: f"{tender.get_kind_display()} : {tender.title} ({tender.author.company_name})"
     """
-    if tender.source == tender_constants.SOURCE_TALLY:
+    if tender.source == TenderSourcesChoices.SOURCE_TALLY:
         tender_title_splitted = " ".join(tender.title.split()[:3])
         email_subject = f"{tender.get_kind_display()} : {tender_title_splitted}..."
     else:
