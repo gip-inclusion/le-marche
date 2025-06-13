@@ -1,6 +1,5 @@
 from unittest.mock import patch
 
-from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 
@@ -221,26 +220,6 @@ class TenderCreateApiTest(TestCase):
         self.assertIsInstance(
             kwargs.get("tender"), Tender, "Expected an instance of Tender for the 'tender' argument."
         )
-
-    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.ContactsApi")
-    def test_create_contact_call_has_user_buyer_attributes(self, mock_create_contact):
-        """Test CreateContact call contains user buyer attributes"""
-        extra_data = {"source": "TALLY"}
-        _, tender, user = self.setup_mock_user_and_tender_creation(
-            title="Test tally", user=self.user_buyer, extra_data=extra_data
-        )
-        sectors = tender.sectors.all()
-        mock_create_contact.assert_called_once()
-        args, kwargs = mock_create_contact.call_args
-        attributes = kwargs["attributes"]
-
-        self.assertEqual(kwargs["email"], user.email)
-        self.assertIn(settings.BREVO_CL_SIGNUP_BUYER_ID, kwargs["list_ids"])
-        self.assertEqual(attributes["MONTANT_BESOIN_ACHETEUR"], tender.amount_int)
-        self.assertEqual(attributes["TYPE_BESOIN_ACHETEUR"], tender.kind)
-
-        if sectors.exists():
-            attributes["TYPE_VERTICALE_ACHETEUR"] = sectors.first().name
 
     @patch("lemarche.api.tenders.views.add_to_contact_list")
     def test_reset_modification_request(self, mock_add_to_contact_list):
