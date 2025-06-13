@@ -1,8 +1,6 @@
 from datetime import timedelta
 
-from django.db import transaction
 from django.utils import timezone
-from tqdm import tqdm
 
 from lemarche.companies.models import Company
 from lemarche.siaes.models import Siae
@@ -66,15 +64,6 @@ class Command(BaseCommand):
             default=50,
             help="Number of companies to process per batch",
         )
-        parser.add_argument(
-            "--max-retries",
-            dest="max_retries",
-            type=int,
-            default=3,
-            help="Maximum number of retry attempts in case of API error",
-        )
-        parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Simulation mode (no changes)")
-
         parser.add_argument(
             "--company-type",
             dest="company_type",
