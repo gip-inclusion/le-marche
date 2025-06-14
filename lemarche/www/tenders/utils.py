@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from lemarche.tenders import constants as tender_constants
+from lemarche.tenders.enums import TenderSourcesChoices
 from lemarche.tenders.models import Tender, TenderQuestion
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
@@ -131,7 +131,7 @@ def duplicate(tender: Tender, fields_to_remove=FIELDS_TO_REMOVE) -> Tender:
 
     # overwrite some fields
     new_tender_dict["status"] = Tender.StatusChoices.STATUS_SUBMITTED
-    new_tender_dict["source"] = tender_constants.SOURCE_STAFF_C4_CREATED
+    new_tender_dict["source"] = TenderSourcesChoices.SOURCE_STAFF_C4_CREATED
     new_tender_dict["logs"] = [{"action": "tender_duplicated", "from": tender.id}]
 
     # create duplicate tender
