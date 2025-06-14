@@ -27,6 +27,7 @@ from lemarche.tenders.models import (
     QuestionAnswer,
     SuggestedQuestion,
     Tender,
+    TenderInstruction,
     TenderQuestion,
     TenderSiae,
     TenderStepsData,
@@ -455,6 +456,12 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
             if user_kind == User.KIND_SIAE and self.object.kind == tender_constants.KIND_PROJECT
             else self.object.get_kind_display()
         )
+        try:
+            instruction = TenderInstruction.objects.get(tender_type=self.object.kind, tender_source=self.object.source)
+        except TenderInstruction.DoesNotExist:
+            instruction = None
+        finally:
+            context["tender_instruction"] = instruction
         if self.siae:
             context["siae_id"] = self.siae.id
             context["siae_has_detail_contact_click_date"] = TenderSiae.objects.filter(
