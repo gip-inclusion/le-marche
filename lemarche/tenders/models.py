@@ -394,7 +394,6 @@ class Tender(models.Model):
         verbose_name="Comment répondre à cette demande ?",
         blank=True,
     )
-    tender_instruction = models.ForeignKey(TenderInstruction, on_delete=models.SET_NULL, null=True, blank=True)
     external_link = models.URLField(
         verbose_name="Lien vers l'appel d'offres",
         help_text="Ajoutez ici l'URL de votre appel d'offres",

@@ -63,11 +63,4 @@ class Migration(migrations.Migration):
                 ],
             },
         ),
-        migrations.AddField(
-            model_name="tender",
-            name="tender_instruction",
-            field=models.ForeignKey(
-                blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to="tenders.tenderinstruction"
-            ),
-        ),
     ]
