@@ -41,6 +41,25 @@ from lemarche.utils.fields import ChoiceArrayField
 from lemarche.utils.urls import get_object_admin_url
 
 
+class TenderInstruction(models.Model):
+    """Store instruction for the owner of the tender"""
+
+    title = models.CharField(verbose_name="Titre", max_length=120)
+    text = models.TextField(verbose_name="Contenu")
+    tender_type = models.CharField(choices=tender_constants.KIND_CHOICES, max_length=10)
+    tender_source = models.CharField(choices=TenderSourcesChoices.choices, max_length=20)
+
+    class Meta:
+        verbose_name = "Notice de réponse au besoin d'achat"
+        verbose_name_plural = "Notices de réponse au besoin d'achat"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tender_type", "tender_source"],
+                name="unique_instruction_for_each_tender_type_and_source",
+            ),
+        ]
+
+
 def get_perimeter_filter(siae):
     return (
         Q(perimeters__post_codes__contains=[siae.post_code])
@@ -375,6 +394,7 @@ class Tender(models.Model):
         verbose_name="Comment répondre à cette demande ?",
         blank=True,
     )
+    tender_instruction = models.ForeignKey(TenderInstruction, on_delete=models.SET_NULL, null=True, blank=True)
     external_link = models.URLField(
         verbose_name="Lien vers l'appel d'offres",
         help_text="Ajoutez ici l'URL de votre appel d'offres",
