@@ -25,6 +25,7 @@ from lemarche.tenders.models import (
     QuestionAnswer,
     SuggestedQuestion,
     Tender,
+    TenderInstruction,
     TenderQuestion,
     TenderSiae,
     TenderStepsData,
@@ -1051,3 +1052,13 @@ class TenderSiaeAdmin(admin.ModelAdmin):
         return "-"
 
     logs_display.short_description = Tender._meta.get_field("logs").verbose_name
+
+
+@admin.register(TenderInstruction, site=admin_site)
+class TenderInstructionAdmin(admin.ModelAdmin):
+    list_display = ["id", "title", "tender_type", "tender_source"]
+    search_fields = ["id", "title", "tender_type", "tender_source"]
+
+    formfield_overrides = {
+        models.TextField: {"widget": CKEditorWidget},
+    }
