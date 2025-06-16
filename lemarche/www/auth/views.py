@@ -39,7 +39,6 @@ class CustomSignupView(SuccessMessageMixin, SignupView):
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
-        self.skip_meeting = self.request.GET.get("skip_meeting", None)
 
     def get_success_message(self, cleaned_data):
         """Show detailed welcome message to SIAE."""

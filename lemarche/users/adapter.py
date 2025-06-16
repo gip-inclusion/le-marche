@@ -80,10 +80,6 @@ class LeMarcheAccountAdapter(DefaultAccountAdapter):
 
         user.extra_data = extra_data
 
-        skip_meeting = self.request.GET.get("skip_meeting", None)
-        if form.cleaned_data.get("kind") == User.KIND_BUYER and settings.GOOGLE_AGENDA_IFRAME_URL and not skip_meeting:
-            user.is_onboarded = False
-
         # add to Brevo list (to send welcome email + automation)
         add_to_contact_list(user, "signup")
         # signup notification email for the team
