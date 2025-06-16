@@ -32,9 +32,7 @@ class LeMarcheAccountAdapter(DefaultAccountAdapter):
     def get_signup_redirect_url(self, request):
         success_url = super().get_signup_redirect_url(request)
 
-        skip_meeting = self.request.GET.get("skip_meeting", None)
-
-        if settings.GOOGLE_AGENDA_IFRAME_URL and self.request.user.kind == User.KIND_BUYER and not skip_meeting:
+        if settings.GOOGLE_AGENDA_IFRAME_URL and self.request.user.kind == User.KIND_BUYER:
             success_url = reverse_lazy("auth:booking-meeting-view")
         next_url = self.request.GET.get("next", None)
         # sanitize next_url
