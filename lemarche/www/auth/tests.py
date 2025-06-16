@@ -377,15 +377,6 @@ class SignupMeetingTestCase(TestCase):
             defaults={"title": "Numéro tel"},
         )
 
-    def test_magic_link_test_case(self):
-        """View should not redirect to meeting if the User is signing up
-        with the magic link"""
-        self.assertEqual(User.objects.count(), 0)
-
-        post_response = self.client.post(path=f"{reverse('account_signup')}?skip_meeting=true", data=self.form_data)
-        self.assertEqual(post_response.status_code, 302)
-        self.assertTrue(User.objects.get().is_onboarded)
-
     def test_meeting_redirect(self):
         """View should redirect to meeting"""
         self.assertEqual(User.objects.count(), 0)
@@ -394,6 +385,11 @@ class SignupMeetingTestCase(TestCase):
         self.assertEqual(post_response.status_code, 302)
         self.assertFalse(User.objects.get().is_onboarded)
         self.assertRedirects(post_response, reverse("auth:booking-meeting-view"))
+
+        # check dashboard access is OK even if user is not onboarded
+        self.client.login(email=self.form_data["email"], password=self.form_data["password1"])
+        response = self.client.get(reverse("dashboard:home"))
+        self.assertEqual(response.status_code, 200)
 
 
 class LoginFormTest(StaticLiveServerTestCase):
