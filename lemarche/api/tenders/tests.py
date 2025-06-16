@@ -27,7 +27,6 @@ TENDER_JSON = {
     "description": "string",
     "start_working_date": "2023-03-14",
     "external_link": "",
-    "constraints": "string",
     "amount": "0-1K",
     "amount_exact": 693,
     # "why_amount_is_blank": "DONT_KNOW",

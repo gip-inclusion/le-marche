@@ -412,7 +412,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             {
                 "fields": (
                     "description",
-                    "constraints",
                     "external_link",
                     "question_count_with_link",
                     "answer_count_with_link",

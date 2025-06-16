@@ -40,7 +40,6 @@ class TenderSerializer(serializers.ModelSerializer):
             "description",
             "start_working_date",
             "external_link",
-            "constraints",
             "amount",
             "amount_exact",
             "why_amount_is_blank",
