@@ -1,7 +1,6 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.shortcuts import redirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import DetailView, FormView, UpdateView
 
@@ -17,20 +16,8 @@ SLUG_RESSOURCES_CAT_SIAES = "solutions"
 SLUG_RESSOURCES_CAT_BUYERS = "acheteurs"
 
 
-class DashboardHomeView(UserPassesTestMixin, LoginRequiredMixin, DetailView):
+class DashboardHomeView(LoginRequiredMixin, DetailView):
     context_object_name = "user"
-
-    def test_func(self):
-        if self.request.user.is_authenticated:
-            return self.request.user.is_onboarded
-        else:
-            return True
-
-    def handle_no_permission(self):
-        if not self.test_func():
-            return redirect(reverse("auth:booking-meeting-view"))
-        else:
-            return super().handle_no_permission()
 
     def get_object(self):
         return self.request.user

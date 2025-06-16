@@ -1,10 +1,10 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse, reverse_lazy
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView
@@ -16,22 +16,10 @@ from lemarche.utils.mixins import FavoriteListOwnerRequiredMixin
 from lemarche.www.dashboard_favorites.forms import FavoriteListEditForm
 
 
-class DashboardFavoriteListView(UserPassesTestMixin, LoginRequiredMixin, ListView):
+class DashboardFavoriteListView(LoginRequiredMixin, ListView):
     template_name = "favorites/dashboard_favorite_list.html"
     queryset = FavoriteList.objects.all()
     context_object_name = "favorite_lists"
-
-    def test_func(self):
-        if self.request.user.is_authenticated:
-            return self.request.user.is_onboarded
-        else:
-            return True
-
-    def handle_no_permission(self):
-        if not self.test_func():
-            return redirect(reverse("auth:booking-meeting-view"))
-        else:
-            return super().handle_no_permission()
 
     def get_queryset(self):
         qs = super().get_queryset()
