@@ -1058,3 +1058,7 @@ class TenderSiaeAdmin(admin.ModelAdmin):
 class TenderInstructionAdmin(admin.ModelAdmin):
     list_display = ["id", "title", "tender_type", "tender_source"]
     search_fields = ["id", "title", "tender_type", "tender_source"]
+
+    formfield_overrides = {
+        models.TextField: {"widget": CKEditorWidget},
+    }
