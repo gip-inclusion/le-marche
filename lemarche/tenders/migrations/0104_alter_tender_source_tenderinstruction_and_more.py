@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("tenders", "0102_alter_tender_status"),
+        ("tenders", "0103_suggestedquestion"),
     ]
 
     operations = [
