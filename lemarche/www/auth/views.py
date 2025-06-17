@@ -37,9 +37,6 @@ class CustomSignupView(SuccessMessageMixin, SignupView):
     template_name = "account/signup.html"
     form_class = CustomSignupForm
 
-    def setup(self, request, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
-
     def get_success_message(self, cleaned_data):
         """Show detailed welcome message to SIAE."""
         success_message = super().get_success_message(cleaned_data)
