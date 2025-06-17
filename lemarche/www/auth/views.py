@@ -70,7 +70,7 @@ class MeetingCalendarView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
 
     def test_func(self):
         """Do not display for already onboarded users"""
-        if self.request.user.is_onboarded:
+        if self.request.user.have_followed_onboarding:
             return False
         return True
 

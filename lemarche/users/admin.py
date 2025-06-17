@@ -487,13 +487,13 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     extra_data_display.short_description = User._meta.get_field("extra_data").verbose_name
 
     def onboard_user_button(self, user):
-        if user.is_onboarded:
+        if user.have_followed_onboarding:
             return format_html('<img src="/static/admin/img/icon-yes.svg" alt="True">')
         else:
             return format_html(
                 f"<a class='button'"
                 f" href='{reverse('admin:onboard_user', args=[user.pk])}'>"
-                f"Finaliser l'onboarding</a>"
+                f"Confirmer que l'utilisateur a suivi la procédure d'onboarding</a>"
             )
 
     onboard_user_button.short_description = "L'utilisateur a suivi la procédure d'onboarding"

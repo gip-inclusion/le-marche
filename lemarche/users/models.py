@@ -302,7 +302,9 @@ class User(AbstractUser):
 
     # is_active, is_staff, is_superuser
     is_anonymized = models.BooleanField(verbose_name="L'utilisateur à été anonymisé", default=False)
-    is_onboarded = models.BooleanField(verbose_name="L'utilisateur a suivi la procédure d'onboarding", default=False)
+    have_followed_onboarding = models.BooleanField(
+        verbose_name="L'utilisateur a suivi la procédure d'onboarding", default=False
+    )
 
     # date_joined, last_login
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
@@ -352,8 +354,8 @@ class User(AbstractUser):
         super().save(*args, **kwargs)
 
     def set_onboarded_and_send_email(self):
-        """Set is_onboarded and send email"""
-        self.is_onboarded = True
+        """Set have_followed_onboarding and send email"""
+        self.have_followed_onboarding = True
         self.save()
         notify_user_onboarded(self)
 

@@ -383,7 +383,7 @@ class SignupMeetingTestCase(TestCase):
 
         post_response = self.client.post(path=reverse("account_signup"), data=self.form_data)
         self.assertEqual(post_response.status_code, 302)
-        self.assertFalse(User.objects.get().is_onboarded)
+        self.assertFalse(User.objects.get().have_followed_onboarding)
         self.assertRedirects(post_response, reverse("auth:booking-meeting-view"))
 
         # check dashboard access is OK even if user is not onboarded
