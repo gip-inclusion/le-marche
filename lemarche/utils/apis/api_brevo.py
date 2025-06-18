@@ -411,7 +411,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
                 return api_response
             except ApiException as e:
                 # Analyze error type
-                error_body = _get_error_body(e)
+                error_body = self._get_error_body(e)
                 # Contact already exists - try to retrieve existing ID
                 if e.status == 400 and error_body.get("code") == "duplicate_parameter":
                     logger.info(f"Contact {user.id} already exists in Brevo, attempting to retrieve ID...")
@@ -613,7 +613,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
                 logger.info(f"Success Brevo->ContactsApi->remove_contact_from_list: {api_response}")
                 return api_response
             except ApiException as e:
-                error_body = _get_error_body(e)
+                error_body = self._get_error_body(e)
                 if error_body.get("message") == "Contact already removed from list and/or does not exist":
                     logger.info(
                         "calling Brevo->ContactsApi->remove_contact_from_list: " "contact doesn't exist in this list"
@@ -685,6 +685,25 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
 
         return result
 
+    def _get_error_body(self, exception):
+        """
+        Helper function to extract error body from ApiException
+
+        Args:
+            exception: The ApiException object
+
+        Returns:
+            dict: Parsed error body or empty dict if parsing fails
+        """
+        try:
+            if exception.body:  # Check if body is not None
+                return json.loads(exception.body)
+        except (json.JSONDecodeError, AttributeError):
+            logger.error(
+                f"Error decoding JSON response: {exception.body if hasattr(exception, 'body') else str(exception)}"
+            )
+        return {}
+
 
 class BrevoCompanyApiClient(BrevoBaseApiClient):
 
@@ -694,6 +713,34 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         """
         super().__init__()
         self.api_instance = sib_api_v3_sdk.CompaniesApi(self.api_client)
+
+    def _handle_company_404_and_retry(self, siae, max_retries, retry_delay):
+        """Handle 404 error by switching from update to create mode"""
+        logger.warning(f"Company {siae.id} (ID {siae.brevo_company_id}) not found in Brevo, attempting to create...")
+        siae.brevo_company_id = None
+        siae.save(update_fields=["brevo_company_id"])
+        return self.create_or_update_company(siae, max_retries, retry_delay)
+
+    def _post_process_company_success(self, siae, api_response, sync_log, is_update):
+        """Handle post-processing after successful company operation"""
+        if not is_update and api_response:
+            siae.brevo_company_id = api_response.id
+            sync_log["brevo_company_id"] = siae.brevo_company_id
+
+        sync_log["status"] = "success"
+        siae.logs.append({"brevo_sync": sync_log})
+
+        if is_update:
+            siae.save(update_fields=["logs"])
+        else:
+            siae.save(update_fields=["brevo_company_id", "logs"])
+            # Link contacts after creation
+            try:
+                self.link_company_with_contact_list(
+                    siae.brevo_company_id, list(siae.users.values_list("brevo_contact_id", flat=True))
+                )
+            except Exception as link_error:
+                logger.warning(f"Error linking company {siae.id} with its contacts: {link_error}")
 
     def create_or_update_company(self, siae, max_retries=3, retry_delay=5):
         """
@@ -741,65 +788,35 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
 
         is_update = bool(siae.brevo_company_id)
 
-        for attempt in range(max_retries):
+        def _company_operation():
+            """Execute the company create or update operation"""
             try:
                 if is_update:
-                    self.api_instance.companies_id_patch(siae.brevo_company_id, siae_brevo_company_body)
+                    return self.api_instance.companies_id_patch(siae.brevo_company_id, siae_brevo_company_body)
                 else:
-                    api_response = self.api_instance.companies_post(siae_brevo_company_body)
-                    siae.brevo_company_id = api_response.id
-                    sync_log["brevo_company_id"] = siae.brevo_company_id
-
-                # Success
-                sync_log["status"] = "success"
-                siae.logs.append({"brevo_sync": sync_log})
-
-                if is_update:
-                    siae.save(update_fields=["logs"])
-                else:
-                    siae.save(update_fields=["brevo_company_id", "logs"])
-                    # Link contacts after creation
-                    try:
-                        self.link_company_with_contact_list(
-                            siae.brevo_company_id, list(siae.users.values_list("brevo_contact_id", flat=True))
-                        )
-                    except Exception as link_error:
-                        logger.warning(f"Error linking company {siae.id} with its contacts: {link_error}")
-
-                return
-
+                    return self.api_instance.companies_post(siae_brevo_company_body)
             except ApiException as e:
                 if is_update and e.status == 404:
-                    logger.warning(
-                        f"Company {siae.id} (ID {siae.brevo_company_id}) not found in Brevo, attempting to create..."
-                    )
-                    # set the brevo_company_id to None to retry creation
-                    siae.brevo_company_id = None
-                    siae.save(update_fields=["brevo_company_id"])
-                    self.create_or_update_company(siae, max_retries, retry_delay)
-                    return
+                    return self._handle_company_404_and_retry(siae, max_retries, retry_delay)
+                raise
 
-                should_retry, wait_time = self.handle_api_retry(
-                    e, attempt, max_retries, retry_delay, f"{'updating' if is_update else 'creating'} company", siae.id
-                )
+        try:
+            api_response = self._execute_with_retry(
+                _company_operation,
+                max_retries=max_retries,
+                retry_delay=retry_delay,
+                operation_name=f"{'updating' if is_update else 'creating'} company",
+                entity_id=str(siae.id),
+            )
 
-                if should_retry:
-                    time.sleep(wait_time)
-                    continue
-                else:
-                    sync_log["status"] = "error"
-                    sync_log["error"] = str(e)
-                    siae.logs.append({"brevo_sync": sync_log})
-                    siae.save(update_fields=["logs"])
-                    raise BrevoApiError(
-                        f"Failed to {'update' if is_update else 'create'} company {siae.id} "
-                        f"after {max_retries} attempts",
-                        e,
-                    )
+            self._post_process_company_success(siae, api_response, sync_log, is_update)
 
-        raise BrevoApiError(
-            f"Failed to {'update' if is_update else 'create'} company {siae.id} after {max_retries} attempts"
-        )
+        except BrevoApiError as e:
+            sync_log["status"] = "error"
+            sync_log["error"] = str(e)
+            siae.logs.append({"brevo_sync": sync_log})
+            siae.save(update_fields=["logs"])
+            raise
 
     def link_company_with_contact_list(self, brevo_company_id: int, contact_list: list):
         """
@@ -832,6 +849,36 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
 
             except ApiException as e:
                 logger.error("Exception when calling Brevo->DealApi->companies_link_unlink_id_patch: %s\n" % e)
+
+    def _handle_buyer_company_404_and_retry(self, company, max_retries, retry_delay):
+        """Handle 404 error for buyer company by switching from update to create mode"""
+        logger.warning(
+            f"Buyer company {company.id} (ID {company.brevo_company_id}) not found in Brevo, attempting to create..."
+        )
+        company.brevo_company_id = None
+        company.save(update_fields=["brevo_company_id"])
+        return self.create_or_update_buyer_company(company, max_retries, retry_delay)
+
+    def _post_process_buyer_company_success(self, company, api_response, sync_log, is_update):
+        """Handle post-processing after successful buyer company operation"""
+        if not is_update and api_response:
+            company.brevo_company_id = api_response.id
+            sync_log["brevo_company_id"] = company.brevo_company_id
+
+        sync_log["status"] = "success"
+        company.logs.append({"brevo_sync": sync_log})
+
+        if is_update:
+            company.save(update_fields=["logs"])
+        else:
+            company.save(update_fields=["brevo_company_id", "logs"])
+            # Lier les contacts après création
+            try:
+                self.link_company_with_contact_list(
+                    company.brevo_company_id, list(company.users.values_list("brevo_contact_id", flat=True))
+                )
+            except Exception as link_error:
+                logger.warning(f"Error linking buyer company {company.id} with its contacts: {link_error}")
 
     def create_or_update_buyer_company(self, company, max_retries=3, retry_delay=5):
         """
@@ -871,64 +918,36 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
 
         is_update = bool(company.brevo_company_id)
 
-        for attempt in range(max_retries):
+        def _buyer_company_operation():
+            """Execute the buyer company create or update operation"""
             try:
                 if is_update:
-                    api_response = self.api_instance.companies_id_patch(company.brevo_company_id, company_brevo_body)
+                    return self.api_instance.companies_id_patch(company.brevo_company_id, company_brevo_body)
                 else:
-                    api_response = self.api_instance.companies_post(company_brevo_body)
-                    company.brevo_company_id = api_response.id
-                    sync_log["brevo_company_id"] = company.brevo_company_id
-
-                # Succès commun
-                sync_log["status"] = "success"
-                company.logs.append({"brevo_sync": sync_log})
-
-                if is_update:
-                    company.save(update_fields=["logs"])
-                else:
-                    company.save(update_fields=["brevo_company_id", "logs"])
-                    # Lier les contacts après création
-                    try:
-                        self.link_company_with_contact_list(
-                            company.brevo_company_id, list(company.users.values_list("brevo_contact_id", flat=True))
-                        )
-                    except Exception as link_error:
-                        logger.warning(f"Error linking buyer company {company.id} with its contacts: {link_error}")
-
-                return True
-
+                    return self.api_instance.companies_post(company_brevo_body)
             except ApiException as e:
                 if is_update and e.status == 404:
-                    logger.warning(
-                        f"""Buyer company {company.id} (ID {company.brevo_company_id}) not found in Brevo,
-                        attempting to create..."""
-                    )
-                    # set the brevo_company_id to None to retry creation
-                    company.brevo_company_id = None
-                    company.save(update_fields=["brevo_company_id"])
-                    return self.create_or_update_buyer_company(company, max_retries, retry_delay)
+                    return self._handle_buyer_company_404_and_retry(company, max_retries, retry_delay)
+                raise
 
-                should_retry, wait_time = self.handle_api_retry(
-                    e,
-                    attempt,
-                    max_retries,
-                    retry_delay,
-                    f"{'updating' if is_update else 'creating'} buyer company",
-                    company.id,
-                )
+        try:
+            api_response = self._execute_with_retry(
+                _buyer_company_operation,
+                max_retries=max_retries,
+                retry_delay=retry_delay,
+                operation_name=f"{'updating' if is_update else 'creating'} buyer company",
+                entity_id=str(company.id),
+            )
 
-                if should_retry:
-                    time.sleep(wait_time)
-                    continue
-                else:
-                    sync_log["status"] = "error"
-                    sync_log["error"] = str(e)
-                    company.logs.append({"brevo_sync": sync_log})
-                    company.save(update_fields=["logs"])
-                    return False
+            self._post_process_buyer_company_success(company, api_response, sync_log, is_update)
+            return True
 
-        return False
+        except BrevoApiError as e:
+            sync_log["status"] = "error"
+            sync_log["error"] = str(e)
+            company.logs.append({"brevo_sync": sync_log})
+            company.save(update_fields=["logs"])
+            return False
 
 
 class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
@@ -999,26 +1018,6 @@ class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
             operation_name="sending transactional email",
             entity_id=f"to {recipient_email}",
         )
-
-
-def _get_error_body(exception):
-    """
-    Helper function to extract error body from ApiException
-
-    Args:
-        exception: The ApiException object
-
-    Returns:
-        dict: Parsed error body or empty dict if parsing fails
-    """
-    try:
-        if exception.body:  # Check if body is not None
-            return json.loads(exception.body)
-    except (json.JSONDecodeError, AttributeError):
-        logger.error(
-            f"Error decoding JSON response: {exception.body if hasattr(exception, 'body') else str(exception)}"
-        )
-    return {}
 
 
 def get_config():
