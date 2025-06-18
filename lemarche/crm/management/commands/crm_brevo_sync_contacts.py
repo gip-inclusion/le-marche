@@ -110,7 +110,7 @@ class Command(BaseCommand):
                         api_brevo.create_contact(user=user, list_id=current_list_id)
                         self.stdout_info(f"Brevo contact created: {user.pk}")
                         return {"created": 1}
-                    except api_brevo.ContactCreationError as e:
+                    except api_brevo.BrevoApiError as e:
                         self.stdout_error(f"Failed to create contact for {user.pk}: {e}")
                         return {"errors": 1}
                 return {"created": 1}  # dry_run case

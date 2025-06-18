@@ -9,6 +9,7 @@ from django.utils import timezone
 
 from lemarche.crm.management.commands.crm_brevo_sync_contacts import Command
 from lemarche.users.factories import UserFactory
+from lemarche.utils.apis.api_brevo import BrevoApiError
 
 
 class CrmBrevoSyncContactsCommandTest(TransactionTestCase):
@@ -194,10 +195,9 @@ class CrmBrevoSyncContactsCommandTest(TransactionTestCase):
     @patch("lemarche.crm.management.commands.crm_brevo_sync_contacts.api_brevo.create_contact")
     def test_sync_contacts_api_failure(self, mock_create_contact):
         """Test handling of API create contact failure."""
-        from lemarche.utils.apis.api_brevo import ContactCreationError
 
         # Mock create_contact to raise an exception
-        mock_create_contact.side_effect = ContactCreationError("API failure")
+        mock_create_contact.side_effect = BrevoApiError("API failure")
 
         out = StringIO()
         call_command("crm_brevo_sync_contacts", stdout=out)
