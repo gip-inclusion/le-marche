@@ -28,30 +28,6 @@ class BrevoApiError(Exception):
         super().__init__(self.message)
 
 
-class ContactsFetchError(BrevoApiError):
-    """Exception raised when contacts fetching fails after all retries"""
-
-    pass
-
-
-class ContactCreationError(BrevoApiError):
-    """Exception raised when contact creation fails after all retries"""
-
-    pass
-
-
-class CompanySyncError(BrevoApiError):
-    """Exception raised when company synchronization fails after all retries"""
-
-    pass
-
-
-class ContactRetrievalError(BrevoApiError):
-    """Exception raised when contact retrieval by email fails"""
-
-    pass
-
-
 def handle_api_retry(exception: ApiException, attempt, max_retries, retry_delay, operation_name, entity_id=""):
     """
     Helper function to handle API retry logic with exponential backoff
@@ -195,7 +171,7 @@ def get_all_contacts(limit_max=None, since_days=30, max_retries=3, retry_delay=5
         dict: Dictionary mapping contact emails to their IDs
 
     Raises:
-        ContactsFetchError: When contacts fetching fails after all retries
+        BrevoApiError: When contacts fetching fails after all retries
     """
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
@@ -205,7 +181,7 @@ def get_all_contacts(limit_max=None, since_days=30, max_retries=3, retry_delay=5
     try:
         while not config["is_finished"]:
             _fetch_contacts_batch(api_instance, config, max_retries, retry_delay)
-    except ContactsFetchError:
+    except BrevoApiError:
         # Error occurred and max retries exceeded
         pass
 
@@ -243,7 +219,7 @@ def _fetch_contacts_batch(api_instance, config, max_retries, retry_delay):
         retry_delay: Base delay between retries
 
     Raises:
-        ContactsFetchError: When fetching fails after all retries
+        BrevoApiError: When fetching fails after all retries
     """
     try:
         _process_contacts_batch(api_instance, config)
@@ -251,7 +227,7 @@ def _fetch_contacts_batch(api_instance, config, max_retries, retry_delay):
         _handle_contacts_api_error(e, config, max_retries, retry_delay)
     except Exception as e:
         logger.error(f"Unexpected error retrieving contacts: {e}")
-        raise ContactsFetchError(f"Unexpected error retrieving contacts: {e}", e)
+        raise BrevoApiError(f"Unexpected error retrieving contacts: {e}", e)
 
 
 def _process_contacts_batch(api_instance, config):
@@ -308,7 +284,7 @@ def _handle_contacts_api_error(exception, config, max_retries, retry_delay):
         retry_delay: Base delay between retries
 
     Raises:
-        ContactsFetchError: When max retries are exceeded
+        BrevoApiError: When max retries are exceeded
     """
     logger.error(f"Exception when calling ContactsApi->get_contacts: {exception}")
 
@@ -324,7 +300,7 @@ def _handle_contacts_api_error(exception, config, max_retries, retry_delay):
     else:
         logger.error(f"Failed after {max_retries} attempts for get all contacts")
         config["result"] = {}
-        raise ContactsFetchError(f"Failed after {max_retries} attempts for get all contacts", exception)
+        raise BrevoApiError(f"Failed after {max_retries} attempts for get all contacts", exception)
 
 
 def _additional_tender_attributes(tender):
@@ -376,7 +352,7 @@ def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5
         retry_delay (int): Delay in seconds between retry attempts
 
     Raises:
-        ContactCreationError: When contact creation fails after all retries
+        BrevoApiError: When contact creation fails after all retries
     """
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
@@ -438,11 +414,9 @@ def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5
                 continue  # Retry the operation
             else:
                 logger.error(f"Failed after {max_retries + 1} attempts for {user.id}")
-                raise ContactCreationError(
-                    f"Failed to create contact for user {user.id} after {max_retries + 1} attempts", e
-                )
+                raise BrevoApiError(f"Failed to create contact for user {user.id} after {max_retries + 1} attempts", e)
 
-    raise ContactCreationError(f"Failed to create contact for user {user.id} after {max_retries + 1} attempts")
+    raise BrevoApiError(f"Failed to create contact for user {user.id} after {max_retries + 1} attempts")
 
 
 def retrieve_and_update_user_brevo_contact_id(user):
@@ -453,7 +427,7 @@ def retrieve_and_update_user_brevo_contact_id(user):
         user: User object to update
 
     Raises:
-        ContactRetrievalError: When contact retrieval fails
+        BrevoApiError: When contact retrieval fails
     """
     try:
         # Search for contact by email
@@ -463,10 +437,10 @@ def retrieve_and_update_user_brevo_contact_id(user):
             user.save(update_fields=["brevo_contact_id"])
             logger.info(f"Brevo ID retrieved for {user.email}: {user.brevo_contact_id}")
         else:
-            raise ContactRetrievalError(f"No contact found for email {user.email}")
+            raise BrevoApiError(f"No contact found for email {user.email}")
     except Exception as lookup_error:
         logger.error(f"Error retrieving contact ID: {lookup_error}")
-        raise ContactRetrievalError(f"Error retrieving contact ID for {user.email}", lookup_error)
+        raise BrevoApiError(f"Error retrieving contact ID for {user.email}", lookup_error)
 
 
 def get_contacts_by_email(email):
@@ -542,7 +516,7 @@ def create_or_update_company(siae, max_retries=3, retry_delay=5):
         retry_delay (int): Delay in seconds between retry attempts
 
     Raises:
-        CompanySyncError: When company synchronization fails after all retries
+        BrevoApiError: When company synchronization fails after all retries
     """
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.CompaniesApi(api_client)
@@ -630,13 +604,13 @@ def create_or_update_company(siae, max_retries=3, retry_delay=5):
                 sync_log["error"] = str(e)
                 siae.logs.append({"brevo_sync": sync_log})
                 siae.save(update_fields=["logs"])
-                raise CompanySyncError(
+                raise BrevoApiError(
                     f"Failed to {'update' if is_update else 'create'} company {siae.id} "
                     f"after {max_retries} attempts",
                     e,
                 )
 
-    raise CompanySyncError(
+    raise BrevoApiError(
         f"Failed to {'update' if is_update else 'create'} company {siae.id} after {max_retries} attempts"
     )
 

@@ -65,7 +65,7 @@ def add_to_contact_list(user, contact_type: str | int, tender=None):
         tender: Optional tender object for buyer signup
 
     Raises:
-        api_brevo.ContactCreationError: When contact creation fails
+        api_brevo.BrevoApiError: When contact creation fails
         ValueError: When contact_type is not valid
     """
     try:
@@ -78,7 +78,7 @@ def add_to_contact_list(user, contact_type: str | int, tender=None):
             api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_BUYER_SEARCH_SIAE_LIST_ID)
         else:
             raise ValueError("contact_type must be defined")
-    except api_brevo.ContactCreationError as e:
+    except api_brevo.BrevoApiError as e:
         logger.error(f"Failed to add user {user.id} to contact list: {e}")
         raise
 

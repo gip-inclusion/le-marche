@@ -322,7 +322,7 @@ class BrevoApiTest(TestCase):
         mock_api_instance.create_contact.side_effect = server_error
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            with self.assertRaises(api_brevo.ContactCreationError):
+            with self.assertRaises(api_brevo.BrevoApiError):
                 api_brevo.create_contact(self.user, list_id=1, max_retries=2)
 
         self.user.refresh_from_db()
@@ -343,7 +343,7 @@ class BrevoApiTest(TestCase):
         mock_api_instance.create_contact.side_effect = error_exception
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            with self.assertRaises(api_brevo.ContactCreationError):
+            with self.assertRaises(api_brevo.BrevoApiError):
                 api_brevo.create_contact(self.user, list_id=1, max_retries=1)
 
         self.user.refresh_from_db()
