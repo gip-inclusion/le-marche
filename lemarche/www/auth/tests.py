@@ -377,22 +377,13 @@ class SignupMeetingTestCase(TestCase):
             defaults={"title": "Numéro tel"},
         )
 
-    def test_magic_link_test_case(self):
-        """View should not redirect to meeting if the User is signing up
-        with the magic link"""
-        self.assertEqual(User.objects.count(), 0)
-
-        post_response = self.client.post(path=f"{reverse('account_signup')}?skip_meeting=true", data=self.form_data)
-        self.assertEqual(post_response.status_code, 302)
-        self.assertTrue(User.objects.get().is_onboarded)
-
     def test_meeting_redirect(self):
         """View should redirect to meeting"""
         self.assertEqual(User.objects.count(), 0)
 
         post_response = self.client.post(path=reverse("account_signup"), data=self.form_data)
         self.assertEqual(post_response.status_code, 302)
-        self.assertFalse(User.objects.get().is_onboarded)
+        self.assertFalse(User.objects.get().have_followed_onboarding)
         self.assertRedirects(post_response, reverse("auth:booking-meeting-view"))
 
 

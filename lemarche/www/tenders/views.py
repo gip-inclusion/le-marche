@@ -278,9 +278,6 @@ class TenderCreateMultiStepView(SessionWizardView):
         user = get_or_create_user(
             self.request.user, tender_dict=cleaned_data, source=user_constants.SOURCE_TENDER_FORM
         )
-        # User is considered as onboarded if it completes a Tender creation
-        user.is_onboarded = True
-        user.save(update_fields=["is_onboarded"])
         # when it's done we save the tender
         tender_dict = cleaned_data | {"author": user, "source": tender_constants.SOURCE_FORM}
         is_draft: bool = self.request.POST.get("is_draft", False)

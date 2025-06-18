@@ -37,10 +37,6 @@ class CustomSignupView(SuccessMessageMixin, SignupView):
     template_name = "account/signup.html"
     form_class = CustomSignupForm
 
-    def setup(self, request, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
-        self.skip_meeting = self.request.GET.get("skip_meeting", None)
-
     def get_success_message(self, cleaned_data):
         """Show detailed welcome message to SIAE."""
         success_message = super().get_success_message(cleaned_data)
@@ -74,7 +70,7 @@ class MeetingCalendarView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
 
     def test_func(self):
         """Do not display for already onboarded users"""
-        if self.request.user.is_onboarded:
+        if self.request.user.have_followed_onboarding:
             return False
         return True
 

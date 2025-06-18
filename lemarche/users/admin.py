@@ -254,7 +254,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             "brevo_contact_id",
             "extra_data_display",
             "onboard_user_button",
-            "display_signup_magic_link",
         ]
     )
 
@@ -265,7 +264,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
                 "fields": (
                     "email",
                     "password",
-                    "display_signup_magic_link",
                 )
             },
         ),
@@ -489,21 +487,16 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     extra_data_display.short_description = User._meta.get_field("extra_data").verbose_name
 
     def onboard_user_button(self, user):
-        if user.is_onboarded:
+        if user.have_followed_onboarding:
             return format_html('<img src="/static/admin/img/icon-yes.svg" alt="True">')
         else:
             return format_html(
                 f"<a class='button'"
                 f" href='{reverse('admin:onboard_user', args=[user.pk])}'>"
-                f"Finaliser l'onboarding</a>"
+                f"Confirmer que l'utilisateur a suivi la procédure d'onboarding</a>"
             )
 
     onboard_user_button.short_description = "L'utilisateur a suivi la procédure d'onboarding"
-
-    def display_signup_magic_link(self, user):
-        return format_html(f"<a target='_blank' href='{reverse('account_signup')}?skip_meeting=true'>Lien magique</a>")
-
-    display_signup_magic_link.short_description = "Lien magic pour l'inscription"
 
     @admin.action(description="Anonymiser les utilisateurs sélectionnés")
     def anonymize_users(self, request, queryset):
