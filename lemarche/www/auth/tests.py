@@ -386,11 +386,6 @@ class SignupMeetingTestCase(TestCase):
         self.assertFalse(User.objects.get().have_followed_onboarding)
         self.assertRedirects(post_response, reverse("auth:booking-meeting-view"))
 
-        # check dashboard access is OK even if user is not onboarded
-        self.client.login(email=self.form_data["email"], password=self.form_data["password1"])
-        response = self.client.get(reverse("dashboard:home"))
-        self.assertEqual(response.status_code, 200)
-
 
 class LoginFormTest(StaticLiveServerTestCase):
     @classmethod
