@@ -151,6 +151,13 @@ class BrevoBaseApiClient:
 
 class BrevoContactsApiClient(BrevoBaseApiClient):
 
+    def __init__(self):
+        """
+        Initialize the Brevo Contacts API client with the API key from settings.
+        """
+        super().__init__()
+        self.api_instance = sib_api_v3_sdk.ContactsApi(self.api_client)
+
     def _fetch_contacts_batch(self, config, max_retries, retry_delay):
         """
         Fetch a single batch of contacts with error handling
@@ -229,7 +236,6 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         Process a single batch of contacts
 
         Args:
-            api_instance: Brevo ContactsApi instance
             config: Configuration dictionary for contact fetching
 
         Raises:
@@ -309,8 +315,9 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         Returns:
             tuple: (list: List of contacts from the API response, int: Total count of contacts)
         """
-        api_instance = sib_api_v3_sdk.ContactsApi(self.api_client)
-        api_response = api_instance.get_contacts(limit=limit, offset=offset, modified_since=modified_since).to_dict()
+        api_response = self.api_instance.get_contacts(
+            limit=limit, offset=offset, modified_since=modified_since
+        ).to_dict()
         return api_response.get("contacts", []), api_response.get("count", 0)
 
     def _should_continue_pagination(self, contacts_count, current_limit, total_retrieved, limit_max):
@@ -374,8 +381,6 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
             logger.info(f"Contact {user.email} already exists in Brevo with ID: {user.brevo_contact_id}")
             return {"id": user.brevo_contact_id}
 
-        api_instance = sib_api_v3_sdk.ContactsApi(self.api_client)
-
         attributes: dict[str, str | None] = {
             "NOM": sanitize_to_send_by_email(user.last_name.capitalize()),
             "PRENOM": sanitize_to_send_by_email(user.first_name.capitalize()),
@@ -401,7 +406,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
 
         def _create_contact_operation():
             try:
-                api_response = api_instance.create_contact(new_contact).to_dict()
+                api_response = self.api_instance.create_contact(new_contact).to_dict()
                 logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response.get('id')}")
                 return api_response
             except ApiException as e:
@@ -500,11 +505,10 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When contact retrieval fails after all retries
         """
-        api_instance = sib_api_v3_sdk.ContactsApi(self.api_client)
 
         def _get_contact_operation():
             try:
-                response = api_instance.get_contact_info(email)
+                response = self.api_instance.get_contact_info(email)
                 return response.to_dict()
             except ApiException as e:
                 if e.status == 404:  # Contact not found
@@ -535,11 +539,10 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When contact update fails after all retries
         """
-        api_instance = sib_api_v3_sdk.ContactsApi(self.api_client)
         update_contact = sib_api_v3_sdk.UpdateContact(attributes=attributes_to_update)
 
         def _update_contact_operation():
-            api_response = api_instance.update_contact(identifier=user_identifier, update_contact=update_contact)
+            api_response = self.api_instance.update_contact(identifier=user_identifier, update_contact=update_contact)
             logger.info(f"Success Brevo->ContactsApi->update_contact: {api_response}")
             return api_response
 
@@ -569,11 +572,10 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When contact update fails after all retries
         """
-        api_instance = sib_api_v3_sdk.ContactsApi(self.api_client)
         update_contact = sib_api_v3_sdk.UpdateContact(email_blacklisted=email_blacklisted)
 
         def _update_contact_blacklist_operation():
-            api_response = api_instance.update_contact(identifier=user_identifier, update_contact=update_contact)
+            api_response = self.api_instance.update_contact(identifier=user_identifier, update_contact=update_contact)
             logger.info(f"Success Brevo->ContactsApi->update_contact to update email_blacklisted: {api_response}")
             return api_response
 
@@ -601,12 +603,13 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When contact removal fails after all retries
         """
-        api_instance = sib_api_v3_sdk.ContactsApi(self.api_client)
         contact_emails = sib_api_v3_sdk.RemoveContactFromList(emails=[user_email])
 
         def _remove_contact_operation():
             try:
-                api_response = api_instance.remove_contact_from_list(list_id=list_id, contact_emails=contact_emails)
+                api_response = self.api_instance.remove_contact_from_list(
+                    list_id=list_id, contact_emails=contact_emails
+                )
                 logger.info(f"Success Brevo->ContactsApi->remove_contact_from_list: {api_response}")
                 return api_response
             except ApiException as e:
@@ -643,7 +646,6 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When contact retrieval fails after all retries
         """
-        api_instance = sib_api_v3_sdk.ContactsApi(self.api_client)
         result = {}
         current_offset = offset
         is_finished = False
@@ -651,7 +653,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         while not is_finished:
 
             def _get_contacts_page_operation():
-                api_response = api_instance.get_contacts_from_list(
+                api_response = self.api_instance.get_contacts_from_list(
                     list_id=list_id, limit=limit, offset=current_offset
                 ).to_dict()
                 return api_response
@@ -685,6 +687,14 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
 
 
 class BrevoCompanyApiClient(BrevoBaseApiClient):
+
+    def __init__(self):
+        """
+        Initialize the Brevo Company API client with the API key from settings.
+        """
+        super().__init__()
+        self.api_instance = sib_api_v3_sdk.CompaniesApi(self.api_client)
+
     def create_or_update_company(self, siae, max_retries=3, retry_delay=5):
         """
         Create or update a company in Brevo CRM
@@ -697,7 +707,6 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When company synchronization fails after all retries
         """
-        self.api_instance = sib_api_v3_sdk.CompaniesApi(self.api_client)
 
         siae_brevo_company_body = sib_api_v3_sdk.Body(
             name=siae.name,
@@ -807,9 +816,6 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         Raises:
             ApiException: If an error occurs during the linking process in the Brevo API.
         """
-        api_client = get_api_client()
-        api_instance = sib_api_v3_sdk.CompaniesApi(api_client)
-
         if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
             try:
                 # get brevo ids
@@ -822,7 +828,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
                 if len(contact_list):
                     # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body2.md
                     body_link_company_contact = sib_api_v3_sdk.Body2(link_contact_ids=contact_list)
-                    api_instance.companies_link_unlink_id_patch(brevo_crm_company_id, body_link_company_contact)
+                    self.api_instance.companies_link_unlink_id_patch(brevo_crm_company_id, body_link_company_contact)
 
             except ApiException as e:
                 logger.error("Exception when calling Brevo->DealApi->companies_link_unlink_id_patch: %s\n" % e)
@@ -839,9 +845,6 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         Returns:
             bool: True if operation was successful, False otherwise
         """
-        api_client = get_api_client()
-        api_instance = sib_api_v3_sdk.CompaniesApi(api_client)
-
         company_brevo_body = sib_api_v3_sdk.Body(
             name=company.name,
             attributes={
@@ -871,9 +874,9 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         for attempt in range(max_retries):
             try:
                 if is_update:
-                    api_response = api_instance.companies_id_patch(company.brevo_company_id, company_brevo_body)
+                    api_response = self.api_instance.companies_id_patch(company.brevo_company_id, company_brevo_body)
                 else:
-                    api_response = api_instance.companies_post(company_brevo_body)
+                    api_response = self.api_instance.companies_post(company_brevo_body)
                     company.brevo_company_id = api_response.id
                     sync_log["brevo_company_id"] = company.brevo_company_id
 
@@ -929,6 +932,14 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
 
 
 class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
+
+    def __init__(self):
+        """
+        Initialize the Brevo Transactional Email API client with the API key from settings.
+        """
+        super().__init__()
+        self.api_instance = sib_api_v3_sdk.TransactionalEmailsApi(self.api_client)
+
     def send_transactional_email_with_template(
         self,
         template_id: int,
@@ -965,7 +976,6 @@ class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
             logger.info("Brevo: email not sent (DEV or TEST environment detected)")
             return {"message": "Email not sent in development/test environment"}
 
-        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(self.api_client)
         data = {
             "sender": {"email": from_email, "name": from_name},
             "to": [{"email": recipient_email, "name": recipient_name}],
@@ -978,7 +988,7 @@ class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
 
         def _send_email_operation():
             send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
-            response = api_instance.send_transac_email(send_smtp_email)
+            response = self.api_instance.send_transac_email(send_smtp_email)
             logger.info("Brevo: send transactional email with template")
             return response.to_dict()
 
