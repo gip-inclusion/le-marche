@@ -260,9 +260,9 @@ class BrevoApiTest(TestCase):
         # Should not raise any exception
         api_brevo.create_contact(self.user, list_id=1)
 
-    @patch("lemarche.utils.apis.api_brevo.get_contacts_by_email")
+    @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient.get_contact_by_email")
     @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_contact_duplicate_error_with_recovery(self, mock_get_api_client, mock_get_contacts):
+    def test_create_contact_duplicate_error_with_recovery(self, mock_get_api_client, mock_get_contact_by_email):
         """Test handling of duplicate contact error with successful ID recovery"""
         mock_api_instance = MagicMock()
         mock_client = MagicMock()
@@ -275,14 +275,14 @@ class BrevoApiTest(TestCase):
         mock_api_instance.create_contact.side_effect = duplicate_exception
 
         # Mock successful contact lookup
-        mock_get_contacts.return_value = {"id": 55555}
+        mock_get_contact_by_email.return_value = {"id": 55555}
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
             api_brevo.create_contact(self.user, list_id=1)
 
         self.user.refresh_from_db()
         self.assertEqual(self.user.brevo_contact_id, 55555)
-        mock_get_contacts.assert_called_once_with(self.user.email)
+        mock_get_contact_by_email.assert_called_once_with(self.user.email)
 
     @patch("lemarche.utils.apis.api_brevo.time.sleep")
     @patch("lemarche.utils.apis.api_brevo.get_api_client")
