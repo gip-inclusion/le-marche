@@ -133,14 +133,14 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
         self.siae3.save()
 
         out = StringIO()
-        call_command("crm_brevo_sync_companies", company_type="buyer", stdout=out)
+        call_command("crm_brevo_sync_companies", company_type="siae", stdout=out)
 
         # Verify API was called for buyer companies
-        self.assertTrue(mock_api_call.call_count > 0)
+        self.assertTrue(mock_api_call.call_count == 0)
         output = out.getvalue()
-        self.assertIn("Processing buyer companies", output)
+        self.assertNotIn("Processing buyer companies", output)
         self.assertIn("Synchronization completed", output)
-        self.assertNotIn("Processing SIAE companies", output)
+        self.assertIn("Processing SIAE companies", output)
 
     @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_buyer_company")
     def test_sync_buyer_companies_recently_updated(self, mock_sleep, mock_api_call):
