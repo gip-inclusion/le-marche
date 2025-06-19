@@ -10,6 +10,7 @@ from lemarche.siaes.factories import SiaeFactory
 from lemarche.tenders.factories import TenderFactory
 from lemarche.users.factories import UserFactory
 from lemarche.utils.apis import api_brevo
+from lemarche.utils.apis.brevo_attributes import CONTACT_ATTRIBUTES
 
 
 class BrevoContactsApiClientTest(TestCase):
@@ -253,9 +254,9 @@ class BrevoContactsApiClientTest(TestCase):
 
         # Verify that tender attributes were included in the call
         call_args = mock_api_instance.create_contact.call_args[0][0]
-        self.assertEqual(call_args.attributes["MONTANT_BESOIN_ACHETEUR"], 50000)
-        self.assertEqual(call_args.attributes["TYPE_BESOIN_ACHETEUR"], "PRESTA")
-        self.assertEqual(call_args.attributes["TYPE_VERTICALE_ACHETEUR"], "Informatique")
+        self.assertEqual(call_args.attributes[CONTACT_ATTRIBUTES["MONTANT_BESOIN_ACHETEUR"]], 50000)
+        self.assertEqual(call_args.attributes[CONTACT_ATTRIBUTES["TYPE_BESOIN_ACHETEUR"]], "PRESTA")
+        self.assertEqual(call_args.attributes[CONTACT_ATTRIBUTES["TYPE_VERTICALE_ACHETEUR"]], "Informatique")
 
     def test_create_contact_already_has_brevo_id(self):
         """Test contact creation when user already has Brevo ID"""
@@ -403,11 +404,11 @@ class BrevoContactsApiClientTest(TestCase):
 
         # Verify attributes
         attributes = call_args.attributes
-        self.assertEqual(attributes["NOM"], "Dupont")
-        self.assertEqual(attributes["PRENOM"], "Jean")
-        self.assertEqual(attributes["NOM_ENTREPRISE"], "Acme corp")
-        self.assertEqual(attributes["TYPE_ORGANISATION"], "ENTREPRISE")
-        self.assertEqual(attributes["SMS"], "+33123456789")
+        self.assertEqual(attributes[CONTACT_ATTRIBUTES["NOM"]], "Dupont")
+        self.assertEqual(attributes[CONTACT_ATTRIBUTES["PRENOM"]], "Jean")
+        self.assertEqual(attributes[CONTACT_ATTRIBUTES["NOM_ENTREPRISE"]], "Acme corp")
+        self.assertEqual(attributes[CONTACT_ATTRIBUTES["TYPE_ORGANISATION"]], "ENTREPRISE")
+        self.assertEqual(attributes[CONTACT_ATTRIBUTES["SMS"]], "+33123456789")
 
 
 class BrevoCompanyApiClientTest(TestCase):
