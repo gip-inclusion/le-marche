@@ -1031,27 +1031,6 @@ def get_api_client():
     return sib_api_v3_sdk.ApiClient(config)
 
 
-def create_or_update_company(siae, max_retries=3, retry_delay=5):
-    c = BrevoCompanyApiClient()
-    return c.create_or_update_company(siae, max_retries, retry_delay)
-
-
-def create_or_update_buyer_company(company, max_retries=3, retry_delay=5):
-    """
-    Creates or updates a buyer company in Brevo CRM
-
-    Args:
-        company: Company (buyer) object to synchronize with Brevo
-        max_retries (int): Maximum number of retry attempts in case of error
-        retry_delay (int): Delay in seconds between retry attempts
-
-    Returns:
-        bool: True if operation was successful, False otherwise
-    """
-    c = BrevoCompanyApiClient()
-    return c.create_or_update_buyer_company(company, max_retries, retry_delay)
-
-
 def create_deal(tender, owner_email: str):
     """
     Creates a new deal in Brevo CRM from a tender and logs the result.
@@ -1070,8 +1049,8 @@ def create_deal(tender, owner_email: str):
     Raises:
         ApiException: If the Brevo API encounters an error during deal creation.
     """
-    api_client = get_api_client()
-    api_instance = sib_api_v3_sdk.DealsApi(api_client)
+    c = BrevoBaseApiClient()
+    api_instance = sib_api_v3_sdk.DealsApi(c.api_client)
     body_deal = sib_api_v3_sdk.Body3(
         name=tender.title,
         attributes={
@@ -1149,6 +1128,7 @@ def send_transactional_email_with_template(
 ):
     """
     Send a transactional email using a Brevo template (Huey task)
+    Todo: remove this legacy function
 
     Args:
         template_id (int): The Brevo template ID
@@ -1172,163 +1152,3 @@ def send_transactional_email_with_template(
         from_email=from_email,
         from_name=from_name,
     )
-
-
-def get_all_contacts(
-    limit_max: int = None,
-    since_days: int = 30,
-    page_limit: int = 500,
-    max_retries: int = 3,
-    retry_delay: int = 5,
-):
-    """
-    Retrieves all contacts from Brevo, with pagination and error handling.
-
-    Args:
-        limit_max (int): Maximum number of contacts to retrieve. Defaults to None (no limit).
-        since_days (int): Number of days to look back for modified contacts. Defaults to 30.
-        page_limit (int): Number of contacts per page. Defaults to 500.
-        max_retries (int): Maximum number of retry attempts on failure. Defaults to 3.
-        retry_delay (int): Delay in seconds between retries. Defaults to 5.
-
-    Returns:
-        dict: Dictionary of contacts with email as key and ID as value.
-    """
-    c = BrevoContactsApiClient()
-    return c.get_all_contacts(
-        limit_max=limit_max,
-        since_days=since_days,
-        page_limit=page_limit,
-        max_retries=max_retries,
-        retry_delay=retry_delay,
-    )
-
-
-def create_contact(user, list_id: int, tender=None, max_retries=3, retry_delay=5):
-    """
-    Create or update a contact in Brevo using the new API client.
-
-    Args:
-        user: User object to send to Brevo
-        list_id (int): Brevo list ID to add the contact to
-        tender: Tender object associated with the user (optional)
-        max_retries (int): Maximum number of retry attempts in case of error
-        retry_delay (int): Delay in seconds between retry attempts
-
-    Returns:
-        dict: API response with contact ID if successful
-
-    Raises:
-        BrevoApiError: When contact creation fails after all retries
-    """
-    c = BrevoContactsApiClient()
-    api_response = c.create_contact(user, list_id, tender, max_retries, retry_delay)
-
-    # Update user with Brevo contact ID if not already set
-    if not user.brevo_contact_id and api_response.get("id"):
-        user.brevo_contact_id = api_response.get("id")
-        user.save(update_fields=["brevo_contact_id"])
-
-    return api_response
-
-
-def get_contacts_by_email(email: str, max_retries=3, retry_delay=5):
-    """
-    Retrieves Brevo contact by email address using the new API client.
-
-    Args:
-        email (str): Email address to search for
-        max_retries (int): Maximum number of retry attempts
-        retry_delay (int): Delay in seconds between retries
-
-    Returns:
-        dict: Contact information if found, empty dict otherwise
-    """
-    c = BrevoContactsApiClient()
-    return c.get_contact_by_email(email, max_retries, retry_delay)
-
-
-def update_contact(user_identifier: str, attributes_to_update: dict, max_retries=3, retry_delay=5):
-    """
-    Update a contact in Brevo using the new API client.
-
-    Args:
-        user_identifier (str): Contact identifier (email or ID)
-        attributes_to_update (dict): Attributes to update
-        max_retries (int): Maximum number of retry attempts
-        retry_delay (int): Delay in seconds between retry attempts
-
-    Returns:
-        dict: API response if successful
-    """
-    c = BrevoContactsApiClient()
-    return c.update_contact(user_identifier, attributes_to_update, max_retries, retry_delay)
-
-
-def update_contact_email_blacklisted(user_identifier: str, email_blacklisted: bool, max_retries=3, retry_delay=5):
-    """
-    Update the email blacklist status of a contact using the new API client.
-
-    Args:
-        user_identifier (str): Contact identifier (email or ID)
-        email_blacklisted (bool): Whether to blacklist the email
-        max_retries (int): Maximum number of retry attempts
-        retry_delay (int): Delay in seconds between retry attempts
-
-    Returns:
-        dict: API response if successful
-    """
-    c = BrevoContactsApiClient()
-    return c.update_contact_email_blacklisted(user_identifier, email_blacklisted, max_retries, retry_delay)
-
-
-def remove_contact_from_list(user_email: str, list_id: int, max_retries=3, retry_delay=5):
-    """
-    Remove a contact from a specific list using the new API client.
-
-    Args:
-        user_email (str): Email of the contact to remove
-        list_id (int): ID of the list to remove contact from
-        max_retries (int): Maximum number of retry attempts
-        retry_delay (int): Delay in seconds between retry attempts
-
-    Returns:
-        dict: API response if successful
-    """
-    c = BrevoContactsApiClient()
-    return c.remove_contact_from_list(user_email, list_id, max_retries, retry_delay)
-
-
-def get_all_users_from_list(
-    list_id: int = settings.BREVO_CL_SIGNUP_BUYER_ID, limit=500, offset=0, max_retries=3, retry_delay=5
-):
-    """
-    Fetches all users from a specified Brevo CRM list using the new API client.
-
-    Args:
-        list_id (int): ID of the list to fetch users from. Defaults to BREVO_CL_SIGNUP_BUYER_ID.
-        limit (int): Number of users to fetch per request. Defaults to 500.
-        offset (int): Initial offset for fetching users. Defaults to 0.
-        max_retries (int): Maximum number of retries on API failure. Defaults to 3.
-        retry_delay (int): Delay in seconds between retries. Defaults to 5.
-
-    Returns:
-        dict: Maps user emails to their IDs.
-    """
-    c = BrevoContactsApiClient()
-    return c.get_contacts_from_list(list_id, limit, offset, max_retries, retry_delay)
-
-
-def link_company_with_contact_list(brevo_company_id: int, contact_list: list):
-    """
-    Links a Brevo company to a list of contacts using the new API client.
-
-    Args:
-        brevo_company_id (int): The Brevo company ID to link contacts to.
-        contact_list (list of int): List of contact IDs to be linked with the company.
-
-    Raises:
-        ApiException: If an error occurs during the linking process in the Brevo API.
-    """
-    c = BrevoCompanyApiClient()
-    c.link_company_with_contact_list(brevo_company_id, contact_list)

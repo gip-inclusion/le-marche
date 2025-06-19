@@ -46,22 +46,22 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
         self.buyer_company5.updated_at = timezone.now() - timedelta(days=25)
         self.buyer_company5.save()
 
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_buyer_company")
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_company")
-    def test_sync_all_companies_success(self, mock_siae_api, mock_buyer_api, mock_sleep):
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.BrevoCompanyApiClient")
+    def test_sync_all_companies_success(self, mock_client_class, mock_sleep):
         """Test successful synchronization of all companies."""
+        mock_client = mock_client_class.return_value
 
         out = StringIO()
         call_command("crm_brevo_sync_companies", stdout=out)
 
         # Verify APIs were called
-        self.assertTrue(mock_siae_api.call_count > 0)
-        self.assertTrue(mock_buyer_api.call_count > 0)
+        self.assertTrue(mock_client.create_or_update_company.call_count > 0)
+        self.assertTrue(mock_client.create_or_update_buyer_company.call_count > 0)
         output = out.getvalue()
         self.assertIn("Synchronization completed", output)
 
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_company")
-    def test_sync_recently_updated_only(self, mock_sleep, mock_api_call):
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.BrevoCompanyApiClient")
+    def test_sync_recently_updated_only(self, mock_client_class, mock_sleep):
         """Test synchronization of only recently updated companies."""
 
         out = StringIO()
@@ -73,25 +73,25 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
         self.assertIn("Recently modified buyer companies", output)
         self.assertIn("Synchronization completed", output)
 
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_buyer_company")
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_company")
-    def test_dry_run_mode(self, mock_sleep, mock_buyer_api, mock_siae_api):
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.BrevoCompanyApiClient")
+    def test_dry_run_mode(self, mock_client_class, mock_sleep):
         """Test dry run mode doesn't make actual changes."""
+        mock_client = mock_client_class.return_value
+
         out = StringIO()
         call_command("crm_brevo_sync_companies", dry_run=True, stdout=out)
 
         # Verify APIs were not called in dry run mode
-        mock_siae_api.assert_not_called()
-        mock_buyer_api.assert_not_called()
+        mock_client.create_or_update_company.assert_not_called()
+        mock_client.create_or_update_buyer_company.assert_not_called()
         output = out.getvalue()
         self.assertIn("Simulation mode enabled", output)
 
-    @patch(
-        "lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_company",
-        side_effect=Exception("API Error"),
-    )
-    def test_api_error_handling(self, mock_sleep, mock_api_call):
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.BrevoCompanyApiClient")
+    def test_api_error_handling(self, mock_client_class, mock_sleep):
         """Test proper error handling when API calls fail."""
+        mock_client = mock_client_class.return_value
+        mock_client.create_or_update_company.side_effect = Exception("API Error")
 
         out = StringIO()
         call_command("crm_brevo_sync_companies", stdout=out)
@@ -100,12 +100,12 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
         self.assertIn("Error processing", output)
         self.assertIn("Errors:", output)
 
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_buyer_company")
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_company")
-    def test_extra_data_update(self, mock_sleep, mock_buyer_api, mock_siae_api):
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.BrevoCompanyApiClient")
+    def test_extra_data_update(self, mock_client_class, mock_sleep):
         """Test that extra_data is properly updated with new statistics."""
-        mock_siae_api.return_value = None
-        mock_buyer_api.return_value = None
+        mock_client = mock_client_class.return_value
+        mock_client.create_or_update_company.return_value = None
+        mock_client.create_or_update_buyer_company.return_value = None
 
         # Set initial extra_data
         self.siae1.extra_data = {"brevo_company_data": {"completion_rate": 75}}
@@ -120,32 +120,39 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
         # Only test for completion_rate as it's the only one that gets updated by default
         self.assertIn("completion_rate", brevo_data)
 
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_company")
-    def test_skip_unchanged_data(self, mock_sleep, mock_api_call):
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.BrevoCompanyApiClient")
+    def test_skip_unchanged_data(self, mock_client_class, mock_sleep):
         """Test that SIAEs with unchanged data are skipped."""
-        self.siae3.extra_data = {
-            "brevo_company_data": {
-                "completion_rate": None,
-                "tender_received": 0,
-                "tender_interest": 0,
+        mock_client = mock_client_class.return_value
+
+        # Give all SIAEs brevo_company_ids and set their extra_data to match
+        # what _prepare_siae_extra_data would calculate for SIAEs with no stats
+        for siae in [self.siae1, self.siae2, self.siae3, self.siae4, self.siae5]:
+            siae.brevo_company_id = 100 + siae.id
+            siae.extra_data = {
+                "brevo_company_data": {
+                    "completion_rate": 0,  # Default for None completion_rate
+                    "tender_received": 0,  # No annotated stats
+                    "tender_interest": 0,  # No annotated stats
+                }
             }
-        }
-        self.siae3.save()
+            siae.save()
 
         out = StringIO()
         call_command("crm_brevo_sync_companies", company_type="siae", stdout=out)
 
-        # Verify API was called for buyer companies
-        self.assertTrue(mock_api_call.call_count == 0)
+        # Verify API was not called because data didn't change
+        self.assertEqual(mock_client.create_or_update_company.call_count, 0)
         output = out.getvalue()
         self.assertNotIn("Processing buyer companies", output)
         self.assertIn("Synchronization completed", output)
         self.assertIn("Processing SIAE companies", output)
 
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_buyer_company")
-    def test_sync_buyer_companies_recently_updated(self, mock_sleep, mock_api_call):
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.BrevoCompanyApiClient")
+    def test_sync_buyer_companies_recently_updated(self, mock_client_class, mock_sleep):
         """Test synchronization of only recently updated buyer companies."""
-        mock_api_call.return_value = None
+        mock_client = mock_client_class.return_value
+        mock_client.create_or_update_buyer_company.return_value = None
 
         out = StringIO()
         call_command("crm_brevo_sync_companies", company_type="buyer", recently_updated=True, stdout=out)
@@ -155,22 +162,25 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
         self.assertIn("Processing buyer companies", output)
         self.assertIn("Synchronization completed", output)
 
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_buyer_company")
-    def test_sync_buyer_companies_dry_run(self, mock_sleep, mock_api_call):
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.BrevoCompanyApiClient")
+    def test_sync_buyer_companies_dry_run(self, mock_client_class, mock_sleep):
         """Test dry run mode for buyer companies."""
+        mock_client = mock_client_class.return_value
+
         out = StringIO()
         call_command("crm_brevo_sync_companies", company_type="buyer", dry_run=True, stdout=out)
 
         # Verify API was not called in dry run mode
-        mock_api_call.assert_not_called()
+        mock_client.create_or_update_buyer_company.assert_not_called()
         output = out.getvalue()
         self.assertIn("Simulation mode enabled", output)
         self.assertIn("Processing buyer companies", output)
 
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_buyer_company")
-    def test_buyer_companies_api_error_handling(self, mock_api_call, mock_sleep):
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.BrevoCompanyApiClient")
+    def test_buyer_companies_api_error_handling(self, mock_client_class, mock_sleep):
         """Test proper error handling when buyer company API calls fail."""
-        mock_api_call.side_effect = Exception("Buyer API Error")
+        mock_client = mock_client_class.return_value
+        mock_client.create_or_update_buyer_company.side_effect = Exception("Buyer API Error")
 
         out = StringIO()
         call_command("crm_brevo_sync_companies", company_type="buyer", stdout=out)
@@ -179,10 +189,11 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
         self.assertIn("Error processing buyer company", output)
         self.assertIn("Errors:", output)
 
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_buyer_company")
-    def test_buyer_companies_extra_data_update(self, mock_sleep, mock_api_call):
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.BrevoCompanyApiClient")
+    def test_buyer_companies_extra_data_update(self, mock_client_class, mock_sleep):
         """Test that buyer company extra_data is properly updated with statistics."""
-        mock_api_call.return_value = None
+        mock_client = mock_client_class.return_value
+        mock_client.create_or_update_buyer_company.return_value = None
 
         # Set initial extra_data
         self.buyer_company1.extra_data = {"brevo_company_data": {"user_count": 5}}
@@ -198,28 +209,27 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
         self.assertIn("user_count", brevo_data)
         self.assertIn("tender_count", brevo_data)
 
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_buyer_company")
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_company")
-    def test_sync_all_company_types(self, mock_siae_api, mock_buyer_api, mock_sleep):
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.BrevoCompanyApiClient")
+    def test_sync_all_company_types(self, mock_client_class, mock_sleep):
         """Test synchronization of both SIAE and buyer companies."""
-        mock_buyer_api.return_value = None
-        mock_siae_api.return_value = None
+        mock_client = mock_client_class.return_value
+        mock_client.create_or_update_buyer_company.return_value = None
+        mock_client.create_or_update_company.return_value = None
 
         out = StringIO()
         call_command("crm_brevo_sync_companies", company_type="all", stdout=out)
 
         # Verify both APIs were called
-        self.assertTrue(mock_siae_api.call_count > 0)
-        self.assertTrue(mock_buyer_api.call_count > 0)
+        self.assertTrue(mock_client.create_or_update_company.call_count > 0)
+        self.assertTrue(mock_client.create_or_update_buyer_company.call_count > 0)
 
         output = out.getvalue()
         self.assertIn("Processing SIAE companies", output)
         self.assertIn("Processing buyer companies", output)
         self.assertIn("Synchronization completed", output)
 
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_buyer_company")
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_company")
-    def test_command_arguments(self, mock_sleep, mock_buyer_api, mock_siae_api):
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.BrevoCompanyApiClient")
+    def test_command_arguments(self, mock_client_class, mock_sleep):
         """Test that command line arguments are properly parsed."""
         command = Command()
         parser = command.create_parser("test", "crm_brevo_sync_companies")
@@ -231,9 +241,8 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
         self.assertEqual(options.max_retries, 5)
         self.assertTrue(options.dry_run)
 
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_buyer_company")
-    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.create_or_update_company")
-    def test_company_type_argument_validation(self, mock_sleep, mock_buyer_api, mock_siae_api):
+    @patch("lemarche.crm.management.commands.crm_brevo_sync_companies.api_brevo.BrevoCompanyApiClient")
+    def test_company_type_argument_validation(self, mock_client_class, mock_sleep):
         """Test that company_type argument accepts valid choices."""
         command = Command()
         parser = command.create_parser("test", "crm_brevo_sync_companies")

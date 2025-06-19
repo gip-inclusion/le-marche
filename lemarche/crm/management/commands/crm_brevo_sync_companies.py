@@ -173,7 +173,8 @@ class Command(BaseCommand):
         """Synchronize SIAE with Brevo if needed."""
         if not siae.brevo_company_id or extra_data_changed:
             if not dry_run:
-                api_brevo.create_or_update_company(siae, max_retries=max_retries, retry_delay=5)
+                c = api_brevo.BrevoCompanyApiClient()
+                c.create_or_update_company(siae, max_retries, 5)
 
             if siae.brevo_company_id:
                 self.stats["updated"] += 1
@@ -243,7 +244,8 @@ class Command(BaseCommand):
         """Synchronize buyer company with Brevo if needed."""
         if not company.brevo_company_id or extra_data_changed:
             if not dry_run:
-                api_brevo.create_or_update_buyer_company(company, max_retries=max_retries, retry_delay=5)
+                c = api_brevo.BrevoCompanyApiClient()
+                c.create_or_update_buyer_company(company, max_retries, 5)
 
             if company.brevo_company_id:
                 self.stats["updated"] += 1
