@@ -505,7 +505,7 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertEqual(attributes["description"], "Une SIAE de test")
         self.assertEqual(attributes["kind"], "EI")
         self.assertEqual(attributes["address_street"], "123 Rue Test")
-        self.assertEqual(attributes["address_post_code"], "75001")
+        self.assertEqual(attributes["postal_code"], "75001")  # Corrected from address_post_code
         self.assertEqual(attributes["address_city"], "Paris")
         self.assertEqual(attributes["contact_email"], "contact@test.com")
 
@@ -667,7 +667,7 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertEqual(attributes["description"], "Une entreprise acheteuse")
         self.assertEqual(attributes["kind"], "BUYER")
         self.assertEqual(attributes["siret"], "12345678901234")
-        self.assertEqual(attributes["nombre_utilisateurs"], 5)
+        self.assertEqual(attributes["nombre_d_utilisateurs"], 5)  # Corrected from nombre_utilisateurs
         self.assertEqual(attributes["nombre_besoins"], 3)
 
     @patch("lemarche.utils.apis.api_brevo.get_api_client")
