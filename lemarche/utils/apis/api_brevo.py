@@ -11,7 +11,8 @@ from huey.contrib.djhuey import task
 from sib_api_v3_sdk import ApiClient, Configuration
 from sib_api_v3_sdk.rest import ApiException
 
-from lemarche.tenders.enums import TenderSourcesChoices
+from lemarche.tenders import constants as tender_constants
+from lemarche.utils.apis.brevo_attributes import BUYER_COMPANY_ATTRIBUTES, CONTACT_ATTRIBUTES, SIAE_COMPANY_ATTRIBUTES
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 from lemarche.utils.data import sanitize_to_send_by_email
 from lemarche.utils.urls import get_object_admin_url, get_object_share_url
@@ -245,15 +246,15 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
             return {"id": user.brevo_contact_id}
 
         attributes: dict[str, str | None] = {
-            "NOM": sanitize_to_send_by_email(user.last_name.capitalize()),
-            "PRENOM": sanitize_to_send_by_email(user.first_name.capitalize()),
-            "DATE_INSCRIPTION": user.created_at,
-            "TYPE_ORGANISATION": user.buyer_kind_detail,
-            "NOM_ENTREPRISE": sanitize_to_send_by_email(user.company_name.capitalize()),
-            "SMS": sanitize_to_send_by_email(user.phone_display),
-            "MONTANT_BESOIN_ACHETEUR": None,
-            "TYPE_BESOIN_ACHETEUR": None,
-            "TYPE_VERTICALE_ACHETEUR": None,
+            CONTACT_ATTRIBUTES["NOM"]: sanitize_to_send_by_email(user.last_name.capitalize()),
+            CONTACT_ATTRIBUTES["PRENOM"]: sanitize_to_send_by_email(user.first_name.capitalize()),
+            CONTACT_ATTRIBUTES["DATE_INSCRIPTION"]: user.created_at,
+            CONTACT_ATTRIBUTES["TYPE_ORGANISATION"]: user.buyer_kind_detail,
+            CONTACT_ATTRIBUTES["NOM_ENTREPRISE"]: sanitize_to_send_by_email(user.company_name.capitalize()),
+            CONTACT_ATTRIBUTES["SMS"]: sanitize_to_send_by_email(user.phone_display),
+            CONTACT_ATTRIBUTES["MONTANT_BESOIN_ACHETEUR"]: None,
+            CONTACT_ATTRIBUTES["TYPE_BESOIN_ACHETEUR"]: None,
+            CONTACT_ATTRIBUTES["TYPE_VERTICALE_ACHETEUR"]: None,
         }
 
         if tender:
@@ -626,15 +627,15 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         try:
             first_sector = tender.sectors.first()
             attributes = {
-                "MONTANT_BESOIN_ACHETEUR": tender.amount_int,
-                "TYPE_BESOIN_ACHETEUR": tender.kind,
+                CONTACT_ATTRIBUTES["MONTANT_BESOIN_ACHETEUR"]: tender.amount_int,
+                CONTACT_ATTRIBUTES["TYPE_BESOIN_ACHETEUR"]: tender.kind,
             }
 
             # Check if there is one sector whose tender source is TALLY
             if tender.source == tender_constants.SOURCE_TALLY and first_sector:
-                attributes["TYPE_VERTICALE_ACHETEUR"] = first_sector.name
+                attributes[CONTACT_ATTRIBUTES["TYPE_VERTICALE_ACHETEUR"]] = first_sector.name
             else:
-                attributes["TYPE_VERTICALE_ACHETEUR"] = None
+                attributes[CONTACT_ATTRIBUTES["TYPE_VERTICALE_ACHETEUR"]] = None
 
             return attributes
 
@@ -714,24 +715,30 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
             attributes={
                 # default attributes
                 # name, owner, linked_contacts, revenue, number_of_employees, created_at, last_updated_at, next_activity_date, owner_assign_date, number_of_contacts, number_of_activities, industry  # noqa
-                "domain": siae.website,
-                "phone_number": siae.contact_phone_display,
+                SIAE_COMPANY_ATTRIBUTES["domain"]: siae.website,
+                SIAE_COMPANY_ATTRIBUTES["phone_number"]: siae.contact_phone_display,
                 # custom attributes
-                "app_id": siae.id,
-                "siae": True,
-                "active": siae.is_active,
-                "description": siae.description,
-                "kind": siae.kind,
-                "address_street": siae.address,
-                "address_post_code": siae.post_code,
-                "address_city": siae.city,
-                "contact_email": siae.contact_email,
-                "logo_url": siae.logo_url,
-                "app_url": get_object_share_url(siae),
-                "app_admin_url": get_object_admin_url(siae),
-                "taux_de_completion": siae.extra_data.get("brevo_company_data", {}).get("completion_rate"),
-                "nombre_de_besoins_recus": siae.extra_data.get("brevo_company_data", {}).get("tender_received"),
-                "nombre_de_besoins_interesses": siae.extra_data.get("brevo_company_data", {}).get("tender_interest"),
+                SIAE_COMPANY_ATTRIBUTES["app_id"]: siae.id,
+                SIAE_COMPANY_ATTRIBUTES["siae"]: True,
+                SIAE_COMPANY_ATTRIBUTES["active"]: siae.is_active,
+                SIAE_COMPANY_ATTRIBUTES["description"]: siae.description,
+                SIAE_COMPANY_ATTRIBUTES["kind"]: siae.kind,
+                SIAE_COMPANY_ATTRIBUTES["address_street"]: siae.address,
+                SIAE_COMPANY_ATTRIBUTES["postal_code"]: siae.post_code,
+                SIAE_COMPANY_ATTRIBUTES["address_city"]: siae.city,
+                SIAE_COMPANY_ATTRIBUTES["contact_email"]: siae.contact_email,
+                SIAE_COMPANY_ATTRIBUTES["logo_url"]: siae.logo_url,
+                SIAE_COMPANY_ATTRIBUTES["app_url"]: get_object_share_url(siae),
+                SIAE_COMPANY_ATTRIBUTES["app_admin_url"]: get_object_admin_url(siae),
+                SIAE_COMPANY_ATTRIBUTES["taux_de_completion"]: (
+                    siae.extra_data.get("brevo_company_data", {}).get("completion_rate")
+                ),
+                SIAE_COMPANY_ATTRIBUTES["nombre_de_besoins_recus"]: (
+                    siae.extra_data.get("brevo_company_data", {}).get("tender_received")
+                ),
+                SIAE_COMPANY_ATTRIBUTES["nombre_de_besoins_interesses"]: (
+                    siae.extra_data.get("brevo_company_data", {}).get("tender_interest")
+                ),
             },
         )
 
@@ -783,18 +790,24 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
             name=company.name,
             attributes={
                 # default attributes
-                "domain": company.website,
-                "phone_number": "",  # Company model doesn't have phone
+                BUYER_COMPANY_ATTRIBUTES["domain"]: company.website,
+                BUYER_COMPANY_ATTRIBUTES["phone_number"]: "",  # Company model doesn't have phone
                 # custom attributes
-                "app_id": company.id,
-                "siae": False,  # This is a buyer company, not SIAE
-                "description": company.description,
-                "kind": "BUYER",  # Distinguish from SIAE
-                "siret": company.siret,
-                "app_admin_url": get_object_admin_url(company),
-                "nombre_utilisateurs": company.extra_data.get("brevo_company_data", {}).get("user_count"),
-                "nombre_besoins": company.extra_data.get("brevo_company_data", {}).get("user_tender_count"),
-                "email_domains": ",".join(company.email_domain_list) if company.email_domain_list else "",
+                BUYER_COMPANY_ATTRIBUTES["app_id"]: company.id,
+                BUYER_COMPANY_ATTRIBUTES["siae"]: False,  # This is a buyer company, not SIAE
+                BUYER_COMPANY_ATTRIBUTES["description"]: company.description,
+                BUYER_COMPANY_ATTRIBUTES["kind"]: "BUYER",  # Distinguish from SIAE
+                BUYER_COMPANY_ATTRIBUTES["siret"]: company.siret,
+                BUYER_COMPANY_ATTRIBUTES["app_admin_url"]: get_object_admin_url(company),
+                BUYER_COMPANY_ATTRIBUTES["nombre_d_utilisateurs"]: (
+                    company.extra_data.get("brevo_company_data", {}).get("user_count")
+                ),
+                BUYER_COMPANY_ATTRIBUTES["nombre_besoins"]: (
+                    company.extra_data.get("brevo_company_data", {}).get("user_tender_count")
+                ),
+                BUYER_COMPANY_ATTRIBUTES["domaines_email"]: (
+                    ",".join(company.email_domain_list) if company.email_domain_list else ""
+                ),
             },
         )
 
