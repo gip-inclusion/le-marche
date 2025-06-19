@@ -71,8 +71,10 @@ class BrevoContactsApiClientTest(TestCase):
         mock_api_instance.get_contacts.side_effect = [mock_response_page1, mock_response_page2]
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            client = api_brevo.BrevoContactsApiClient()
-            result = client.get_all_contacts(page_limit=5)
+            # Use custom config with small page limit for testing pagination
+            config = api_brevo.BrevoConfig(default_page_limit=5)
+            client = api_brevo.BrevoContactsApiClient(config)
+            result = client.get_all_contacts()
 
         # Verify that all contacts were retrieved
         self.assertEqual(len(result), 8)
@@ -121,8 +123,10 @@ class BrevoContactsApiClientTest(TestCase):
         mock_api_instance.get_contacts.side_effect = [ApiException(status=500, reason="Server Error"), mock_response]
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            client = api_brevo.BrevoContactsApiClient()
-            result = client.get_all_contacts(max_retries=2)
+            # Use custom config with fewer retries for testing
+            config = api_brevo.BrevoConfig(max_retries=2)
+            client = api_brevo.BrevoContactsApiClient(config)
+            result = client.get_all_contacts()
 
         self.assertEqual(len(result), 1)
         self.assertEqual(mock_api_instance.get_contacts.call_count, 2)
@@ -140,8 +144,10 @@ class BrevoContactsApiClientTest(TestCase):
         mock_api_instance.get_contacts.side_effect = ApiException(status=500, reason="Server Error")
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            client = api_brevo.BrevoContactsApiClient()
-            result = client.get_all_contacts(max_retries=2)
+            # Use custom config with fewer retries for testing
+            config = api_brevo.BrevoConfig(max_retries=2)
+            client = api_brevo.BrevoContactsApiClient(config)
+            result = client.get_all_contacts()
 
         self.assertEqual(result, {})
         self.assertEqual(mock_api_instance.get_contacts.call_count, 3)  # Initial call + 2 retries
@@ -306,8 +312,10 @@ class BrevoContactsApiClientTest(TestCase):
         mock_api_instance.create_contact.side_effect = [rate_limit_exception, mock_response]
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            c = api_brevo.BrevoContactsApiClient()
-            response = c.create_contact(self.user, list_id=1, max_retries=2)
+            # Use custom config with fewer retries for testing
+            config = api_brevo.BrevoConfig(max_retries=2)
+            c = api_brevo.BrevoContactsApiClient(config)
+            response = c.create_contact(self.user, list_id=1)
 
         # The user's brevo_contact_id should not be automatically updated
         self.user.refresh_from_db()
@@ -332,8 +340,10 @@ class BrevoContactsApiClientTest(TestCase):
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
             with self.assertRaises(api_brevo.BrevoApiError):
-                c = api_brevo.BrevoContactsApiClient()
-                c.create_contact(self.user, list_id=1, max_retries=2)
+                # Use custom config with fewer retries for testing
+                config = api_brevo.BrevoConfig(max_retries=2)
+                c = api_brevo.BrevoContactsApiClient(config)
+                c.create_contact(self.user, list_id=1)
 
         self.user.refresh_from_db()
         self.assertIsNone(self.user.brevo_contact_id)
@@ -354,8 +364,10 @@ class BrevoContactsApiClientTest(TestCase):
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
             with self.assertRaises(api_brevo.BrevoApiError):
-                c = api_brevo.BrevoContactsApiClient()
-                c.create_contact(self.user, list_id=1, max_retries=1)
+                # Use custom config with fewer retries for testing
+                config = api_brevo.BrevoConfig(max_retries=1)
+                c = api_brevo.BrevoContactsApiClient(config)
+                c.create_contact(self.user, list_id=1)
 
         self.user.refresh_from_db()
         self.assertIsNone(self.user.brevo_contact_id)
@@ -542,8 +554,10 @@ class BrevoCompanyApiClientTest(TestCase):
         mock_api_instance.companies_post.side_effect = [server_error, mock_response]
 
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
-            client = api_brevo.BrevoCompanyApiClient()
-            client.create_or_update_company(self.siae, max_retries=2)
+            # Use custom config with fewer retries for testing
+            config = api_brevo.BrevoConfig(max_retries=2)
+            client = api_brevo.BrevoCompanyApiClient(config)
+            client.create_or_update_company(self.siae)
 
         self.siae.refresh_from_db()
         self.assertEqual(self.siae.brevo_company_id, "12345")
@@ -565,8 +579,10 @@ class BrevoCompanyApiClientTest(TestCase):
 
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
             with self.assertRaises(api_brevo.BrevoApiError):
-                client = api_brevo.BrevoCompanyApiClient()
-                client.create_or_update_company(self.siae, max_retries=2)
+                # Use custom config with fewer retries for testing
+                config = api_brevo.BrevoConfig(max_retries=2)
+                client = api_brevo.BrevoCompanyApiClient(config)
+                client.create_or_update_company(self.siae)
 
         self.siae.refresh_from_db()
         self.assertIsNone(self.siae.brevo_company_id)
@@ -695,8 +711,10 @@ class BrevoCompanyApiClientTest(TestCase):
         mock_api_instance.companies_post.side_effect = server_error
 
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
-            client = api_brevo.BrevoCompanyApiClient()
-            result = client.create_or_update_buyer_company(self.company, max_retries=1)
+            # Use custom config with fewer retries for testing
+            config = api_brevo.BrevoConfig(max_retries=1)
+            client = api_brevo.BrevoCompanyApiClient(config)
+            result = client.create_or_update_buyer_company(self.company)
 
         self.assertFalse(result)
         self.company.refresh_from_db()
