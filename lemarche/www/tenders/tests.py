@@ -1729,6 +1729,7 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
         self.assertContains(response, "Votre réponse a déjà été prise en compte")
         self.assertEqual(t.survey_transactioned_answer, constants.YES)
         self.assertTrue(t.siae_transactioned)
+        self.assertIsNotNone(t.siae_transactioned_last_updated)
 
     def test_update_tender_stats_on_tender_survey_transactioned_answer_false(self):
         # load with answer False: partial form
@@ -1738,6 +1739,7 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
         t = Tender.objects.get(id=self.tender.id)
         self.assertEqual(t.survey_transactioned_answer, constants.NO)
         self.assertFalse(t.siae_transactioned)
+        self.assertIsNotNone(t.siae_transactioned_last_updated)
         # fill in form
         response = self.client.post(url, data={"survey_transactioned_feedback": "Feedback"}, follow=True)
         self.assertEqual(response.status_code, 200)  # redirect
@@ -1764,6 +1766,7 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
         t = Tender.objects.get(id=self.tender.id)
         self.assertEqual(t.survey_transactioned_answer, constants.DONT_KNOW)
         self.assertIsNone(t.siae_transactioned)
+        self.assertIsNone(t.siae_transactioned_last_updated)
         # fill in form
         response = self.client.post(url, data={"survey_transactioned_feedback": "Feedback"}, follow=True)
         self.assertEqual(response.status_code, 200)  # redirect
