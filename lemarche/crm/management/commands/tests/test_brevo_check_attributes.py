@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 from django.core.management import call_command
 from django.test import TestCase
 
-from lemarche.utils.apis.brevo_attributes import ALL_CONTACT_ATTRIBUTES
+from lemarche.utils.apis.brevo_attributes import ALL_COMPANY_ATTRIBUTES, ALL_CONTACT_ATTRIBUTES
 
 
 class BrevoCheckAttributesCommandTest(TestCase):
@@ -26,8 +26,8 @@ class BrevoCheckAttributesCommandTest(TestCase):
         call_command("brevo_check_attributes", entity="contacts", dry_run=True, stdout=out)
 
         output = out.getvalue()
-        self.assertIn("Aucun attribut manquant ✅", output)
-        self.assertIn("VÉRIFICATION DES ATTRIBUTS CONTACTS", output)
+        self.assertIn("No missing attributes ✅", output)
+        self.assertIn("CONTACT ATTRIBUTES VERIFICATION", output)
 
     @patch("lemarche.crm.management.commands.brevo_check_attributes.api_brevo.BrevoBaseApiClient")
     @patch("lemarche.crm.management.commands.brevo_check_attributes.sib_api_v3_sdk.ContactsApi")
@@ -51,7 +51,7 @@ class BrevoCheckAttributesCommandTest(TestCase):
         call_command("brevo_check_attributes", entity="contacts", dry_run=True, stdout=out)
 
         output = out.getvalue()
-        self.assertIn("Attributs manquants", output)
+        self.assertIn("Missing attributes", output)
         self.assertIn("DATE_INSCRIPTION", output)
         self.assertIn("TYPE_ORGANISATION", output)
 
@@ -63,40 +63,16 @@ class BrevoCheckAttributesCommandTest(TestCase):
         mock_api_instance = MagicMock()
         mock_companies_api_class.return_value = mock_api_instance
 
-        mock_response = MagicMock()
-        mock_response.to_dict.return_value = {
-            "attributes": [
-                {"name": "domain"},
-                {"name": "phone_number"},
-                {"name": "app_id"},
-                {"name": "siae"},
-                {"name": "active"},
-                {"name": "description"},
-                {"name": "kind"},
-                {"name": "address_street"},
-                {"name": "address_post_code"},
-                {"name": "address_city"},
-                {"name": "contact_email"},
-                {"name": "logo_url"},
-                {"name": "app_url"},
-                {"name": "app_admin_url"},
-                {"name": "taux_de_completion"},
-                {"name": "nombre_de_besoins_recus"},
-                {"name": "nombre_de_besoins_interesses"},
-                {"name": "siret"},
-                {"name": "nombre_utilisateurs"},
-                {"name": "nombre_besoins"},
-                {"name": "email_domains"},
-            ]
-        }
+        # companies_attributes_get() returns directly a list, not a dict with to_dict()
+        mock_response = [{"internalName": attr} for attr in ALL_COMPANY_ATTRIBUTES]
         mock_api_instance.companies_attributes_get.return_value = mock_response
 
         out = StringIO()
         call_command("brevo_check_attributes", entity="companies", dry_run=True, stdout=out)
 
         output = out.getvalue()
-        self.assertIn("Aucun attribut manquant ✅", output)
-        self.assertIn("VÉRIFICATION DES ATTRIBUTS ENTREPRISES", output)
+        self.assertIn("No missing attributes ✅", output)
+        self.assertIn("COMPANY ATTRIBUTES VERIFICATION", output)
 
     @patch("lemarche.crm.management.commands.brevo_check_attributes.api_brevo.BrevoBaseApiClient")
     @patch("lemarche.crm.management.commands.brevo_check_attributes.sib_api_v3_sdk.CompaniesApi")
@@ -106,21 +82,19 @@ class BrevoCheckAttributesCommandTest(TestCase):
         mock_api_instance = MagicMock()
         mock_companies_api_class.return_value = mock_api_instance
 
-        mock_response = MagicMock()
-        mock_response.to_dict.return_value = {
-            "attributes": [
-                {"name": "domain"},
-                {"name": "phone_number"},
-                # Missing other expected attributes
-            ]
-        }
+        # companies_attributes_get() returns directly a list, not a dict with to_dict()
+        mock_response = [
+            {"internalName": "domain"},
+            {"internalName": "phone_number"},
+            # Missing other expected attributes
+        ]
         mock_api_instance.companies_attributes_get.return_value = mock_response
 
         out = StringIO()
         call_command("brevo_check_attributes", entity="companies", dry_run=True, stdout=out)
 
         output = out.getvalue()
-        self.assertIn("Attributs manquants", output)
+        self.assertIn("Missing attributes", output)
         self.assertIn("app_id", output)
         self.assertIn("siae", output)
 
@@ -145,7 +119,7 @@ class BrevoCheckAttributesCommandTest(TestCase):
         call_command("brevo_check_attributes", entity="contacts", create_missing=True, dry_run=True, stdout=out)
 
         output = out.getvalue()
-        self.assertIn("Mode simulation - les attributs suivants seraient créés", output)
+        self.assertIn("Simulation mode - the following attributes would be created:", output)
         self.assertIn("DATE_INSCRIPTION", output)
         # Should not actually call create_attribute in dry run mode
         mock_api_instance.create_attribute.assert_not_called()
@@ -171,8 +145,8 @@ class BrevoCheckAttributesCommandTest(TestCase):
         call_command("brevo_check_attributes", entity="contacts", create_missing=True, dry_run=False, stdout=out)
 
         output = out.getvalue()
-        self.assertIn("Création des attributs contacts manquants", output)
-        self.assertIn("✅ Attribut créé", output)
+        self.assertIn("Creating missing contact attributes", output)
+        self.assertIn("✅ Attribute created", output)
 
     def test_check_all_entities(self):
         """Test checking both contacts and companies"""
@@ -190,17 +164,24 @@ class BrevoCheckAttributesCommandTest(TestCase):
             for mock_api_class in [mock_contacts, mock_companies]:
                 mock_api_instance = MagicMock()
                 mock_api_class.return_value = mock_api_instance
-                mock_response = MagicMock()
-                mock_response.to_dict.return_value = {"attributes": []}
-                mock_api_instance.get_attributes.return_value = mock_response
-                mock_api_instance.companies_attributes_get.return_value = mock_response
+
+                # Different response structures for contacts vs companies
+                if mock_api_class == mock_contacts:
+                    # Contacts API returns object with to_dict()
+                    mock_response = MagicMock()
+                    mock_response.to_dict.return_value = {"attributes": []}
+                    mock_api_instance.get_attributes.return_value = mock_response
+                else:
+                    # Companies API returns list directly
+                    mock_response = []
+                    mock_api_instance.companies_attributes_get.return_value = mock_response
 
             out = StringIO()
             call_command("brevo_check_attributes", entity="all", dry_run=True, stdout=out)
 
             output = out.getvalue()
-            self.assertIn("VÉRIFICATION DES ATTRIBUTS CONTACTS", output)
-            self.assertIn("VÉRIFICATION DES ATTRIBUTS ENTREPRISES", output)
+            self.assertIn("CONTACT ATTRIBUTES VERIFICATION", output)
+            self.assertIn("COMPANY ATTRIBUTES VERIFICATION", output)
 
     def test_command_arguments(self):
         """Test command argument parsing"""
