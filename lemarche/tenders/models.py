@@ -754,7 +754,7 @@ class Tender(models.Model):
         """
         for field_name in self.TRACK_UPDATE_FIELDS:
             previous_field_name = f"__previous_{field_name}"
-            if getattr(self, field_name) and getattr(self, field_name) != getattr(self, previous_field_name):
+            if getattr(self, field_name) != getattr(self, previous_field_name):
                 try:
                     setattr(self, f"{field_name}_last_updated", timezone.now())
                 except AttributeError:  # TRACK_UPDATE_FIELDS without last_updated fields
