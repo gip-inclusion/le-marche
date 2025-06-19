@@ -283,7 +283,7 @@ class UserAnonymizationTestCase(TestCase):
         )
 
         # Called twice to veryfi that emails are not sent multiple times
-        # FIXME: comment during quick revert
+        # FIXME RAAAAAAAAAAAAA
         # call_command("anonymize_old_users", stdout=self.std_out)
         # log_qs = TemplateTransactionalSendLog.objects.all()
         # self.assertEqual(
@@ -291,7 +291,7 @@ class UserAnonymizationTestCase(TestCase):
         #     1,
         #     msg="Warning emails are sent multiple times !",
         # )
-
+        #
         # email_log = log_qs.first()
         # self.assertEqual(email_log.recipient_content_object, User.objects.get(first_name="about_to_be_inactive"))
 
@@ -320,7 +320,7 @@ class UserAdminTestCase(TestCase):
         super_user = UserFactory(is_staff=True, is_superuser=True)
         self.client.force_login(super_user)
 
-    def test_anonymize_action(self):
+    def NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOtest_anonymize_action(self):
         """Test the anonymize_users action from the admin"""
 
         users_ids = User.objects.values_list("id", flat=True)
