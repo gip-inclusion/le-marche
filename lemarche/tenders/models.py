@@ -32,13 +32,32 @@ from lemarche.perimeters.models import Perimeter
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
+from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices, TenderSourcesChoices
 from lemarche.tenders.utils import find_amount_ranges
 from lemarche.users.models import User
 from lemarche.utils.constants import ADMIN_FIELD_HELP_TEXT, AUTO_FIELD_HELP_TEXT, RECALCULATED_FIELD_HELP_TEXT
 from lemarche.utils.data import phone_number_display
 from lemarche.utils.fields import ChoiceArrayField
 from lemarche.utils.urls import get_object_admin_url
+
+
+class TenderInstruction(models.Model):
+    """Store instruction for the owner of the tender"""
+
+    title = models.CharField(verbose_name="Titre", max_length=120)
+    text = models.TextField(verbose_name="Contenu")
+    tender_type = models.CharField(choices=tender_constants.KIND_CHOICES, max_length=10)
+    tender_source = models.CharField(choices=TenderSourcesChoices.choices, max_length=20)
+
+    class Meta:
+        verbose_name = "Notice de réponse au besoin d'achat"
+        verbose_name_plural = "Notices de réponse au besoin d'achat"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tender_type", "tender_source"],
+                name="unique_instruction_for_each_tender_type_and_source",
+            ),
+        ]
 
 
 def get_perimeter_filter(siae):
@@ -371,10 +390,6 @@ class Tender(models.Model):
         blank=True,
         default=list,
     )
-    constraints = models.TextField(
-        verbose_name="Comment répondre à cette demande ?",
-        blank=True,
-    )
     external_link = models.URLField(
         verbose_name="Lien vers l'appel d'offres",
         help_text="Ajoutez ici l'URL de votre appel d'offres",
@@ -678,8 +693,8 @@ class Tender(models.Model):
     source = models.CharField(
         verbose_name="Source",
         max_length=20,
-        choices=tender_constants.SOURCE_CHOICES,
-        default=tender_constants.SOURCE_FORM,
+        choices=TenderSourcesChoices.choices,
+        default=TenderSourcesChoices.SOURCE_FORM,
     )
     version = models.PositiveIntegerField(verbose_name="Version", default=1)
     extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)

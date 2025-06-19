@@ -93,11 +93,11 @@
                 {% for question in tender.questions_list %}<li>{{ question.text }}</li>{% endfor %}
             </ul>
         {% endif %}
-        <!-- tender constraints -->
-        {% if tender.constraints %}
+        <!-- tender instruction -->
+        {% if tender_instruction %}
             <hr>
-            <h2>Comment répondre à cette demande ?</h2>
-            <p>{{ tender.constraints|safe }}</p>
+            <h2>{{ tender_instruction.title }}</h2>
+            <p>{{ tender_instruction.text|safe }}</p>
         {% endif %}
         <!-- tender amount -->
         {% if source_form or user == tender.author or tender.accept_share_amount %}

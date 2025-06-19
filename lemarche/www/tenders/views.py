@@ -21,11 +21,13 @@ from formtools.wizard.views import SessionWizardView
 
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
+from lemarche.tenders.enums import TenderSourcesChoices
 from lemarche.tenders.forms import QuestionAnswerForm, SiaeSelectionForm
 from lemarche.tenders.models import (
     QuestionAnswer,
     SuggestedQuestion,
     Tender,
+    TenderInstruction,
     TenderQuestion,
     TenderSiae,
     TenderStepsData,
@@ -279,7 +281,7 @@ class TenderCreateMultiStepView(SessionWizardView):
             self.request.user, tender_dict=cleaned_data, source=user_constants.SOURCE_TENDER_FORM
         )
         # when it's done we save the tender
-        tender_dict = cleaned_data | {"author": user, "source": tender_constants.SOURCE_FORM}
+        tender_dict = cleaned_data | {"author": user, "source": TenderSourcesChoices.SOURCE_FORM}
         is_draft: bool = self.request.POST.get("is_draft", False)
         self.save_instance_tender(tender_dict=tender_dict, form_dict=form_dict, is_draft=is_draft)
         # remove steps data
@@ -451,6 +453,12 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
             if user_kind == User.KIND_SIAE and self.object.kind == tender_constants.KIND_PROJECT
             else self.object.get_kind_display()
         )
+        try:
+            instruction = TenderInstruction.objects.get(tender_type=self.object.kind, tender_source=self.object.source)
+        except TenderInstruction.DoesNotExist:
+            instruction = None
+        finally:
+            context["tender_instruction"] = instruction
         if self.siae:
             context["siae_id"] = self.siae.id
             context["siae_has_detail_contact_click_date"] = TenderSiae.objects.filter(

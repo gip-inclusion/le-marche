@@ -6,8 +6,23 @@ from factory.django import DjangoModelFactory
 
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.models import PartnerShareTender, QuestionAnswer, Tender, TenderQuestion, TenderSiae
+from lemarche.tenders.models import (
+    PartnerShareTender,
+    QuestionAnswer,
+    Tender,
+    TenderInstruction,
+    TenderQuestion,
+    TenderSiae,
+)
 from lemarche.users.factories import UserFactory
+
+
+class TenderInstructionFactory(DjangoModelFactory):
+    class Meta:
+        model = TenderInstruction
+
+    title = "Some instruction title"
+    text = "Some instruction text"
 
 
 class TenderFactory(DjangoModelFactory):
@@ -25,7 +40,6 @@ class TenderFactory(DjangoModelFactory):
         tender_constants.RESPONSE_KIND_EXTERNAL,
     ]
     description = "Ceci est un pagagraphe de test"
-    constraints = "Ceci est un pagagraphe de test"
     deadline_date = date.today() + timedelta(days=10)
     start_working_date = date.today() + timedelta(days=50)
     author = factory.SubFactory(UserFactory)

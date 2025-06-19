@@ -23,8 +23,14 @@ from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
-from lemarche.tenders.factories import QuestionAnswerFactory, TenderFactory, TenderQuestionFactory, TenderSiaeFactory
+from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices, TenderSourcesChoices
+from lemarche.tenders.factories import (
+    QuestionAnswerFactory,
+    TenderFactory,
+    TenderInstructionFactory,
+    TenderQuestionFactory,
+    TenderSiaeFactory,
+)
 from lemarche.tenders.models import QuestionAnswer, Tender, TenderSiae, TenderStepsData
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
@@ -733,7 +739,7 @@ class TenderDetailViewTest(TestCase):
         response = self.client.get(url)
         self.assertContains(response, "Questions à poser aux prestataires ciblés")
         # tender without questions: section should be hidden
-        tender_2 = TenderFactory(author=self.user_buyer_2, constraints="")
+        tender_2 = TenderFactory(author=self.user_buyer_2)
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -756,18 +762,21 @@ class TenderDetailViewTest(TestCase):
         self.assertContains(response, "Télécharger le document 2")
         self.assertNotContains(response, "Télécharger le document 3")
 
-    def test_tender_constraints_display(self):
-        # tender with constraints: section should be visible
-        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+    def test_tender_instruction_display(self):
+        TenderInstructionFactory(
+            title="Titre instruction",
+            text="Texte instruction",
+            tender_type=tender_constants.KIND_TENDER,
+            tender_source=TenderSourcesChoices.SOURCE_FORM,
+        )
+        tender = TenderFactory(
+            author=self.user_buyer_2, kind=tender_constants.KIND_TENDER, source=TenderSourcesChoices.SOURCE_FORM
+        )
+        url = reverse("tenders:detail", kwargs={"slug": tender.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Comment répondre à cette demande ?")
-        # tender without constraints: section should be hidden
-        tender_2 = TenderFactory(author=self.user_buyer_2, constraints="")
-        url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, "Comment répondre à cette demande ?")
+        self.assertContains(response, "Titre instruction")
+        self.assertContains(response, "Texte instruction")
 
     def test_tender_amount_display(self):
         # tender with amount + accept_share_amount: section should be visible
