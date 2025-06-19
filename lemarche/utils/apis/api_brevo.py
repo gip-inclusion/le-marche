@@ -150,6 +150,18 @@ class BrevoBaseApiClient:
 
 
 class BrevoContactsApiClient(BrevoBaseApiClient):
+    """
+    Client for Brevo Contacts API operations.
+
+    This class provides methods for:
+    - Creating and updating contacts
+    - Retrieving contacts (individual, bulk, from lists)
+    - Managing contact lists and blacklist status
+    """
+
+    # =============================================================================
+    # CONFIGURATION & INITIALIZATION
+    # =============================================================================
 
     def __init__(self):
         """
@@ -158,25 +170,110 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         super().__init__()
         self.api_instance = sib_api_v3_sdk.ContactsApi(self.api_client)
 
-    def _fetch_contacts_batch(self, config, max_retries, retry_delay):
+    # =============================================================================
+    # PUBLIC METHODS - CORE CONTACT OPERATIONS
+    # =============================================================================
+
+    def create_contact(self, user, list_id: int, tender=None, max_retries=3, retry_delay=5):
         """
-        Fetch a single batch of contacts with error handling
+        Create or update a contact in Brevo
 
         Args:
-            config: Configuration dictionary for contact fetching
-            max_retries: Maximum number of retry attempts
-            retry_delay: Base delay between retries
+            user: User object to send to Brevo
+            list_id (int): Brevo list ID to add the contact to
+            tender: Tender object associated with the user (optional)
+            max_retries (int): Maximum number of retry attempts in case of error
+            retry_delay (int): Delay in seconds between retry attempts
+
+        Returns:
+            dict: API response with contact ID if successful
 
         Raises:
-            BrevoApiError: When fetching fails after all retries
+            BrevoApiError: When contact creation fails after all retries
         """
-        try:
-            self._process_contacts_batch(config)
-        except ApiException as e:
-            self._handle_contacts_api_error(e, config, max_retries, retry_delay)
-        except Exception as e:
-            logger.error(f"Unexpected error retrieving contacts: {e}")
-            raise BrevoApiError(f"Unexpected error retrieving contacts: {e}", e)
+        # If user already has a Brevo ID, no need to create a new contact
+        if user.brevo_contact_id:
+            logger.info(f"Contact {user.email} already exists in Brevo with ID: {user.brevo_contact_id}")
+            return {"id": user.brevo_contact_id}
+
+        attributes: dict[str, str | None] = {
+            "NOM": sanitize_to_send_by_email(user.last_name.capitalize()),
+            "PRENOM": sanitize_to_send_by_email(user.first_name.capitalize()),
+            "DATE_INSCRIPTION": user.created_at,
+            "TYPE_ORGANISATION": user.buyer_kind_detail,
+            "NOM_ENTREPRISE": sanitize_to_send_by_email(user.company_name.capitalize()),
+            "SMS": sanitize_to_send_by_email(user.phone_display),
+            "MONTANT_BESOIN_ACHETEUR": None,
+            "TYPE_BESOIN_ACHETEUR": None,
+            "TYPE_VERTICALE_ACHETEUR": None,
+        }
+
+        if tender:
+            attributes |= self._additional_tender_attributes(tender)
+
+        new_contact = sib_api_v3_sdk.CreateContact(
+            email=user.email,
+            list_ids=[list_id],
+            attributes=attributes,
+            ext_id=str(user.id),
+            update_enabled=True,
+        )
+
+        def _create_contact_operation():
+            try:
+                api_response = self.api_instance.create_contact(new_contact).to_dict()
+                logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response.get('id')}")
+                return api_response
+            except ApiException as e:
+                # Analyze error type
+                error_body = self._get_error_body(e)
+                # Contact already exists - try to retrieve existing ID
+                if e.status == 400 and error_body.get("code") == "duplicate_parameter":
+                    logger.info(f"Contact {user.id} already exists in Brevo, attempting to retrieve ID...")
+                    self.retrieve_and_update_user_brevo_contact_id(user)
+                    return {"id": user.brevo_contact_id}
+                raise  # Re-raise for retry logic
+
+        return self._execute_with_retry(
+            _create_contact_operation,
+            max_retries=max_retries,
+            retry_delay=retry_delay,
+            operation_name="creating contact",
+            entity_id=str(user.id),
+        )
+
+    def get_contact_by_email(self, email: str, max_retries=3, retry_delay=5):
+        """
+        Retrieves Brevo contact by email address
+
+        Args:
+            email (str): Email address to search for
+            max_retries (int): Maximum number of retry attempts
+            retry_delay (int): Delay in seconds between retry attempts
+
+        Returns:
+            dict: Contact information if found, empty dict otherwise
+
+        Raises:
+            BrevoApiError: When contact retrieval fails after all retries
+        """
+
+        def _get_contact_operation():
+            try:
+                response = self.api_instance.get_contact_info(email)
+                return response.to_dict()
+            except ApiException as e:
+                if e.status == 404:  # Contact not found
+                    return {}
+                raise  # Re-raise for retry logic
+
+        return self._execute_with_retry(
+            _get_contact_operation,
+            max_retries=max_retries,
+            retry_delay=retry_delay,
+            operation_name="getting contact by email",
+            entity_id=email,
+        )
 
     def get_all_contacts(self, limit_max=None, since_days=30, max_retries=3, retry_delay=5, page_limit=500):
         """
@@ -213,6 +310,227 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         logger.debug(f"Total contacts retrieved: {config['total_retrieved']}")
 
         return config["result"]
+
+    def get_contacts_from_list(self, list_id: int, limit=500, offset=0, max_retries=3, retry_delay=5):
+        """
+        Get all contacts from a specific list with pagination
+
+        Args:
+            list_id (int): ID of the list to fetch contacts from
+            limit (int): Number of contacts per page
+            offset (int): Offset for pagination
+            max_retries (int): Maximum number of retry attempts
+            retry_delay (int): Delay in seconds between retries
+
+        Returns:
+            dict: Dictionary mapping contact emails to their IDs
+
+        Raises:
+            BrevoApiError: When contact retrieval fails after all retries
+        """
+        result = {}
+        current_offset = offset
+        is_finished = False
+
+        while not is_finished:
+
+            def _get_contacts_page_operation():
+                api_response = self.api_instance.get_contacts_from_list(
+                    list_id=list_id, limit=limit, offset=current_offset
+                ).to_dict()
+                return api_response
+
+            try:
+                api_response = self._execute_with_retry(
+                    _get_contacts_page_operation,
+                    max_retries=max_retries,
+                    retry_delay=retry_delay,
+                    operation_name="getting contacts from list",
+                    entity_id=f"list {list_id}",
+                )
+
+                contacts = api_response.get("contacts", [])
+                logger.debug(f"Contacts fetched: {len(contacts)} at offset {current_offset}")
+
+                for contact in contacts:
+                    result[contact.get("email")] = contact.get("id")
+
+                # Check if we should continue pagination
+                if len(contacts) < limit:
+                    is_finished = True
+                else:
+                    current_offset += limit
+
+            except BrevoApiError:
+                # Error already logged in _execute_with_retry
+                break
+
+        return result
+
+    # =============================================================================
+    # PUBLIC METHODS - CONTACT UPDATES
+    # =============================================================================
+
+    def update_contact(self, user_identifier: str, attributes_to_update: dict, max_retries=3, retry_delay=5):
+        """
+        Update a contact in Brevo
+
+        Args:
+            user_identifier (str): Contact identifier (email or ID)
+            attributes_to_update (dict): Attributes to update
+            max_retries (int): Maximum number of retry attempts
+            retry_delay (int): Delay in seconds between retry attempts
+
+        Returns:
+            dict: API response if successful
+
+        Raises:
+            BrevoApiError: When contact update fails after all retries
+        """
+        update_contact = sib_api_v3_sdk.UpdateContact(attributes=attributes_to_update)
+
+        def _update_contact_operation():
+            api_response = self.api_instance.update_contact(identifier=user_identifier, update_contact=update_contact)
+            logger.info(f"Success Brevo->ContactsApi->update_contact: {api_response}")
+            return api_response
+
+        return self._execute_with_retry(
+            _update_contact_operation,
+            max_retries=max_retries,
+            retry_delay=retry_delay,
+            operation_name="updating contact",
+            entity_id=user_identifier,
+        )
+
+    def update_contact_email_blacklisted(
+        self, user_identifier: str, email_blacklisted: bool, max_retries=3, retry_delay=5
+    ):
+        """
+        Update the email blacklist status of a contact
+
+        Args:
+            user_identifier (str): Contact identifier (email or ID)
+            email_blacklisted (bool): Whether to blacklist the email
+            max_retries (int): Maximum number of retry attempts
+            retry_delay (int): Delay in seconds between retry attempts
+
+        Returns:
+            dict: API response if successful
+
+        Raises:
+            BrevoApiError: When contact update fails after all retries
+        """
+        update_contact = sib_api_v3_sdk.UpdateContact(email_blacklisted=email_blacklisted)
+
+        def _update_contact_blacklist_operation():
+            api_response = self.api_instance.update_contact(identifier=user_identifier, update_contact=update_contact)
+            logger.info(f"Success Brevo->ContactsApi->update_contact to update email_blacklisted: {api_response}")
+            return api_response
+
+        return self._execute_with_retry(
+            _update_contact_blacklist_operation,
+            max_retries=max_retries,
+            retry_delay=retry_delay,
+            operation_name="updating contact email blacklist",
+            entity_id=user_identifier,
+        )
+
+    def retrieve_and_update_user_brevo_contact_id(self, user):
+        """
+        Retrieve and update user's Brevo contact ID by email
+
+        Args:
+            user: User object to update
+
+        Raises:
+            BrevoApiError: When contact retrieval fails
+        """
+        try:
+            # Search for contact by email
+            existing_contacts = self.get_contact_by_email(user.email)
+            if existing_contacts:
+                contact_id = existing_contacts.get("id")
+                if contact_id:
+                    user.brevo_contact_id = int(contact_id)
+                    user.save(update_fields=["brevo_contact_id"])
+                    logger.info(f"Brevo ID retrieved for {user.id}: {user.brevo_contact_id}")
+                else:
+                    raise BrevoApiError(f"No contact ID found for email {user.id}")
+            else:
+                raise BrevoApiError(f"No contact found for email {user.id}")
+        except Exception as lookup_error:
+            logger.error(f"Error retrieving contact ID: {lookup_error}")
+            raise BrevoApiError(f"Error retrieving contact ID for {user.id}", lookup_error)
+
+    # =============================================================================
+    # PUBLIC METHODS - LIST MANAGEMENT
+    # =============================================================================
+
+    def remove_contact_from_list(self, user_email: str, list_id: int, max_retries=3, retry_delay=5):
+        """
+        Remove a contact from a specific list
+
+        Args:
+            user_email (str): Email of the contact to remove
+            list_id (int): ID of the list to remove contact from
+            max_retries (int): Maximum number of retry attempts
+            retry_delay (int): Delay in seconds between retry attempts
+
+        Returns:
+            dict: API response if successful
+
+        Raises:
+            BrevoApiError: When contact removal fails after all retries
+        """
+        contact_emails = sib_api_v3_sdk.RemoveContactFromList(emails=[user_email])
+
+        def _remove_contact_operation():
+            try:
+                api_response = self.api_instance.remove_contact_from_list(
+                    list_id=list_id, contact_emails=contact_emails
+                )
+                logger.info(f"Success Brevo->ContactsApi->remove_contact_from_list: {api_response}")
+                return api_response
+            except ApiException as e:
+                error_body = self._get_error_body(e)
+                if error_body.get("message") == "Contact already removed from list and/or does not exist":
+                    logger.info(
+                        "calling Brevo->ContactsApi->remove_contact_from_list: " "contact doesn't exist in this list"
+                    )
+                    return {}
+                raise  # Re-raise for retry logic
+
+        return self._execute_with_retry(
+            _remove_contact_operation,
+            max_retries=max_retries,
+            retry_delay=retry_delay,
+            operation_name="removing contact from list",
+            entity_id=f"{user_email} from list {list_id}",
+        )
+
+    # =============================================================================
+    # PRIVATE METHODS - BATCH PROCESSING FOR get_all_contacts()
+    # =============================================================================
+
+    def _fetch_contacts_batch(self, config, max_retries, retry_delay):
+        """
+        Fetch a single batch of contacts with error handling
+
+        Args:
+            config: Configuration dictionary for contact fetching
+            max_retries: Maximum number of retry attempts
+            retry_delay: Base delay between retries
+
+        Raises:
+            BrevoApiError: When fetching fails after all retries
+        """
+        try:
+            self._process_contacts_batch(config)
+        except ApiException as e:
+            self._handle_contacts_api_error(e, config, max_retries, retry_delay)
+        except Exception as e:
+            logger.error(f"Unexpected error retrieving contacts: {e}")
+            raise BrevoApiError(f"Unexpected error retrieving contacts: {e}", e)
 
     def _initialize_contacts_config(self, limit_max, since_days, page_limit):
         """Initialize configuration for contact fetching"""
@@ -320,6 +638,10 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         ).to_dict()
         return api_response.get("contacts", []), api_response.get("count", 0)
 
+    # =============================================================================
+    # PRIVATE METHODS - UTILITIES
+    # =============================================================================
+
     def _should_continue_pagination(self, contacts_count, current_limit, total_retrieved, limit_max):
         """
         Determines if pagination should continue
@@ -359,104 +681,10 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
             return limit_max - total_retrieved
         return page_limit
 
-    def create_contact(self, user, list_id: int, tender=None, max_retries=3, retry_delay=5):
-        """
-        Create or update a contact in Brevo
-
-        Args:
-            user: User object to send to Brevo
-            list_id (int): Brevo list ID to add the contact to
-            tender: Tender object associated with the user (optional)
-            max_retries (int): Maximum number of retry attempts in case of error
-            retry_delay (int): Delay in seconds between retry attempts
-
-        Returns:
-            dict: API response with contact ID if successful
-
-        Raises:
-            BrevoApiError: When contact creation fails after all retries
-        """
-        # If user already has a Brevo ID, no need to create a new contact
-        if user.brevo_contact_id:
-            logger.info(f"Contact {user.email} already exists in Brevo with ID: {user.brevo_contact_id}")
-            return {"id": user.brevo_contact_id}
-
-        attributes: dict[str, str | None] = {
-            "NOM": sanitize_to_send_by_email(user.last_name.capitalize()),
-            "PRENOM": sanitize_to_send_by_email(user.first_name.capitalize()),
-            "DATE_INSCRIPTION": user.created_at,
-            "TYPE_ORGANISATION": user.buyer_kind_detail,
-            "NOM_ENTREPRISE": sanitize_to_send_by_email(user.company_name.capitalize()),
-            "SMS": sanitize_to_send_by_email(user.phone_display),
-            "MONTANT_BESOIN_ACHETEUR": None,
-            "TYPE_BESOIN_ACHETEUR": None,
-            "TYPE_VERTICALE_ACHETEUR": None,
-        }
-
-        if tender:
-            attributes |= self._additional_tender_attributes(tender)
-
-        new_contact = sib_api_v3_sdk.CreateContact(
-            email=user.email,
-            list_ids=[list_id],
-            attributes=attributes,
-            ext_id=str(user.id),
-            update_enabled=True,
-        )
-
-        def _create_contact_operation():
-            try:
-                api_response = self.api_instance.create_contact(new_contact).to_dict()
-                logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response.get('id')}")
-                return api_response
-            except ApiException as e:
-                # Analyze error type
-                error_body = self._get_error_body(e)
-                # Contact already exists - try to retrieve existing ID
-                if e.status == 400 and error_body.get("code") == "duplicate_parameter":
-                    logger.info(f"Contact {user.id} already exists in Brevo, attempting to retrieve ID...")
-                    self.retrieve_and_update_user_brevo_contact_id(user)
-                    return {"id": user.brevo_contact_id}
-                raise  # Re-raise for retry logic
-
-        return self._execute_with_retry(
-            _create_contact_operation,
-            max_retries=max_retries,
-            retry_delay=retry_delay,
-            operation_name="creating contact",
-            entity_id=str(user.id),
-        )
-
-    def retrieve_and_update_user_brevo_contact_id(self, user):
-        """
-        Retrieve and update user's Brevo contact ID by email
-
-        Args:
-            user: User object to update
-
-        Raises:
-            BrevoApiError: When contact retrieval fails
-        """
-        try:
-            # Search for contact by email
-            existing_contacts = self.get_contact_by_email(user.email)
-            if existing_contacts:
-                contact_id = existing_contacts.get("id")
-                if contact_id:
-                    user.brevo_contact_id = int(contact_id)
-                    user.save(update_fields=["brevo_contact_id"])
-                    logger.info(f"Brevo ID retrieved for {user.id}: {user.brevo_contact_id}")
-                else:
-                    raise BrevoApiError(f"No contact ID found for email {user.id}")
-            else:
-                raise BrevoApiError(f"No contact found for email {user.id}")
-        except Exception as lookup_error:
-            logger.error(f"Error retrieving contact ID: {lookup_error}")
-            raise BrevoApiError(f"Error retrieving contact ID for {user.id}", lookup_error)
-
     def _additional_tender_attributes(self, tender):
         """
         Helper function to get additional attributes for a tender when creating a Brevo contact
+
         Args:
             tender: Tender object to extract attributes from
 
@@ -490,201 +718,6 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
             "TYPE_VERTICALE_ACHETEUR": None,
         }
 
-    def get_contact_by_email(self, email: str, max_retries=3, retry_delay=5):
-        """
-        Retrieves Brevo contact by email address
-
-        Args:
-            email (str): Email address to search for
-            max_retries (int): Maximum number of retry attempts
-            retry_delay (int): Delay in seconds between retry attempts
-
-        Returns:
-            dict: Contact information if found, empty dict otherwise
-
-        Raises:
-            BrevoApiError: When contact retrieval fails after all retries
-        """
-
-        def _get_contact_operation():
-            try:
-                response = self.api_instance.get_contact_info(email)
-                return response.to_dict()
-            except ApiException as e:
-                if e.status == 404:  # Contact not found
-                    return {}
-                raise  # Re-raise for retry logic
-
-        return self._execute_with_retry(
-            _get_contact_operation,
-            max_retries=max_retries,
-            retry_delay=retry_delay,
-            operation_name="getting contact by email",
-            entity_id=email,
-        )
-
-    def update_contact(self, user_identifier: str, attributes_to_update: dict, max_retries=3, retry_delay=5):
-        """
-        Update a contact in Brevo
-
-        Args:
-            user_identifier (str): Contact identifier (email or ID)
-            attributes_to_update (dict): Attributes to update
-            max_retries (int): Maximum number of retry attempts
-            retry_delay (int): Delay in seconds between retry attempts
-
-        Returns:
-            dict: API response if successful
-
-        Raises:
-            BrevoApiError: When contact update fails after all retries
-        """
-        update_contact = sib_api_v3_sdk.UpdateContact(attributes=attributes_to_update)
-
-        def _update_contact_operation():
-            api_response = self.api_instance.update_contact(identifier=user_identifier, update_contact=update_contact)
-            logger.info(f"Success Brevo->ContactsApi->update_contact: {api_response}")
-            return api_response
-
-        return self._execute_with_retry(
-            _update_contact_operation,
-            max_retries=max_retries,
-            retry_delay=retry_delay,
-            operation_name="updating contact",
-            entity_id=user_identifier,
-        )
-
-    def update_contact_email_blacklisted(
-        self, user_identifier: str, email_blacklisted: bool, max_retries=3, retry_delay=5
-    ):
-        """
-        Update the email blacklist status of a contact
-
-        Args:
-            user_identifier (str): Contact identifier (email or ID)
-            email_blacklisted (bool): Whether to blacklist the email
-            max_retries (int): Maximum number of retry attempts
-            retry_delay (int): Delay in seconds between retry attempts
-
-        Returns:
-            dict: API response if successful
-
-        Raises:
-            BrevoApiError: When contact update fails after all retries
-        """
-        update_contact = sib_api_v3_sdk.UpdateContact(email_blacklisted=email_blacklisted)
-
-        def _update_contact_blacklist_operation():
-            api_response = self.api_instance.update_contact(identifier=user_identifier, update_contact=update_contact)
-            logger.info(f"Success Brevo->ContactsApi->update_contact to update email_blacklisted: {api_response}")
-            return api_response
-
-        return self._execute_with_retry(
-            _update_contact_blacklist_operation,
-            max_retries=max_retries,
-            retry_delay=retry_delay,
-            operation_name="updating contact email blacklist",
-            entity_id=user_identifier,
-        )
-
-    def remove_contact_from_list(self, user_email: str, list_id: int, max_retries=3, retry_delay=5):
-        """
-        Remove a contact from a specific list
-
-        Args:
-            user_email (str): Email of the contact to remove
-            list_id (int): ID of the list to remove contact from
-            max_retries (int): Maximum number of retry attempts
-            retry_delay (int): Delay in seconds between retry attempts
-
-        Returns:
-            dict: API response if successful
-
-        Raises:
-            BrevoApiError: When contact removal fails after all retries
-        """
-        contact_emails = sib_api_v3_sdk.RemoveContactFromList(emails=[user_email])
-
-        def _remove_contact_operation():
-            try:
-                api_response = self.api_instance.remove_contact_from_list(
-                    list_id=list_id, contact_emails=contact_emails
-                )
-                logger.info(f"Success Brevo->ContactsApi->remove_contact_from_list: {api_response}")
-                return api_response
-            except ApiException as e:
-                error_body = self._get_error_body(e)
-                if error_body.get("message") == "Contact already removed from list and/or does not exist":
-                    logger.info(
-                        "calling Brevo->ContactsApi->remove_contact_from_list: " "contact doesn't exist in this list"
-                    )
-                    return {}
-                raise  # Re-raise for retry logic
-
-        return self._execute_with_retry(
-            _remove_contact_operation,
-            max_retries=max_retries,
-            retry_delay=retry_delay,
-            operation_name="removing contact from list",
-            entity_id=f"{user_email} from list {list_id}",
-        )
-
-    def get_contacts_from_list(self, list_id: int, limit=500, offset=0, max_retries=3, retry_delay=5):
-        """
-        Get all contacts from a specific list with pagination
-
-        Args:
-            list_id (int): ID of the list to fetch contacts from
-            limit (int): Number of contacts per page
-            offset (int): Offset for pagination
-            max_retries (int): Maximum number of retry attempts
-            retry_delay (int): Delay in seconds between retries
-
-        Returns:
-            dict: Dictionary mapping contact emails to their IDs
-
-        Raises:
-            BrevoApiError: When contact retrieval fails after all retries
-        """
-        result = {}
-        current_offset = offset
-        is_finished = False
-
-        while not is_finished:
-
-            def _get_contacts_page_operation():
-                api_response = self.api_instance.get_contacts_from_list(
-                    list_id=list_id, limit=limit, offset=current_offset
-                ).to_dict()
-                return api_response
-
-            try:
-                api_response = self._execute_with_retry(
-                    _get_contacts_page_operation,
-                    max_retries=max_retries,
-                    retry_delay=retry_delay,
-                    operation_name="getting contacts from list",
-                    entity_id=f"list {list_id}",
-                )
-
-                contacts = api_response.get("contacts", [])
-                logger.debug(f"Contacts fetched: {len(contacts)} at offset {current_offset}")
-
-                for contact in contacts:
-                    result[contact.get("email")] = contact.get("id")
-
-                # Check if we should continue pagination
-                if len(contacts) < limit:
-                    is_finished = True
-                else:
-                    current_offset += limit
-
-            except BrevoApiError:
-                # Error already logged in _execute_with_retry
-                break
-
-        return result
-
     def _get_error_body(self, exception):
         """
         Helper function to extract error body from ApiException
@@ -706,6 +739,18 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
 
 
 class BrevoCompanyApiClient(BrevoBaseApiClient):
+    """
+    Client for Brevo Companies API operations.
+
+    This class provides methods for:
+    - Creating and updating SIAE companies in Brevo CRM
+    - Creating and updating buyer companies in Brevo CRM
+    - Linking companies with their contacts
+    """
+
+    # =============================================================================
+    # CONFIGURATION & INITIALIZATION
+    # =============================================================================
 
     def __init__(self):
         """
@@ -714,33 +759,9 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         super().__init__()
         self.api_instance = sib_api_v3_sdk.CompaniesApi(self.api_client)
 
-    def _handle_company_404_and_retry(self, siae, max_retries, retry_delay):
-        """Handle 404 error by switching from update to create mode"""
-        logger.warning(f"Company {siae.id} (ID {siae.brevo_company_id}) not found in Brevo, attempting to create...")
-        siae.brevo_company_id = None
-        siae.save(update_fields=["brevo_company_id"])
-        return self.create_or_update_company(siae, max_retries, retry_delay)
-
-    def _post_process_company_success(self, siae, api_response, sync_log, is_update):
-        """Handle post-processing after successful company operation"""
-        if not is_update and api_response:
-            siae.brevo_company_id = api_response.id
-            sync_log["brevo_company_id"] = siae.brevo_company_id
-
-        sync_log["status"] = "success"
-        siae.logs.append({"brevo_sync": sync_log})
-
-        if is_update:
-            siae.save(update_fields=["logs"])
-        else:
-            siae.save(update_fields=["brevo_company_id", "logs"])
-            # Link contacts after creation
-            try:
-                self.link_company_with_contact_list(
-                    siae.brevo_company_id, list(siae.users.values_list("brevo_contact_id", flat=True))
-                )
-            except Exception as link_error:
-                logger.warning(f"Error linking company {siae.id} with its contacts: {link_error}")
+    # =============================================================================
+    # PUBLIC METHODS - SIAE COMPANY OPERATIONS
+    # =============================================================================
 
     def create_or_update_company(self, siae, max_retries=3, retry_delay=5):
         """
@@ -818,67 +839,9 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
             siae.save(update_fields=["logs"])
             raise
 
-    def link_company_with_contact_list(self, brevo_company_id: int, contact_list: list):
-        """
-        Links a Brevo company to a list of contacts. If no contact list is provided, it defaults
-        to linking the company with the siae's users.
-
-        This function uses the siae's stored company ID and either a provided list of contact IDs or the
-        siae author's user(s) ID(s) to link contacts to the company in the Brevo CRM.
-
-        Args:
-            brevo_company_id (int): The Brevo company ID to link contacts to.
-            contact_list (list of int, optional): List of contact IDs to be linked with the company. Defaults to None.
-
-        Raises:
-            ApiException: If an error occurs during the linking process in the Brevo API.
-        """
-        if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
-            try:
-                # get brevo ids
-                brevo_crm_company_id = brevo_company_id
-
-                # cleanup
-                contact_list = [id for id in contact_list if id is not None]
-
-                # link company with contact_list
-                if len(contact_list):
-                    # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body2.md
-                    body_link_company_contact = sib_api_v3_sdk.Body2(link_contact_ids=contact_list)
-                    self.api_instance.companies_link_unlink_id_patch(brevo_crm_company_id, body_link_company_contact)
-
-            except ApiException as e:
-                logger.error("Exception when calling Brevo->DealApi->companies_link_unlink_id_patch: %s\n" % e)
-
-    def _handle_buyer_company_404_and_retry(self, company, max_retries, retry_delay):
-        """Handle 404 error for buyer company by switching from update to create mode"""
-        logger.warning(
-            f"Buyer company {company.id} (ID {company.brevo_company_id}) not found in Brevo, attempting to create..."
-        )
-        company.brevo_company_id = None
-        company.save(update_fields=["brevo_company_id"])
-        return self.create_or_update_buyer_company(company, max_retries, retry_delay)
-
-    def _post_process_buyer_company_success(self, company, api_response, sync_log, is_update):
-        """Handle post-processing after successful buyer company operation"""
-        if not is_update and api_response:
-            company.brevo_company_id = api_response.id
-            sync_log["brevo_company_id"] = company.brevo_company_id
-
-        sync_log["status"] = "success"
-        company.logs.append({"brevo_sync": sync_log})
-
-        if is_update:
-            company.save(update_fields=["logs"])
-        else:
-            company.save(update_fields=["brevo_company_id", "logs"])
-            # Lier les contacts après création
-            try:
-                self.link_company_with_contact_list(
-                    company.brevo_company_id, list(company.users.values_list("brevo_contact_id", flat=True))
-                )
-            except Exception as link_error:
-                logger.warning(f"Error linking buyer company {company.id} with its contacts: {link_error}")
+    # =============================================================================
+    # PUBLIC METHODS - BUYER COMPANY OPERATIONS
+    # =============================================================================
 
     def create_or_update_buyer_company(self, company, max_retries=3, retry_delay=5):
         """
@@ -948,6 +911,108 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
             company.logs.append({"brevo_sync": sync_log})
             company.save(update_fields=["logs"])
             return False
+
+    # =============================================================================
+    # PUBLIC METHODS - COMPANY-CONTACT LINKING
+    # =============================================================================
+
+    def link_company_with_contact_list(self, brevo_company_id: int, contact_list: list):
+        """
+        Links a Brevo company to a list of contacts. If no contact list is provided, it defaults
+        to linking the company with the siae's users.
+
+        This function uses the siae's stored company ID and either a provided list of contact IDs or the
+        siae author's user(s) ID(s) to link contacts to the company in the Brevo CRM.
+
+        Args:
+            brevo_company_id (int): The Brevo company ID to link contacts to.
+            contact_list (list of int, optional): List of contact IDs to be linked with the company. Defaults to None.
+
+        Raises:
+            ApiException: If an error occurs during the linking process in the Brevo API.
+        """
+        if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
+            try:
+                # get brevo ids
+                brevo_crm_company_id = brevo_company_id
+
+                # cleanup
+                contact_list = [id for id in contact_list if id is not None]
+
+                # link company with contact_list
+                if len(contact_list):
+                    # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body2.md
+                    body_link_company_contact = sib_api_v3_sdk.Body2(link_contact_ids=contact_list)
+                    self.api_instance.companies_link_unlink_id_patch(brevo_crm_company_id, body_link_company_contact)
+
+            except ApiException as e:
+                logger.error("Exception when calling Brevo->DealApi->companies_link_unlink_id_patch: %s\n" % e)
+
+    # =============================================================================
+    # PRIVATE METHODS - SIAE COMPANY SUPPORT
+    # =============================================================================
+
+    def _handle_company_404_and_retry(self, siae, max_retries, retry_delay):
+        """Handle 404 error by switching from update to create mode"""
+        logger.warning(f"Company {siae.id} (ID {siae.brevo_company_id}) not found in Brevo, attempting to create...")
+        siae.brevo_company_id = None
+        siae.save(update_fields=["brevo_company_id"])
+        return self.create_or_update_company(siae, max_retries, retry_delay)
+
+    def _post_process_company_success(self, siae, api_response, sync_log, is_update):
+        """Handle post-processing after successful company operation"""
+        if not is_update and api_response:
+            siae.brevo_company_id = api_response.id
+            sync_log["brevo_company_id"] = siae.brevo_company_id
+
+        sync_log["status"] = "success"
+        siae.logs.append({"brevo_sync": sync_log})
+
+        if is_update:
+            siae.save(update_fields=["logs"])
+        else:
+            siae.save(update_fields=["brevo_company_id", "logs"])
+            # Link contacts after creation
+            try:
+                self.link_company_with_contact_list(
+                    siae.brevo_company_id, list(siae.users.values_list("brevo_contact_id", flat=True))
+                )
+            except Exception as link_error:
+                logger.warning(f"Error linking company {siae.id} with its contacts: {link_error}")
+
+    # =============================================================================
+    # PRIVATE METHODS - BUYER COMPANY SUPPORT
+    # =============================================================================
+
+    def _handle_buyer_company_404_and_retry(self, company, max_retries, retry_delay):
+        """Handle 404 error for buyer company by switching from update to create mode"""
+        logger.warning(
+            f"Buyer company {company.id} (ID {company.brevo_company_id}) not found in Brevo, attempting to create..."
+        )
+        company.brevo_company_id = None
+        company.save(update_fields=["brevo_company_id"])
+        return self.create_or_update_buyer_company(company, max_retries, retry_delay)
+
+    def _post_process_buyer_company_success(self, company, api_response, sync_log, is_update):
+        """Handle post-processing after successful buyer company operation"""
+        if not is_update and api_response:
+            company.brevo_company_id = api_response.id
+            sync_log["brevo_company_id"] = company.brevo_company_id
+
+        sync_log["status"] = "success"
+        company.logs.append({"brevo_sync": sync_log})
+
+        if is_update:
+            company.save(update_fields=["logs"])
+        else:
+            company.save(update_fields=["brevo_company_id", "logs"])
+            # Lier les contacts après création
+            try:
+                self.link_company_with_contact_list(
+                    company.brevo_company_id, list(company.users.values_list("brevo_contact_id", flat=True))
+                )
+            except Exception as link_error:
+                logger.warning(f"Error linking buyer company {company.id} with its contacts: {link_error}")
 
 
 class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
@@ -1092,8 +1157,8 @@ def link_deal_with_contact_list(tender, contact_list: list = None):
     Raises:
         ApiException: If an error occurs during the linking process in the Brevo API.
     """
-    api_client = get_api_client()
-    api_instance = sib_api_v3_sdk.DealsApi(api_client)
+    c = BrevoBaseApiClient()
+    api_instance = sib_api_v3_sdk.DealsApi(c.api_client)
 
     if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
         try:
