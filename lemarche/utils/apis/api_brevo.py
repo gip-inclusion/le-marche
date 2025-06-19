@@ -56,6 +56,11 @@ class BrevoConfig:
         """Check if emails should be sent (not in dev/test)."""
         return self.is_production_env
 
+    @property
+    def should_skip_api_calls(self) -> bool:
+        """Check if API calls should be skipped (in dev/test environments)."""
+        return not self.is_production_env
+
 
 class BrevoApiError(Exception):
     """Exception raised when contacts fetching fails after all retries"""
@@ -180,6 +185,14 @@ class BrevoBaseApiClient:
                 raise BrevoApiError(f"Unexpected error during {operation_name} {entity_id}: {e}", e)
 
         raise BrevoApiError(f"Failed to {operation_name} {entity_id} after {max_retries + 1} attempts")
+
+    def _cleanup_contact_list(self, contact_list):
+        """Clean up contact list by removing None values"""
+        return [contact_id for contact_id in contact_list if contact_id is not None]
+
+    def _handle_linking_error(self, error, operation_description="linking operation"):
+        """Handle and log linking operation errors"""
+        logger.error(f"Exception when calling Brevo->{operation_description}: {error}")
 
 
 class BrevoContactsApiClient(BrevoBaseApiClient):
@@ -722,10 +735,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
             },
         )
 
-        sync_log = {
-            "date": datetime.now().isoformat(),
-            "operation": "update" if siae.brevo_company_id else "create",
-        }
+        sync_log = self._create_sync_log(siae)
 
         is_update = bool(siae.brevo_company_id)
 
@@ -738,7 +748,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
                     return self.api_instance.companies_post(siae_brevo_company_body)
             except ApiException as e:
                 if is_update and e.status == 404:
-                    return self._handle_company_404_and_retry(siae)
+                    return self._handle_company_404_and_retry(siae, self.create_or_update_company)
                 raise
 
         try:
@@ -751,10 +761,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
             self._post_process_company_success(siae, api_response, sync_log, is_update)
 
         except BrevoApiError as e:
-            sync_log["status"] = "error"
-            sync_log["error"] = str(e)
-            siae.logs.append({"brevo_sync": sync_log})
-            siae.save(update_fields=["logs"])
+            self._handle_company_error(siae, sync_log, e)
             raise
 
     # =============================================================================
@@ -791,10 +798,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
             },
         )
 
-        sync_log = {
-            "date": datetime.now().isoformat(),
-            "operation": "update" if company.brevo_company_id else "create",
-        }
+        sync_log = self._create_sync_log(company)
 
         is_update = bool(company.brevo_company_id)
 
@@ -807,7 +811,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
                     return self.api_instance.companies_post(company_brevo_body)
             except ApiException as e:
                 if is_update and e.status == 404:
-                    return self._handle_buyer_company_404_and_retry(company)
+                    return self._handle_company_404_and_retry(company, self.create_or_update_buyer_company)
                 raise
 
         try:
@@ -817,14 +821,11 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
                 entity_id=str(company.id),
             )
 
-            self._post_process_buyer_company_success(company, api_response, sync_log, is_update)
+            self._post_process_company_success(company, api_response, sync_log, is_update)
             return True
 
         except BrevoApiError as e:
-            sync_log["status"] = "error"
-            sync_log["error"] = str(e)
-            company.logs.append({"brevo_sync": sync_log})
-            company.save(update_fields=["logs"])
+            self._handle_company_error(company, sync_log, e)
             return False
 
     # =============================================================================
@@ -848,68 +849,47 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         """
         if self.config.is_production_env:
             try:
-                # get brevo ids
-                brevo_crm_company_id = brevo_company_id
-
                 # cleanup
-                contact_list = [id for id in contact_list if id is not None]
-
+                contact_list = self._cleanup_contact_list(contact_list)
                 # link company with contact_list
                 if len(contact_list):
-                    # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body2.md
                     body_link_company_contact = sib_api_v3_sdk.Body2(link_contact_ids=contact_list)
-                    self.api_instance.companies_link_unlink_id_patch(brevo_crm_company_id, body_link_company_contact)
+                    self.api_instance.companies_link_unlink_id_patch(brevo_company_id, body_link_company_contact)
 
             except ApiException as e:
-                logger.error("Exception when calling Brevo->DealApi->companies_link_unlink_id_patch: %s\n" % e)
+                self._handle_linking_error(e, "DealApi->companies_link_unlink_id_patch")
 
     # =============================================================================
-    # PRIVATE METHODS - SIAE COMPANY SUPPORT
+    # PRIVATE METHODS - COMMON COMPANY SUPPORT
     # =============================================================================
 
-    def _handle_company_404_and_retry(self, siae):
+    def _create_sync_log(self, company):
+        """Create a sync log entry for a company operation"""
+        return {
+            "date": datetime.now().isoformat(),
+            "operation": "update" if company.brevo_company_id else "create",
+        }
+
+    def _handle_company_error(self, company, sync_log, error):
+        """Handle error in company operation by logging and saving"""
+        sync_log["status"] = "error"
+        sync_log["error"] = str(error)
+        company.logs.append({"brevo_sync": sync_log})
+        company.save(update_fields=["logs"])
+
+    def _handle_company_404_and_retry(self, company, create_method):
         """Handle 404 error by switching from update to create mode"""
-        logger.warning(f"Company {siae.id} (ID {siae.brevo_company_id}) not found in Brevo, attempting to create...")
-        siae.brevo_company_id = None
-        siae.save(update_fields=["brevo_company_id"])
-        return self.create_or_update_company(siae)
-
-    def _post_process_company_success(self, siae, api_response, sync_log, is_update):
-        """Handle post-processing after successful company operation"""
-        if not is_update and api_response:
-            siae.brevo_company_id = api_response.id
-            sync_log["brevo_company_id"] = siae.brevo_company_id
-
-        sync_log["status"] = "success"
-        siae.logs.append({"brevo_sync": sync_log})
-
-        if is_update:
-            siae.save(update_fields=["logs"])
-        else:
-            siae.save(update_fields=["brevo_company_id", "logs"])
-            # Link contacts after creation
-            try:
-                self.link_company_with_contact_list(
-                    siae.brevo_company_id, list(siae.users.values_list("brevo_contact_id", flat=True))
-                )
-            except Exception as link_error:
-                logger.warning(f"Error linking company {siae.id} with its contacts: {link_error}")
-
-    # =============================================================================
-    # PRIVATE METHODS - BUYER COMPANY SUPPORT
-    # =============================================================================
-
-    def _handle_buyer_company_404_and_retry(self, company):
-        """Handle 404 error for buyer company by switching from update to create mode"""
+        company_type = "SIAE" if hasattr(company, "kind") and company.kind else "Buyer"
         logger.warning(
-            f"Buyer company {company.id} (ID {company.brevo_company_id}) not found in Brevo, attempting to create..."
+            f"{company_type} company {company.id} (ID {company.brevo_company_id}) "
+            f"not found in Brevo, attempting to create..."
         )
         company.brevo_company_id = None
         company.save(update_fields=["brevo_company_id"])
-        return self.create_or_update_buyer_company(company)
+        return create_method(company)
 
-    def _post_process_buyer_company_success(self, company, api_response, sync_log, is_update):
-        """Handle post-processing after successful buyer company operation"""
+    def _post_process_company_success(self, company, api_response, sync_log, is_update):
+        """Handle post-processing after successful company operation"""
         if not is_update and api_response:
             company.brevo_company_id = api_response.id
             sync_log["brevo_company_id"] = company.brevo_company_id
@@ -921,13 +901,14 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
             company.save(update_fields=["logs"])
         else:
             company.save(update_fields=["brevo_company_id", "logs"])
-            # Lier les contacts après création
+            # Link contacts after creation
             try:
                 self.link_company_with_contact_list(
                     company.brevo_company_id, list(company.users.values_list("brevo_contact_id", flat=True))
                 )
             except Exception as link_error:
-                logger.warning(f"Error linking buyer company {company.id} with its contacts: {link_error}")
+                company_type = "SIAE" if hasattr(company, "kind") and company.kind else "buyer"
+                logger.warning(f"Error linking {company_type} company {company.id} with its contacts: {link_error}")
 
 
 class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
@@ -998,13 +979,40 @@ class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
         )
 
 
+def _cleanup_and_link_contacts(api_instance, entity_id, contact_list: list, link_body_class, patch_method_name):
+    """
+    Common utility to clean up contact list and execute linking API call
+
+    Args:
+        api_instance: Brevo API instance (DealsApi or CompaniesApi)
+        entity_id: ID of the entity (deal or company) to link contacts to
+        contact_list: List of contact IDs (may contain None values)
+        link_body_class: The Brevo SDK body class to use (Body2, Body5, etc.)
+        patch_method_name: Name of the API method to call
+    """
+
+    # link entity with contact_list
+    if len(contact_list):
+        body_link = link_body_class(link_contact_ids=contact_list)
+        patch_method = getattr(api_instance, patch_method_name)
+        patch_method(entity_id, body_link)
+
+
 def get_config():
+    """
+    Legacy function for backward compatibility.
+    Consider using BrevoBaseApiClient.get_config() instead.
+    """
     config = sib_api_v3_sdk.Configuration()
     config.api_key["api-key"] = settings.BREVO_API_KEY
     return config
 
 
 def get_api_client():
+    """
+    Legacy function for backward compatibility.
+    Consider using BrevoBaseApiClient directly instead.
+    """
     config = get_config()
     return sib_api_v3_sdk.ApiClient(config)
 
@@ -1073,7 +1081,7 @@ def link_deal_with_contact_list(tender, contact_list: list = None):
     c = BrevoBaseApiClient()
     api_instance = sib_api_v3_sdk.DealsApi(c.api_client)
 
-    if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
+    if c.config.is_production_env:
         try:
             # get brevo ids
             brevo_crm_deal_id = tender.brevo_deal_id
@@ -1081,14 +1089,10 @@ def link_deal_with_contact_list(tender, contact_list: list = None):
             if not contact_list:
                 contact_list = [tender.author.brevo_contact_id]
 
-            # cleanup
-            contact_list = [id for id in contact_list if id is not None]
-
-            # link deal with contact_list
-            if len(contact_list):
-                # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body5.md
-                body_link_deal_contact = sib_api_v3_sdk.Body5(link_contact_ids=contact_list)
-                api_instance.crm_deals_link_unlink_id_patch(brevo_crm_deal_id, body_link_deal_contact)
+            # Use common utility for linking
+            _cleanup_and_link_contacts(
+                api_instance, brevo_crm_deal_id, contact_list, sib_api_v3_sdk.Body5, "crm_deals_link_unlink_id_patch"
+            )
 
         except ApiException as e:
             logger.error("Exception when calling Brevo->DealApi->crm_deals_link_unlink_id_patch: %s\n" % e)
