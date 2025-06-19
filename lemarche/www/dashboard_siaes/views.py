@@ -94,7 +94,8 @@ class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, SuccessMessa
         """
         if not self.object.users.count():
             self.object.users.add(self.request.user)
-            api_brevo.link_company_with_contact_list(self.object.brevo_company_id, [self.request.user.email])
+            c = api_brevo.BrevoCompanyApiClient()
+            c.link_company_with_contact_list(self.object.brevo_company_id, [self.request.user.email])
             return super().form_valid(form)
         else:
             # create SiaeUserRequest + send request email to assignee
@@ -423,7 +424,8 @@ class SiaeUserRequestConfirmView(SiaeMemberRequiredMixin, SuccessMessageMixin, U
         self.object.logs.append({"action": "response_true", "timestamp": self.object.response_date.isoformat()})
         self.object.save()
         send_siae_user_request_response_email_to_initiator(self.object)
-        api_brevo.link_company_with_contact_list(self.object.siae.brevo_company_id, [self.object.initiator.email])
+        c = api_brevo.BrevoCompanyApiClient()
+        c.link_company_with_contact_list(self.object.siae.brevo_company_id, [self.object.initiator.email])
         return super().form_valid(form)
 
     def get_success_url(self):

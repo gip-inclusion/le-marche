@@ -103,14 +103,15 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
         )
 
     @patch("lemarche.utils.apis.api_brevo.time.sleep")  # Mock sleep to speed up tests
-    @patch("lemarche.utils.apis.api_brevo.create_or_update_company")
-    def test_new_siaes_are_synced_in_brevo(self, mock_create_or_update_company, mock_sleep):
+    @patch("lemarche.utils.apis.api_brevo.BrevoCompanyApiClient")
+    def test_new_siaes_are_synced_in_brevo(self, mock_client_class, mock_sleep):
         """Test new siaes are synced in brevo"""
+        mock_client = mock_client_class.return_value
         call_command("crm_brevo_sync_companies", stdout=StringIO())
 
         # Only 2 SIAEs need sync: siae_with_name and siae_with_user
         # siae_with_brevo_id is skipped because it already has correct data in extra_data
-        self.assertEqual(mock_create_or_update_company.call_count, 2)
+        self.assertEqual(mock_client.create_or_update_company.call_count, 2)
 
     def test_siae_has_tender_stats(self):
         self.assertIsNotNone(

@@ -62,10 +62,11 @@ class Command(BaseCommand):
         existing_contacts = {}
         if with_existing_contacts:
             self.stdout_info(f"Retrieving existing contacts from Brevo list (ID: {brevo_list_id})...")
+            c = api_brevo.BrevoContactsApiClient()
             if brevo_list_id:
-                existing_contacts = api_brevo.get_all_users_from_list(list_id=brevo_list_id)
+                existing_contacts = c.get_contacts_from_list(list_id=brevo_list_id)
             else:
-                existing_contacts = api_brevo.get_all_contacts()
+                existing_contacts = c.get_all_contacts()
             self.stdout_info(f"Existing contacts in Brevo list: {len(existing_contacts)}")
         return existing_contacts
 
@@ -107,7 +108,8 @@ class Command(BaseCommand):
                 current_list_id = self._get_current_list_id(user, brevo_list_id)
                 if not dry_run:
                     try:
-                        api_brevo.create_contact(user=user, list_id=current_list_id)
+                        c = api_brevo.BrevoContactsApiClient()
+                        c.create_contact(user=user, list_id=current_list_id)
                         self.stdout_info(f"Brevo contact created: {user.pk}")
                         return {"created": 1}
                     except api_brevo.BrevoApiError as e:
