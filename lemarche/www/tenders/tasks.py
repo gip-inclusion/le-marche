@@ -401,6 +401,7 @@ def send_confirmation_published_email_to_author(tender: Tender):
                 variables=variables,
                 recipient_content_object=tender.author,
                 parent_content_object=tender,
+                from_tally=tender.source == tender_constants.SOURCE_TALLY,
             )
 
 
@@ -459,6 +460,7 @@ def send_siae_interested_email_to_author(tender: Tender):
                         variables=variables,
                         recipient_content_object=tender.author,
                         parent_content_object=tender,
+                        from_tally=tender.source == tender_constants.SOURCE_TALLY,
                     )
 
 
@@ -529,6 +531,7 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
                 variables=variables,
                 recipient_content_object=tender.author,
                 parent_content_object=tender,
+                from_tally=tender.source == tender_constants.SOURCE_TALLY,
             )
 
 
@@ -564,6 +567,7 @@ def send_tender_author_modification_request(tender: Tender):
             variables=variables,
             recipient_content_object=tender.author,
             parent_content_object=tender,
+            from_tally=tender.source == tender_constants.SOURCE_TALLY,
         )
 
 
@@ -595,6 +599,7 @@ def send_tender_author_reject_message(tender: Tender):
             variables=variables,
             recipient_content_object=tender.author,
             parent_content_object=tender,
+            from_tally=tender.source == tender_constants.SOURCE_TALLY,
         )
 
 
@@ -705,4 +710,5 @@ def send_super_siaes_email_to_author(tender: Tender, top_siaes: list[Siae]):
                 variables=variables,
                 recipient_content_object=tender.author,
                 parent_content_object=tender,
+                from_tally=tender.source == tender_constants.SOURCE_TALLY,
             )

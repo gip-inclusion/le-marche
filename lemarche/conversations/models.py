@@ -226,6 +226,9 @@ class TemplateTransactional(models.Model):
     description = models.TextField(verbose_name="Description", blank=True)
     group = models.ForeignKey("EmailGroup", on_delete=models.CASCADE, null=True)
     brevo_id = models.IntegerField(verbose_name="Identifiant Brevo", unique=True, db_index=True, blank=True, null=True)
+    tally_brevo_id = models.IntegerField(
+        verbose_name="Identifiant Brevo Tally", unique=True, db_index=True, blank=True, null=True
+    )
     is_active = models.BooleanField(verbose_name="Actif", default=False)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
@@ -265,10 +268,12 @@ class TemplateTransactional(models.Model):
         self.full_clean()
         super().save(*args, **kwargs)
 
-    @property
-    def get_template_id(self):
+    def get_template_id(self, from_tally=False):
         if self.code:
-            return self.brevo_id
+            if not from_tally or not self.tally_brevo_id:
+                return self.brevo_id
+            else:
+                return self.tally_brevo_id
         return None
 
     def create_send_log(self, **kwargs):
@@ -284,20 +289,35 @@ class TemplateTransactional(models.Model):
         from_name=settings.DEFAULT_FROM_NAME,
         recipient_content_object=None,
         parent_content_object=None,
+        from_tally=False,
     ):
+        """Send a transactional email using Brevo with the template.
+        Args:
+            recipient_email (str): The email address of the recipient.
+            recipient_name (str): The name of the recipient.
+            variables (dict): Variables to replace in the template.
+            subject (str): Subject of the email.
+            from_email (str): Email address of the sender.
+            from_name (str): Name of the sender.
+            recipient_content_object (GenericForeignKey): The object that is the recipient of the email.
+            parent_content_object (GenericForeignKey): The object that is the parent of the email.
+            from_tally (bool): Whether to send the email from Tally Brevo account.
+
+        """
         if self.is_active:
             # check if recipient email doesn't associated to a user or associated user doesn't disable email group
             if self.group and self.group.disabled_for_email(recipient_email):
                 return
 
             args = {
-                "template_id": self.get_template_id,
+                "template_id": self.get_template_id(from_tally=from_tally),
                 "recipient_email": recipient_email,
                 "recipient_name": recipient_name,
                 "variables": variables,
                 "subject": subject,
                 "from_email": from_email,
                 "from_name": from_name,
+                "from_tally": from_tally,
             }
 
             # create log
@@ -306,8 +326,9 @@ class TemplateTransactional(models.Model):
                 parent_content_object=parent_content_object,
                 extra_data={"source": "BREVO", "args": args},  # "response": result()
             )
+            brevo_email_client = api_brevo.BrevoTransactionalEmailApiClient()
 
-            api_brevo.send_transactional_email_with_template(**args)
+            brevo_email_client.send_transactional_email_with_template(**args)
 
 
 class TemplateTransactionalSendLog(models.Model):
