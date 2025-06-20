@@ -326,7 +326,6 @@ class TemplateTransactional(models.Model):
                 "subject": subject,
                 "from_email": from_email,
                 "from_name": from_name,
-                "from_tally": from_tally,
             }
 
             # create log

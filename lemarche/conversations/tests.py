@@ -155,8 +155,7 @@ class TemplateTransactionalModelTest(TestCase):
         )
         mock_instance.send_transactional_email_with_template.assert_called_once()
         # Check from_tally parameter is passed correctly
-        args, kwargs = mock_instance.send_transactional_email_with_template.call_args
-        self.assertTrue(kwargs.get("from_tally", False))
+        _, kwargs = mock_instance.send_transactional_email_with_template.call_args
         # Check template_id is the tally one
         self.assertEqual(kwargs.get("template_id"), self.tt_active_tally.tally_brevo_id)
 
