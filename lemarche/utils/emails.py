@@ -69,14 +69,16 @@ def add_to_contact_list(user, contact_type: str | int, tender=None):
         ValueError: When contact_type is not valid
     """
     try:
-        c = api_brevo.BrevoContactsApiClient()
+        brevo_contacts_client = api_brevo.BrevoContactsApiClient()
         if contact_type == "signup":
             if user.kind == user.KIND_BUYER:
-                c.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_BUYER_ID, tender=tender)
+                brevo_contacts_client.create_contact(
+                    user=user, list_id=settings.BREVO_CL_SIGNUP_BUYER_ID, tender=tender
+                )
             elif user.kind == user.KIND_SIAE:
-                c.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_SIAE_ID)
+                brevo_contacts_client.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_SIAE_ID)
         elif contact_type == "buyer_search":
-            c.create_contact(user=user, list_id=settings.BREVO_CL_BUYER_SEARCH_SIAE_LIST_ID)
+            brevo_contacts_client.create_contact(user=user, list_id=settings.BREVO_CL_BUYER_SEARCH_SIAE_LIST_ID)
         else:
             raise ValueError("contact_type must be defined")
     except api_brevo.BrevoApiError as e:
@@ -85,8 +87,8 @@ def add_to_contact_list(user, contact_type: str | int, tender=None):
 
 
 def update_contact_email_blacklisted(email, email_blacklisted: bool):
-    c = api_brevo.BrevoContactsApiClient()
-    c.update_contact_email_blacklisted(email, email_blacklisted)
+    brevo_contacts_client = api_brevo.BrevoContactsApiClient()
+    brevo_contacts_client.update_contact_email_blacklisted(email, email_blacklisted)
 
 
 @task()
