@@ -1,4 +1,5 @@
 from lemarche.conversations.models import TemplateTransactional
+from lemarche.users import constants as user_constants
 
 
 def notify_user_onboarded(user):
@@ -12,4 +13,5 @@ def notify_user_onboarded(user):
         variables=variables,
         recipient_content_object=user,
         parent_content_object=user,
+        from_tally=user.source == user_constants.SOURCE_TALLY_FORM,
     )
