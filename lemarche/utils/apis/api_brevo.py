@@ -1091,10 +1091,10 @@ def link_deal_with_contact_list(tender, contact_list: list = None):
     Raises:
         ApiException: If an error occurs during the linking process in the Brevo API.
     """
-    c = BrevoBaseApiClient()
-    api_instance = sib_api_v3_sdk.DealsApi(c.api_client)
+    brevo_client = BrevoBaseApiClient()
+    api_instance = sib_api_v3_sdk.DealsApi(brevo_client.api_client)
 
-    if c.config.is_production_env:
+    if brevo_client.config.is_production_env:
         try:
             # get brevo ids
             brevo_crm_deal_id = tender.brevo_deal_id
