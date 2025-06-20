@@ -148,6 +148,9 @@ def send_tender_email_to_siae(tendersiae: TenderSiae, email_subject: str, recipi
             "TENDERSIAE_ID": tendersiae.id,
         }
 
+        # Determine if the email should be sent via Tally Brevo
+        from_tally = tendersiae.tender.source == tender_constants.SOURCE_TALLY
+
         email_template.send_transactional_email(
             recipient_email=recipient_email,
             recipient_name=recipient_name,
@@ -155,9 +158,10 @@ def send_tender_email_to_siae(tendersiae: TenderSiae, email_subject: str, recipi
             subject=email_subject,
             recipient_content_object=recipient_to_override if recipient_to_override else tendersiae.siae,
             parent_content_object=tendersiae,
+            from_tally=from_tally,
         )
 
-        # update tendersiae
+        # update tendersiae with the email send date
         tendersiae.email_send_date = timezone.now()
         tendersiae.save()
 

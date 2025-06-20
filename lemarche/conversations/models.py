@@ -269,6 +269,15 @@ class TemplateTransactional(models.Model):
         super().save(*args, **kwargs)
 
     def get_template_id(self, from_tally=False):
+        """
+        Get the appropriate Brevo template ID based on context.
+
+        Args:
+            from_tally (bool): If True and if tally_brevo_id exists, returns the Tally-specific ID.
+
+        Returns:
+            int: The Brevo template ID to use, or None if no ID is available
+        """
         if self.code:
             if not from_tally or not self.tally_brevo_id:
                 return self.brevo_id

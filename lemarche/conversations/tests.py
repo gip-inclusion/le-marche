@@ -121,38 +121,64 @@ class TemplateTransactionalModelTest(TestCase):
         cls.tt_active_brevo = TemplateTransactional(
             name="Email 3", code="EMAIL_3", brevo_id=41, is_active=True, group=cls.email_group
         )
+        cls.tt_active_tally = TemplateTransactional(
+            name="Email 4", code="EMAIL_4", brevo_id=42, tally_brevo_id=43, is_active=True, group=cls.email_group
+        )
 
     def test_get_template_id(self):
-        self.assertIsNone(self.tt_active_empty.get_template_id)
-        self.assertEqual(self.tt_inactive.get_template_id, self.tt_inactive.brevo_id)
-        self.assertEqual(self.tt_active_brevo.get_template_id, self.tt_active_brevo.brevo_id)
+        self.assertIsNone(self.tt_active_empty.get_template_id())
+        self.assertEqual(self.tt_inactive.get_template_id(), self.tt_inactive.brevo_id)
+        self.assertEqual(self.tt_active_brevo.get_template_id(), self.tt_active_brevo.brevo_id)
+        # Test that when from_tally is False, it returns the default brevo_id
+        self.assertEqual(self.tt_active_tally.get_template_id(), self.tt_active_tally.brevo_id)
+        # Test that when from_tally is True, it returns the tally_brevo_id
+        self.assertEqual(self.tt_active_tally.get_template_id(from_tally=True), self.tt_active_tally.tally_brevo_id)
 
-    @patch("lemarche.conversations.models.api_brevo.send_transactional_email_with_template")
-    def test_send_transactional_email_brevo(self, mock_send_transactional_email_brevo):
+    @patch("lemarche.conversations.models.api_brevo.BrevoTransactionalEmailApiClient")
+    def test_send_transactional_email_brevo(self, mock_brevo_client_class):
+        mock_instance = mock_brevo_client_class.return_value
         self.tt_active_brevo.save()
         self.tt_active_brevo.send_transactional_email(
             recipient_email="test@example.com", recipient_name="test", variables={}
         )
-        mock_send_transactional_email_brevo.assert_called_once()
+        mock_instance.send_transactional_email_with_template.assert_called_once()
+        # Check from_tally parameter is passed correctly
+        args, kwargs = mock_instance.send_transactional_email_with_template.call_args
+        self.assertFalse(kwargs.get("from_tally", False))
 
-    @patch("lemarche.conversations.models.api_brevo.send_transactional_email_with_template")
-    def test_send_transactional_email_inactive(self, mock_send_transactional_email_brevo):
+    @patch("lemarche.conversations.models.api_brevo.BrevoTransactionalEmailApiClient")
+    def test_send_transactional_email_tally(self, mock_brevo_client_class):
+        mock_instance = mock_brevo_client_class.return_value
+        self.tt_active_tally.save()
+        self.tt_active_tally.send_transactional_email(
+            recipient_email="test@example.com", recipient_name="test", variables={}, from_tally=True
+        )
+        mock_instance.send_transactional_email_with_template.assert_called_once()
+        # Check from_tally parameter is passed correctly
+        args, kwargs = mock_instance.send_transactional_email_with_template.call_args
+        self.assertTrue(kwargs.get("from_tally", False))
+        # Check template_id is the tally one
+        self.assertEqual(kwargs.get("template_id"), self.tt_active_tally.tally_brevo_id)
+
+    @patch("lemarche.conversations.models.api_brevo.BrevoTransactionalEmailApiClient")
+    def test_send_transactional_email_inactive(self, mock_brevo_client_class):
+        mock_instance = mock_brevo_client_class.return_value
         self.tt_inactive.save()
         self.tt_inactive.send_transactional_email(
             recipient_email="test@example.com", recipient_name="test", variables={}
         )
+        mock_instance.send_transactional_email_with_template.assert_not_called()
 
-        mock_send_transactional_email_brevo.assert_not_called()
-
-    @patch("lemarche.conversations.models.api_brevo.send_transactional_email_with_template")
-    def test_disabled_email_group(self, mock_send_transactional_email_brevo):
+    @patch("lemarche.conversations.models.api_brevo.BrevoTransactionalEmailApiClient")
+    def test_disabled_email_group(self, mock_brevo_client_class):
+        mock_instance = mock_brevo_client_class.return_value
         email_test = "test@example.com"
         user = UserFactory(email=email_test)
         DisabledEmail.objects.create(user=user, group=self.email_group)
 
         self.tt_active_brevo.save()
         self.tt_active_brevo.send_transactional_email(recipient_email=email_test, recipient_name="test", variables={})
-        mock_send_transactional_email_brevo.assert_not_called()
+        mock_instance.send_transactional_email_with_template.assert_not_called()
 
 
 class TemplateTransactionalModelSaveTest(TransactionTestCase):
