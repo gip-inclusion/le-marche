@@ -35,6 +35,7 @@ class Command(BaseCommand):
             "extra_data_updated": 0,
             "total": 0,
         }
+        self.brevo_company_client = api_brevo.BrevoCompanyApiClient()
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -173,8 +174,7 @@ class Command(BaseCommand):
         """Synchronize SIAE with Brevo if needed."""
         if not siae.brevo_company_id or extra_data_changed:
             if not dry_run:
-                c = api_brevo.BrevoCompanyApiClient()
-                c.create_or_update_company(siae)
+                self.brevo_company_client.create_or_update_company(siae)
 
             if siae.brevo_company_id:
                 self.stats["updated"] += 1
@@ -244,8 +244,7 @@ class Command(BaseCommand):
         """Synchronize buyer company with Brevo if needed."""
         if not company.brevo_company_id or extra_data_changed:
             if not dry_run:
-                c = api_brevo.BrevoCompanyApiClient()
-                c.create_or_update_buyer_company(company)
+                self.brevo_company_client.create_or_update_buyer_company(company)
 
             if company.brevo_company_id:
                 self.stats["updated"] += 1
