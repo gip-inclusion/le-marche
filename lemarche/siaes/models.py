@@ -1485,7 +1485,8 @@ class SiaeActivity(models.Model):
         if self.geo_range == siae_constants.GEO_RANGE_COUNTRY:
             return self.get_geo_range_display()
         elif self.geo_range == siae_constants.GEO_RANGE_ZONES:
-            return f"{self.get_geo_range_display()} : {', '.join(self.locations.values_list('name', flat=True))}"
+            locations_str = ", ".join(location.name_display for location in self.locations.all())
+            return f"{self.get_geo_range_display()} : {locations_str}"
         elif self.geo_range == siae_constants.GEO_RANGE_CUSTOM:
             if self.geo_range_custom_distance:
                 return f"{self.geo_range_custom_distance} km de {self.siae.city}"
