@@ -36,31 +36,10 @@ class BrevoConfig:
     default_page_limit: int = 500
     contacts_default_since_days: int = 30
 
-    # API configuration
-    api_key: Optional[str] = None
-    environment: Optional[str] = None
-
-    def __post_init__(self):
-        """Initialize config values from Django settings."""
-        if self.api_key is None:
-            self.api_key = settings.BREVO_API_KEY
-        if self.environment is None:
-            self.environment = getattr(settings, "BITOUBI_ENV", "dev")
-
     @property
     def is_production_env(self) -> bool:
         """Check if we're in production environment."""
-        return self.environment not in ENV_NOT_ALLOWED
-
-    @property
-    def should_send_emails(self) -> bool:
-        """Check if emails should be sent (not in dev/test)."""
-        return self.is_production_env
-
-    @property
-    def should_skip_api_calls(self) -> bool:
-        """Check if API calls should be skipped (in dev/test environments)."""
-        return not self.is_production_env
+        return settings.BITOUBI_ENV not in ENV_NOT_ALLOWED
 
 
 class BrevoApiError(Exception):
@@ -74,24 +53,20 @@ class BrevoApiError(Exception):
 
 class BrevoBaseApiClient:
 
-    def __init__(self, config: Optional[BrevoConfig] = None):
+    def __init__(self, config: Optional[BrevoConfig] = BrevoConfig()):
         """
         Initialize the Brevo API client with configuration.
 
         Args:
             config (BrevoConfig, optional): Configuration instance. If None, uses default config.
         """
-        self.config = config or BrevoConfig()
+        self.config = config
         self.set_api_client()
-        self.logger = logging.getLogger(__name__)
-
-    def get_config(self):
-        config = Configuration()
-        config.api_key["api-key"] = self.config.api_key
-        return config
+        self.logger = logging.getLogger(__class__.__name__)
 
     def set_api_client(self):
-        config = self.get_config()
+        config = Configuration()
+        config.api_key["api-key"] = settings.BREVO_API_KEY
         self.api_client = ApiClient(config)
 
     def handle_api_retry(self, exception: ApiException, attempt, operation_name, entity_id=""):
@@ -970,7 +945,7 @@ class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
             BrevoApiError: When email sending fails after all retries
         """
 
-        if self.config.environment in ENV_NOT_ALLOWED:
+        if not self.config.is_production_env:
             self.logger.info("Brevo: email not sent (DEV or TEST environment detected)")
             return {"message": "Email not sent in development/test environment"}
 
