@@ -390,11 +390,11 @@ class Tender(models.Model):
         blank=True,
         default=list,
     )
+    constraints_title = models.CharField(max_length=255, blank=True, verbose_name="Titre des contraintes")
     constraints = models.TextField(
         verbose_name="Comment répondre à cette demande ?",
         blank=True,
     )
-    tender_instruction = models.ForeignKey(TenderInstruction, on_delete=models.SET_NULL, null=True, blank=True)
     external_link = models.URLField(
         verbose_name="Lien vers l'appel d'offres",
         help_text="Ajoutez ici l'URL de votre appel d'offres",
