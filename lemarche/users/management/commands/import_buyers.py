@@ -90,7 +90,7 @@ class Command(BaseCommand):
             send_new_user_password_reset_link(user, template_code=template_code)
             self.stdout.write(f"L'acheteur {imported_user['EMAIL']} a été inscrit avec succès.")
         finally:  # add to Brevo contact list, even if user already exists or not
-            add_to_contact_list(user, contact_type=brevo_contact_id)
+            add_to_contact_list(user, contact_type="signup")
 
     def _add_email_dns_to_company(self, email: str, company: Company) -> None:
         """If the email domain is not already in the company's email_domain_list, add it."""
