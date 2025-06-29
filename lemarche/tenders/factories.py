@@ -25,6 +25,7 @@ class TenderFactory(DjangoModelFactory):
         tender_constants.RESPONSE_KIND_EXTERNAL,
     ]
     description = "Ceci est un pagagraphe de test"
+    constraints_title = "constraint title"
     constraints = "Ceci est un pagagraphe de test"
     deadline_date = date.today() + timedelta(days=10)
     start_working_date = date.today() + timedelta(days=50)

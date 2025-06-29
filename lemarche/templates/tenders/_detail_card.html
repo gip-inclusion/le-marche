@@ -96,8 +96,8 @@
         <!-- tender constraints -->
         {% if tender.constraints %}
             <hr>
-            <h2>Comment répondre à cette demande ?</h2>
-            <p>{{ tender.constraints|safe }}</p>
+            <h2>{{ tender.constraints_title }}</h2>
+            {{ tender.constraints|safe }}
         {% endif %}
         <!-- tender amount -->
         {% if source_form or user == tender.author or tender.accept_share_amount %}

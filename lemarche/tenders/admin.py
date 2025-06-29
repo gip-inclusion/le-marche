@@ -18,13 +18,14 @@ from lemarche.notes.models import Note
 from lemarche.perimeters.admin import PerimeterRegionFilter
 from lemarche.perimeters.models import Perimeter
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.constants import SOURCE_TALLY
+from lemarche.tenders.enums import TenderSourcesChoices
 from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import (
     PartnerShareTender,
     QuestionAnswer,
     SuggestedQuestion,
     Tender,
+    TenderInstruction,
     TenderQuestion,
     TenderSiae,
     TenderStepsData,
@@ -86,9 +87,9 @@ class TallyFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         value = self.value()
         if value == "TALLY":
-            return queryset.filter(source=SOURCE_TALLY)
+            return queryset.filter(source=TenderSourcesChoices.SOURCE_TALLY)
         elif value == "PRO":
-            return queryset.exclude(source=SOURCE_TALLY)
+            return queryset.exclude(source=TenderSourcesChoices.SOURCE_TALLY)
         return queryset
 
 
@@ -411,6 +412,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             {
                 "fields": (
                     "description",
+                    "constraints_title",
                     "constraints",
                     "external_link",
                     "question_count_with_link",
@@ -599,7 +601,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         """
         Default values in add form.
         """
-        return {"source": tender_constants.SOURCE_STAFF_C4_CREATED}
+        return {"source": TenderSourcesChoices.SOURCE_STAFF_C4_CREATED}
 
     def lookup_allowed(self, lookup, *args, **kwargs):
         if lookup in [
@@ -1051,3 +1053,13 @@ class TenderSiaeAdmin(admin.ModelAdmin):
         return "-"
 
     logs_display.short_description = Tender._meta.get_field("logs").verbose_name
+
+
+@admin.register(TenderInstruction, site=admin_site)
+class TenderInstructionAdmin(admin.ModelAdmin):
+    list_display = ["id", "title", "tender_type", "tender_source"]
+    search_fields = ["id", "title", "tender_type", "tender_source"]
+
+    formfield_overrides = {
+        models.TextField: {"widget": CKEditorWidget},
+    }
