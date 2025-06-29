@@ -23,9 +23,10 @@ from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
+from lemarche.tenders.constants import KIND_QUOTE
+from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices, TenderSourcesChoices
 from lemarche.tenders.factories import QuestionAnswerFactory, TenderFactory, TenderQuestionFactory, TenderSiaeFactory
-from lemarche.tenders.models import QuestionAnswer, Tender, TenderSiae, TenderStepsData
+from lemarche.tenders.models import QuestionAnswer, Tender, TenderInstruction, TenderSiae, TenderStepsData
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 from lemarche.utils import constants
@@ -40,6 +41,13 @@ class TenderCreateViewTest(TestCase):
         cls.user_buyer = UserFactory(kind=User.KIND_BUYER, company_name="Entreprise Buyer")
         cls.sectors = [SectorFactory().slug for _ in range(3)]
         cls.location_slug = PerimeterFactory(insee_code="06195").slug
+
+        TenderInstruction.objects.create(
+            title="instruction_title",
+            text="tender instruction text",
+            tender_type=KIND_QUOTE,
+            tender_source=TenderSourcesChoices.SOURCE_FORM,
+        )
 
     @classmethod
     def _generate_fake_data_form(
@@ -761,7 +769,7 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Comment répondre à cette demande ?")
+        self.assertContains(response, "constraint title")
         # tender without constraints: section should be hidden
         tender_2 = TenderFactory(author=self.user_buyer_2, constraints="")
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
