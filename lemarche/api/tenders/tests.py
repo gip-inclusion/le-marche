@@ -7,9 +7,10 @@ from django.urls import reverse
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.sectors.factories import SectorFactory
 from lemarche.tenders import constants as tender_constants
+from lemarche.tenders.constants import KIND_PROJECT, KIND_TENDER
 from lemarche.tenders.enums import TenderSourcesChoices
 from lemarche.tenders.factories import TenderFactory
-from lemarche.tenders.models import Tender
+from lemarche.tenders.models import Tender, TenderInstruction
 from lemarche.users import constants as user_constants
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
@@ -53,6 +54,20 @@ class TenderCreateApiTest(TestCase):
         cls.perimeter = PerimeterFactory()
         cls.sector_1 = SectorFactory()
         cls.sector_2 = SectorFactory()
+
+        TenderInstruction.objects.create(
+            title="tally_instruction",
+            text="instruction",
+            tender_type=KIND_TENDER,
+            tender_source=TenderSourcesChoices.SOURCE_TALLY,
+        )
+
+        TenderInstruction.objects.create(
+            title="api_instruction",
+            text="instruction",
+            tender_type=KIND_TENDER,
+            tender_source=TenderSourcesChoices.SOURCE_API,
+        )
 
     @patch("lemarche.api.tenders.views.get_or_create_user_from_anonymous_content")
     def setup_mock_user_and_tender_creation(self, mock_get_user, user=None, title="Test Tally", extra_data=None):
@@ -221,6 +236,7 @@ class TenderCreateApiTest(TestCase):
         self.assertIsInstance(
             kwargs.get("tender"), Tender, "Expected an instance of Tender for the 'tender' argument."
         )
+        self.assertEqual(kwargs.get("tender").constraints_title, "tally_instruction")
 
     @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.CreateContact")
     def test_create_contact_call_has_user_buyer_attributes(self, mock_create_contact):
@@ -323,6 +339,20 @@ class TenderCreateApiPartnerTest(TestCase):
         cls.api_token_approch = "a" * 64
         cls.url = reverse("api:tenders-list")
         cls.user_partner_with_token = UserFactory(email="approch@example.com", api_key=cls.api_token_approch)
+
+        TenderInstruction.objects.create(
+            title="api_instruction",
+            text="instruction",
+            tender_type=KIND_TENDER,
+            tender_source=TenderSourcesChoices.SOURCE_API,
+        )
+
+        TenderInstruction.objects.create(
+            title="api_instruction",
+            text="instruction",
+            tender_type=KIND_PROJECT,
+            tender_source=TenderSourcesChoices.SOURCE_API,
+        )
 
     def test_partner_approch_can_create_tender(self):
         with self.settings(PARTNER_APPROCH_USER_ID=self.user_partner_with_token.id):
