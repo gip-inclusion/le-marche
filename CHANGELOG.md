@@ -6,6 +6,13 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2025.5.0](https://github.com/gip-inclusion/le-marche/compare/v2025.4.0...v2025.5.0) (2025-06-30)
+
+
+### Features
+
+* Instructions automatiques pour les DDB ([#1726](https://github.com/gip-inclusion/le-marche/issues/1726)) ([831b8a0](https://github.com/gip-inclusion/le-marche/commit/831b8a08e7e4de808ce337e6d893aaba27d97b00))
+
 ## [2025.4.0](https://github.com/gip-inclusion/le-marche/compare/v2025.3.0...v2025.4.0) (2025-06-23)
 
 
