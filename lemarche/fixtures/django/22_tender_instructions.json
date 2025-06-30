@@ -1,0 +1,52 @@
+[
+{
+    "model": "tenders.tenderinstruction",
+    "pk": 1,
+    "fields": {
+        "title": "Comment répondre à cette demande de devis",
+        "text": "<p>1. Cliquez sur “Accéder aux coordonnées” pour contacter le client<br />\r\n2. Cliquez sur “OUI” pour montrer votre intérêt.<br />\r\n3. Envoyez un premier devis par mail<br />\r\n<strong>4. Mettez en copie commercial@lemarche.inclusion.beta.gouv.fr pour que notre équipe puisse vous aider à répondre à la demande de devis.</strong></p>",
+        "tender_type": "QUOTE",
+        "tender_source": "FORM"
+    }
+},
+{
+    "model": "tenders.tenderinstruction",
+    "pk": 2,
+    "fields": {
+        "title": "Comment répondre à cette demande de devis",
+        "text": "<p>1. Cliquez sur “Accéder aux coordonnées” pour contacter le client<br />\r\n2. Cliquez sur “OUI” pour montrer votre intérêt.<br />\r\n3. Envoyez un premier devis par mail<br />\r\n<strong>4. Mettez en copie commercial@lemarche.inclusion.beta.gouv.fr pour que notre équipe puisse vous aider à répondre à la demande de devis.</strong></p>",
+        "tender_type": "QUOTE",
+        "tender_source": "TALLY"
+    }
+},
+{
+    "model": "tenders.tenderinstruction",
+    "pk": 3,
+    "fields": {
+        "title": "Comment répondre à cet appel d'offre",
+        "text": "<p>1. Cliquez sur « Accéder à l’appel d’offre » pour ouvrir la plateforme dédiée<br />\r\n2. Téléchargez les documents relatifs à cet appel d’offre<br />\r\n<strong>3. Contactez notre référent chems.benzeghiba@inclusion.gouv.fr si vous avez besoin d’un accompagnement spécifique</strong></p>",
+        "tender_type": "TENDER",
+        "tender_source": "FORM"
+    }
+},
+{
+    "model": "tenders.tenderinstruction",
+    "pk": 4,
+    "fields": {
+        "title": "Comment répondre à ce sourcing",
+        "text": "<p>1. Cliquez sur « Accéder aux coordonnées » pour rentrer en contact avec l’acheteur<br />\r\n2. Cliquez ensuite sur “OUI ” pour montrer votre intérêt<br />\r\n3. Répondez aux questions de l’acheteur puis envoyez-lui un mail pour initier un premier contact<br />\r\n<strong>4. Mettez en copie commercial@lemarche.inclusion.beta.gouv.fr pour garantir un suivi du côté du Marché de l’inclusion</strong></p>",
+        "tender_type": "PROJ",
+        "tender_source": "FORM"
+    }
+},
+{
+    "model": "tenders.tenderinstruction",
+    "pk": 5,
+    "fields": {
+        "title": "Comment répondre à ce projet d'achat APProch",
+        "text": "<p>1. Cliquez sur “Accédez au lien\" afin d’obtenir le lien et les détails de ce sourcing sur APProch<br />\r\n<strong>2. Ce projet d’achat est relayé par la plateforme de l’Etat : APProch. Connectez-vous sur celle-ci en vous créant un identifiant, puis cliquez sur \"Ça m'intéresse\"</strong><br />\r\n3. Contactez-nous par mail commercial@lemarche.inclusion.beta.gouv.fr pour toute question</p>",
+        "tender_type": "TENDER",
+        "tender_source": "API"
+    }
+}
+]

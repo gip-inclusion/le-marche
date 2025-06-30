@@ -7,7 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from lemarche.api.tenders.serializers import TenderSerializer
 from lemarche.api.utils import BasicChoiceSerializer
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.models import Tender
+from lemarche.tenders.enums import TenderSourcesChoices
+from lemarche.tenders.models import Tender, TenderInstruction
 from lemarche.users import constants as user_constants
 from lemarche.utils.emails import add_to_contact_list
 from lemarche.www.tenders.utils import get_or_create_user_from_anonymous_content
@@ -35,13 +36,13 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         - create Tender !
         """
         tender_source = (
-            tender_constants.SOURCE_TALLY
-            if serializer.validated_data.get("extra_data", {}).get("source") == tender_constants.SOURCE_TALLY
-            else tender_constants.SOURCE_API
+            TenderSourcesChoices.SOURCE_TALLY
+            if serializer.validated_data.get("extra_data", {}).get("source") == TenderSourcesChoices.SOURCE_TALLY
+            else TenderSourcesChoices.SOURCE_API
         )
         user_source = (
             user_constants.SOURCE_TALLY_FORM
-            if (tender_source == tender_constants.SOURCE_TALLY)
+            if (tender_source == TenderSourcesChoices.SOURCE_TALLY)
             else user_constants.SOURCE_SIGNUP_FORM
         )
         # get Tender author
@@ -49,8 +50,12 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             serializer.validated_data,
             source=user_source,
         )
+
+        tender_instruction = TenderInstruction.objects.get(
+            tender_type=serializer.validated_data.get("kind"), tender_source=tender_source
+        )
         # Manage Partner APProch
-        if tender_source == tender_constants.SOURCE_API:
+        if tender_source == TenderSourcesChoices.SOURCE_API:
             if user.id == settings.PARTNER_APPROCH_USER_ID:
                 tender_partner_approch_id = serializer.validated_data.get("extra_data", {}).get("id", None)
                 if tender_partner_approch_id:
@@ -77,6 +82,8 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             published_at=timezone.now(),
             source=tender_source,
             import_raw_object=self.request.data,
+            constraints_title=tender_instruction.title,
+            constraints=tender_instruction.text,
         )
         # Check before adding logs or resetting modification request
         tender.reset_modification_request()
