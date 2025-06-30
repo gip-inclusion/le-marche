@@ -204,11 +204,6 @@ def csrf_failure(request, reason=""):  # noqa C901
     """
     template_name = "403_csrf.html"
     context = {}
-
-    logger.error(
-        "CSRF FAILURE REASON %s PATH %s POST %s SESSION %s", reason, request.path, request.POST, dict(request.session)
-    )
-
     return render(request, template_name, context)
 
 
