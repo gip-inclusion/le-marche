@@ -13,6 +13,205 @@ from lemarche.utils.apis import api_brevo
 from lemarche.utils.apis.brevo_attributes import CONTACT_ATTRIBUTES
 
 
+class BrevoBaseApiClientTest(TestCase):
+    """
+    Tests for the BrevoBaseApiClient class.
+    This covers the retry decorator functionality and base client behavior.
+    """
+
+    def setUp(self):
+        self.base_client = api_brevo.BrevoBaseApiClient()
+
+    @patch("lemarche.utils.apis.api_brevo.time.sleep")
+    def test_execute_with_retry_method_success_first_attempt(self, mock_sleep):
+        """Test decorator when operation succeeds on first attempt"""
+
+        # Create a test method decorated with execute_with_retry_method
+        @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
+        def test_method(self):
+            return {"success": True}
+
+        # Bind the method to our client instance
+        bound_method = test_method.__get__(self.base_client, api_brevo.BrevoBaseApiClient)
+
+        # Execute the method
+        result = bound_method()
+
+        # Verify success and no retries
+        self.assertEqual(result, {"success": True})
+        mock_sleep.assert_not_called()
+
+    @patch("lemarche.utils.apis.api_brevo.time.sleep")
+    def test_execute_with_retry_method_success_after_retry(self, mock_sleep):
+        """Test decorator when operation succeeds after one retry"""
+
+        # Use a list to be able to modify the value from the nested function
+        call_counter = [0]
+
+        @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
+        def test_method(self):
+            call_counter[0] += 1
+            if call_counter[0] == 1:
+                # First call fails
+                raise ApiException(status=500, reason="Server Error")
+            else:
+                # Second call succeeds
+                return {"success": True, "attempt": call_counter[0]}
+
+        bound_method = test_method.__get__(self.base_client, api_brevo.BrevoBaseApiClient)
+        result = bound_method()
+
+        # Verify success after retry
+        self.assertEqual(result, {"success": True, "attempt": 2})
+        self.assertEqual(call_counter[0], 2)
+        mock_sleep.assert_called_once_with(5)  # Default retry delay
+
+    @patch("lemarche.utils.apis.api_brevo.time.sleep")
+    def test_execute_with_retry_method_rate_limit_handling(self, mock_sleep):
+        """Test decorator handles rate limiting with exponential backoff"""
+
+        # Use a list to be able to modify the value from the nested function
+        call_counter = [0]
+
+        @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
+        def test_method(self):
+            call_counter[0] += 1
+            if call_counter[0] == 1:
+                # First call hits rate limit
+                raise ApiException(status=429, reason="Rate Limit")
+            else:
+                # Second call succeeds
+                return {"success": True}
+
+        bound_method = test_method.__get__(self.base_client, api_brevo.BrevoBaseApiClient)
+        result = bound_method()
+
+        # Verify rate limit handling with exponential backoff
+        self.assertEqual(result, {"success": True})
+        # Rate limit wait time = retry_delay * (attempt + 1) * rate_limit_backoff_multiplier
+        # = 5 * (0 + 1) * 2 = 10 seconds
+        mock_sleep.assert_called_once_with(10)
+
+    @patch("lemarche.utils.apis.api_brevo.time.sleep")
+    def test_execute_with_retry_method_max_retries_exceeded(self, mock_sleep):
+        """Test decorator when max retries are exceeded"""
+
+        @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
+        def test_method(self):
+            # Always fail
+            raise ApiException(status=500, reason="Server Error")
+
+        bound_method = test_method.__get__(self.base_client, api_brevo.BrevoBaseApiClient)
+
+        # Should raise BrevoApiError after max retries
+        with self.assertRaises(api_brevo.BrevoApiError) as context:
+            bound_method()
+
+        # Verify error message contains operation details
+        self.assertIn("Failed to test operation", str(context.exception))
+        self.assertIn("after 4 attempts", str(context.exception))  # max_retries=3 + initial attempt
+
+        # Verify sleep was called for each retry (3 times)
+        self.assertEqual(mock_sleep.call_count, 3)
+
+    @patch("lemarche.utils.apis.api_brevo.time.sleep")
+    def test_execute_with_retry_method_custom_config(self, mock_sleep):
+        """Test decorator with custom retry configuration"""
+
+        # Create client with custom config
+        config = api_brevo.BrevoConfig(max_retries=1, retry_delay=2)
+        custom_client = api_brevo.BrevoBaseApiClient(config)
+
+        @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
+        def test_method(self):
+            # Always fail
+            raise ApiException(status=500, reason="Server Error")
+
+        bound_method = test_method.__get__(custom_client, api_brevo.BrevoBaseApiClient)
+
+        with self.assertRaises(api_brevo.BrevoApiError):
+            bound_method()
+
+        # Should only retry once with custom delay
+        mock_sleep.assert_called_once_with(2)
+
+    @patch("lemarche.utils.apis.api_brevo.time.sleep")
+    def test_execute_with_retry_method_unexpected_exception(self, mock_sleep):
+        """Test decorator handling of unexpected exceptions"""
+
+        @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
+        def test_method(self):
+            # Raise unexpected exception (not ApiException)
+            raise ValueError("Unexpected error")
+
+        bound_method = test_method.__get__(self.base_client, api_brevo.BrevoBaseApiClient)
+
+        with self.assertRaises(api_brevo.BrevoApiError) as context:
+            bound_method()
+
+        # Should not retry for unexpected exceptions
+        mock_sleep.assert_not_called()
+        self.assertIn("Unexpected error during test operation", str(context.exception))
+
+    def test_execute_with_retry_method_simplified(self):
+        """Test decorator works without entity_id parameter"""
+
+        @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
+        def test_method(self):
+            return {"success": True}
+
+        bound_method = test_method.__get__(self.base_client, api_brevo.BrevoBaseApiClient)
+        result = bound_method()
+
+        # Verify it works without entity_id
+        self.assertEqual(result, {"success": True})
+
+    def test_execute_with_retry_method_without_entity_id_decorator(self):
+        """Test decorator without entity_id parameter"""
+
+        @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
+        def test_method(self):
+            raise ApiException(status=500, reason="Server Error")
+
+        bound_method = test_method.__get__(self.base_client, api_brevo.BrevoBaseApiClient)
+
+        with self.assertRaises(api_brevo.BrevoApiError) as context:
+            bound_method()
+
+        # Verify error message doesn't contain entity_id references
+        self.assertIn("Failed to test operation after", str(context.exception))
+
+    def test_handle_api_retry_rate_limit(self):
+        """Test handle_api_retry method for rate limiting"""
+        exception = ApiException(status=429, reason="Rate Limit")
+
+        should_retry, wait_time = self.base_client.handle_api_retry(exception, 0, "test operation")
+
+        self.assertTrue(should_retry)
+        # Wait time = retry_delay * (attempt + 1) * rate_limit_backoff_multiplier = 5 * 1 * 2 = 10
+        self.assertEqual(wait_time, 10)
+
+    def test_handle_api_retry_server_error_within_limits(self):
+        """Test handle_api_retry method for server error within retry limits"""
+        exception = ApiException(status=500, reason="Server Error")
+
+        should_retry, wait_time = self.base_client.handle_api_retry(exception, 1, "test operation")
+
+        self.assertTrue(should_retry)
+        # Wait time = retry_delay * (attempt + 1) = 5 * 2 = 10
+        self.assertEqual(wait_time, 10)
+
+    def test_handle_api_retry_max_retries_exceeded(self):
+        """Test handle_api_retry method when max retries exceeded"""
+        exception = ApiException(status=500, reason="Server Error")
+
+        # Attempt equals max_retries (3), should not retry
+        should_retry, wait_time = self.base_client.handle_api_retry(exception, 3, "test operation")
+
+        self.assertFalse(should_retry)
+        self.assertEqual(wait_time, 0)
+
+
 class BrevoContactsApiClientTest(TestCase):
     """
     Tests for the BrevoContactsApiClient class.
@@ -791,9 +990,8 @@ class BrevoCompanyApiClientTest(TestCase):
         # Verify no API call was made
         mock_api_instance.companies_link_unlink_id_patch.assert_not_called()
 
-    @patch("lemarche.utils.apis.api_brevo.logger")
     @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_link_company_with_contact_list_api_exception_logged(self, mock_get_api_client, mock_logger):
+    def test_link_company_with_contact_list_api_exception_logged(self, mock_get_api_client):
         """Test that API exceptions are properly logged"""
         mock_api_instance = MagicMock()
         mock_client = MagicMock()
@@ -806,13 +1004,16 @@ class BrevoCompanyApiClientTest(TestCase):
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
             with patch("lemarche.utils.apis.api_brevo.settings.BITOUBI_ENV", "local"):
                 client = api_brevo.BrevoCompanyApiClient()
-                # Should not raise exception, just log it
-                client.link_company_with_contact_list(12345, [111, 222])
 
-        # Verify error was logged
-        mock_logger.error.assert_called_once()
-        error_msg = mock_logger.error.call_args[0][0]
-        self.assertIn("Exception when calling Brevo->DealApi->companies_link_unlink_id_patch", error_msg)
+                # Mock the logger of the client instance
+                with patch.object(client, "logger") as mock_logger:
+                    # Should not raise exception, just log it
+                    client.link_company_with_contact_list(12345, [111, 222])
+
+                    # Verify error was logged
+                    mock_logger.error.assert_called_once()
+                    error_msg = mock_logger.error.call_args[0][0]
+                    self.assertIn("Exception when calling Brevo->DealApi->companies_link_unlink_id_patch", error_msg)
 
     def test_link_company_with_contact_list_env_not_allowed(self):
         """Test that method does nothing when environment is not allowed"""

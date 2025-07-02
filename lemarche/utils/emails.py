@@ -83,7 +83,7 @@ def add_to_contact_list(user, contact_type: str | int, tender=None):
             raise ValueError("contact_type must be defined")
     except api_brevo.BrevoApiError as e:
         logger.error(f"Failed to add user {user.id} to contact list: {e}")
-        raise
+        raise e
 
 
 def update_contact_email_blacklisted(email, email_blacklisted: bool):
