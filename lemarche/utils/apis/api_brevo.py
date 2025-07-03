@@ -9,7 +9,7 @@ from django.conf import settings
 from huey.contrib.djhuey import task
 from sib_api_v3_sdk.rest import ApiException
 
-from lemarche.tenders import constants as tender_constants
+from lemarche.tenders.enums import TenderSourcesChoices
 from lemarche.utils.apis.brevo_attributes import BUYER_COMPANY_ATTRIBUTES, CONTACT_ATTRIBUTES, SIAE_COMPANY_ATTRIBUTES
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 from lemarche.utils.data import sanitize_to_send_by_email
@@ -635,7 +635,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
             }
 
             # Check if there is one sector whose tender source is TALLY
-            if tender.source == tender_constants.SOURCE_TALLY and first_sector:
+            if tender.source == TenderSourcesChoices.SOURCE_TALLY and first_sector:
                 attributes[CONTACT_ATTRIBUTES["TYPE_VERTICALE_ACHETEUR"]] = first_sector.name
             else:
                 attributes[CONTACT_ATTRIBUTES["TYPE_VERTICALE_ACHETEUR"]] = None
@@ -649,9 +649,9 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
 
         # Return default values only if an exception occurred
         return {
-            "MONTANT_BESOIN_ACHETEUR": None,
-            "TYPE_BESOIN_ACHETEUR": None,
-            "TYPE_VERTICALE_ACHETEUR": None,
+            CONTACT_ATTRIBUTES["MONTANT_BESOIN_ACHETEUR"]: None,
+            CONTACT_ATTRIBUTES["TYPE_BESOIN_ACHETEUR"]: None,
+            CONTACT_ATTRIBUTES["TYPE_VERTICALE_ACHETEUR"]: None,
         }
 
     def _get_error_body(self, exception):

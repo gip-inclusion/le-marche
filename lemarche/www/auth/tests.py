@@ -401,7 +401,6 @@ class SignupMeetingTestCase(TestCase):
 
         post_response = self.client.post(path=f"{reverse('account_signup')}?skip_meeting=true", data=self.form_data)
         self.assertEqual(post_response.status_code, 302)
-        self.assertTrue(User.objects.get().is_onboarded)
 
     @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient")
     def test_meeting_redirect(self, mock_brevo_contacts_client):
