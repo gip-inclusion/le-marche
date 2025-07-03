@@ -87,6 +87,11 @@ def add_to_contact_list(user, contact_type: str | int, tender=None):
 
 
 def update_contact_email_blacklisted(email, email_blacklisted: bool):
+    """Update the email blacklisted status in Brevo.
+    Args:
+        email (str): The email address to update.
+        email_blacklisted (bool): True if the email should be blacklisted, False otherwise.
+    """
     brevo_contacts_client = api_brevo.BrevoContactsApiClient()
     brevo_contacts_client.update_contact_email_blacklisted(email, email_blacklisted)
 
