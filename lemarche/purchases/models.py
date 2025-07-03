@@ -72,13 +72,3 @@ class Purchase(models.Model):
 
     def __str__(self):
         return f"{self.supplier_name} - {self.purchase_amount}€ ({self.purchase_year})"
-
-    @property
-    def is_siae_supplier(self):
-        """Check if the supplier is a SIAE"""
-        return self.siae is not None
-
-    @property
-    def purchase_amount_display(self):
-        """Format purchase amount for display"""
-        return f"{self.purchase_amount:,.2f} €"
