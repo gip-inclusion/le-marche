@@ -133,15 +133,15 @@ class Command(BaseCommand):
 
     def _process_rows(self, reader, company, stats):
         """Process all rows in the CSV file."""
-        for row_num, row in enumerate(reader, start=2):  # Start at 2 because of header
+        for row_num, row in enumerate(reader, start=2):  # Start at 2 because of header for row number in error message
             stats["total_rows"] += 1
 
             try:
-                self._process_single_row(row, row_num, company, stats)
+                self._process_single_row(row, company, stats)
             except Exception as e:
                 self._handle_row_error(e, row_num, stats)
 
-    def _process_single_row(self, row, row_num, company, stats):
+    def _process_single_row(self, row, company, stats):
         """Process a single row from the CSV."""
         # Clean and validate data
         supplier_name = row["Raison sociale du Fournisseur"].strip()
