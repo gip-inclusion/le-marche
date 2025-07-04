@@ -77,8 +77,6 @@ def add_to_contact_list(user, contact_type: str | int, tender=None):
                 )
             elif user.kind == user.KIND_SIAE:
                 brevo_contacts_client.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_SIAE_ID)
-        elif contact_type == "buyer_search":
-            brevo_contacts_client.create_contact(user=user, list_id=settings.BREVO_CL_BUYER_SEARCH_SIAE_LIST_ID)
         else:
             raise ValueError("contact_type must be defined")
     except api_brevo.BrevoApiError as e:
