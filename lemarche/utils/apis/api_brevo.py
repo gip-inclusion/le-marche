@@ -359,6 +359,9 @@ def get_all_users_from_list(
 
 @task()
 def send_transactional_email_with_template(
+    template_object,
+    recipient_content_object,
+    parent_content_object,
     template_id: int,
     recipient_email: str,
     recipient_name: str,
@@ -369,24 +372,42 @@ def send_transactional_email_with_template(
 ):
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.TransactionalEmailsApi(api_client)
+
     data = {
         "sender": {"email": from_email, "name": from_name},
         "to": [{"email": recipient_email, "name": recipient_name}],
         "template_id": template_id,
         "params": variables,
     }
-    # if subject empty, defaults to Brevo's template subject
-    if subject:
-        data["subject"] = EMAIL_SUBJECT_PREFIX + subject
 
-    if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
-        try:
-            send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
-            response = api_instance.send_transac_email(send_smtp_email)
-            logger.info("Brevo: send transactional email with template")
-            # {'message_id': '<202407151419.84958140835@smtp-relay.mailin.fr>', 'message_ids': None}
-            return response.to_dict()
-        except ApiException as e:
-            print(f"Exception when calling SMTPApi->send_transac_email: {e}")
+    # # if subject empty, defaults to Brevo's template subject
+    # if subject:
+    #     data["subject"] = EMAIL_SUBJECT_PREFIX + subject
+
+    data["subject"] = "SUBJECT" + EMAIL_SUBJECT_PREFIX
+
+    sent_log = template_object.create_send_log(
+        recipient_content_object=recipient_content_object,
+        parent_content_object=parent_content_object,
+        extra_data={"source": "BREVO"},
+    )
+
+    try:
+
+        logger.error(f"CALLED to {recipient_email}, template_id {template_id}")  # fixme
+
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
+
+        # FIXME
+        send_smtp_email.html_content = "gfgfdgd"
+
+        response = api_instance.send_transac_email(send_smtp_email)
+    except ApiException as e:
+        logger.error(f"ApiException: {e}")
     else:
-        logger.info("Brevo: email not sent (DEV or TEST environment detected)")
+        sent_log.extra_data["sent"] = True
+        sent_log.save()
+
+        logger.error(f"SENT!! {response.to_dict()}")  # fixme
+
+        return response.to_dict()
