@@ -30,6 +30,7 @@ from lemarche.tenders.models import QuestionAnswer, Tender, TenderInstruction, T
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 from lemarche.utils import constants
+from lemarche.utils.apis.brevo_attributes import CONTACT_ATTRIBUTES
 from lemarche.www.tenders.views import TenderCreateMultiStepView
 
 
@@ -310,10 +311,11 @@ class TenderCreateViewTest(TestCase):
 
         self.assertEqual(kwargs["email"], user.email)
         self.assertIn(settings.BREVO_CL_SIGNUP_BUYER_ID, kwargs["list_ids"])
-        self.assertEqual(attributes["MONTANT_BESOIN_ACHETEUR"], tender.amount_int)
-        self.assertEqual(attributes["TYPE_BESOIN_ACHETEUR"], tender.kind)
+        self.assertEqual(attributes[CONTACT_ATTRIBUTES["MONTANT_BESOIN_ACHETEUR"]], tender.amount_int)
+        self.assertEqual(attributes[CONTACT_ATTRIBUTES["TYPE_BESOIN_ACHETEUR"]], tender.kind)
         self.assertIsNone(
-            attributes["TYPE_VERTICALE_ACHETEUR"], "Expected TYPE_VERTICALE_ACHETEUR to be None for non-TALLY sources"
+            attributes[CONTACT_ATTRIBUTES["TYPE_VERTICALE_ACHETEUR"]],
+            "Expected TYPE_VERTICALE_ACHETEUR to be None for non-TALLY sources",
         )
 
     @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, contact_type, tender: None)
@@ -335,6 +337,7 @@ class TenderCreateViewTest(TestCase):
         self.assertEqual(tender.status, Tender.StatusChoices.STATUS_SUBMITTED)
         self.assertEqual(tender.email_sent_for_modification, False)
 
+    @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, contact_type, tender: None)
     def test_create_tender_with_attachment(self):
         """Test create tender with attachments"""
 
