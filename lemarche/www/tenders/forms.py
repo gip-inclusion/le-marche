@@ -437,6 +437,7 @@ class TenderFilterForm(forms.Form):
     )
 
     def __init__(self, user, *args, **kwargs):
+        """Adds a count of unread notifications to each sections in the dropdown for filtering tender types."""
         super().__init__(*args, **kwargs)
 
         stats = Tender.objects.unread_stats(user=user)
