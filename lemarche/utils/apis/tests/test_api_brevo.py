@@ -187,77 +187,6 @@ class BrevoBaseApiClientTest(TestCase):
         # Verify that the final error is raised with the correct message
         self.assertIn("Failed to test operation after 4 attempts", str(context.exception))
 
-    def test_get_contact_by_email_success(self, mock_sleep):
-        """Test get_contact_by_email success"""
-        mock_api_instance = MagicMock()
-
-        # Mock successful response
-        mock_response = MagicMock()
-        mock_response.to_dict.return_value = {"id": 12345, "email": "test@example.com"}
-        mock_api_instance.get_contact_info.return_value = mock_response
-
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            client = api_brevo.BrevoContactsApiClient()
-            result = client.get_contact_by_email("test@example.com")
-
-        self.assertEqual(result["id"], 12345)
-        self.assertEqual(result["email"], "test@example.com")
-        mock_api_instance.get_contact_info.assert_called_once_with("test@example.com")
-
-    def test_get_contact_by_email_non_404_error(self, mock_sleep):
-        """Test get_contact_by_email with non-404 API error that should be retried"""
-        mock_api_instance = MagicMock()
-
-        # Mock server error (not 404)
-        server_error = ApiException(status=500, reason="Server Error")
-        mock_api_instance.get_contact_info.side_effect = server_error
-
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            client = api_brevo.BrevoContactsApiClient()
-
-            with self.assertRaises(api_brevo.BrevoApiError):
-                client.get_contact_by_email("test@example.com")
-
-    def test_get_all_contacts_brevo_api_error_handling(self, mock_sleep):
-        """Test get_all_contacts handling BrevoApiError in pagination loop"""
-        mock_api_instance = MagicMock()
-
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            # Mock the _fetch_contacts_page to raise BrevoApiError
-            client = api_brevo.BrevoContactsApiClient()
-
-            with patch.object(client, "_fetch_contacts_page", side_effect=api_brevo.BrevoApiError("Test error")):
-                result = client.get_all_contacts()
-
-                # Should return empty dict when BrevoApiError occurs
-                self.assertEqual(result, {})
-
-        # Test when limit_max would be exceeded
-        result = client._calculate_pagination_limit(limit_max=25, total_retrieved=20, page_limit=10)
-        self.assertEqual(result, 5)  # Only 5 more to reach limit_max of 25
-
-        # Test when limit_max is not exceeded
-        result = client._calculate_pagination_limit(limit_max=100, total_retrieved=20, page_limit=10)
-        self.assertEqual(result, 10)  # Full page_limit
-
-        # Test with no limit_max
-        result = client._calculate_pagination_limit(limit_max=None, total_retrieved=20, page_limit=10)
-        self.assertEqual(result, 10)  # Full page_limit
-
-    def test_get_error_body_with_none_body(self, mock_sleep):
-        """Test _get_error_body with None body"""
-        client = api_brevo.BrevoContactsApiClient()
-
-        exception = ApiException(status=400, reason="Bad Request")
-        exception.body = None
-
-        with patch.object(client, "logger") as mock_logger:
-            result = client._get_error_body(exception)
-            # When body is None, the function returns None implicitly (no return statement executed)
-            self.assertIsNone(result)
-            # Verify that no error was logged for None body (it should check if body is not None)
-            mock_logger.error.assert_not_called()
-
 
 @patch("lemarche.utils.apis.api_brevo.time.sleep")
 class BrevoContactsApiClientTest(TestCase):
@@ -755,6 +684,77 @@ class BrevoContactsApiClientTest(TestCase):
                 client.retrieve_and_update_user_brevo_contact_id(user)
 
             self.assertIn("Error retrieving contact ID", str(context.exception))
+
+    def test_get_contact_by_email_success(self, mock_sleep):
+        """Test get_contact_by_email success"""
+        mock_api_instance = MagicMock()
+
+        # Mock successful response
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {"id": 12345, "email": "test@example.com"}
+        mock_api_instance.get_contact_info.return_value = mock_response
+
+        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+            client = api_brevo.BrevoContactsApiClient()
+            result = client.get_contact_by_email("test@example.com")
+
+        self.assertEqual(result["id"], 12345)
+        self.assertEqual(result["email"], "test@example.com")
+        mock_api_instance.get_contact_info.assert_called_once_with("test@example.com")
+
+    def test_get_contact_by_email_non_404_error(self, mock_sleep):
+        """Test get_contact_by_email with non-404 API error that should be retried"""
+        mock_api_instance = MagicMock()
+
+        # Mock server error (not 404)
+        server_error = ApiException(status=500, reason="Server Error")
+        mock_api_instance.get_contact_info.side_effect = server_error
+
+        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+            client = api_brevo.BrevoContactsApiClient()
+
+            with self.assertRaises(api_brevo.BrevoApiError):
+                client.get_contact_by_email("test@example.com")
+
+    def test_get_all_contacts_brevo_api_error_handling(self, mock_sleep):
+        """Test get_all_contacts handling BrevoApiError in pagination loop"""
+        mock_api_instance = MagicMock()
+
+        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+            # Mock the _fetch_contacts_page to raise BrevoApiError
+            client = api_brevo.BrevoContactsApiClient()
+
+            with patch.object(client, "_fetch_contacts_page", side_effect=api_brevo.BrevoApiError("Test error")):
+                result = client.get_all_contacts()
+
+                # Should return empty dict when BrevoApiError occurs
+                self.assertEqual(result, {})
+
+        # Test when limit_max would be exceeded
+        result = client._calculate_pagination_limit(limit_max=25, total_retrieved=20, page_limit=10)
+        self.assertEqual(result, 5)  # Only 5 more to reach limit_max of 25
+
+        # Test when limit_max is not exceeded
+        result = client._calculate_pagination_limit(limit_max=100, total_retrieved=20, page_limit=10)
+        self.assertEqual(result, 10)  # Full page_limit
+
+        # Test with no limit_max
+        result = client._calculate_pagination_limit(limit_max=None, total_retrieved=20, page_limit=10)
+        self.assertEqual(result, 10)  # Full page_limit
+
+    def test_get_error_body_with_none_body(self, mock_sleep):
+        """Test _get_error_body with None body"""
+        client = api_brevo.BrevoContactsApiClient()
+
+        exception = ApiException(status=400, reason="Bad Request")
+        exception.body = None
+
+        with patch.object(client, "logger") as mock_logger:
+            result = client._get_error_body(exception)
+            # When body is None, the function returns None implicitly (no return statement executed)
+            self.assertIsNone(result)
+            # Verify that no error was logged for None body (it should check if body is not None)
+            mock_logger.error.assert_not_called()
 
 
 @patch("lemarche.utils.apis.api_brevo.time.sleep")
