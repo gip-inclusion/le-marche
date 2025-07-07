@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -173,7 +175,9 @@ class SignupFormTest(StaticLiveServerTestCase):
             ]
             return message_list
 
-    def test_siae_submits_signup_form_success(self):
+    @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient")
+    def test_siae_submits_signup_form_success(self, mock_brevo_contacts_client):
+        mock_client_instance = mock_brevo_contacts_client.return_value
         self._complete_form(user_profile=self.SIAE, with_submit=True)
 
         # should redirect SIAE to dashboard
@@ -182,6 +186,9 @@ class SignupFormTest(StaticLiveServerTestCase):
             "Vous pouvez maintenant ajouter votre structure en cliquant sur Ajouter une structure.", messages
         )
         self.assertIn("Connexion avec siae@example.com réussie.", messages)
+
+        # assert Brevo contact creation
+        mock_client_instance.create_contact.assert_called_once()
 
     def test_siae_submits_signup_form_error(self):
         user_profile = self.SIAE
@@ -205,7 +212,9 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertTrue("Cette adresse e-mail est déjà utilisée." in alerts.text)
 
     @freeze_time("2025-03-05")
-    def test_buyer_submits_signup_form_success(self):
+    @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient")
+    def test_buyer_submits_signup_form_success(self, mock_brevo_contacts_client):
+        mock_client_instance = mock_brevo_contacts_client.return_value
         self._complete_form(user_profile=self.BUYER, with_submit=False)
 
         buyer_kind_detail_select_element = self.driver.find_element(By.CSS_SELECTOR, "select#id_buyer_kind_detail")
@@ -216,8 +225,11 @@ class SignupFormTest(StaticLiveServerTestCase):
 
         # should redirect BUYER to search
         self._assert_signup_success(redirect_url=reverse("auth:booking-meeting-view"), user_kind=User.KIND_BUYER)
+        # assert Brevo contact creation
+        mock_client_instance.create_contact.assert_called_once()
 
-    def test_buyer_submits_signup_form_success_extra_data(self):
+    @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient")
+    def test_buyer_submits_signup_form_success_extra_data(self, mock_brevo_contacts_client):
         self._complete_form(user_profile=self.BUYER, with_submit=False)
 
         buyer_kind_detail_select_element = self.driver.find_element(By.CSS_SELECTOR, "select#id_buyer_kind_detail")
@@ -289,7 +301,9 @@ class SignupFormTest(StaticLiveServerTestCase):
         # should not submit form (last_name field is required)
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('account_signup')}")
 
-    def test_user_submits_signup_form_with_next_param_success_and_redirect(self):
+    @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient")
+    def test_user_submits_signup_form_with_next_param_success_and_redirect(self, mock_brevo_contacts_client):
+        mock_client_instance = mock_brevo_contacts_client.return_value
         next_url = f"{reverse('siae:search_results')}?kind=ESAT"
         self._complete_form(
             user_profile=self.SIAE,
@@ -301,6 +315,8 @@ class SignupFormTest(StaticLiveServerTestCase):
 
         messages = self._assert_signup_success(redirect_url=next_url, user_kind=User.KIND_SIAE)
         self.assertIn("Connexion avec siae@example.com réussie.", messages)
+        # assert Brevo contact creation
+        mock_client_instance.create_contact.assert_called_once()
 
     @classmethod
     def tearDownClass(cls):
@@ -377,7 +393,17 @@ class SignupMeetingTestCase(TestCase):
             defaults={"title": "Numéro tel"},
         )
 
-    def test_meeting_redirect(self):
+    @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient")
+    def test_magic_link_test_case(self, mock_brevo_contacts_client):
+        """View should not redirect to meeting if the User is signing up
+        with the magic link"""
+        self.assertEqual(User.objects.count(), 0)
+
+        post_response = self.client.post(path=f"{reverse('account_signup')}?skip_meeting=true", data=self.form_data)
+        self.assertEqual(post_response.status_code, 302)
+
+    @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient")
+    def test_meeting_redirect(self, mock_brevo_contacts_client):
         """View should redirect to meeting"""
         self.assertEqual(User.objects.count(), 0)
 

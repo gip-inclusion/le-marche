@@ -102,12 +102,16 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
             "Le nombre de besoins intéressés dans les 90 derniers jours devrait être 0",
         )
 
-    @patch("lemarche.utils.apis.api_brevo.create_or_update_company")
-    def test_new_siaes_are_synced_in_brevo(self, mock_create_or_update_company):
+    @patch("lemarche.utils.apis.api_brevo.time.sleep")  # Mock sleep to speed up tests
+    @patch("lemarche.utils.apis.api_brevo.BrevoCompanyApiClient")
+    def test_new_siaes_are_synced_in_brevo(self, mock_client_class, mock_sleep):
         """Test new siaes are synced in brevo"""
+        mock_client = mock_client_class.return_value
         call_command("crm_brevo_sync_companies", stdout=StringIO())
 
-        self.assertEqual(mock_create_or_update_company.call_count, 3)
+        # Only 2 SIAEs need sync: siae_with_name and siae_with_user
+        # siae_with_brevo_id is skipped because it already has correct data in extra_data
+        self.assertEqual(mock_client.create_or_update_company.call_count, 2)
 
     def test_siae_has_tender_stats(self):
         self.assertIsNotNone(
@@ -119,7 +123,8 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
             "Cette SIAE devrait avoir des statistiques sur les besoins.",
         )
 
-    def test_siae_extra_data_is_set_on_first_sync(self):
+    @patch("lemarche.utils.apis.api_brevo.time.sleep")  # Mock sleep to speed up tests
+    def test_siae_extra_data_is_set_on_first_sync(self, mock_sleep):
         """
         - Test siae is updated if extra_data is changed.
         - Test siae.extra_data update does not erase existing data.
@@ -150,7 +155,8 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
             self.siae_with_user.extra_data, expected_extra_data, "siae.extra_data n'est pas conforme aux attentes."
         )
 
-    def test_siae_extra_data_is_not_updated_if_no_changes(self):
+    @patch("lemarche.utils.apis.api_brevo.time.sleep")  # Mock sleep to speed up tests
+    def test_siae_extra_data_is_not_updated_if_no_changes(self, mock_sleep):
         """Test siae.extra_data is not updated if no changes."""
         call_command("crm_brevo_sync_companies", recently_updated=True, stdout=StringIO())
 
@@ -161,7 +167,8 @@ class CrmBrevoSyncCompaniesCommandTest(TestCase):
             "siae.extra_data a été mis à jour alors qu'il n'y avait pas de changement.",
         )
 
-    def test_fields_update_within_90_days_and_ignore_older_changes(self):
+    @patch("lemarche.utils.apis.api_brevo.time.sleep")  # Mock sleep to speed up tests
+    def test_fields_update_within_90_days_and_ignore_older_changes(self, mock_sleep):
         """Test fields update within 90 days and ignore older changes."""
         TenderSiae.objects.create(
             tender=self.tender_2,
