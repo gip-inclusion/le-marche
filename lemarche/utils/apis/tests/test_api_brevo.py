@@ -658,7 +658,13 @@ class BrevoCompanyApiClientTest(TestCase):
     """
 
     def setUp(self):
-        self.company = CompanyFactory(name="Test Company", website="https://company.com")
+        self.company = CompanyFactory(
+            name="Test Company",
+            website="https://company.com",
+            description="Buyer company description",
+            siret="12345678901234",
+            extra_data={"brevo_company_data": {"user_count": 5, "user_tender_count": 3}},
+        )
 
     def test_create_or_update_company_success_create(self):
         """Test successful SIAE company creation"""
@@ -703,22 +709,16 @@ class BrevoCompanyApiClientTest(TestCase):
 
     def test_build_buyer_attributes(self):
         """Test _build_buyer_attributes method"""
-        company = CompanyFactory(
-            name="Test Company 2",
-            website="https://company.com",
-            description="Buyer company description",
-            siret="12345678901234",
-        )
-        company.extra_data = {"brevo_company_data": {"user_count": 8, "user_tender_count": 15}}
-        company.email_domain_list = ["company.com", "subsidiary.com"]
-        company.save()
+        self.company.extra_data = {"brevo_company_data": {"user_count": 8, "user_tender_count": 15}}
+        self.company.email_domain_list = ["company.com", "subsidiary.com"]
+        self.company.save()
 
         clientCompanyBrevo = api_brevo.BrevoCompanyApiClient()
 
-        attributes = clientCompanyBrevo._build_buyer_attributes(company)
+        attributes = clientCompanyBrevo._build_buyer_attributes(self.company)
 
         self.assertEqual(attributes["domain"], "https://company.com")
-        self.assertEqual(attributes["app_id"], company.id)
+        self.assertEqual(attributes["app_id"], self.company.id)
         self.assertFalse(attributes["siae"])
         self.assertEqual(attributes["description"], "Buyer company description")
         self.assertEqual(attributes["kind"], "BUYER")
@@ -729,7 +729,6 @@ class BrevoCompanyApiClientTest(TestCase):
 
     def test_create_or_update_company_verify_attributes(self):
         """Test that SIAE company attributes are correctly set"""
-        self.company.description = "Une SIAE de test"
         self.company.address = "123 Rue Test"
         self.company.post_code = "75001"
         self.company.city = "Paris"
@@ -870,10 +869,6 @@ class BrevoCompanyApiClientTest(TestCase):
 
     def test_create_or_update_buyer_company_verify_attributes(self):
         """Test that buyer company attributes are correctly set"""
-        self.company.description = "Une entreprise acheteuse"
-        self.company.siret = "12345678901234"
-        self.company.extra_data = {"brevo_company_data": {"user_count": 5, "user_tender_count": 3}}
-        self.company.save()
 
         mock_api_instance = MagicMock()
 
@@ -893,7 +888,7 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertEqual(attributes["domain"], "https://company.com")
         self.assertEqual(attributes["app_id"], self.company.id)
         self.assertFalse(attributes["siae"])  # This is a buyer, not SIAE
-        self.assertEqual(attributes["description"], "Une entreprise acheteuse")
+        self.assertEqual(attributes["description"], "Buyer company description")
         self.assertEqual(attributes["kind"], "BUYER")
         self.assertEqual(attributes["siret"], "12345678901234")
         self.assertEqual(attributes["nombre_d_utilisateurs"], 5)  # Corrected from nombre_utilisateurs
@@ -1271,9 +1266,8 @@ class BrevoCompanyApiClientTest(TestCase):
         """Test _handle_company_404_and_retry for buyer company"""
         mock_api_instance = MagicMock()
 
-        company = CompanyFactory()
-        company.brevo_company_id = 88888
-        company.save()
+        self.company.brevo_company_id = 88888
+        self.company.save()
 
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
@@ -1282,7 +1276,7 @@ class BrevoCompanyApiClientTest(TestCase):
                 # Mock the create method to return a success
                 mock_create_method = MagicMock(return_value="success")
 
-                client._handle_company_404_and_retry(company, mock_create_method)
+                client._handle_company_404_and_retry(self.company, mock_create_method)
 
                 # Verify it logged the warning for buyer company
                 mock_logger.warning.assert_called()
