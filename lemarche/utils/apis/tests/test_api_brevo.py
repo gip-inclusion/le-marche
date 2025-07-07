@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from sib_api_v3_sdk.rest import ApiException
 
 from lemarche.companies.factories import CompanyFactory
@@ -28,8 +28,6 @@ class BrevoBaseApiClientTest(TestCase):
 
         # Create a test method decorated with execute_with_retry_method
         class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
-            """A test method to be bound to the client"""
-
             @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
             def test_method(self):
                 return {"success": True}
@@ -50,8 +48,6 @@ class BrevoBaseApiClientTest(TestCase):
         call_counter = [0]
 
         class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
-            """A test method to be bound to the client"""
-
             @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
             def test_method(self):
                 call_counter[0] += 1
@@ -76,18 +72,18 @@ class BrevoBaseApiClientTest(TestCase):
         # Use a list to be able to modify the value from the nested function
         call_counter = [0]
 
-        @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
-        def test_method(self):
-            call_counter[0] += 1
-            if call_counter[0] == 1:
-                # First call hits rate limit
-                raise ApiException(status=429, reason="Rate Limit")
-            else:
-                # Second call succeeds
-                return {"success": True}
+        class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
+            @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
+            def test_method(self):
+                call_counter[0] += 1
+                if call_counter[0] == 1:
+                    # First call hits rate limit
+                    raise ApiException(status=429, reason="Rate Limit")
+                else:
+                    # Second call succeeds
+                    return {"success": True}
 
-        bound_method = test_method.__get__(self.base_client, api_brevo.BrevoBaseApiClient)
-        result = bound_method()
+        result = TestBrevoClassBased().test_method()
 
         # Verify rate limit handling with exponential backoff
         self.assertEqual(result, {"success": True})
@@ -99,17 +95,15 @@ class BrevoBaseApiClientTest(TestCase):
     def test_execute_with_retry_method_max_retries_exceeded(self, mock_sleep):
         """Test decorator when max retries are exceeded"""
 
-        @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
-        def test_method(self):
-            # Always fail
-            raise ApiException(status=500, reason="Server Error")
-
-        bound_method = test_method.__get__(self.base_client, api_brevo.BrevoBaseApiClient)
+        class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
+            @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
+            def test_method(self):
+                # Always fail
+                raise ApiException(status=500, reason="Server Error")
 
         # Should raise BrevoApiError after max retries
         with self.assertRaises(api_brevo.BrevoApiError) as context:
-            bound_method()
-
+            TestBrevoClassBased().test_method()
         # Verify error message contains operation details
         self.assertIn("Failed to test operation", str(context.exception))
         self.assertIn("after 4 attempts", str(context.exception))  # max_retries=3 + initial attempt
@@ -123,17 +117,15 @@ class BrevoBaseApiClientTest(TestCase):
 
         # Create client with custom config
         config = api_brevo.BrevoConfig(max_retries=1, retry_delay=2)
-        custom_client = api_brevo.BrevoBaseApiClient(config)
 
-        @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
-        def test_method(self):
-            # Always fail
-            raise ApiException(status=500, reason="Server Error")
-
-        bound_method = test_method.__get__(custom_client, api_brevo.BrevoBaseApiClient)
+        class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
+            @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
+            def test_method(self):
+                # Always fail
+                raise ApiException(status=500, reason="Server Error")
 
         with self.assertRaises(api_brevo.BrevoApiError):
-            bound_method()
+            TestBrevoClassBased(config=config).test_method()
 
         # Should only retry once with custom delay
         mock_sleep.assert_called_once_with(2)
@@ -142,15 +134,14 @@ class BrevoBaseApiClientTest(TestCase):
     def test_execute_with_retry_method_unexpected_exception(self, mock_sleep):
         """Test decorator handling of unexpected exceptions"""
 
-        @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
-        def test_method(self):
-            # Raise unexpected exception (not ApiException)
-            raise ValueError("Unexpected error")
-
-        bound_method = test_method.__get__(self.base_client, api_brevo.BrevoBaseApiClient)
+        class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
+            @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
+            def test_method(self):
+                # Raise unexpected exception (not ApiException)
+                raise ValueError("Unexpected error")
 
         with self.assertRaises(api_brevo.BrevoApiError) as context:
-            bound_method()
+            TestBrevoClassBased().test_method()
 
         # Should not retry for unexpected exceptions
         mock_sleep.assert_not_called()
@@ -189,22 +180,20 @@ class BrevoBaseApiClientTest(TestCase):
     @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_execute_with_retry_method_final_failure_without_exception(self, mock_sleep):
         """Test decorator when max retries exceeded without any exception being raised"""
-
-        # Cette ligne couvre le cas où on atteint la fin du décorateur sans exception
+        # This test covers the case when we reach the end of the decorator with exceptions thrown on every attempt
         call_counter = [0]
 
-        @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
-        def test_method(self):
-            call_counter[0] += 1
-            # Toujours lever une exception pour déclencher la logique de retry
-            raise ApiException(status=500, reason="Server Error")
-
-        bound_method = test_method.__get__(self.base_client, api_brevo.BrevoBaseApiClient)
+        class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
+            @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
+            def test_method(self):
+                call_counter[0] += 1
+                # Always raise an exception to trigger the retry logic
+                raise ApiException(status=500, reason="Server Error")
 
         with self.assertRaises(api_brevo.BrevoApiError) as context:
-            bound_method()
+            TestBrevoClassBased().test_method()
 
-        # Vérifier que l'erreur finale est levée
+        # Verify that the final error is raised with the correct message
         self.assertIn("Failed to test operation after 4 attempts", str(context.exception))
 
     def test_should_continue_pagination_no_contacts(self):
@@ -247,12 +236,9 @@ class BrevoContactsApiClientTest(TestCase):
         self.user = UserFactory(email="test@example.com")
         self.siae = SiaeFactory()
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_get_all_contacts_success(self, mock_get_api_client):
+    def test_get_all_contacts_success(self):
         """Test successful retrieval of contacts"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # Mock first page response
         mock_response = MagicMock()
@@ -303,12 +289,9 @@ class BrevoContactsApiClientTest(TestCase):
         self.assertEqual(attributes["nombre_de_besoins_recus"], 10)
         self.assertEqual(attributes["nombre_de_besoins_interesses"], 5)
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_get_all_contacts_pagination(self, mock_get_api_client):
+    def test_get_all_contacts_pagination(self):
         """Test pagination functionality"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # Mock first page (5 contacts)
         mock_response_page1 = MagicMock()
@@ -341,12 +324,9 @@ class BrevoContactsApiClientTest(TestCase):
         # Verify that the API was called 2 times with correct parameters
         self.assertEqual(mock_api_instance.get_contacts.call_count, 2)
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_get_all_contacts_with_limit_max(self, mock_get_api_client):
+    def test_get_all_contacts_with_limit_max(self):
         """Test limit_max parameter"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         mock_response = MagicMock()
         mock_response.to_dict.return_value = {
@@ -366,12 +346,9 @@ class BrevoContactsApiClientTest(TestCase):
         self.assertEqual(call_args[1]["limit"], 5)
 
     @patch("lemarche.utils.apis.api_brevo.time.sleep")
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_get_all_contacts_api_exception_with_retry(self, mock_get_api_client, mock_sleep):
+    def test_get_all_contacts_api_exception_with_retry(self, mock_sleep):
         """Test API exception handling with retry mechanism"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # First call raises exception, second call succeeds
         mock_response = MagicMock()
@@ -390,12 +367,9 @@ class BrevoContactsApiClientTest(TestCase):
         mock_sleep.assert_called_once_with(5)  # retry delay
 
     @patch("lemarche.utils.apis.api_brevo.time.sleep")
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_get_all_contacts_max_retries_exceeded(self, mock_get_api_client, mock_sleep):
+    def test_get_all_contacts_max_retries_exceeded(self, mock_sleep):
         """Test behavior when max retries are exceeded"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # Always raise exception
         mock_api_instance.get_contacts.side_effect = ApiException(status=500, reason="Server Error")
@@ -410,12 +384,9 @@ class BrevoContactsApiClientTest(TestCase):
         self.assertEqual(mock_api_instance.get_contacts.call_count, 3)  # Initial call + 2 retries
         self.assertEqual(mock_sleep.call_count, 2)  # 2 retries
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_get_all_contacts_unexpected_exception(self, mock_get_api_client):
+    def test_get_all_contacts_unexpected_exception(self):
         """Test handling of unexpected exceptions"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # Raise unexpected exception
         mock_api_instance.get_contacts.side_effect = Exception("Unexpected error")
@@ -426,12 +397,9 @@ class BrevoContactsApiClientTest(TestCase):
 
         self.assertEqual(result, {})
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_get_all_contacts_empty_response(self, mock_get_api_client):
+    def test_get_all_contacts_empty_response(self):
         """Test handling of empty contact list"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         mock_response = MagicMock()
         mock_response.to_dict.return_value = {"contacts": [], "count": 0}
@@ -444,13 +412,9 @@ class BrevoContactsApiClientTest(TestCase):
         self.assertEqual(result, {})
         mock_api_instance.get_contacts.assert_called_once()
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_get_all_contacts_since_days_parameter(self, mock_get_api_client):
+    def test_get_all_contacts_since_days_parameter(self):
         """Test that since_days parameter is correctly passed to API call"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
-
         mock_response = MagicMock()
         mock_response.to_dict.return_value = {"contacts": []}
         mock_api_instance.get_contacts.return_value = mock_response
@@ -469,12 +433,9 @@ class BrevoContactsApiClientTest(TestCase):
         # Allow for small time differences during test execution
         self.assertLess(abs((modified_since - expected_date).total_seconds()), 10)
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_contact_success(self, mock_get_api_client):
+    def test_create_contact_success(self):
         """Test successful contact creation"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # Mock successful API response
         mock_response = MagicMock()
@@ -489,16 +450,13 @@ class BrevoContactsApiClientTest(TestCase):
         self.assertEqual(response["id"], 12345)
         mock_api_instance.create_contact.assert_called_once()
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_contact_with_tender(self, mock_get_api_client):
+    def test_create_contact_with_tender(self):
         """Test contact creation with tender information"""
         sector = SectorFactory(name="Informatique")
         tender = TenderFactory(amount_exact=50000, kind="PRESTA", source="TALLY")
         tender.sectors.add(sector)
 
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         mock_response = MagicMock()
         mock_response.to_dict.return_value = {"id": 12345}
@@ -524,12 +482,9 @@ class BrevoContactsApiClientTest(TestCase):
         c.create_contact(self.user, list_id=1)
 
     @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient.get_contact_by_email")
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_contact_duplicate_error_with_recovery(self, mock_get_api_client, mock_get_contact_by_email):
+    def test_create_contact_duplicate_error_with_recovery(self, mock_get_contact_by_email):
         """Test handling of duplicate contact error with successful ID recovery"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # Mock duplicate error response
         error_body = '{"code": "duplicate_parameter", "message": "Contact already exists"}'
@@ -553,12 +508,9 @@ class BrevoContactsApiClientTest(TestCase):
         mock_get_contact_by_email.assert_called_once_with(self.user.email)
 
     @patch("lemarche.utils.apis.api_brevo.time.sleep")
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_contact_rate_limit_with_retry(self, mock_get_api_client, mock_sleep):
+    def test_create_contact_rate_limit_with_retry(self, mock_sleep):
         """Test retry mechanism for rate limiting"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # First call rate limited, second call succeeds
         rate_limit_exception = ApiException(status=429, reason="Rate Limit")
@@ -583,12 +535,9 @@ class BrevoContactsApiClientTest(TestCase):
         mock_sleep.assert_called_once()
 
     @patch("lemarche.utils.apis.api_brevo.time.sleep")
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_contact_max_retries_exceeded(self, mock_get_api_client, mock_sleep):
+    def test_create_contact_max_retries_exceeded(self, mock_sleep):
         """Test behavior when max retries are exceeded"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # Always return server error
         server_error = ApiException(status=500, reason="Internal Server Error")
@@ -607,12 +556,9 @@ class BrevoContactsApiClientTest(TestCase):
         self.assertEqual(mock_api_instance.create_contact.call_count, 3)  # 1 initial + 2 retries
         self.assertEqual(mock_sleep.call_count, 2)  # 2 retries avec max_retries=2
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_contact_malformed_error_response(self, mock_get_api_client):
+    def test_create_contact_malformed_error_response(self):
         """Test handling of malformed JSON error response"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # Mock error with malformed JSON body
         error_exception = ApiException(status=400, reason="Bad Request")
@@ -629,8 +575,7 @@ class BrevoContactsApiClientTest(TestCase):
         self.user.refresh_from_db()
         self.assertIsNone(self.user.brevo_contact_id)
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_contact_verify_attributes(self, mock_get_api_client):
+    def test_create_contact_verify_attributes(self):
         """Test that contact attributes are correctly set"""
         self.user.last_name = "Dupont"
         self.user.first_name = "Jean"
@@ -640,8 +585,6 @@ class BrevoContactsApiClientTest(TestCase):
         self.user.save()
 
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         mock_response = MagicMock()
         mock_response.to_dict.return_value = {"id": 88888}
@@ -719,15 +662,11 @@ class BrevoCompanyApiClientTest(TestCase):
     """
 
     def setUp(self):
-        self.siae = SiaeFactory(name="Test SIAE", website="https://test.com")
         self.company = CompanyFactory(name="Test Company", website="https://company.com")
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_or_update_company_success_create(self, mock_get_api_client):
+    def test_create_or_update_company_success_create(self):
         """Test successful SIAE company creation"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # Mock successful API response
         mock_response = MagicMock()
@@ -736,43 +675,40 @@ class BrevoCompanyApiClientTest(TestCase):
 
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
-            client.create_or_update_company(self.siae)
+            client.create_or_update_company(self.company)
 
-        # Verify the SIAE was updated with Brevo ID
-        self.siae.refresh_from_db()
-        self.assertEqual(self.siae.brevo_company_id, "12345")
-        self.assertTrue(len(self.siae.logs) > 0)
-        self.assertEqual(self.siae.logs[-1]["brevo_sync"]["status"], "success")
+        # Verify the company was updated with Brevo ID
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.brevo_company_id, "12345")
+        self.assertTrue(len(self.company.logs) > 0)
+        self.assertEqual(self.company.logs[-1]["brevo_sync"]["status"], "success")
         mock_api_instance.companies_post.assert_called_once()
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_or_update_company_success_update(self, mock_get_api_client):
+    def test_create_or_update_company_success_update(self):
         """Test successful SIAE company update"""
-        self.siae.brevo_company_id = 99999
-        self.siae.save()
+        self.company.brevo_company_id = 99999
+        self.company.save()
 
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         mock_response = MagicMock()
         mock_api_instance.companies_id_patch.return_value = mock_response
 
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
-            client.create_or_update_company(self.siae)
+            client.create_or_update_company(self.company)
 
         # Verify update was called with correct ID
         call_args = mock_api_instance.companies_id_patch.call_args
         mock_api_instance.companies_id_patch.assert_called_once_with(99999, call_args[0][1])
-        self.siae.refresh_from_db()
-        self.assertTrue(len(self.siae.logs) > 0)
-        self.assertEqual(self.siae.logs[-1]["brevo_sync"]["status"], "success")
+        self.company.refresh_from_db()
+        self.assertTrue(len(self.company.logs) > 0)
+        self.assertEqual(self.company.logs[-1]["brevo_sync"]["status"], "success")
 
     def test_build_buyer_attributes(self):
         """Test _build_buyer_attributes method"""
         company = CompanyFactory(
-            name="Test Company",
+            name="Test Company 2",
             website="https://company.com",
             description="Buyer company description",
             siret="12345678901234",
@@ -795,21 +731,17 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertEqual(attributes["nombre_besoins"], 15)
         self.assertEqual(attributes["domaines_email"], "company.com,subsidiary.com")
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_or_update_company_verify_attributes(self, mock_get_api_client):
+    def test_create_or_update_company_verify_attributes(self):
         """Test that SIAE company attributes are correctly set"""
-        self.siae.description = "Une SIAE de test"
-        self.siae.kind = "EI"
-        self.siae.address = "123 Rue Test"
-        self.siae.post_code = "75001"
-        self.siae.city = "Paris"
-        self.siae.contact_email = "contact@test.com"
-        self.siae.is_active = True
-        self.siae.save()
+        self.company.description = "Une SIAE de test"
+        self.company.address = "123 Rue Test"
+        self.company.post_code = "75001"
+        self.company.city = "Paris"
+        self.company.contact_email = "contact@test.com"
+        self.company.is_active = True
+        self.company.save()
 
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         mock_response = MagicMock()
         mock_response.id = 12345
@@ -817,33 +749,23 @@ class BrevoCompanyApiClientTest(TestCase):
 
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
-            client.create_or_update_company(self.siae)
+            client.create_or_update_company(self.company)
 
         # Verify the company body passed to API
         call_args = mock_api_instance.companies_post.call_args[0][0]
-        self.assertEqual(call_args.name, "Test SIAE")
+        self.assertEqual(call_args.name, "Test Company")
 
         attributes = call_args.attributes
-        self.assertEqual(attributes["domain"], "https://test.com")
-        self.assertEqual(attributes["app_id"], self.siae.id)
-        self.assertTrue(attributes["siae"])
-        self.assertTrue(attributes["active"])
-        self.assertEqual(attributes["description"], "Une SIAE de test")
-        self.assertEqual(attributes["kind"], "EI")
-        self.assertEqual(attributes["address_street"], "123 Rue Test")
-        self.assertEqual(attributes["postal_code"], "75001")  # Corrected from address_post_code
-        self.assertEqual(attributes["address_city"], "Paris")
-        self.assertEqual(attributes["contact_email"], "contact@test.com")
+        self.assertEqual(attributes["domain"], "https://company.com")
+        self.assertEqual(attributes["app_id"], self.company.id)
+        self.assertFalse(attributes["siae"])
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_or_update_company_404_recovery(self, mock_get_api_client):
+    def test_create_or_update_company_404_recovery(self):
         """Test 404 error handling - switches from update to create"""
-        self.siae.brevo_company_id = 99999
-        self.siae.save()
+        self.company.brevo_company_id = 99999
+        self.company.save()
 
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # First call (update) returns 404, second call (create) succeeds
         not_found_exception = ApiException(status=404, reason="Not Found")
@@ -856,21 +778,18 @@ class BrevoCompanyApiClientTest(TestCase):
 
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
-            client.create_or_update_company(self.siae)
+            client.create_or_update_company(self.company)
 
         # Verify it switched to create mode and updated the ID
-        self.siae.refresh_from_db()
-        self.assertEqual(self.siae.brevo_company_id, "54321")
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.brevo_company_id, "54321")
         mock_api_instance.companies_id_patch.assert_called_once()
         mock_api_instance.companies_post.assert_called_once()
 
     @patch("lemarche.utils.apis.api_brevo.time.sleep")
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_or_update_company_retry_mechanism(self, mock_get_api_client, mock_sleep):
+    def test_create_or_update_company_retry_mechanism(self, mock_sleep):
         """Test retry mechanism for API errors"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # First call fails, second call succeeds
         server_error = ApiException(status=500, reason="Server Error")
@@ -884,20 +803,17 @@ class BrevoCompanyApiClientTest(TestCase):
             # Use custom config with fewer retries for testing
             config = api_brevo.BrevoConfig(max_retries=2)
             client = api_brevo.BrevoCompanyApiClient(config)
-            client.create_or_update_company(self.siae)
+            client.create_or_update_company(self.company)
 
-        self.siae.refresh_from_db()
-        self.assertEqual(self.siae.brevo_company_id, "12345")
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.brevo_company_id, "12345")
         self.assertEqual(mock_api_instance.companies_post.call_count, 2)
         mock_sleep.assert_called_once_with(5)
 
     @patch("lemarche.utils.apis.api_brevo.time.sleep")
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_or_update_company_max_retries_exceeded(self, mock_get_api_client, mock_sleep):
+    def test_create_or_update_company_max_retries_exceeded(self, mock_sleep):
         """Test behavior when max retries are exceeded"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # Always fail
         server_error = ApiException(status=500, reason="Server Error")
@@ -909,20 +825,17 @@ class BrevoCompanyApiClientTest(TestCase):
                 # Use custom config with fewer retries for testing
                 config = api_brevo.BrevoConfig(max_retries=2)
                 client = api_brevo.BrevoCompanyApiClient(config)
-                client.create_or_update_company(self.siae)
+                client.create_or_update_company(self.company)
 
-        self.siae.refresh_from_db()
-        self.assertIsNone(self.siae.brevo_company_id)
-        self.assertTrue(len(self.siae.logs) > 0)
-        self.assertEqual(self.siae.logs[-1]["brevo_sync"]["status"], "error")
+        self.company.refresh_from_db()
+        self.assertIsNone(self.company.brevo_company_id)
+        self.assertTrue(len(self.company.logs) > 0)
+        self.assertEqual(self.company.logs[-1]["brevo_sync"]["status"], "error")
         self.assertEqual(mock_api_instance.companies_post.call_count, 3)  # 1 initial + 2 retries
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_or_update_buyer_company_success_create(self, mock_get_api_client):
+    def test_create_or_update_buyer_company_success_create(self):
         """Test successful buyer company creation"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         mock_response = MagicMock()
         mock_response.id = 67890
@@ -938,15 +851,12 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertTrue(len(self.company.logs) > 0)
         self.assertEqual(self.company.logs[-1]["brevo_sync"]["status"], "success")
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_or_update_buyer_company_success_update(self, mock_get_api_client):
+    def test_create_or_update_buyer_company_success_update(self):
         """Test successful buyer company update"""
         self.company.brevo_company_id = 77777
         self.company.save()
 
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         mock_response = MagicMock()
         mock_api_instance.companies_id_patch.return_value = mock_response
@@ -962,8 +872,7 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertTrue(len(self.company.logs) > 0)
         self.assertEqual(self.company.logs[-1]["brevo_sync"]["status"], "success")
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_or_update_buyer_company_verify_attributes(self, mock_get_api_client):
+    def test_create_or_update_buyer_company_verify_attributes(self):
         """Test that buyer company attributes are correctly set"""
         self.company.description = "Une entreprise acheteuse"
         self.company.siret = "12345678901234"
@@ -971,8 +880,6 @@ class BrevoCompanyApiClientTest(TestCase):
         self.company.save()
 
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         mock_response = MagicMock()
         mock_response.id = 67890
@@ -996,15 +903,12 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertEqual(attributes["nombre_d_utilisateurs"], 5)  # Corrected from nombre_utilisateurs
         self.assertEqual(attributes["nombre_besoins"], 3)
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_or_update_buyer_company_404_recovery(self, mock_get_api_client):
+    def test_create_or_update_buyer_company_404_recovery(self):
         """Test 404 error handling for buyer company - switches from update to create"""
         self.company.brevo_company_id = 88888
         self.company.save()
 
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # First call (update) returns 404, second call (create) succeeds
         not_found_exception = ApiException(status=404, reason="Not Found")
@@ -1025,12 +929,9 @@ class BrevoCompanyApiClientTest(TestCase):
         mock_api_instance.companies_id_patch.assert_called_once()
         mock_api_instance.companies_post.assert_called_once()
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_create_or_update_buyer_company_api_error_returns_false(self, mock_get_api_client):
+    def test_create_or_update_buyer_company_api_error_returns_false(self):
         """Test that buyer company API errors return False instead of raising"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # Simulate persistent API error
         server_error = ApiException(status=500, reason="Server Error")
@@ -1049,19 +950,16 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertTrue(len(self.company.logs) > 0)
         self.assertEqual(self.company.logs[-1]["brevo_sync"]["status"], "error")
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_link_company_with_contact_list_success(self, mock_get_api_client):
+    @override_settings(BITOUBI_ENV="prod")
+    def test_link_company_with_contact_list_success(self):
         """Test successful company-contact linking"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         contact_list = [111, 222, 333]
 
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
-            with patch("lemarche.utils.apis.api_brevo.settings.BITOUBI_ENV", "local"):
-                client = api_brevo.BrevoCompanyApiClient()
-                client.link_company_with_contact_list(12345, contact_list)
+            client = api_brevo.BrevoCompanyApiClient()
+            client.link_company_with_contact_list(12345, contact_list)
 
         # Verify the API call was made
         mock_api_instance.companies_link_unlink_id_patch.assert_called_once()
@@ -1069,98 +967,82 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertEqual(call_args[0][0], 12345)  # company_id
         self.assertEqual(call_args[0][1].link_contact_ids, [111, 222, 333])
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_link_company_with_contact_list_filters_none_values(self, mock_get_api_client):
+    @override_settings(BITOUBI_ENV="local")
+    def test_link_company_with_contact_list_filters_none_values(self):
         """Test that None values are filtered out from contact list"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         contact_list = [111, None, 222, None, 333]
 
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
-            with patch("lemarche.utils.apis.api_brevo.settings.BITOUBI_ENV", "local"):
-                client = api_brevo.BrevoCompanyApiClient()
-                client.link_company_with_contact_list(12345, contact_list)
+            client = api_brevo.BrevoCompanyApiClient()
+            client.link_company_with_contact_list(12345, contact_list)
 
         # Verify None values were filtered out
         call_args = mock_api_instance.companies_link_unlink_id_patch.call_args
         self.assertEqual(call_args[0][1].link_contact_ids, [111, 222, 333])
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_link_company_with_contact_list_empty_list_no_api_call(self, mock_get_api_client):
+    @override_settings(BITOUBI_ENV="local")
+    def test_link_company_with_contact_list_empty_list_no_api_call(self):
         """Test that empty contact list doesn't trigger API call"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
-            with patch("lemarche.utils.apis.api_brevo.settings.BITOUBI_ENV", "local"):
-                client = api_brevo.BrevoCompanyApiClient()
-                client.link_company_with_contact_list(12345, [])
+            client = api_brevo.BrevoCompanyApiClient()
+            client.link_company_with_contact_list(12345, [])
 
         # Verify no API call was made
         mock_api_instance.companies_link_unlink_id_patch.assert_not_called()
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_link_company_with_contact_list_only_none_values_no_api_call(self, mock_get_api_client):
+    @override_settings(BITOUBI_ENV="local")
+    def test_link_company_with_contact_list_only_none_values_no_api_call(self):
         """Test that contact list with only None values doesn't trigger API call"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
-            with patch("lemarche.utils.apis.api_brevo.settings.BITOUBI_ENV", "local"):
-                client = api_brevo.BrevoCompanyApiClient()
-                client.link_company_with_contact_list(12345, [None, None])
+            client = api_brevo.BrevoCompanyApiClient()
+            client.link_company_with_contact_list(12345, [None, None])
 
         # Verify no API call was made
         mock_api_instance.companies_link_unlink_id_patch.assert_not_called()
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_link_company_with_contact_list_api_exception_logged(self, mock_get_api_client):
+    @override_settings(BITOUBI_ENV="prod")
+    def test_link_company_with_contact_list_api_exception_logged(self):
         """Test that API exceptions are properly logged"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         api_error = ApiException(status=400, reason="Bad Request")
         api_error.body = None
         mock_api_instance.companies_link_unlink_id_patch.side_effect = api_error
 
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
-            with patch("lemarche.utils.apis.api_brevo.settings.BITOUBI_ENV", "local"):
-                client = api_brevo.BrevoCompanyApiClient()
+            client = api_brevo.BrevoCompanyApiClient()
 
-                # Mock the logger of the client instance
-                with patch.object(client, "logger") as mock_logger:
-                    # Should not raise exception, just log it
-                    client.link_company_with_contact_list(12345, [111, 222])
-
-                    # Verify error was logged
-                    mock_logger.error.assert_called_once()
-                    error_msg = mock_logger.error.call_args[0][0]
-                    self.assertIn("Exception when calling Brevo->DealApi->companies_link_unlink_id_patch", error_msg)
-
-    def test_link_company_with_contact_list_env_not_allowed(self):
-        """Test that method does nothing when environment is not allowed"""
-        from lemarche.utils.apis.api_brevo import ENV_NOT_ALLOWED
-
-        # Mock an environment that's not allowed
-        with patch("lemarche.utils.apis.api_brevo.settings.BITOUBI_ENV", ENV_NOT_ALLOWED[0]):
-            with patch("lemarche.utils.apis.api_brevo.get_api_client") as mock_get_api_client:
-                client = api_brevo.BrevoCompanyApiClient()
+            # Mock the logger of the client instance
+            with patch.object(client, "logger") as mock_logger:
+                # Should not raise exception, just log it
                 client.link_company_with_contact_list(12345, [111, 222])
 
-                # Verify no API client was even created
-                mock_get_api_client.assert_not_called()
+                # Verify error was logged
+                mock_logger.error.assert_called_once()
+                error_msg = mock_logger.error.call_args[0][0]
+                self.assertIn("Exception when calling Brevo->DealApi->companies_link_unlink_id_patch", error_msg)
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_get_contact_by_email_success(self, mock_get_api_client):
+    @override_settings(BITOUBI_ENV="dev")
+    def test_link_company_with_contact_list_env_not_allowed(self):
+        """Test that method does nothing when environment is not allowed"""
+
+        # Mock an environment that's not allowed
+        with patch("sib_api_v3_sdk.CompaniesApi.companies_link_unlink_id_patch") as mock_api_link_unlink:
+            client = api_brevo.BrevoCompanyApiClient()
+            client.link_company_with_contact_list(12345, [111, 222])
+
+            # Verify no API client was even created
+            mock_api_link_unlink.assert_not_called()
+
+    def test_get_contact_by_email_success(self):
         """Test get_contact_by_email success"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # Mock successful response
         mock_response = MagicMock()
@@ -1175,12 +1057,9 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertEqual(result["email"], "test@example.com")
         mock_api_instance.get_contact_info.assert_called_once_with("test@example.com")
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_get_contact_by_email_not_found(self, mock_get_api_client):
+    def test_get_contact_by_email_not_found(self):
         """Test get_contact_by_email returns None for non-existent contact"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # Mock 404 response
         not_found_exception = ApiException(status=404, reason="Not Found")
@@ -1193,12 +1072,9 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertEqual(result, {})
         mock_api_instance.get_contact_info.assert_called_once_with("notfound@example.com")
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_get_contact_by_email_non_404_error(self, mock_get_api_client):
+    def test_get_contact_by_email_non_404_error(self):
         """Test get_contact_by_email with non-404 API error that should be retried"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # Mock server error (not 404)
         server_error = ApiException(status=500, reason="Server Error")
@@ -1210,12 +1086,9 @@ class BrevoCompanyApiClientTest(TestCase):
             with self.assertRaises(api_brevo.BrevoApiError):
                 client.get_contact_by_email("test@example.com")
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_get_all_contacts_brevo_api_error_handling(self, mock_get_api_client):
+    def test_get_all_contacts_brevo_api_error_handling(self):
         """Test get_all_contacts handling BrevoApiError in pagination loop"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
             # Mock the _fetch_contacts_page to raise BrevoApiError
@@ -1283,12 +1156,9 @@ class BrevoCompanyApiClientTest(TestCase):
             self.assertEqual(result, {})
             mock_logger.error.assert_called()
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_remove_contact_from_list_other_api_error(self, mock_get_api_client):
+    def test_remove_contact_from_list_other_api_error(self):
         """Test remove_contact_from_list with other API error (not 'already removed')"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # Mock error that's not "already removed"
         error_body = '{"message": "Some other error"}'
@@ -1373,12 +1243,9 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertTrue(len(company.logs) > 0)
         self.assertEqual(company.logs[-1]["brevo_sync"]["status"], "error")
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_handle_company_404_and_retry_siae(self, mock_get_api_client):
+    def test_handle_company_404_and_retry_siae(self):
         """Test _handle_company_404_and_retry for SIAE company"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         siae = SiaeFactory()
         siae.brevo_company_id = 99999
@@ -1404,12 +1271,9 @@ class BrevoCompanyApiClientTest(TestCase):
                 mock_create_method.assert_called_once_with(siae)
                 self.assertEqual(result, "success")
 
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_handle_company_404_and_retry_buyer(self, mock_get_api_client):
+    def test_handle_company_404_and_retry_buyer(self):
         """Test _handle_company_404_and_retry for buyer company"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         company = CompanyFactory()
         company.brevo_company_id = 88888
@@ -1505,49 +1369,49 @@ class BrevoTransactionalEmailApiClientTest(TestCase):
     def setUp(self):
         self.email_client = api_brevo.BrevoTransactionalEmailApiClient()
 
+    @override_settings(BITOUBI_ENV="prod")
     def test_send_transactional_email_with_template_success(self):
         """Test successful email sending"""
-        with patch("lemarche.utils.apis.api_brevo.settings.BITOUBI_ENV", "prod"):
-            with patch.object(
-                self.email_client, "_send_email_with_retry", return_value={"messageId": "12345"}
-            ) as mock_send:
-                result = self.email_client.send_transactional_email_with_template(
-                    template_id=1,
-                    recipient_email="test@example.com",
-                    recipient_name="Test User",
-                    variables={"name": "John"},
-                    subject="Test Subject",
-                )
-
-        self.assertEqual(result["messageId"], "12345")
-        mock_send.assert_called_once()
-
-    def test_send_transactional_email_development_environment(self):
-        """Test email sending in development environment"""
-        with patch("lemarche.utils.apis.api_brevo.settings.BITOUBI_ENV", "dev"):
+        with patch.object(
+            self.email_client, "_send_email_with_retry", return_value={"messageId": "12345"}
+        ) as mock_send:
             result = self.email_client.send_transactional_email_with_template(
                 template_id=1,
                 recipient_email="test@example.com",
                 recipient_name="Test User",
                 variables={"name": "John"},
+                subject="Test Subject",
             )
+
+        self.assertEqual(result["messageId"], "12345")
+        mock_send.assert_called_once()
+
+    @override_settings(BITOUBI_ENV="dev")
+    def test_send_transactional_email_development_environment(self):
+        """Test email sending in development environment"""
+        result = self.email_client.send_transactional_email_with_template(
+            template_id=1,
+            recipient_email="test@example.com",
+            recipient_name="Test User",
+            variables={"name": "John"},
+        )
 
         # Should return development message without calling API
         self.assertEqual(result["message"], "Email not sent in development/test environment")
 
+    @override_settings(BITOUBI_ENV="prod")
     def test_send_transactional_email_without_custom_subject(self):
         """Test email sending without custom subject"""
-        with patch("lemarche.utils.apis.api_brevo.settings.BITOUBI_ENV", "prod"):
-            with patch.object(
-                self.email_client, "_send_email_with_retry", return_value={"messageId": "67890"}
-            ) as mock_send:
-                self.email_client.send_transactional_email_with_template(
-                    template_id=2,
-                    recipient_email="test@example.com",
-                    recipient_name="Test User",
-                    variables={"name": "Jane"},
-                    # No subject parameter
-                )
+        with patch.object(
+            self.email_client, "_send_email_with_retry", return_value={"messageId": "67890"}
+        ) as mock_send:
+            self.email_client.send_transactional_email_with_template(
+                template_id=2,
+                recipient_email="test@example.com",
+                recipient_name="Test User",
+                variables={"name": "Jane"},
+                # No subject parameter
+            )
 
         # Verify the method was called
         mock_send.assert_called_once()
@@ -1555,13 +1419,11 @@ class BrevoTransactionalEmailApiClientTest(TestCase):
         call_args = mock_send.call_args[0][0]
         self.assertNotIn("subject", call_args)
 
+    @override_settings(BITOUBI_ENV="prod")
     @patch("lemarche.utils.apis.api_brevo.time.sleep")
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_send_transactional_email_with_retry(self, mock_get_api_client, mock_sleep):
+    def test_send_transactional_email_with_retry(self, mock_sleep):
         """Test email sending with retry mechanism"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # First call fails, second succeeds
         server_error = ApiException(status=500, reason="Server Error")
@@ -1571,47 +1433,43 @@ class BrevoTransactionalEmailApiClientTest(TestCase):
         mock_api_instance.send_transac_email.side_effect = [server_error, mock_response]
 
         with patch("sib_api_v3_sdk.TransactionalEmailsApi", return_value=mock_api_instance):
-            with patch("lemarche.utils.apis.api_brevo.settings.BITOUBI_ENV", "prod"):
-                # Use custom config with fewer retries for testing
-                config = api_brevo.BrevoConfig(max_retries=2)
-                client = api_brevo.BrevoTransactionalEmailApiClient(config)
+            # Use custom config with fewer retries for testing
+            config = api_brevo.BrevoConfig(max_retries=2)
+            client = api_brevo.BrevoTransactionalEmailApiClient(config)
 
-                result = client.send_transactional_email_with_template(
-                    template_id=3,
-                    recipient_email="retry@example.com",
-                    recipient_name="Retry User",
-                    variables={"test": "retry"},
-                )
+            result = client.send_transactional_email_with_template(
+                template_id=3,
+                recipient_email="retry@example.com",
+                recipient_name="Retry User",
+                variables={"test": "retry"},
+            )
 
         self.assertEqual(result["messageId"], "retry-success")
         self.assertEqual(mock_api_instance.send_transac_email.call_count, 2)
         mock_sleep.assert_called_once_with(5)
 
+    @override_settings(BITOUBI_ENV="prod")
     @patch("lemarche.utils.apis.api_brevo.time.sleep")
-    @patch("lemarche.utils.apis.api_brevo.get_api_client")
-    def test_send_transactional_email_max_retries_exceeded(self, mock_get_api_client, mock_sleep):
+    def test_send_transactional_email_max_retries_exceeded(self, mock_sleep):
         """Test email sending when max retries are exceeded"""
         mock_api_instance = MagicMock()
-        mock_client = MagicMock()
-        mock_get_api_client.return_value = mock_client
 
         # Always fail
         server_error = ApiException(status=500, reason="Server Error")
         mock_api_instance.send_transac_email.side_effect = server_error
 
         with patch("sib_api_v3_sdk.TransactionalEmailsApi", return_value=mock_api_instance):
-            with patch("lemarche.utils.apis.api_brevo.settings.BITOUBI_ENV", "prod"):
-                # Use custom config with fewer retries for testing
-                config = api_brevo.BrevoConfig(max_retries=1)
-                client = api_brevo.BrevoTransactionalEmailApiClient(config)
+            # Use custom config with fewer retries for testing
+            config = api_brevo.BrevoConfig(max_retries=1)
+            client = api_brevo.BrevoTransactionalEmailApiClient(config)
 
-                with self.assertRaises(api_brevo.BrevoApiError):
-                    client.send_transactional_email_with_template(
-                        template_id=4,
-                        recipient_email="fail@example.com",
-                        recipient_name="Fail User",
-                        variables={"test": "fail"},
-                    )
+            with self.assertRaises(api_brevo.BrevoApiError):
+                client.send_transactional_email_with_template(
+                    template_id=4,
+                    recipient_email="fail@example.com",
+                    recipient_name="Fail User",
+                    variables={"test": "fail"},
+                )
 
         self.assertEqual(mock_api_instance.send_transac_email.call_count, 2)  # 1 initial + 1 retry
         mock_sleep.assert_called_once()
@@ -1624,7 +1482,6 @@ class BrevoUtilityFunctionsTest(TestCase):
 
     def test_cleanup_and_link_contacts_with_contacts(self):
         """Test _cleanup_and_link_contacts utility function"""
-        from lemarche.utils.apis.api_brevo import _cleanup_and_link_contacts
 
         mock_api_instance = MagicMock()
         mock_body_class = MagicMock()
@@ -1633,7 +1490,7 @@ class BrevoUtilityFunctionsTest(TestCase):
 
         contact_list = [111, 222, 333]
 
-        _cleanup_and_link_contacts(
+        api_brevo._cleanup_and_link_contacts(
             api_instance=mock_api_instance,
             entity_id=12345,
             contact_list=contact_list,
@@ -1649,14 +1506,13 @@ class BrevoUtilityFunctionsTest(TestCase):
 
     def test_cleanup_and_link_contacts_empty_list(self):
         """Test _cleanup_and_link_contacts with empty contact list"""
-        from lemarche.utils.apis.api_brevo import _cleanup_and_link_contacts
 
         mock_api_instance = MagicMock()
         mock_body_class = MagicMock()
 
         contact_list = []
 
-        _cleanup_and_link_contacts(
+        api_brevo._cleanup_and_link_contacts(
             api_instance=mock_api_instance,
             entity_id=12345,
             contact_list=contact_list,

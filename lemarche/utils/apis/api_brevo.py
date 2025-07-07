@@ -51,6 +51,8 @@ class BrevoApiError(Exception):
 
 class BrevoBaseApiClient:
 
+    api_client: sib_api_v3_sdk.ApiClient
+
     def __init__(self, config: BrevoConfig = BrevoConfig()):
         """
         Initialize the Brevo API client with configuration.
@@ -296,19 +298,17 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         modified_since = datetime.now() - timedelta(days=since_days)
         result = {}
         total_retrieved = 0
-        is_finished = False
 
         self.logger.debug(f"Retrieving contacts modified in the last {since_days} days")
 
         try:
-            while not is_finished:
+            while True:
                 # Calculate current limit for this request
                 pagination_limit = self._calculate_pagination_limit(
                     limit_max, total_retrieved, self.config.default_page_limit
                 )
 
                 if pagination_limit <= 0:
-                    is_finished = True
                     break
 
                 self.logger.debug(f"Fetching contacts: limit={pagination_limit}, offset={offset}")
@@ -329,7 +329,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
 
                 # Determine if we should continue pagination
                 if not self._should_continue_pagination(len(contacts), pagination_limit, total_retrieved, limit_max):
-                    is_finished = True
+                    break
                 else:
                     offset += pagination_limit
 
@@ -676,7 +676,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
             self._post_process_company_success(siae, api_response, sync_log, is_update)
         except BrevoApiError as e:
             self._handle_company_error(siae, sync_log, e)
-            raise
+            raise e
 
     @BrevoBaseApiClient.execute_with_retry_method(operation_name="company operation")
     def _company_with_retry(self, siae, siae_brevo_company_body, is_update):
@@ -689,7 +689,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         except ApiException as e:
             if is_update and e.status == 404:
                 return self._handle_company_404_and_retry(siae, self.create_or_update_company)
-            raise
+            raise e
 
     # =============================================================================
     # PUBLIC METHODS - BUYER COMPANY OPERATIONS
@@ -733,7 +733,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         except ApiException as e:
             if is_update and e.status == 404:
                 return self._handle_company_404_and_retry(company, self.create_or_update_buyer_company)
-            raise
+            raise e
 
     # =============================================================================
     # PUBLIC METHODS - COMPANY-CONTACT LINKING
@@ -762,9 +762,8 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
                 if len(contact_list):
                     body_link_company_contact = sib_api_v3_sdk.Body2(link_contact_ids=contact_list)
                     self.api_instance.companies_link_unlink_id_patch(brevo_company_id, body_link_company_contact)
-
             except ApiException as e:
-                self.logger.error(f"Exception when calling Brevo->{e}: DealApi->companies_link_unlink_id_patch")
+                self.logger.error(f"Exception when calling Brevo->DealApi->companies_link_unlink_id_patch \n {e}")
 
     # =============================================================================
     # PRIVATE METHODS - COMMON COMPANY SUPPORT
@@ -939,25 +938,6 @@ def _cleanup_and_link_contacts(api_instance, entity_id, contact_list: list, link
         body_link = link_body_class(link_contact_ids=contact_list)
         patch_method = getattr(api_instance, patch_method_name)
         patch_method(entity_id, body_link)
-
-
-def get_config():
-    """
-    Legacy function for backward compatibility.
-    Consider using BrevoBaseApiClient.get_config() instead.
-    """
-    config = sib_api_v3_sdk.Configuration()
-    config.api_key["api-key"] = settings.BREVO_API_KEY
-    return config
-
-
-def get_api_client():
-    """
-    Legacy function for backward compatibility.
-    Consider using BrevoBaseApiClient directly instead.
-    """
-    config = get_config()
-    return sib_api_v3_sdk.ApiClient(config)
 
 
 def create_deal(tender, owner_email: str):
