@@ -27,15 +27,16 @@ class BrevoBaseApiClientTest(TestCase):
         """Test decorator when operation succeeds on first attempt"""
 
         # Create a test method decorated with execute_with_retry_method
-        @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
-        def test_method(self):
-            return {"success": True}
+        class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
+            """A test method to be bound to the client"""
 
-        # Bind the method to our client instance
-        bound_method = test_method.__get__(self.base_client, api_brevo.BrevoBaseApiClient)
+            @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
+            def test_method(self):
+                return {"success": True}
 
+        test = TestBrevoClassBased()
         # Execute the method
-        result = bound_method()
+        result = test.test_method()
 
         # Verify success and no retries
         self.assertEqual(result, {"success": True})
@@ -48,18 +49,20 @@ class BrevoBaseApiClientTest(TestCase):
         # Use a list to be able to modify the value from the nested function
         call_counter = [0]
 
-        @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
-        def test_method(self):
-            call_counter[0] += 1
-            if call_counter[0] == 1:
-                # First call fails
-                raise ApiException(status=500, reason="Server Error")
-            else:
-                # Second call succeeds
-                return {"success": True, "attempt": call_counter[0]}
+        class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
+            """A test method to be bound to the client"""
 
-        bound_method = test_method.__get__(self.base_client, api_brevo.BrevoBaseApiClient)
-        result = bound_method()
+            @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
+            def test_method(self):
+                call_counter[0] += 1
+                if call_counter[0] == 1:
+                    # First call fails
+                    raise ApiException(status=500, reason="Server Error")
+                else:
+                    # Second call succeeds
+                    return {"success": True, "attempt": call_counter[0]}
+
+        result = TestBrevoClassBased().test_method()
 
         # Verify success after retry
         self.assertEqual(result, {"success": True, "attempt": 2})
@@ -153,34 +156,6 @@ class BrevoBaseApiClientTest(TestCase):
         mock_sleep.assert_not_called()
         self.assertIn("Unexpected error during test operation", str(context.exception))
 
-    def test_execute_with_retry_method_simplified(self):
-        """Test decorator works without entity_id parameter"""
-
-        @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
-        def test_method(self):
-            return {"success": True}
-
-        bound_method = test_method.__get__(self.base_client, api_brevo.BrevoBaseApiClient)
-        result = bound_method()
-
-        # Verify it works without entity_id
-        self.assertEqual(result, {"success": True})
-
-    def test_execute_with_retry_method_without_entity_id_decorator(self):
-        """Test decorator without entity_id parameter"""
-
-        @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
-        def test_method(self):
-            raise ApiException(status=500, reason="Server Error")
-
-        bound_method = test_method.__get__(self.base_client, api_brevo.BrevoBaseApiClient)
-
-        with self.assertRaises(api_brevo.BrevoApiError) as context:
-            bound_method()
-
-        # Verify error message doesn't contain entity_id references
-        self.assertIn("Failed to test operation after", str(context.exception))
-
     def test_handle_api_retry_rate_limit(self):
         """Test handle_api_retry method for rate limiting"""
         exception = ApiException(status=429, reason="Rate Limit")
@@ -260,38 +235,6 @@ class BrevoBaseApiClientTest(TestCase):
         )
         self.assertFalse(result)
 
-    def test_build_siae_attributes(self):
-        """Test _build_siae_attributes method"""
-        siae = SiaeFactory(
-            name="Test SIAE",
-            website="https://test.com",
-            description="Description test",
-            kind="EI",
-            address="123 Rue Test",
-            post_code="75001",
-            city="Paris",
-            contact_email="contact@test.com",
-            is_active=True,
-        )
-        siae.extra_data = {"brevo_company_data": {"completion_rate": 85, "tender_received": 10, "tender_interest": 5}}
-        siae.save()
-
-        attributes = self.base_client._build_siae_attributes(siae)
-
-        self.assertEqual(attributes["domain"], "https://test.com")
-        self.assertEqual(attributes["app_id"], siae.id)
-        self.assertTrue(attributes["siae"])
-        self.assertTrue(attributes["active"])
-        self.assertEqual(attributes["description"], "Description test")
-        self.assertEqual(attributes["kind"], "EI")
-        self.assertEqual(attributes["address_street"], "123 Rue Test")
-        self.assertEqual(attributes["postal_code"], "75001")
-        self.assertEqual(attributes["address_city"], "Paris")
-        self.assertEqual(attributes["contact_email"], "contact@test.com")
-        self.assertEqual(attributes["taux_de_completion"], 85)
-        self.assertEqual(attributes["nombre_de_besoins_recus"], 10)
-        self.assertEqual(attributes["nombre_de_besoins_interesses"], 5)
-
 
 class BrevoContactsApiClientTest(TestCase):
     """
@@ -326,6 +269,39 @@ class BrevoContactsApiClientTest(TestCase):
         expected_result = {"user1@example.com": 1, "user2@example.com": 2}
         self.assertEqual(result, expected_result)
         mock_api_instance.get_contacts.assert_called_once()
+
+    def test_build_siae_attributes(self):
+        """Test _build_siae_attributes method"""
+        siae = SiaeFactory(
+            name="Test SIAE",
+            website="https://test.com",
+            description="Description test",
+            kind="EI",
+            address="123 Rue Test",
+            post_code="75001",
+            city="Paris",
+            contact_email="contact@test.com",
+            is_active=True,
+        )
+        siae.extra_data = {"brevo_company_data": {"completion_rate": 85, "tender_received": 10, "tender_interest": 5}}
+        siae.save()
+        clientContactsBrevo = api_brevo.BrevoContactsApiClient()
+
+        attributes = clientContactsBrevo._build_siae_attributes(siae)
+
+        self.assertEqual(attributes["domain"], "https://test.com")
+        self.assertEqual(attributes["app_id"], siae.id)
+        self.assertTrue(attributes["siae"])
+        self.assertTrue(attributes["active"])
+        self.assertEqual(attributes["description"], "Description test")
+        self.assertEqual(attributes["kind"], "EI")
+        self.assertEqual(attributes["address_street"], "123 Rue Test")
+        self.assertEqual(attributes["postal_code"], "75001")
+        self.assertEqual(attributes["address_city"], "Paris")
+        self.assertEqual(attributes["contact_email"], "contact@test.com")
+        self.assertEqual(attributes["taux_de_completion"], 85)
+        self.assertEqual(attributes["nombre_de_besoins_recus"], 10)
+        self.assertEqual(attributes["nombre_de_besoins_interesses"], 5)
 
     @patch("lemarche.utils.apis.api_brevo.get_api_client")
     def test_get_all_contacts_pagination(self, mock_get_api_client):

@@ -666,7 +666,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When company synchronization fails after all retries
         """
-        siae_brevo_company_body = sib_api_v3_sdk.Body(name=siae.name, attributes=self._build_siae_attributes(siae))
+        siae_brevo_company_body = sib_api_v3_sdk.Body(name=siae.name, attributes=self._build_buyer_attributes(siae))
 
         sync_log = self._create_sync_log(siae)
         is_update = bool(siae.brevo_company_id)
