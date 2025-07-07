@@ -19,20 +19,17 @@ class BrevoBaseApiClientTest(TestCase):
     This covers the retry decorator functionality and base client behavior.
     """
 
-    def setUp(self):
-        self.base_client = api_brevo.BrevoBaseApiClient()
-
     @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_execute_with_retry_method_success_first_attempt(self, mock_sleep):
         """Test decorator when operation succeeds on first attempt"""
 
         # Create a test method decorated with execute_with_retry_method
-        class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
+        class TestBrevoBasedClass(api_brevo.BrevoBaseApiClient):
             @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
             def test_method(self):
                 return {"success": True}
 
-        test = TestBrevoClassBased()
+        test = TestBrevoBasedClass()
         # Execute the method
         result = test.test_method()
 
@@ -46,7 +43,7 @@ class BrevoBaseApiClientTest(TestCase):
 
         # Use a list to be able to modify the value from the nested function
 
-        class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
+        class TestBrevoBasedClass(api_brevo.BrevoBaseApiClient):
             call_counter = 0
 
             @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
@@ -59,7 +56,7 @@ class BrevoBaseApiClientTest(TestCase):
                     # Second call succeeds
                     return {"success": True, "attempt": self.call_counter}
 
-        class_based = TestBrevoClassBased()
+        class_based = TestBrevoBasedClass()
         result = class_based.test_method()
 
         # Verify success after retry
@@ -72,7 +69,7 @@ class BrevoBaseApiClientTest(TestCase):
 
         # Use a list to be able to modify the value from the nested function
 
-        class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
+        class TestBrevoBasedClass(api_brevo.BrevoBaseApiClient):
             call_counter = 0
 
             @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
@@ -85,7 +82,7 @@ class BrevoBaseApiClientTest(TestCase):
                     # Second call succeeds
                     return {"success": True}
 
-        result = TestBrevoClassBased().test_method()
+        result = TestBrevoBasedClass().test_method()
 
         # Verify rate limit handling with exponential backoff
         self.assertEqual(result, {"success": True})
@@ -97,7 +94,7 @@ class BrevoBaseApiClientTest(TestCase):
     def test_execute_with_retry_method_max_retries_exceeded(self, mock_sleep):
         """Test decorator when max retries are exceeded"""
 
-        class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
+        class TestBrevoBasedClass(api_brevo.BrevoBaseApiClient):
             @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
             def test_method(self):
                 # Always fail
@@ -105,7 +102,7 @@ class BrevoBaseApiClientTest(TestCase):
 
         # Should raise BrevoApiError after max retries
         with self.assertRaises(api_brevo.BrevoApiError) as context:
-            TestBrevoClassBased().test_method()
+            TestBrevoBasedClass().test_method()
         # Verify error message contains operation details
         self.assertIn("Failed to test operation", str(context.exception))
         self.assertIn("after 4 attempts", str(context.exception))  # max_retries=3 + initial attempt
@@ -120,14 +117,14 @@ class BrevoBaseApiClientTest(TestCase):
         # Create client with custom config
         config = api_brevo.BrevoConfig(max_retries=1, retry_delay=2)
 
-        class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
+        class TestBrevoBasedClass(api_brevo.BrevoBaseApiClient):
             @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
             def test_method(self):
                 # Always fail
                 raise ApiException(status=500, reason="Server Error")
 
         with self.assertRaises(api_brevo.BrevoApiError):
-            TestBrevoClassBased(config=config).test_method()
+            TestBrevoBasedClass(config=config).test_method()
 
         # Should only retry once with custom delay
         mock_sleep.assert_called_once_with(2)
@@ -136,14 +133,14 @@ class BrevoBaseApiClientTest(TestCase):
     def test_execute_with_retry_method_unexpected_exception(self, mock_sleep):
         """Test decorator handling of unexpected exceptions"""
 
-        class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
+        class TestBrevoBasedClass(api_brevo.BrevoBaseApiClient):
             @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
             def test_method(self):
                 # Raise unexpected exception (not ApiException)
                 raise ValueError("Unexpected error")
 
         with self.assertRaises(api_brevo.BrevoApiError) as context:
-            TestBrevoClassBased().test_method()
+            TestBrevoBasedClass().test_method()
 
         # Should not retry for unexpected exceptions
         mock_sleep.assert_not_called()
@@ -153,7 +150,7 @@ class BrevoBaseApiClientTest(TestCase):
         """Test handle_api_retry method for rate limiting"""
         exception = ApiException(status=429, reason="Rate Limit")
 
-        should_retry, wait_time = self.base_client.handle_api_retry(exception, 0, "test operation")
+        should_retry, wait_time = api_brevo.BrevoBaseApiClient().handle_api_retry(exception, 0, "test operation")
 
         self.assertTrue(should_retry)
         # Wait time = retry_delay * (attempt + 1) * rate_limit_backoff_multiplier = 5 * 1 * 2 = 10
@@ -163,7 +160,7 @@ class BrevoBaseApiClientTest(TestCase):
         """Test handle_api_retry method for server error within retry limits"""
         exception = ApiException(status=500, reason="Server Error")
 
-        should_retry, wait_time = self.base_client.handle_api_retry(exception, 1, "test operation")
+        should_retry, wait_time = api_brevo.BrevoBaseApiClient().handle_api_retry(exception, 1, "test operation")
 
         self.assertTrue(should_retry)
         # Wait time = retry_delay * (attempt + 1) = 5 * 2 = 10
@@ -174,7 +171,7 @@ class BrevoBaseApiClientTest(TestCase):
         exception = ApiException(status=500, reason="Server Error")
 
         # Attempt equals max_retries (3), should not retry
-        should_retry, wait_time = self.base_client.handle_api_retry(exception, 3, "test operation")
+        should_retry, wait_time = api_brevo.BrevoBaseApiClient().handle_api_retry(exception, 3, "test operation")
 
         self.assertFalse(should_retry)
         self.assertEqual(wait_time, 0)
@@ -184,42 +181,42 @@ class BrevoBaseApiClientTest(TestCase):
         """Test decorator when max retries exceeded without any exception being raised"""
 
         # This test covers the case when we reach the end of the decorator with exceptions thrown on every attempt
-        class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
+        class TestBrevoBasedClass(api_brevo.BrevoBaseApiClient):
             @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
             def test_method(self):
                 # Always raise an exception to trigger the retry logic
                 raise ApiException(status=500, reason="Server Error")
 
         with self.assertRaises(api_brevo.BrevoApiError) as context:
-            TestBrevoClassBased().test_method()
+            TestBrevoBasedClass().test_method()
 
         # Verify that the final error is raised with the correct message
         self.assertIn("Failed to test operation after 4 attempts", str(context.exception))
 
     def test_should_continue_pagination_no_contacts(self):
         """Test pagination stopping when no contacts returned"""
-        result = self.base_client._should_continue_pagination(
+        result = api_brevo.BrevoBaseApiClient()._should_continue_pagination(
             contacts_count=0, pagination_limit=10, total_retrieved=5, limit_max=None
         )
         self.assertFalse(result)
 
     def test_should_continue_pagination_limit_max_reached(self):
         """Test pagination stopping when limit_max is reached"""
-        result = self.base_client._should_continue_pagination(
+        result = api_brevo.BrevoBaseApiClient()._should_continue_pagination(
             contacts_count=5, pagination_limit=10, total_retrieved=10, limit_max=10
         )
         self.assertFalse(result)
 
     def test_should_continue_pagination_continue(self):
         """Test pagination continuing when full page returned"""
-        result = self.base_client._should_continue_pagination(
+        result = api_brevo.BrevoBaseApiClient()._should_continue_pagination(
             contacts_count=10, pagination_limit=10, total_retrieved=10, limit_max=None
         )
         self.assertTrue(result)
 
     def test_should_continue_pagination_partial_page(self):
         """Test pagination stopping when partial page returned"""
-        result = self.base_client._should_continue_pagination(
+        result = api_brevo.BrevoBaseApiClient()._should_continue_pagination(
             contacts_count=5, pagination_limit=10, total_retrieved=15, limit_max=None
         )
         self.assertFalse(result)
