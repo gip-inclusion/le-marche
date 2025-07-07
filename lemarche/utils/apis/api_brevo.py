@@ -98,28 +98,26 @@ class BrevoBaseApiClient:
             self.logger.error(f"Failed after {max_retries} attempts to {operation_name}: {exception}")
             return False, 0
 
-    def _should_continue_pagination(self, contacts_count, current_limit, total_retrieved, limit_max):
+    def _should_continue_pagination(self, contacts_count, pagination_limit, total_retrieved, limit_max):
         """
         Determine if pagination should continue
 
         Args:
             contacts_count: Number of contacts returned in current page
-            current_limit: Limit used for current request
+            pagination_limit: Limit used for current request
             total_retrieved: Total number of contacts to retrieve
+            limit_max: Maximum total contacts to retrieve
 
         Returns:
             bool: True if pagination should continue, False otherwise
         """
-        # Stop if no contacts were returned (end of data)
-        if contacts_count == 0:
-            return False
 
         # Stop if we've reached the limit_max
         if limit_max and total_retrieved >= limit_max:
             return False
 
         # Continue if we got a full page (indicating more data might be available)
-        return contacts_count == current_limit
+        return contacts_count == pagination_limit
 
     @classmethod
     def execute_with_retry_method(cls, operation_name="API operation"):
@@ -161,10 +159,6 @@ class BrevoBaseApiClient:
             return wrapper
 
         return decorator
-
-    def _cleanup_contact_list(self, contact_list):
-        """Clean up contact list by removing None values"""
-        return [contact_id for contact_id in contact_list if contact_id is not None]
 
     def _handle_linking_error(self, error, operation_description="linking operation"):
         """Handle and log linking operation errors"""
@@ -239,6 +233,10 @@ class BrevoBaseApiClient:
                 ",".join(company.email_domain_list) if company.email_domain_list else ""
             ),
         }
+
+    def _cleanup_contact_list(self, contact_list):
+        """Clean up contact list by removing None values"""
+        return [contact_id for contact_id in contact_list if contact_id is not None]
 
 
 class BrevoContactsApiClient(BrevoBaseApiClient):
@@ -383,19 +381,19 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         try:
             while not is_finished:
                 # Calculate current limit for this request
-                current_limit = self._calculate_current_limit(
+                pagination_limit = self._calculate_pagination_limit(
                     limit_max, total_retrieved, self.config.default_page_limit
                 )
 
-                if current_limit <= 0:
+                if pagination_limit <= 0:
                     is_finished = True
                     break
 
-                self.logger.debug(f"Fetching contacts: limit={current_limit}, offset={offset}")
+                self.logger.debug(f"Fetching contacts: limit={pagination_limit}, offset={offset}")
 
                 # Execute the fetch operation with retry logic
                 try:
-                    contacts, total_count_users = self._fetch_contacts_page(current_limit, offset, modified_since)
+                    contacts, total_count_users = self._fetch_contacts_page(pagination_limit, offset, modified_since)
                 except BrevoApiError:
                     self.logger.error("Failed to retrieve contacts page after all retries")
                     break
@@ -408,10 +406,10 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
                 total_retrieved += len(contacts)
 
                 # Determine if we should continue pagination
-                if not self._should_continue_pagination(len(contacts), current_limit, total_retrieved, limit_max):
+                if not self._should_continue_pagination(len(contacts), pagination_limit, total_retrieved, limit_max):
                     is_finished = True
                 else:
-                    offset += current_limit
+                    offset += pagination_limit
 
         except BrevoApiError:
             # Error occurred and max retries exceeded, return empty result
@@ -597,7 +595,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         api_response = self.api_instance.get_contacts_from_list(list_id=list_id, limit=limit, offset=offset).to_dict()
         return api_response
 
-    def _calculate_current_limit(self, limit_max, total_retrieved, page_limit):
+    def _calculate_pagination_limit(self, limit_max, total_retrieved, page_limit):
         """
         Calculates the limit for current API request
 

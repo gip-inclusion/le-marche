@@ -235,28 +235,28 @@ class BrevoBaseApiClientTest(TestCase):
     def test_should_continue_pagination_no_contacts(self):
         """Test pagination stopping when no contacts returned"""
         result = self.base_client._should_continue_pagination(
-            contacts_count=0, current_limit=10, total_retrieved=5, limit_max=None
+            contacts_count=0, pagination_limit=10, total_retrieved=5, limit_max=None
         )
         self.assertFalse(result)
 
     def test_should_continue_pagination_limit_max_reached(self):
         """Test pagination stopping when limit_max is reached"""
         result = self.base_client._should_continue_pagination(
-            contacts_count=5, current_limit=10, total_retrieved=10, limit_max=10
+            contacts_count=5, pagination_limit=10, total_retrieved=10, limit_max=10
         )
         self.assertFalse(result)
 
     def test_should_continue_pagination_continue(self):
         """Test pagination continuing when full page returned"""
         result = self.base_client._should_continue_pagination(
-            contacts_count=10, current_limit=10, total_retrieved=10, limit_max=None
+            contacts_count=10, pagination_limit=10, total_retrieved=10, limit_max=None
         )
         self.assertTrue(result)
 
     def test_should_continue_pagination_partial_page(self):
         """Test pagination stopping when partial page returned"""
         result = self.base_client._should_continue_pagination(
-            contacts_count=5, current_limit=10, total_retrieved=15, limit_max=None
+            contacts_count=5, pagination_limit=10, total_retrieved=15, limit_max=None
         )
         self.assertFalse(result)
 
@@ -1262,20 +1262,20 @@ class BrevoCompanyApiClientTest(TestCase):
                 # Should return empty dict when BrevoApiError occurs
                 self.assertEqual(result, {})
 
-    def test_calculate_current_limit_with_limit_max(self):
-        """Test _calculate_current_limit with limit_max constraint"""
+    def test_calculate_pagination_limit_with_limit_max(self):
+        """Test _calculate_pagination_limit with limit_max constraint"""
         client = api_brevo.BrevoContactsApiClient()
 
         # Test when limit_max would be exceeded
-        result = client._calculate_current_limit(limit_max=25, total_retrieved=20, page_limit=10)
+        result = client._calculate_pagination_limit(limit_max=25, total_retrieved=20, page_limit=10)
         self.assertEqual(result, 5)  # Only 5 more to reach limit_max of 25
 
         # Test when limit_max is not exceeded
-        result = client._calculate_current_limit(limit_max=100, total_retrieved=20, page_limit=10)
+        result = client._calculate_pagination_limit(limit_max=100, total_retrieved=20, page_limit=10)
         self.assertEqual(result, 10)  # Full page_limit
 
         # Test with no limit_max
-        result = client._calculate_current_limit(limit_max=None, total_retrieved=20, page_limit=10)
+        result = client._calculate_pagination_limit(limit_max=None, total_retrieved=20, page_limit=10)
         self.assertEqual(result, 10)  # Full page_limit
 
     def test_get_error_body_with_none_body(self):
