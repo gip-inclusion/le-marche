@@ -292,30 +292,6 @@ class BrevoBaseApiClientTest(TestCase):
         self.assertEqual(attributes["nombre_de_besoins_recus"], 10)
         self.assertEqual(attributes["nombre_de_besoins_interesses"], 5)
 
-    def test_build_buyer_attributes(self):
-        """Test _build_buyer_attributes method"""
-        company = CompanyFactory(
-            name="Test Company",
-            website="https://company.com",
-            description="Buyer company description",
-            siret="12345678901234",
-        )
-        company.extra_data = {"brevo_company_data": {"user_count": 8, "user_tender_count": 15}}
-        company.email_domain_list = ["company.com", "subsidiary.com"]
-        company.save()
-
-        attributes = self.base_client._build_buyer_attributes(company)
-
-        self.assertEqual(attributes["domain"], "https://company.com")
-        self.assertEqual(attributes["app_id"], company.id)
-        self.assertFalse(attributes["siae"])
-        self.assertEqual(attributes["description"], "Buyer company description")
-        self.assertEqual(attributes["kind"], "BUYER")
-        self.assertEqual(attributes["siret"], "12345678901234")
-        self.assertEqual(attributes["nombre_d_utilisateurs"], 8)
-        self.assertEqual(attributes["nombre_besoins"], 15)
-        self.assertEqual(attributes["domaines_email"], "company.com,subsidiary.com")
-
 
 class BrevoContactsApiClientTest(TestCase):
     """
@@ -816,6 +792,32 @@ class BrevoCompanyApiClientTest(TestCase):
         self.siae.refresh_from_db()
         self.assertTrue(len(self.siae.logs) > 0)
         self.assertEqual(self.siae.logs[-1]["brevo_sync"]["status"], "success")
+
+    def test_build_buyer_attributes(self):
+        """Test _build_buyer_attributes method"""
+        company = CompanyFactory(
+            name="Test Company",
+            website="https://company.com",
+            description="Buyer company description",
+            siret="12345678901234",
+        )
+        company.extra_data = {"brevo_company_data": {"user_count": 8, "user_tender_count": 15}}
+        company.email_domain_list = ["company.com", "subsidiary.com"]
+        company.save()
+
+        clientCompanyBrevo = api_brevo.BrevoCompanyApiClient()
+
+        attributes = clientCompanyBrevo._build_buyer_attributes(company)
+
+        self.assertEqual(attributes["domain"], "https://company.com")
+        self.assertEqual(attributes["app_id"], company.id)
+        self.assertFalse(attributes["siae"])
+        self.assertEqual(attributes["description"], "Buyer company description")
+        self.assertEqual(attributes["kind"], "BUYER")
+        self.assertEqual(attributes["siret"], "12345678901234")
+        self.assertEqual(attributes["nombre_d_utilisateurs"], 8)
+        self.assertEqual(attributes["nombre_besoins"], 15)
+        self.assertEqual(attributes["domaines_email"], "company.com,subsidiary.com")
 
     @patch("lemarche.utils.apis.api_brevo.get_api_client")
     def test_create_or_update_company_verify_attributes(self, mock_get_api_client):

@@ -160,76 +160,6 @@ class BrevoBaseApiClient:
 
         return decorator
 
-    def _build_siae_attributes(self, siae):
-        """
-        Build SIAE company attributes dictionary for Brevo
-
-        Args:
-            siae: SIAE object to extract attributes from
-
-        Returns:
-            dict: Dictionary of attributes for Brevo company
-        """
-        return {
-            # Default attributes
-            SIAE_COMPANY_ATTRIBUTES["domain"]: siae.website,
-            SIAE_COMPANY_ATTRIBUTES["phone_number"]: siae.contact_phone_display,
-            # Custom attributes
-            SIAE_COMPANY_ATTRIBUTES["app_id"]: siae.id,
-            SIAE_COMPANY_ATTRIBUTES["siae"]: True,
-            SIAE_COMPANY_ATTRIBUTES["active"]: siae.is_active,
-            SIAE_COMPANY_ATTRIBUTES["description"]: siae.description,
-            SIAE_COMPANY_ATTRIBUTES["kind"]: siae.kind,
-            SIAE_COMPANY_ATTRIBUTES["address_street"]: siae.address,
-            SIAE_COMPANY_ATTRIBUTES["postal_code"]: siae.post_code,
-            SIAE_COMPANY_ATTRIBUTES["address_city"]: siae.city,
-            SIAE_COMPANY_ATTRIBUTES["contact_email"]: siae.contact_email,
-            SIAE_COMPANY_ATTRIBUTES["logo_url"]: siae.logo_url,
-            SIAE_COMPANY_ATTRIBUTES["app_url"]: get_object_share_url(siae),
-            SIAE_COMPANY_ATTRIBUTES["app_admin_url"]: get_object_admin_url(siae),
-            SIAE_COMPANY_ATTRIBUTES["taux_de_completion"]: (
-                siae.extra_data.get("brevo_company_data", {}).get("completion_rate")
-            ),
-            SIAE_COMPANY_ATTRIBUTES["nombre_de_besoins_recus"]: (
-                siae.extra_data.get("brevo_company_data", {}).get("tender_received")
-            ),
-            SIAE_COMPANY_ATTRIBUTES["nombre_de_besoins_interesses"]: (
-                siae.extra_data.get("brevo_company_data", {}).get("tender_interest")
-            ),
-        }
-
-    def _build_buyer_attributes(self, company):
-        """
-        Build buyer company attributes dictionary for Brevo
-
-        Args:
-            company: Company object to extract attributes from
-
-        Returns:
-            dict: Dictionary of attributes for Brevo company
-        """
-        return {
-            # Default attributes
-            BUYER_COMPANY_ATTRIBUTES["domain"]: company.website,
-            BUYER_COMPANY_ATTRIBUTES["phone_number"]: "",  # Company model doesn't have phone
-            # Custom attributes
-            BUYER_COMPANY_ATTRIBUTES["app_id"]: company.id,
-            BUYER_COMPANY_ATTRIBUTES["siae"]: False,  # This is a buyer company, not SIAE
-            BUYER_COMPANY_ATTRIBUTES["description"]: company.description,
-            BUYER_COMPANY_ATTRIBUTES["kind"]: "BUYER",  # Distinguish from SIAE
-            BUYER_COMPANY_ATTRIBUTES["siret"]: company.siret,
-            BUYER_COMPANY_ATTRIBUTES["app_admin_url"]: get_object_admin_url(company),
-            BUYER_COMPANY_ATTRIBUTES["nombre_d_utilisateurs"]: (
-                company.extra_data.get("brevo_company_data", {}).get("user_count")
-            ),
-            BUYER_COMPANY_ATTRIBUTES["nombre_besoins"]: (
-                company.extra_data.get("brevo_company_data", {}).get("user_tender_count")
-            ),
-            BUYER_COMPANY_ATTRIBUTES["domaines_email"]: (
-                ",".join(company.email_domain_list) if company.email_domain_list else ""
-            ),
-        }
-
 
 class BrevoContactsApiClient(BrevoBaseApiClient):
     """
@@ -659,6 +589,44 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
             )
             return {}  # Return empty dict on error
 
+    def _build_siae_attributes(self, siae):
+        """
+        Build SIAE company attributes dictionary for Brevo
+
+        Args:
+            siae: SIAE object to extract attributes from
+
+        Returns:
+            dict: Dictionary of attributes for Brevo company
+        """
+        return {
+            # Default attributes
+            SIAE_COMPANY_ATTRIBUTES["domain"]: siae.website,
+            SIAE_COMPANY_ATTRIBUTES["phone_number"]: siae.contact_phone_display,
+            # Custom attributes
+            SIAE_COMPANY_ATTRIBUTES["app_id"]: siae.id,
+            SIAE_COMPANY_ATTRIBUTES["siae"]: True,
+            SIAE_COMPANY_ATTRIBUTES["active"]: siae.is_active,
+            SIAE_COMPANY_ATTRIBUTES["description"]: siae.description,
+            SIAE_COMPANY_ATTRIBUTES["kind"]: siae.kind,
+            SIAE_COMPANY_ATTRIBUTES["address_street"]: siae.address,
+            SIAE_COMPANY_ATTRIBUTES["postal_code"]: siae.post_code,
+            SIAE_COMPANY_ATTRIBUTES["address_city"]: siae.city,
+            SIAE_COMPANY_ATTRIBUTES["contact_email"]: siae.contact_email,
+            SIAE_COMPANY_ATTRIBUTES["logo_url"]: siae.logo_url,
+            SIAE_COMPANY_ATTRIBUTES["app_url"]: get_object_share_url(siae),
+            SIAE_COMPANY_ATTRIBUTES["app_admin_url"]: get_object_admin_url(siae),
+            SIAE_COMPANY_ATTRIBUTES["taux_de_completion"]: (
+                siae.extra_data.get("brevo_company_data", {}).get("completion_rate")
+            ),
+            SIAE_COMPANY_ATTRIBUTES["nombre_de_besoins_recus"]: (
+                siae.extra_data.get("brevo_company_data", {}).get("tender_received")
+            ),
+            SIAE_COMPANY_ATTRIBUTES["nombre_de_besoins_interesses"]: (
+                siae.extra_data.get("brevo_company_data", {}).get("tender_interest")
+            ),
+        }
+
 
 class BrevoCompanyApiClient(BrevoBaseApiClient):
     """
@@ -854,6 +822,38 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
     def _cleanup_contact_list(self, contact_list):
         """Clean up contact list by removing None values"""
         return [contact_id for contact_id in contact_list if contact_id is not None]
+
+    def _build_buyer_attributes(self, company):
+        """
+        Build buyer company attributes dictionary for Brevo
+
+        Args:
+            company: Company object to extract attributes from
+
+        Returns:
+            dict: Dictionary of attributes for Brevo company
+        """
+        return {
+            # Default attributes
+            BUYER_COMPANY_ATTRIBUTES["domain"]: company.website,
+            BUYER_COMPANY_ATTRIBUTES["phone_number"]: "",  # Company model doesn't have phone
+            # Custom attributes
+            BUYER_COMPANY_ATTRIBUTES["app_id"]: company.id,
+            BUYER_COMPANY_ATTRIBUTES["siae"]: False,  # This is a buyer company, not SIAE
+            BUYER_COMPANY_ATTRIBUTES["description"]: company.description,
+            BUYER_COMPANY_ATTRIBUTES["kind"]: "BUYER",  # Distinguish from SIAE
+            BUYER_COMPANY_ATTRIBUTES["siret"]: company.siret,
+            BUYER_COMPANY_ATTRIBUTES["app_admin_url"]: get_object_admin_url(company),
+            BUYER_COMPANY_ATTRIBUTES["nombre_d_utilisateurs"]: (
+                company.extra_data.get("brevo_company_data", {}).get("user_count")
+            ),
+            BUYER_COMPANY_ATTRIBUTES["nombre_besoins"]: (
+                company.extra_data.get("brevo_company_data", {}).get("user_tender_count")
+            ),
+            BUYER_COMPANY_ATTRIBUTES["domaines_email"]: (
+                ",".join(company.email_domain_list) if company.email_domain_list else ""
+            ),
+        }
 
 
 class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
