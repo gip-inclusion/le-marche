@@ -160,10 +160,6 @@ class BrevoBaseApiClient:
 
         return decorator
 
-    def _handle_linking_error(self, error, operation_description="linking operation"):
-        """Handle and log linking operation errors"""
-        self.logger.error(f"Exception when calling Brevo->{operation_description}: {error}")
-
     def _build_siae_attributes(self, siae):
         """
         Build SIAE company attributes dictionary for Brevo
@@ -233,10 +229,6 @@ class BrevoBaseApiClient:
                 ",".join(company.email_domain_list) if company.email_domain_list else ""
             ),
         }
-
-    def _cleanup_contact_list(self, contact_list):
-        """Clean up contact list by removing None values"""
-        return [contact_id for contact_id in contact_list if contact_id is not None]
 
 
 class BrevoContactsApiClient(BrevoBaseApiClient):
@@ -804,7 +796,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
                     self.api_instance.companies_link_unlink_id_patch(brevo_company_id, body_link_company_contact)
 
             except ApiException as e:
-                self._handle_linking_error(e, "DealApi->companies_link_unlink_id_patch")
+                self.logger.error(f"Exception when calling Brevo->{e}: DealApi->companies_link_unlink_id_patch")
 
     # =============================================================================
     # PRIVATE METHODS - COMMON COMPANY SUPPORT
@@ -858,6 +850,10 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
                 self.logger.warning(
                     f"Error linking {company_type} company {company.id} with its contacts: {link_error}"
                 )
+
+    def _cleanup_contact_list(self, contact_list):
+        """Clean up contact list by removing None values"""
+        return [contact_id for contact_id in contact_list if contact_id is not None]
 
 
 class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):

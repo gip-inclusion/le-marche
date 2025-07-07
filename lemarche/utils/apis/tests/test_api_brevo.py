@@ -260,19 +260,6 @@ class BrevoBaseApiClientTest(TestCase):
         )
         self.assertFalse(result)
 
-    def test_cleanup_contact_list(self):
-        """Test cleanup_contact_list method"""
-        contact_list = [1, None, 2, None, 3, 4]
-        result = self.base_client._cleanup_contact_list(contact_list)
-        self.assertEqual(result, [1, 2, 3, 4])
-
-    def test_handle_linking_error(self):
-        """Test handle_linking_error method"""
-        with patch.object(self.base_client, "logger") as mock_logger:
-            error = Exception("Test error")
-            self.base_client._handle_linking_error(error, "test operation")
-            mock_logger.error.assert_called_once_with("Exception when calling Brevo->test operation: Test error")
-
     def test_build_siae_attributes(self):
         """Test _build_siae_attributes method"""
         siae = SiaeFactory(
