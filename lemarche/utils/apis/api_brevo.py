@@ -589,44 +589,6 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
             )
             return {}  # Return empty dict on error
 
-    def _build_siae_attributes(self, siae):
-        """
-        Build SIAE company attributes dictionary for Brevo
-
-        Args:
-            siae: SIAE object to extract attributes from
-
-        Returns:
-            dict: Dictionary of attributes for Brevo company
-        """
-        return {
-            # Default attributes
-            SIAE_COMPANY_ATTRIBUTES["domain"]: siae.website,
-            SIAE_COMPANY_ATTRIBUTES["phone_number"]: siae.contact_phone_display,
-            # Custom attributes
-            SIAE_COMPANY_ATTRIBUTES["app_id"]: siae.id,
-            SIAE_COMPANY_ATTRIBUTES["siae"]: True,
-            SIAE_COMPANY_ATTRIBUTES["active"]: siae.is_active,
-            SIAE_COMPANY_ATTRIBUTES["description"]: siae.description,
-            SIAE_COMPANY_ATTRIBUTES["kind"]: siae.kind,
-            SIAE_COMPANY_ATTRIBUTES["address_street"]: siae.address,
-            SIAE_COMPANY_ATTRIBUTES["postal_code"]: siae.post_code,
-            SIAE_COMPANY_ATTRIBUTES["address_city"]: siae.city,
-            SIAE_COMPANY_ATTRIBUTES["contact_email"]: siae.contact_email,
-            SIAE_COMPANY_ATTRIBUTES["logo_url"]: siae.logo_url,
-            SIAE_COMPANY_ATTRIBUTES["app_url"]: get_object_share_url(siae),
-            SIAE_COMPANY_ATTRIBUTES["app_admin_url"]: get_object_admin_url(siae),
-            SIAE_COMPANY_ATTRIBUTES["taux_de_completion"]: (
-                siae.extra_data.get("brevo_company_data", {}).get("completion_rate")
-            ),
-            SIAE_COMPANY_ATTRIBUTES["nombre_de_besoins_recus"]: (
-                siae.extra_data.get("brevo_company_data", {}).get("tender_received")
-            ),
-            SIAE_COMPANY_ATTRIBUTES["nombre_de_besoins_interesses"]: (
-                siae.extra_data.get("brevo_company_data", {}).get("tender_interest")
-            ),
-        }
-
 
 class BrevoCompanyApiClient(BrevoBaseApiClient):
     """
@@ -666,7 +628,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When company synchronization fails after all retries
         """
-        siae_brevo_company_body = sib_api_v3_sdk.Body(name=siae.name, attributes=self._build_buyer_attributes(siae))
+        siae_brevo_company_body = sib_api_v3_sdk.Body(name=siae.name, attributes=self._build_siae_attributes(siae))
 
         sync_log = self._create_sync_log(siae)
         is_update = bool(siae.brevo_company_id)
@@ -695,7 +657,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
     # PUBLIC METHODS - BUYER COMPANY OPERATIONS
     # =============================================================================
 
-    def create_or_update_buyer_company(self, company):
+    def create_or_update_buyer_company(self, company, is_comp):
         """
         Creates or updates a buyer company in Brevo CRM
 
@@ -851,6 +813,44 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
             ),
             BUYER_COMPANY_ATTRIBUTES["domaines_email"]: (
                 ",".join(company.email_domain_list) if company.email_domain_list else ""
+            ),
+        }
+
+    def _build_siae_attributes(self, siae):
+        """
+        Build SIAE company attributes dictionary for Brevo
+
+        Args:
+            siae: SIAE object to extract attributes from
+
+        Returns:
+            dict: Dictionary of attributes for Brevo company
+        """
+        return {
+            # Default attributes
+            SIAE_COMPANY_ATTRIBUTES["domain"]: siae.website,
+            SIAE_COMPANY_ATTRIBUTES["phone_number"]: siae.contact_phone_display,
+            # Custom attributes
+            SIAE_COMPANY_ATTRIBUTES["app_id"]: siae.id,
+            SIAE_COMPANY_ATTRIBUTES["siae"]: True,
+            SIAE_COMPANY_ATTRIBUTES["active"]: siae.is_active,
+            SIAE_COMPANY_ATTRIBUTES["description"]: siae.description,
+            SIAE_COMPANY_ATTRIBUTES["kind"]: siae.kind,
+            SIAE_COMPANY_ATTRIBUTES["address_street"]: siae.address,
+            SIAE_COMPANY_ATTRIBUTES["postal_code"]: siae.post_code,
+            SIAE_COMPANY_ATTRIBUTES["address_city"]: siae.city,
+            SIAE_COMPANY_ATTRIBUTES["contact_email"]: siae.contact_email,
+            SIAE_COMPANY_ATTRIBUTES["logo_url"]: siae.logo_url,
+            SIAE_COMPANY_ATTRIBUTES["app_url"]: get_object_share_url(siae),
+            SIAE_COMPANY_ATTRIBUTES["app_admin_url"]: get_object_admin_url(siae),
+            SIAE_COMPANY_ATTRIBUTES["taux_de_completion"]: (
+                siae.extra_data.get("brevo_company_data", {}).get("completion_rate")
+            ),
+            SIAE_COMPANY_ATTRIBUTES["nombre_de_besoins_recus"]: (
+                siae.extra_data.get("brevo_company_data", {}).get("tender_received")
+            ),
+            SIAE_COMPANY_ATTRIBUTES["nombre_de_besoins_interesses"]: (
+                siae.extra_data.get("brevo_company_data", {}).get("tender_interest")
             ),
         }
 
@@ -1013,6 +1013,7 @@ def link_deal_with_contact_list(tender, contact_list: list = None):
                 contact_list = [tender.author.brevo_contact_id]
 
             # Use common utility for linking
+
             _cleanup_and_link_contacts(
                 api_instance, brevo_crm_deal_id, contact_list, sib_api_v3_sdk.Body5, "crm_deals_link_unlink_id_patch"
             )

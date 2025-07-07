@@ -396,39 +396,6 @@ class BrevoContactsApiClientTest(TestCase):
         self.assertEqual(result, expected_result)
         mock_api_instance.get_contacts.assert_called_once()
 
-    def test_build_siae_attributes(self, mock_sleep):
-        """Test _build_siae_attributes method"""
-        siae = SiaeFactory(
-            name="Test SIAE",
-            website="https://test.com",
-            description="Description test",
-            kind="EI",
-            address="123 Rue Test",
-            post_code="75001",
-            city="Paris",
-            contact_email="contact@test.com",
-            is_active=True,
-        )
-        siae.extra_data = {"brevo_company_data": {"completion_rate": 85, "tender_received": 10, "tender_interest": 5}}
-        siae.save()
-        clientContactsBrevo = api_brevo.BrevoContactsApiClient()
-
-        attributes = clientContactsBrevo._build_siae_attributes(siae)
-
-        self.assertEqual(attributes["domain"], "https://test.com")
-        self.assertEqual(attributes["app_id"], siae.id)
-        self.assertTrue(attributes["siae"])
-        self.assertTrue(attributes["active"])
-        self.assertEqual(attributes["description"], "Description test")
-        self.assertEqual(attributes["kind"], "EI")
-        self.assertEqual(attributes["address_street"], "123 Rue Test")
-        self.assertEqual(attributes["postal_code"], "75001")
-        self.assertEqual(attributes["address_city"], "Paris")
-        self.assertEqual(attributes["contact_email"], "contact@test.com")
-        self.assertEqual(attributes["taux_de_completion"], 85)
-        self.assertEqual(attributes["nombre_de_besoins_recus"], 10)
-        self.assertEqual(attributes["nombre_de_besoins_interesses"], 5)
-
     def test_get_all_contacts_pagination(self, mock_sleep):
         """Test pagination functionality"""
         mock_api_instance = MagicMock()
@@ -807,8 +774,41 @@ class BrevoCompanyApiClientTest(TestCase):
             extra_data={"brevo_company_data": {"user_count": 5, "user_tender_count": 3}},
         )
 
+    def test_build_siae_attributes(self, mock_sleep):
+        """Test _build_siae_attributes method"""
+        siae = SiaeFactory(
+            name="Test SIAE",
+            website="https://test.com",
+            description="Description test",
+            kind="EI",
+            address="123 Rue Test",
+            post_code="75001",
+            city="Paris",
+            contact_email="contact@test.com",
+            is_active=True,
+        )
+        siae.extra_data = {"brevo_company_data": {"completion_rate": 85, "tender_received": 10, "tender_interest": 5}}
+        siae.save()
+        clientContactsBrevo = api_brevo.BrevoCompanyApiClient()
+
+        attributes = clientContactsBrevo._build_siae_attributes(siae)
+
+        self.assertEqual(attributes["domain"], "https://test.com")
+        self.assertEqual(attributes["app_id"], siae.id)
+        self.assertTrue(attributes["siae"])
+        self.assertTrue(attributes["active"])
+        self.assertEqual(attributes["description"], "Description test")
+        self.assertEqual(attributes["kind"], "EI")
+        self.assertEqual(attributes["address_street"], "123 Rue Test")
+        self.assertEqual(attributes["postal_code"], "75001")
+        self.assertEqual(attributes["address_city"], "Paris")
+        self.assertEqual(attributes["contact_email"], "contact@test.com")
+        self.assertEqual(attributes["taux_de_completion"], 85)
+        self.assertEqual(attributes["nombre_de_besoins_recus"], 10)
+        self.assertEqual(attributes["nombre_de_besoins_interesses"], 5)
+
     def test_create_or_update_company_success_create(self, mock_sleep):
-        """Test successful SIAE company creation"""
+        """Test successful company creation"""
         mock_api_instance = MagicMock()
 
         # Mock successful API response
@@ -828,7 +828,7 @@ class BrevoCompanyApiClientTest(TestCase):
         mock_api_instance.companies_post.assert_called_once()
 
     def test_create_or_update_company_success_update(self, mock_sleep):
-        """Test successful SIAE company update"""
+        """Test successful company update"""
         self.company.brevo_company_id = 99999
         self.company.save()
 
