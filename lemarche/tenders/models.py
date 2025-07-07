@@ -290,7 +290,7 @@ class TenderQuerySet(models.QuerySet):
             f"unread_count_{kind}_annotated": Count(Case(When(kind=kind, then=1), output_field=IntegerField()))
             for kind, _ in tender_constants.KIND_CHOICES
         }
-        return self.unread(user).aggregate(**aggregates)
+        return self.unread(user).values("id").aggregate(**aggregates)
 
     def with_network_siae_stats(self, network_siaes):
         return self.annotate(

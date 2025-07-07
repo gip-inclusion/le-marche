@@ -427,7 +427,7 @@ class User(AbstractUser):
     def tender_siae_unread_count(self):
         from lemarche.tenders.models import Tender
 
-        return Tender.objects.unread(self).count()
+        return Tender.objects.unread(self).values("id").count()
 
 
 @receiver(pre_save, sender=User)

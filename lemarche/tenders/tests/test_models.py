@@ -635,7 +635,8 @@ class TenderModelQuerysetUnreadStatsTest(TestCase):
         _ = TenderFactory(siaes=[siae_with_tender_1], deadline_date=date_tomorrow, kind=tender_constants.KIND_TENDER)
 
     def test_unread_stats(self):
-        stats = Tender.objects.unread_stats(user=self.user_siae)
+        with self.assertNumQueries(1):
+            stats = Tender.objects.unread_stats(user=self.user_siae)
         self.assertEqual(stats[f"unread_count_{tender_constants.KIND_TENDER}_annotated"], 1)
         self.assertEqual(stats[f"unread_count_{tender_constants.KIND_QUOTE}_annotated"], 2)
         self.assertEqual(stats[f"unread_count_{tender_constants.KIND_PROJECT}_annotated"], 0)
