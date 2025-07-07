@@ -269,7 +269,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         except ApiException as e:
             if e.status == 404:  # Contact not found
                 return {}
-            raise  # Re-raise for retry logic
+            raise e  # Re-raise for retry logic
 
     def get_all_contacts(self, limit_max=None, since_days=None):
         """
@@ -487,7 +487,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
                     "calling Brevo->ContactsApi->remove_contact_from_list: " "contact doesn't exist in this list"
                 )
                 return {}
-            raise  # Re-raise for retry logic
+            raise e  # Re-raise for retry logic
 
     # =============================================================================
     # PRIVATE METHODS - UTILITIES
