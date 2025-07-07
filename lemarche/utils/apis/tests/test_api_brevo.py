@@ -45,24 +45,25 @@ class BrevoBaseApiClientTest(TestCase):
         """Test decorator when operation succeeds after one retry"""
 
         # Use a list to be able to modify the value from the nested function
-        call_counter = [0]
 
         class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
+            call_counter = 0
+
             @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
             def test_method(self):
-                call_counter[0] += 1
-                if call_counter[0] == 1:
+                self.call_counter += 1
+                if self.call_counter == 1:
                     # First call fails
                     raise ApiException(status=500, reason="Server Error")
                 else:
                     # Second call succeeds
-                    return {"success": True, "attempt": call_counter[0]}
+                    return {"success": True, "attempt": self.call_counter}
 
-        result = TestBrevoClassBased().test_method()
+        class_based = TestBrevoClassBased()
+        result = class_based.test_method()
 
         # Verify success after retry
         self.assertEqual(result, {"success": True, "attempt": 2})
-        self.assertEqual(call_counter[0], 2)
         mock_sleep.assert_called_once_with(5)  # Default retry delay
 
     @patch("lemarche.utils.apis.api_brevo.time.sleep")
@@ -70,13 +71,14 @@ class BrevoBaseApiClientTest(TestCase):
         """Test decorator handles rate limiting with exponential backoff"""
 
         # Use a list to be able to modify the value from the nested function
-        call_counter = [0]
 
         class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
+            call_counter = 0
+
             @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
             def test_method(self):
-                call_counter[0] += 1
-                if call_counter[0] == 1:
+                self.call_counter += 1
+                if self.call_counter == 1:
                     # First call hits rate limit
                     raise ApiException(status=429, reason="Rate Limit")
                 else:
@@ -180,13 +182,11 @@ class BrevoBaseApiClientTest(TestCase):
     @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_execute_with_retry_method_final_failure_without_exception(self, mock_sleep):
         """Test decorator when max retries exceeded without any exception being raised"""
-        # This test covers the case when we reach the end of the decorator with exceptions thrown on every attempt
-        call_counter = [0]
 
+        # This test covers the case when we reach the end of the decorator with exceptions thrown on every attempt
         class TestBrevoClassBased(api_brevo.BrevoBaseApiClient):
             @api_brevo.BrevoBaseApiClient.execute_with_retry_method(operation_name="test operation")
             def test_method(self):
-                call_counter[0] += 1
                 # Always raise an exception to trigger the retry logic
                 raise ApiException(status=500, reason="Server Error")
 
@@ -967,7 +967,7 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertEqual(call_args[0][0], 12345)  # company_id
         self.assertEqual(call_args[0][1].link_contact_ids, [111, 222, 333])
 
-    @override_settings(BITOUBI_ENV="local")
+    @override_settings(BITOUBI_ENV="prod")
     def test_link_company_with_contact_list_filters_none_values(self):
         """Test that None values are filtered out from contact list"""
         mock_api_instance = MagicMock()
@@ -994,7 +994,7 @@ class BrevoCompanyApiClientTest(TestCase):
         # Verify no API call was made
         mock_api_instance.companies_link_unlink_id_patch.assert_not_called()
 
-    @override_settings(BITOUBI_ENV="local")
+    @override_settings(BITOUBI_ENV="prod")
     def test_link_company_with_contact_list_only_none_values_no_api_call(self):
         """Test that contact list with only None values doesn't trigger API call"""
         mock_api_instance = MagicMock()
