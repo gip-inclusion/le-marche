@@ -270,6 +270,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
     # PUBLIC METHODS - CORE CONTACT OPERATIONS
     # =============================================================================
 
+    @BrevoBaseApiClient.execute_with_retry_method(operation_name="creating contact")
     def create_contact(self, user, list_id: int, tender=None):
         """
         Create or update a contact in Brevo
@@ -314,11 +315,6 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
             update_enabled=True,
         )
 
-        return self._create_contact_with_retry(user, new_contact)
-
-    @BrevoBaseApiClient.execute_with_retry_method(operation_name="creating contact")
-    def _create_contact_with_retry(self, user, new_contact):
-        """Execute the contact creation operation with retry logic"""
         try:
             api_response = self.api_instance.create_contact(new_contact).to_dict()
             self.logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response.get('id')}")
@@ -331,7 +327,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
                 self.logger.info(f"Contact {user.id} already exists in Brevo, attempting to retrieve ID...")
                 self.retrieve_and_update_user_brevo_contact_id(user)
                 return {"id": user.brevo_contact_id}
-            raise  # Re-raise for retry logic
+            raise e  # Re-raise for retry logic
 
     @BrevoBaseApiClient.execute_with_retry_method(operation_name="getting contact by email")
     def get_contact_by_email(self, email: str):
@@ -525,9 +521,9 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         """
         try:
             # Search for contact by email
-            existing_contacts = self.get_contact_by_email(user.email)
-            if existing_contacts:
-                contact_id = existing_contacts.get("id")
+            existing_contact = self.get_contact_by_email(user.email)
+            if existing_contact:
+                contact_id = existing_contact.get("id")
                 if contact_id:
                     user.brevo_contact_id = int(contact_id)
                     user.save(update_fields=["brevo_contact_id"])
