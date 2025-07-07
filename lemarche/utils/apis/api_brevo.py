@@ -100,27 +100,6 @@ class BrevoBaseApiClient:
             self.logger.error(f"Failed after {max_retries} attempts to {operation_name}: {exception}")
             return False, 0
 
-    def _should_continue_pagination(self, contacts_count, pagination_limit, total_retrieved, limit_max):
-        """
-        Determine if pagination should continue
-
-        Args:
-            contacts_count: Number of contacts returned in current page
-            pagination_limit: Limit used for current request
-            total_retrieved: Total number of contacts to retrieve
-            limit_max: Maximum total contacts to retrieve
-
-        Returns:
-            bool: True if pagination should continue, False otherwise
-        """
-
-        # Stop if we've reached the limit_max
-        if limit_max and total_retrieved >= limit_max:
-            return False
-
-        # Continue if we got a full page (indicating more data might be available)
-        return contacts_count == pagination_limit
-
     @classmethod
     def execute_with_retry_method(cls, operation_name="API operation"):
         """
@@ -589,6 +568,25 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
             )
             return {}  # Return empty dict on error
 
+    def _should_continue_pagination(self, contacts_count, pagination_limit, total_retrieved, limit_max):
+        """
+        Determines if pagination should continue based on various factors.
+
+        Args:
+            contacts_count (int): Total number of contacts retrieved so far.
+            pagination_limit (int): Limit for the current pagination request.
+            total_retrieved (int): Total number of contacts retrieved across all requests.
+            limit_max (int): Maximum limit for contacts to retrieve.
+
+        Returns:
+            bool: True if pagination should continue, False otherwise.
+        """
+        if limit_max is not None and total_retrieved >= limit_max:
+            return False
+        if contacts_count < pagination_limit:
+            return False
+        return True
+
 
 class BrevoCompanyApiClient(BrevoBaseApiClient):
     """
@@ -650,14 +648,14 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
                 return self.api_instance.companies_post(siae_brevo_company_body)
         except ApiException as e:
             if is_update and e.status == 404:
-                return self._handle_company_404_and_retry(siae, self.create_or_update_company)
+                return self._handle_company_404_and_retry(siae, self.create_or_update_buyer_company)
             raise e
 
     # =============================================================================
     # PUBLIC METHODS - BUYER COMPANY OPERATIONS
     # =============================================================================
 
-    def create_or_update_buyer_company(self, company, is_comp):
+    def create_or_update_buyer_company(self, company):
         """
         Creates or updates a buyer company in Brevo CRM
 

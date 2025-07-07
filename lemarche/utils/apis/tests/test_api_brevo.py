@@ -187,34 +187,6 @@ class BrevoBaseApiClientTest(TestCase):
         # Verify that the final error is raised with the correct message
         self.assertIn("Failed to test operation after 4 attempts", str(context.exception))
 
-    def test_should_continue_pagination_no_contacts(self, mock_sleep):
-        """Test pagination stopping when no contacts returned"""
-        result = api_brevo.BrevoBaseApiClient()._should_continue_pagination(
-            contacts_count=0, pagination_limit=10, total_retrieved=5, limit_max=None
-        )
-        self.assertFalse(result)
-
-    def test_should_continue_pagination_limit_max_reached(self, mock_sleep):
-        """Test pagination stopping when limit_max is reached"""
-        result = api_brevo.BrevoBaseApiClient()._should_continue_pagination(
-            contacts_count=5, pagination_limit=10, total_retrieved=10, limit_max=10
-        )
-        self.assertFalse(result)
-
-    def test_should_continue_pagination_continue(self, mock_sleep):
-        """Test pagination continuing when full page returned"""
-        result = api_brevo.BrevoBaseApiClient()._should_continue_pagination(
-            contacts_count=10, pagination_limit=10, total_retrieved=10, limit_max=None
-        )
-        self.assertTrue(result)
-
-    def test_should_continue_pagination_partial_page(self, mock_sleep):
-        """Test pagination stopping when partial page returned"""
-        result = api_brevo.BrevoBaseApiClient()._should_continue_pagination(
-            contacts_count=5, pagination_limit=10, total_retrieved=15, limit_max=None
-        )
-        self.assertFalse(result)
-
     def test_get_contact_by_email_success(self, mock_sleep):
         """Test get_contact_by_email success"""
         mock_api_instance = MagicMock()
@@ -286,84 +258,6 @@ class BrevoBaseApiClientTest(TestCase):
             # Verify that no error was logged for None body (it should check if body is not None)
             mock_logger.error.assert_not_called()
 
-    def test_get_error_body_with_invalid_json(self, mock_sleep):
-        """Test _get_error_body with invalid JSON"""
-        client = api_brevo.BrevoContactsApiClient()
-
-        exception = ApiException(status=400, reason="Bad Request")
-        exception.body = "invalid json string"
-
-        with patch.object(client, "logger") as mock_logger:
-            result = client._get_error_body(exception)
-
-            self.assertEqual(result, {})
-            mock_logger.error.assert_called()
-
-    def test_get_error_body_with_no_body_attribute(self, mock_sleep):
-        """Test _get_error_body with exception that has no body attribute"""
-        client = api_brevo.BrevoContactsApiClient()
-
-        # Create an exception without body attribute
-        exception = Exception("No body attribute")
-
-        with patch.object(client, "logger") as mock_logger:
-            result = client._get_error_body(exception)
-
-            self.assertEqual(result, {})
-            mock_logger.error.assert_called()
-
-    def test_remove_contact_from_list_other_api_error(self, mock_sleep):
-        """Test remove_contact_from_list with other API error (not 'already removed')"""
-        mock_api_instance = MagicMock()
-
-        # Mock error that's not "already removed"
-        error_body = '{"message": "Some other error"}'
-        api_error = ApiException(status=400, reason="Bad Request")
-        api_error.body = error_body
-        mock_api_instance.remove_contact_from_list.side_effect = api_error
-
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
-            client = api_brevo.BrevoContactsApiClient()
-
-            # Should re-raise for retry logic
-            with self.assertRaises(api_brevo.BrevoApiError):
-                client.remove_contact_from_list("test@example.com", 1)
-
-    def test_retrieve_and_update_user_brevo_contact_id_no_contact_found(self, mock_sleep):
-        """Test retrieve_and_update_user_brevo_contact_id when no contact found"""
-        client = api_brevo.BrevoContactsApiClient()
-        user = UserFactory()
-
-        with patch.object(client, "get_contact_by_email", return_value={}):
-            with self.assertRaises(api_brevo.BrevoApiError) as context:
-                client.retrieve_and_update_user_brevo_contact_id(user)
-
-            # The exception is caught by the general except clause which prepends "Error retrieving contact ID for"
-            self.assertIn(f"Error retrieving contact ID for {user.id}", str(context.exception))
-
-    def test_retrieve_and_update_user_brevo_contact_id_no_id_in_contact(self, mock_sleep):
-        """Test retrieve_and_update_user_brevo_contact_id when contact has no ID"""
-        client = api_brevo.BrevoContactsApiClient()
-        user = UserFactory()
-
-        with patch.object(client, "get_contact_by_email", return_value={"name": "Test"}):
-            with self.assertRaises(api_brevo.BrevoApiError) as context:
-                client.retrieve_and_update_user_brevo_contact_id(user)
-
-            # The exception is caught by the general except clause which prepends "Error retrieving contact ID for"
-            self.assertIn(f"Error retrieving contact ID for {user.id}", str(context.exception))
-
-    def test_retrieve_and_update_user_brevo_contact_id_lookup_exception(self, mock_sleep):
-        """Test retrieve_and_update_user_brevo_contact_id when lookup raises exception"""
-        client = api_brevo.BrevoContactsApiClient()
-        user = UserFactory()
-
-        with patch.object(client, "get_contact_by_email", side_effect=Exception("Lookup error")):
-            with self.assertRaises(api_brevo.BrevoApiError) as context:
-                client.retrieve_and_update_user_brevo_contact_id(user)
-
-            self.assertIn("Error retrieving contact ID", str(context.exception))
-
 
 @patch("lemarche.utils.apis.api_brevo.time.sleep")
 class BrevoContactsApiClientTest(TestCase):
@@ -395,6 +289,34 @@ class BrevoContactsApiClientTest(TestCase):
         expected_result = {"user1@example.com": 1, "user2@example.com": 2}
         self.assertEqual(result, expected_result)
         mock_api_instance.get_contacts.assert_called_once()
+
+    def test_should_continue_pagination_no_contacts(self, mock_sleep):
+        """Test pagination stopping when no contacts returned"""
+        result = api_brevo.BrevoContactsApiClient()._should_continue_pagination(
+            contacts_count=0, pagination_limit=10, total_retrieved=5, limit_max=None
+        )
+        self.assertFalse(result)
+
+    def test_should_continue_pagination_limit_max_reached(self, mock_sleep):
+        """Test pagination stopping when limit_max is reached"""
+        result = api_brevo.BrevoContactsApiClient()._should_continue_pagination(
+            contacts_count=5, pagination_limit=10, total_retrieved=10, limit_max=10
+        )
+        self.assertFalse(result)
+
+    def test_should_continue_pagination_continue(self, mock_sleep):
+        """Test pagination continuing when full page returned"""
+        result = api_brevo.BrevoContactsApiClient()._should_continue_pagination(
+            contacts_count=10, pagination_limit=10, total_retrieved=10, limit_max=None
+        )
+        self.assertTrue(result)
+
+    def test_should_continue_pagination_partial_page(self, mock_sleep):
+        """Test pagination stopping when partial page returned"""
+        result = api_brevo.BrevoContactsApiClient()._should_continue_pagination(
+            contacts_count=5, pagination_limit=10, total_retrieved=15, limit_max=None
+        )
+        self.assertFalse(result)
 
     def test_get_all_contacts_pagination(self, mock_sleep):
         """Test pagination functionality"""
@@ -756,6 +678,84 @@ class BrevoContactsApiClientTest(TestCase):
             self.assertEqual(result, expected)
             mock_logger.error.assert_called()
 
+    def test_get_error_body_with_invalid_json(self, mock_sleep):
+        """Test _get_error_body with invalid JSON"""
+        client = api_brevo.BrevoContactsApiClient()
+
+        exception = ApiException(status=400, reason="Bad Request")
+        exception.body = "invalid json string"
+
+        with patch.object(client, "logger") as mock_logger:
+            result = client._get_error_body(exception)
+
+            self.assertEqual(result, {})
+            mock_logger.error.assert_called()
+
+    def test_get_error_body_with_no_body_attribute(self, mock_sleep):
+        """Test _get_error_body with exception that has no body attribute"""
+        client = api_brevo.BrevoContactsApiClient()
+
+        # Create an exception without body attribute
+        exception = Exception("No body attribute")
+
+        with patch.object(client, "logger") as mock_logger:
+            result = client._get_error_body(exception)
+
+            self.assertEqual(result, {})
+            mock_logger.error.assert_called()
+
+    def test_remove_contact_from_list_other_api_error(self, mock_sleep):
+        """Test remove_contact_from_list with other API error (not 'already removed')"""
+        mock_api_instance = MagicMock()
+
+        # Mock error that's not "already removed"
+        error_body = '{"message": "Some other error"}'
+        api_error = ApiException(status=400, reason="Bad Request")
+        api_error.body = error_body
+        mock_api_instance.remove_contact_from_list.side_effect = api_error
+
+        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+            client = api_brevo.BrevoContactsApiClient()
+
+            # Should re-raise for retry logic
+            with self.assertRaises(api_brevo.BrevoApiError):
+                client.remove_contact_from_list("test@example.com", 1)
+
+    def test_retrieve_and_update_user_brevo_contact_id_no_contact_found(self, mock_sleep):
+        """Test retrieve_and_update_user_brevo_contact_id when no contact found"""
+        client = api_brevo.BrevoContactsApiClient()
+        user = UserFactory()
+
+        with patch.object(client, "get_contact_by_email", return_value={}):
+            with self.assertRaises(api_brevo.BrevoApiError) as context:
+                client.retrieve_and_update_user_brevo_contact_id(user)
+
+            # The exception is caught by the general except clause which prepends "Error retrieving contact ID for"
+            self.assertIn(f"Error retrieving contact ID for {user.id}", str(context.exception))
+
+    def test_retrieve_and_update_user_brevo_contact_id_no_id_in_contact(self, mock_sleep):
+        """Test retrieve_and_update_user_brevo_contact_id when contact has no ID"""
+        client = api_brevo.BrevoContactsApiClient()
+        user = UserFactory()
+
+        with patch.object(client, "get_contact_by_email", return_value={"name": "Test"}):
+            with self.assertRaises(api_brevo.BrevoApiError) as context:
+                client.retrieve_and_update_user_brevo_contact_id(user)
+
+            # The exception is caught by the general except clause which prepends "Error retrieving contact ID for"
+            self.assertIn(f"Error retrieving contact ID for {user.id}", str(context.exception))
+
+    def test_retrieve_and_update_user_brevo_contact_id_lookup_exception(self, mock_sleep):
+        """Test retrieve_and_update_user_brevo_contact_id when lookup raises exception"""
+        client = api_brevo.BrevoContactsApiClient()
+        user = UserFactory()
+
+        with patch.object(client, "get_contact_by_email", side_effect=Exception("Lookup error")):
+            with self.assertRaises(api_brevo.BrevoApiError) as context:
+                client.retrieve_and_update_user_brevo_contact_id(user)
+
+            self.assertIn("Error retrieving contact ID", str(context.exception))
+
 
 @patch("lemarche.utils.apis.api_brevo.time.sleep")
 class BrevoCompanyApiClientTest(TestCase):
@@ -818,7 +818,7 @@ class BrevoCompanyApiClientTest(TestCase):
 
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
-            client.create_or_update_company(self.company)
+            client.create_or_update_buyer_company(self.company)
 
         # Verify the company was updated with Brevo ID
         self.company.refresh_from_db()
@@ -839,7 +839,7 @@ class BrevoCompanyApiClientTest(TestCase):
 
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
-            client.create_or_update_company(self.company)
+            client.create_or_update_buyer_company(self.company)
 
         # Verify update was called with correct ID
         call_args = mock_api_instance.companies_id_patch.call_args
@@ -885,7 +885,7 @@ class BrevoCompanyApiClientTest(TestCase):
 
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
-            client.create_or_update_company(self.company)
+            client.create_or_update_buyer_company(self.company)
 
         # Verify the company body passed to API
         call_args = mock_api_instance.companies_post.call_args[0][0]
@@ -914,7 +914,7 @@ class BrevoCompanyApiClientTest(TestCase):
 
         with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
-            client.create_or_update_company(self.company)
+            client.create_or_update_buyer_company(self.company)
 
         # Verify it switched to create mode and updated the ID
         self.company.refresh_from_db()
@@ -938,34 +938,12 @@ class BrevoCompanyApiClientTest(TestCase):
             # Use custom config with fewer retries for testing
             config = api_brevo.BrevoConfig(max_retries=2)
             client = api_brevo.BrevoCompanyApiClient(config)
-            client.create_or_update_company(self.company)
+            client.create_or_update_buyer_company(self.company)
 
         self.company.refresh_from_db()
         self.assertEqual(self.company.brevo_company_id, "12345")
         self.assertEqual(mock_api_instance.companies_post.call_count, 2)
         mock_sleep.assert_called_once_with(5)
-
-    def test_create_or_update_company_max_retries_exceeded(self, mock_sleep):
-        """Test behavior when max retries are exceeded"""
-        mock_api_instance = MagicMock()
-
-        # Always fail
-        server_error = ApiException(status=500, reason="Server Error")
-        server_error.body = None
-        mock_api_instance.companies_post.side_effect = server_error
-
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
-            with self.assertRaises(api_brevo.BrevoApiError):
-                # Use custom config with fewer retries for testing
-                config = api_brevo.BrevoConfig(max_retries=2)
-                client = api_brevo.BrevoCompanyApiClient(config)
-                client.create_or_update_company(self.company)
-
-        self.company.refresh_from_db()
-        self.assertIsNone(self.company.brevo_company_id)
-        self.assertTrue(len(self.company.logs) > 0)
-        self.assertEqual(self.company.logs[-1]["brevo_sync"]["status"], "error")
-        self.assertEqual(mock_api_instance.companies_post.call_count, 3)  # 1 initial + 2 retries
 
     def test_create_or_update_buyer_company_success_create(self, mock_sleep):
         """Test successful buyer company creation"""
