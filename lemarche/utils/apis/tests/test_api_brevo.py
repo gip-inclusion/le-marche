@@ -231,7 +231,6 @@ class BrevoContactsApiClientTest(TestCase):
 
     def setUp(self):
         self.user = UserFactory(email="test@example.com")
-        self.siae = SiaeFactory()
 
     def test_get_all_contacts_success(self):
         """Test successful retrieval of contacts"""
