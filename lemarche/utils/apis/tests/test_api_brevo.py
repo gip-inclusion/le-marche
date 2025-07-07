@@ -13,13 +13,13 @@ from lemarche.utils.apis import api_brevo
 from lemarche.utils.apis.brevo_attributes import CONTACT_ATTRIBUTES
 
 
+@patch("lemarche.utils.apis.api_brevo.time.sleep")
 class BrevoBaseApiClientTest(TestCase):
     """
     Tests for the BrevoBaseApiClient class.
     This covers the retry decorator functionality and base client behavior.
     """
 
-    @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_execute_with_retry_method_success_first_attempt(self, mock_sleep):
         """Test decorator when operation succeeds on first attempt"""
 
@@ -37,7 +37,6 @@ class BrevoBaseApiClientTest(TestCase):
         self.assertEqual(result, {"success": True})
         mock_sleep.assert_not_called()
 
-    @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_execute_with_retry_method_success_after_retry(self, mock_sleep):
         """Test decorator when operation succeeds after one retry"""
 
@@ -63,7 +62,6 @@ class BrevoBaseApiClientTest(TestCase):
         self.assertEqual(result, {"success": True, "attempt": 2})
         mock_sleep.assert_called_once_with(5)  # Default retry delay
 
-    @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_execute_with_retry_method_rate_limit_handling(self, mock_sleep):
         """Test decorator handles rate limiting with exponential backoff"""
 
@@ -90,7 +88,6 @@ class BrevoBaseApiClientTest(TestCase):
         # = 5 * (0 + 1) * 2 = 10 seconds
         mock_sleep.assert_called_once_with(10)
 
-    @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_execute_with_retry_method_max_retries_exceeded(self, mock_sleep):
         """Test decorator when max retries are exceeded"""
 
@@ -110,7 +107,6 @@ class BrevoBaseApiClientTest(TestCase):
         # Verify sleep was called for each retry (3 times)
         self.assertEqual(mock_sleep.call_count, 3)
 
-    @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_execute_with_retry_method_custom_config(self, mock_sleep):
         """Test decorator with custom retry configuration"""
 
@@ -129,7 +125,6 @@ class BrevoBaseApiClientTest(TestCase):
         # Should only retry once with custom delay
         mock_sleep.assert_called_once_with(2)
 
-    @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_execute_with_retry_method_unexpected_exception(self, mock_sleep):
         """Test decorator handling of unexpected exceptions"""
 
@@ -176,7 +171,6 @@ class BrevoBaseApiClientTest(TestCase):
         self.assertFalse(should_retry)
         self.assertEqual(wait_time, 0)
 
-    @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_execute_with_retry_method_final_failure_without_exception(self, mock_sleep):
         """Test decorator when max retries exceeded without any exception being raised"""
 
@@ -341,7 +335,6 @@ class BrevoContactsApiClientTest(TestCase):
         call_args = mock_api_instance.get_contacts.call_args
         self.assertEqual(call_args[1]["limit"], 5)
 
-    @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_get_all_contacts_api_exception_with_retry(self, mock_sleep):
         """Test API exception handling with retry mechanism"""
         mock_api_instance = MagicMock()
@@ -362,7 +355,6 @@ class BrevoContactsApiClientTest(TestCase):
         self.assertEqual(mock_api_instance.get_contacts.call_count, 2)
         mock_sleep.assert_called_once_with(5)  # retry delay
 
-    @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_get_all_contacts_max_retries_exceeded(self, mock_sleep):
         """Test behavior when max retries are exceeded"""
         mock_api_instance = MagicMock()
@@ -503,7 +495,6 @@ class BrevoContactsApiClientTest(TestCase):
         self.assertEqual(response["id"], 55555)
         mock_get_contact_by_email.assert_called_once_with(self.user.email)
 
-    @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_create_contact_rate_limit_with_retry(self, mock_sleep):
         """Test retry mechanism for rate limiting"""
         mock_api_instance = MagicMock()
@@ -530,7 +521,6 @@ class BrevoContactsApiClientTest(TestCase):
         self.assertEqual(mock_api_instance.create_contact.call_count, 2)
         mock_sleep.assert_called_once()
 
-    @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_create_contact_max_retries_exceeded(self, mock_sleep):
         """Test behavior when max retries are exceeded"""
         mock_api_instance = MagicMock()
@@ -781,7 +771,6 @@ class BrevoCompanyApiClientTest(TestCase):
         mock_api_instance.companies_id_patch.assert_called_once()
         mock_api_instance.companies_post.assert_called_once()
 
-    @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_create_or_update_company_retry_mechanism(self, mock_sleep):
         """Test retry mechanism for API errors"""
         mock_api_instance = MagicMock()
@@ -805,7 +794,6 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertEqual(mock_api_instance.companies_post.call_count, 2)
         mock_sleep.assert_called_once_with(5)
 
-    @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_create_or_update_company_max_retries_exceeded(self, mock_sleep):
         """Test behavior when max retries are exceeded"""
         mock_api_instance = MagicMock()
@@ -1410,7 +1398,6 @@ class BrevoTransactionalEmailApiClientTest(TestCase):
         self.assertNotIn("subject", call_args)
 
     @override_settings(BITOUBI_ENV="prod")
-    @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_send_transactional_email_with_retry(self, mock_sleep):
         """Test email sending with retry mechanism"""
         mock_api_instance = MagicMock()
@@ -1439,7 +1426,6 @@ class BrevoTransactionalEmailApiClientTest(TestCase):
         mock_sleep.assert_called_once_with(5)
 
     @override_settings(BITOUBI_ENV="prod")
-    @patch("lemarche.utils.apis.api_brevo.time.sleep")
     def test_send_transactional_email_max_retries_exceeded(self, mock_sleep):
         """Test email sending when max retries are exceeded"""
         mock_api_instance = MagicMock()
