@@ -149,7 +149,7 @@ def send_tender_email_to_siae(tendersiae: TenderSiae, email_subject: str, recipi
         }
 
         # Determine if the email should be sent via Tally Brevo
-        from_tally = tendersiae.tender.source == tender_constants.SOURCE_TALLY
+        is_from_tally = tendersiae.tender.source == TenderSourcesChoices.SOURCE_TALLY
 
         email_template.send_transactional_email(
             recipient_email=recipient_email,
@@ -158,7 +158,7 @@ def send_tender_email_to_siae(tendersiae: TenderSiae, email_subject: str, recipi
             subject=email_subject,
             recipient_content_object=recipient_to_override if recipient_to_override else tendersiae.siae,
             parent_content_object=tendersiae,
-            from_tally=from_tally,
+            is_from_tally=is_from_tally,
         )
 
         # update tendersiae with the email send date
@@ -405,7 +405,7 @@ def send_confirmation_published_email_to_author(tender: Tender):
                 variables=variables,
                 recipient_content_object=tender.author,
                 parent_content_object=tender,
-                from_tally=tender.source == tender_constants.SOURCE_TALLY,
+                is_from_tally=tender.source == TenderSourcesChoices.SOURCE_TALLY,
             )
 
 
@@ -464,7 +464,7 @@ def send_siae_interested_email_to_author(tender: Tender):
                         variables=variables,
                         recipient_content_object=tender.author,
                         parent_content_object=tender,
-                        from_tally=tender.source == tender_constants.SOURCE_TALLY,
+                        is_from_tally=tender.source == TenderSourcesChoices.SOURCE_TALLY,
                     )
 
 
@@ -535,7 +535,7 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
                 variables=variables,
                 recipient_content_object=tender.author,
                 parent_content_object=tender,
-                from_tally=tender.source == tender_constants.SOURCE_TALLY,
+                is_from_tally=tender.source == TenderSourcesChoices.SOURCE_TALLY,
             )
 
 
@@ -571,7 +571,7 @@ def send_tender_author_modification_request(tender: Tender):
             variables=variables,
             recipient_content_object=tender.author,
             parent_content_object=tender,
-            from_tally=tender.source == tender_constants.SOURCE_TALLY,
+            is_from_tally=tender.source == TenderSourcesChoices.SOURCE_TALLY,
         )
 
 
@@ -603,7 +603,7 @@ def send_tender_author_reject_message(tender: Tender):
             variables=variables,
             recipient_content_object=tender.author,
             parent_content_object=tender,
-            from_tally=tender.source == tender_constants.SOURCE_TALLY,
+            is_from_tally=tender.source == TenderSourcesChoices.SOURCE_TALLY,
         )
 
 
@@ -714,5 +714,5 @@ def send_super_siaes_email_to_author(tender: Tender, top_siaes: list[Siae]):
                 variables=variables,
                 recipient_content_object=tender.author,
                 parent_content_object=tender,
-                from_tally=tender.source == tender_constants.SOURCE_TALLY,
+                is_from_tally=tender.source == TenderSourcesChoices.SOURCE_TALLY,
             )

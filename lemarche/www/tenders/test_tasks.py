@@ -4,7 +4,7 @@ from django.test import TestCase
 
 from lemarche.conversations.factories import TemplateTransactionalFactory
 from lemarche.siaes.factories import SiaeFactory
-from lemarche.tenders.constants import SOURCE_TALLY
+from lemarche.tenders.enums import TenderSourcesChoices
 from lemarche.tenders.factories import TenderFactory, TenderSiaeFactory
 from lemarche.users.factories import UserFactory
 from lemarche.www.tenders.tasks import send_tender_email_to_siae
@@ -30,7 +30,7 @@ class TenderEmailTasksTest(TestCase):
         cls.tender_siae = TenderSiaeFactory(tender=cls.tender, siae=cls.siae)
 
         # Create a tender from Tally source
-        cls.tender_tally = TenderFactory(author=cls.user, source=SOURCE_TALLY)
+        cls.tender_tally = TenderFactory(author=cls.user, source=TenderSourcesChoices.SOURCE_TALLY)
         cls.tender_tally_siae = TenderSiaeFactory(tender=cls.tender_tally, siae=cls.siae)
 
     @patch("lemarche.conversations.models.TemplateTransactional.send_transactional_email")
@@ -46,7 +46,7 @@ class TenderEmailTasksTest(TestCase):
         # Verify the arguments passed to send_transactional_email
         _, kwargs = mock_send_email.call_args
         self.assertEqual(kwargs["recipient_email"], "siae@example.com")
-        self.assertFalse(kwargs.get("from_tally", False))
+        self.assertFalse(kwargs.get("is_from_tally", False))
 
         # Verify that the send date was recorded in the TenderSiae
         self.tender_siae.refresh_from_db()
@@ -65,9 +65,9 @@ class TenderEmailTasksTest(TestCase):
         # Verify the arguments passed to send_transactional_email
         _, kwargs = mock_send_email.call_args
 
-        # Since the source is TALLY, we expect from_tally to be True
+        # Since the source is TALLY, we expect is_from_tally to be True
         self.assertEqual(kwargs["recipient_email"], "siae@example.com")
-        self.assertTrue(kwargs.get("from_tally", False))
+        self.assertTrue(kwargs.get("is_from_tally", False))
 
         # Verify that the send date was recorded in the TenderSiae
         self.tender_tally_siae.refresh_from_db()
@@ -89,7 +89,7 @@ class TenderEmailTasksTest(TestCase):
         # Verify the arguments passed to send_transactional_email
         _, kwargs = mock_send_email.call_args
         self.assertEqual(kwargs["recipient_email"], "override@example.com")
-        self.assertFalse(kwargs.get("from_tally", False))
+        self.assertFalse(kwargs.get("is_from_tally", False))
 
         # Verify that recipient_content_object is the override user
         self.assertEqual(kwargs["recipient_content_object"], override_user)

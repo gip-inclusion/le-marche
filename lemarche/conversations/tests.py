@@ -129,10 +129,10 @@ class TemplateTransactionalModelTest(TestCase):
         self.assertIsNone(self.tt_active_empty.get_template_id())
         self.assertEqual(self.tt_inactive.get_template_id(), self.tt_inactive.brevo_id)
         self.assertEqual(self.tt_active_brevo.get_template_id(), self.tt_active_brevo.brevo_id)
-        # Test that when from_tally is False, it returns the default brevo_id
+        # Test that when is_from_tally is False, it returns the default brevo_id
         self.assertEqual(self.tt_active_tally.get_template_id(), self.tt_active_tally.brevo_id)
-        # Test that when from_tally is True, it returns the tally_brevo_id
-        self.assertEqual(self.tt_active_tally.get_template_id(from_tally=True), self.tt_active_tally.tally_brevo_id)
+        # Test that when is_from_tally is True, it returns the tally_brevo_id
+        self.assertEqual(self.tt_active_tally.get_template_id(is_from_tally=True), self.tt_active_tally.tally_brevo_id)
 
     @patch("lemarche.conversations.models.api_brevo.BrevoTransactionalEmailApiClient")
     def test_send_transactional_email_brevo(self, mock_brevo_client_class):
@@ -142,19 +142,19 @@ class TemplateTransactionalModelTest(TestCase):
             recipient_email="test@example.com", recipient_name="test", variables={}
         )
         mock_instance.send_transactional_email_with_template.assert_called_once()
-        # Check from_tally parameter is passed correctly
+        # Check is_from_tally parameter is passed correctly
         args, kwargs = mock_instance.send_transactional_email_with_template.call_args
-        self.assertFalse(kwargs.get("from_tally", False))
+        self.assertFalse(kwargs.get("is_from_tally", False))
 
     @patch("lemarche.conversations.models.api_brevo.BrevoTransactionalEmailApiClient")
     def test_send_transactional_email_tally(self, mock_brevo_client_class):
         mock_instance = mock_brevo_client_class.return_value
         self.tt_active_tally.save()
         self.tt_active_tally.send_transactional_email(
-            recipient_email="test@example.com", recipient_name="test", variables={}, from_tally=True
+            recipient_email="test@example.com", recipient_name="test", variables={}, is_from_tally=True
         )
         mock_instance.send_transactional_email_with_template.assert_called_once()
-        # Check from_tally parameter is passed correctly
+        # Check is_from_tally parameter is passed correctly
         _, kwargs = mock_instance.send_transactional_email_with_template.call_args
         # Check template_id is the tally one
         self.assertEqual(kwargs.get("template_id"), self.tt_active_tally.tally_brevo_id)

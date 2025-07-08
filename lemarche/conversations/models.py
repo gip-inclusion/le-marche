@@ -268,18 +268,18 @@ class TemplateTransactional(models.Model):
         self.full_clean()
         super().save(*args, **kwargs)
 
-    def get_template_id(self, from_tally=False):
+    def get_template_id(self, is_from_tally=False):
         """
         Get the appropriate Brevo template ID based on context.
 
         Args:
-            from_tally (bool): If True and if tally_brevo_id exists, returns the Tally-specific ID.
+            is_from_tally (bool): If True and if tally_brevo_id exists, returns the Tally-specific ID.
 
         Returns:
             int: The Brevo template ID to use, or None if no ID is available
         """
         if self.code:
-            if not from_tally or not self.tally_brevo_id:
+            if not is_from_tally or not self.tally_brevo_id:
                 return self.brevo_id
             else:
                 return self.tally_brevo_id
@@ -298,7 +298,7 @@ class TemplateTransactional(models.Model):
         from_name=settings.DEFAULT_FROM_NAME,
         recipient_content_object=None,
         parent_content_object=None,
-        from_tally=False,
+        is_from_tally=False,
     ):
         """Send a transactional email using Brevo with the template.
         Args:
@@ -310,7 +310,7 @@ class TemplateTransactional(models.Model):
             from_name (str): Name of the sender.
             recipient_content_object (GenericForeignKey): The object that is the recipient of the email.
             parent_content_object (GenericForeignKey): The object that is the parent of the email.
-            from_tally (bool): Whether to send the email from Tally Brevo account.
+            is_from_tally (bool): Whether to send the email from Tally Brevo account.
 
         """
         if self.is_active:
@@ -319,7 +319,7 @@ class TemplateTransactional(models.Model):
                 return
 
             args = {
-                "template_id": self.get_template_id(from_tally=from_tally),
+                "template_id": self.get_template_id(is_from_tally=is_from_tally),
                 "recipient_email": recipient_email,
                 "recipient_name": recipient_name,
                 "variables": variables,
