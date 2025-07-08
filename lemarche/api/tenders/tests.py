@@ -274,6 +274,18 @@ class TenderCreateApiTest(TestCase):
         self.assertEqual(author.kind, user_constants.KIND_BUYER)
         self.assertEqual(author.buyer_kind_detail, user_constants.BUYER_KIND_DETAIL_PUBLIC_ASSOCIATION)
 
+    def test_create_tender_without_constraint(self):
+        """An associated TenderInstruction does not exist but tender creation still proceed"""
+        tender_data = TENDER_JSON.copy()
+        tender_data["kind"] = "PROJ"
+        response = self.client.post(
+            self.url,
+            data=tender_data,
+            content_type="application/json",
+            headers={"authorization": f"Bearer {self.user_token}"},
+        )
+        self.assertEqual(response.status_code, 201)
+
 
 def test_create_tender_with_include_country_area(self):
     tender_data = TENDER_JSON.copy()
