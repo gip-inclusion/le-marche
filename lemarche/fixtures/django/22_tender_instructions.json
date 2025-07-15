@@ -43,9 +43,19 @@
     "model": "tenders.tenderinstruction",
     "pk": 5,
     "fields": {
-        "title": "Comment répondre à ce projet d'achat APProch",
+        "title": "Comment répondre à cet appel d'offre APProch",
         "text": "<p>1. Cliquez sur “Accédez au lien\" afin d’obtenir le lien et les détails de ce sourcing sur APProch<br />\r\n<strong>2. Ce projet d’achat est relayé par la plateforme de l’Etat : APProch. Connectez-vous sur celle-ci en vous créant un identifiant, puis cliquez sur \"Ça m'intéresse\"</strong><br />\r\n3. Contactez-nous par mail commercial@lemarche.inclusion.beta.gouv.fr pour toute question</p>",
         "tender_type": "TENDER",
+        "tender_source": "API"
+    }
+},
+{
+    "model": "tenders.tenderinstruction",
+    "pk": 5,
+    "fields": {
+        "title": "Comment répondre à ce projet d'achat APProch",
+        "text": "<p>1. Cliquez sur “Accédez au lien\" afin d’obtenir le lien et les détails de ce sourcing sur APProch<br />\r\n<strong>2. Ce projet d’achat est relayé par la plateforme de l’Etat : APProch. Connectez-vous sur celle-ci en vous créant un identifiant, puis cliquez sur \"Ça m'intéresse\"</strong><br />\r\n3. Contactez-nous par mail commercial@lemarche.inclusion.beta.gouv.fr pour toute question</p>",
+        "tender_type": "PROJ",
         "tender_source": "API"
     }
 }

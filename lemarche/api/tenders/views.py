@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema
@@ -15,6 +17,8 @@ from lemarche.www.tenders.utils import get_or_create_user_from_anonymous_content
 
 
 PARTNER_APPROCH_UPDATE_FIELDS = ["title", "description", "deadline_date", "external_link"]
+
+logger = logging.getLogger(__name__)
 
 
 class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -51,9 +55,16 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             source=user_source,
         )
 
-        tender_instruction = TenderInstruction.objects.get(
-            tender_type=serializer.validated_data.get("kind"), tender_source=tender_source
-        )
+        try:
+            tender_instruction = TenderInstruction.objects.get(
+                tender_type=serializer.validated_data.get("kind"), tender_source=tender_source
+            )
+        except TenderInstruction.DoesNotExist:
+            tender_instruction = TenderInstruction(title="", text="")
+            logger.error(
+                f"TenderInstruction not found for {tender_source} and {serializer.validated_data.get('kind')} !"
+            )
+
         # Manage Partner APProch
         if tender_source == TenderSourcesChoices.SOURCE_API:
             if user.id == settings.PARTNER_APPROCH_USER_ID:
