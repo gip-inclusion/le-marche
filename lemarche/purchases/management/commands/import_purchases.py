@@ -59,7 +59,7 @@ class Command(BaseCommand):
         stats = self._initialize_stats()
 
         try:
-            self._process_csv_file(options, company, stats)
+            self._process_csv_file(company, stats)
         except FileNotFoundError:
             raise CommandError(f"CSV file not found: {options['csv_file']}")
         except UnicodeDecodeError:
@@ -101,7 +101,7 @@ class Command(BaseCommand):
         """Initialize statistics dictionary."""
         return {"total_rows": 0, "imported": 0, "skipped": 0, "errors": 0, "siae_matches": 0, "company_matches": 0}
 
-    def _process_csv_file(self, options, company, stats):
+    def _process_csv_file(self, company, stats):
         """Process the CSV file and import purchases."""
         expected_columns = [
             "Raison sociale du Fournisseur",
@@ -180,7 +180,7 @@ class Command(BaseCommand):
         if stats["imported"] % 100 == 0:
             self.stdout_info(f'Processed {stats["imported"]} rows...')
 
-    def _validate_row_data(self, supplier_name, supplier_siret, purchase_amount_str):
+    def _validate_row_data(self, supplier_name, supplier_siret):
         """Validate required fields in a row."""
         if not supplier_name:
             raise ValueError("Supplier name is required")
