@@ -102,8 +102,6 @@ class Migration(migrations.Migration):
                 "indexes": [
                     models.Index(fields=["supplier_siret"], name="purchases_p_supplie_969a65_idx"),
                     models.Index(fields=["purchase_year"], name="purchases_p_purchas_86529c_idx"),
-                    models.Index(fields=["siae"], name="purchases_p_siae_id_b71022_idx"),
-                    models.Index(fields=["company"], name="purchases_p_company_7d9738_idx"),
                 ],
             },
         ),

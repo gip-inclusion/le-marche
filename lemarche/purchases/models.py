@@ -66,8 +66,6 @@ class Purchase(models.Model):
         indexes = [
             models.Index(fields=["supplier_siret"]),
             models.Index(fields=["purchase_year"]),
-            models.Index(fields=["siae"]),
-            models.Index(fields=["company"]),
         ]
 
     def __str__(self):
