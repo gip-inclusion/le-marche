@@ -16,12 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    help = (
-        "Import purchase data from CSV file. The CSV file must have the following columns: "
-        "Raison sociale du Fournisseur, SIRET, Dépense achat (€), Catégorie d'achat (optionnelle), "
-        "Entité acheteuse (optionnelle)"
-    )
-
     """
     Import purchase data from CSV file.
     The CSV file must have the following columns:
@@ -38,6 +32,12 @@ class Command(BaseCommand):
     Short example:
     python manage.py import_purchases data/purchases.csv --company-slug "company-slug"
     """
+
+    help = (
+        "Import purchase data from CSV file. The CSV file must have the following columns: "
+        "Raison sociale du Fournisseur, SIRET, Dépense achat (€), Catégorie d'achat (optionnelle), "
+        "Entité acheteuse (optionnelle)"
+    )
 
     def add_arguments(self, parser):
         parser.add_argument("csv_file", type=str, help="Path to the CSV file to import")
