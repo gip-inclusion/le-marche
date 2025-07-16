@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load static process_dict dsfr_tags %}
+{% load static process_dict dsfr_tags l10n %}
 {% block page_title %}
     Ma part d'achat inclusif{{ block.super }}
 {% endblock page_title %}
@@ -12,7 +12,7 @@
         <div class="fr-grid-row">
             <div class="fr-col-12">
                 <h1>Ma part d'achat inclusif</h1>
-                <p class="fr-text--lead">Visualisez l'impact de vos achats inclusifs.</p>
+                <p class="fr-text--lead">Pilotez l'intégration des achats inclusifs dans votre politique achat.</p>
             </div>
         </div>
         {% if user.kind == "BUYER" and user.company %}
@@ -72,19 +72,6 @@
                         <div class="fr-card">
                             <div class="fr-card__body">
                                 <div class="fr-card__content">
-                                    <h3 class="fr-card__title">Répartition par type de structure</h3>
-                                    <div class="fr-card__desc">
-                                        <canvas id="structureKindChart" width="400" height="300"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Statistiques détaillées -->
-                    <div class="fr-col-12 fr-col-lg-4">
-                        <div class="fr-card">
-                            <div class="fr-card__body">
-                                <div class="fr-card__content">
                                     <h3 class="fr-card__title">Détails par type de structure</h3>
                                     <div class="fr-card__desc">
                                         <div class="fr-grid-row fr-grid-row--gutters">
@@ -98,13 +85,32 @@
                                             </div>
                                             <div class="fr-col-6">
                                                 <p class="fr-text--lead">
-                                                    <strong>{{ total_handicap_purchases|floatformat:0|default:0 }}€</strong> pour les structures d'handicap
+                                                    <strong>{{ total_handicap_purchases|floatformat:0|default:0 }}€</strong> pour les structures du Handicap
                                                 </p>
                                                 <p class="fr-text--lead">
                                                     soit <strong>{{ total_handicap_purchases_percentage|floatformat:1|default:0 }}%</strong>
                                                 </p>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-lg-4">
+                        <div class="fr-card">
+                            <div class="fr-card__body">
+                                <div class="fr-card__content">
+                                    <h3 class="fr-card__title">Répartition par type de structure</h3>
+                                    <div class="fr-card__desc">
+                                        <canvas id="structureKindChart" width="400" height="300"></canvas>
+                                    </div>
+                                    <div class="fr-card__footer">
+                                        <p>
+                                            <a href="/ressources/cest-quoi-linclusion/#:~:text=Les%20typologies%20de%20structures"
+                                               target="_blank"
+                                               class="fr-link">Découvrez la définition des acronymes EI, EA, ACI, ESAT...</a>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -138,7 +144,7 @@
                 if (chartDataElement) {
                     const chartData = JSON.parse(chartDataElement.textContent);
                     
-                    // Data for main chart (inclusive vs non-inclusive)
+                    // Data for main chart (inclusive vs non inclusive)
                     const inclusiveData = {
                         labels: chartData.inclusive_chart_data.labels,
                         datasets: [{
@@ -236,7 +242,7 @@
                         return percentage + '%';
                     }
 
-                    // Main chart (inclusive vs non-inclusive)
+                    // Main chart (inclusive vs non inclusive)
                     const labelColors = ['#e3e3fd', '#000091'];
                     new Chart(document.getElementById('inclusiveChart'), {
                         type: 'doughnut',

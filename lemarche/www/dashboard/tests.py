@@ -102,7 +102,7 @@ class InclusivePurchaseStatsDashboardViewTest(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Ma part d'achat inclusif")
-        self.assertContains(response, "<strong>10000€</strong> d'achats réalisés")
+        self.assertContains(response, "<strong>10\xa0000€</strong> d'achats réalisés")
         self.assertContains(response, "<strong>0€</strong> d'achats inclusifs")
         self.assertContains(response, "<strong>0,0%</strong> de vos achats sont inclusifs")
 
@@ -113,8 +113,8 @@ class InclusivePurchaseStatsDashboardViewTest(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Ma part d'achat inclusif")
-        self.assertContains(response, "<strong>30000€</strong> d'achats réalisés")
-        self.assertContains(response, "<strong>20000€</strong> d'achats inclusifs")
+        self.assertContains(response, "<strong>30\xa0000€</strong> d'achats réalisés")
+        self.assertContains(response, "<strong>20\xa0000€</strong> d'achats inclusifs")
         self.assertContains(response, "<strong>66,7%</strong> de vos achats sont inclusifs")
         self.assertContains(
             response,
@@ -128,8 +128,8 @@ class InclusivePurchaseStatsDashboardViewTest(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Ma part d'achat inclusif")
-        self.assertContains(response, "<strong>30000€</strong> d'achats réalisés")
-        self.assertContains(response, "<strong>20000€</strong> d'achats inclusifs")
+        self.assertContains(response, "<strong>30\xa0000€</strong> d'achats réalisés")
+        self.assertContains(response, "<strong>20\xa0000€</strong> d'achats inclusifs")
         self.assertContains(response, "<strong>66,7%</strong> de vos achats sont inclusifs")
         self.assertContains(
             response,
@@ -144,8 +144,8 @@ class InclusivePurchaseStatsDashboardViewTest(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Ma part d'achat inclusif")
-        self.assertContains(response, "<strong>60000€</strong> d'achats réalisés")
-        self.assertContains(response, "<strong>50000€</strong> d'achats inclusifs")
+        self.assertContains(response, "<strong>60\xa0000€</strong> d'achats réalisés")
+        self.assertContains(response, "<strong>50\xa0000€</strong> d'achats inclusifs")
         self.assertContains(response, "<strong>83,3%</strong> de vos achats sont inclusifs")
         self.assertContains(
             response,
