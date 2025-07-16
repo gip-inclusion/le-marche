@@ -58,11 +58,6 @@
                         {% include "dashboard/_stats_card.html" with user_buyer_count=user_buyer_count siae_count=siae_count tender_count=tender_count %}
                     </div>
                     {% if not user.partner_network %}
-                        <div class="fr-col-12">{% include "dashboard/_impact_calculator_card.html" %}</div>
-                    {% else %}
-                        <div class="fr-col-12">{% include "dashboard/_network_card.html" with network=user.partner_network %}</div>
-                    {% endif %}
-                    {% if user.company %}
                         <div class="fr-col-12">
                             <div class="fr-card">
                                 <div class="fr-card__body">
@@ -83,6 +78,8 @@
                                 </div>
                             </div>
                         </div>
+                    {% else %}
+                        <div class="fr-col-12">{% include "dashboard/_network_card.html" with network=user.partner_network %}</div>
                     {% endif %}
                 </div>
             </div>
