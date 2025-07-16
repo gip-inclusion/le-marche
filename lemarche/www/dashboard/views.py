@@ -99,7 +99,7 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, TemplateView):
         purchases_stats = Purchase.objects.get_purchase_for_user(user).with_stats()
         if purchases_stats.get("total_amount_annotated", 0) is not None:
             inclusive_chart_data = {
-                "labels": ["Achats inclusifs", "Achats non-inclusifs"],
+                "labels": ["Achats inclusifs", "Achats non inclusifs"],
                 "dataset": [
                     round(purchases_stats.get("total_inclusive_amount_annotated", 0) or 0),
                     round(
@@ -109,7 +109,7 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, TemplateView):
                 ],
             }
             insertion_handicap_chart_data = {
-                "labels": ["Structures d'insertion", "Structures d'handicap"],
+                "labels": ["Structures d'insertion (IAE)", "Structures du Handicap (STPA)"],
                 "dataset": [
                     round(purchases_stats.get("total_insertion_amount_annotated", 0) or 0),
                     round(purchases_stats.get("total_handicap_amount_annotated", 0) or 0),
