@@ -330,9 +330,10 @@ class DashboardSiaeEditActivitiesCreateViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         data = {
-            "sector": self.sector1.id,
-            "presta_type": [siae_constants.PRESTA_PREST],
-            "geo_range": siae_constants.GEO_RANGE_COUNTRY,
+            "sector_group": self.sector1.group.id,
+            "sectors": self.sector1.id,
+            f"presta_type_{self.sector1.id}": [siae_constants.PRESTA_PREST],
+            f"geo_range_{self.sector1.id}": siae_constants.GEO_RANGE_COUNTRY,
         }
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 302)
