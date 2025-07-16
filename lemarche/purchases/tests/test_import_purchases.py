@@ -1,6 +1,7 @@
 import os
 import tempfile
 from decimal import Decimal
+from io import StringIO
 
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -332,3 +333,20 @@ Entreprise Test 1,12345678901234,15000.50,,"""  # noqa: E501
 
         finally:
             os.unlink(csv_file)
+
+    def test_import_purchases_with_multiple_siaes_with_same_siret(self):
+        SiaeFactory(siret="12345678901234")
+        out = StringIO()
+        call_command(
+            "import_purchases", self.sample_file, company_slug=self.company.slug, year=self.current_year, stdout=out
+        )
+
+        purchases = Purchase.objects.filter(siae=self.siae)
+        self.assertEqual(purchases.count(), 1)
+
+        purchase = purchases.first()
+        self.assertEqual(purchase.supplier_name, "Entreprise Test 3")
+
+        self.assertIn(
+            f"Multiple SIAEs found for SIRET: 12345678901234. Using first one: {self.siae.name}", out.getvalue()
+        )

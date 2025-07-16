@@ -151,7 +151,7 @@ class Command(BaseCommand):
         buying_entity = row["Entité acheteuse (optionnelle)"].strip() or None
 
         # Validate required fields
-        self._validate_row_data(supplier_name, supplier_siret, purchase_amount_str)
+        self._validate_row_data(supplier_name, supplier_siret)
 
         # Parse purchase amount
         purchase_amount = self._parse_purchase_amount(purchase_amount_str)
