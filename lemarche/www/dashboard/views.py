@@ -101,18 +101,18 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, TemplateView):
             inclusive_chart_data = {
                 "labels": ["Achats inclusifs", "Achats non-inclusifs"],
                 "dataset": [
-                    round(purchases_stats.get("total_inclusive_amount_annotated", 0)),
+                    round(purchases_stats.get("total_inclusive_amount_annotated", 0) or 0),
                     round(
                         purchases_stats.get("total_amount_annotated", 0)
-                        - purchases_stats.get("total_inclusive_amount_annotated", 0),
+                        - (purchases_stats.get("total_inclusive_amount_annotated", 0) or 0),
                     ),
                 ],
             }
             insertion_handicap_chart_data = {
                 "labels": ["Structures d'insertion", "Structures d'handicap"],
                 "dataset": [
-                    round(purchases_stats.get("total_insertion_amount_annotated", 0)),
-                    round(purchases_stats.get("total_handicap_amount_annotated", 0)),
+                    round(purchases_stats.get("total_insertion_amount_annotated", 0) or 0),
+                    round(purchases_stats.get("total_handicap_amount_annotated", 0) or 0),
                 ],
             }
             siae_type_chart_data = {
@@ -131,20 +131,23 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, TemplateView):
             context.update(
                 {
                     "total_purchases": purchases_stats.get("total_amount_annotated", 0),
-                    "total_suppliers": purchases_stats.get("total_suppliers_annotated", 0),
-                    "total_inclusive_suppliers": purchases_stats.get("total_inclusive_suppliers_annotated", 0),
-                    "total_inclusive_purchases": purchases_stats.get("total_inclusive_amount_annotated", 0),
+                    "total_suppliers": purchases_stats.get("total_suppliers_annotated", 0) or 0,
+                    "total_inclusive_suppliers": purchases_stats.get("total_inclusive_suppliers_annotated", 0) or 0,
+                    "total_inclusive_purchases": purchases_stats.get("total_inclusive_amount_annotated", 0) or 0,
                     "total_inclusive_purchases_percentage": purchases_stats.get(
                         "total_inclusive_percentage_annotated", 0
-                    ),
-                    "total_insertion_purchases": purchases_stats.get("total_insertion_amount_annotated", 0),
+                    )
+                    or 0,
+                    "total_insertion_purchases": purchases_stats.get("total_insertion_amount_annotated", 0) or 0,
                     "total_insertion_purchases_percentage": purchases_stats.get(
                         "total_insertion_percentage_annotated", 0
-                    ),
-                    "total_handicap_purchases": purchases_stats.get("total_handicap_amount_annotated", 0),
+                    )
+                    or 0,
+                    "total_handicap_purchases": purchases_stats.get("total_handicap_amount_annotated", 0) or 0,
                     "total_handicap_purchases_percentage": purchases_stats.get(
                         "total_handicap_percentage_annotated", 0
-                    ),
+                    )
+                    or 0,
                     # Data for json_script (secure JSON format)
                     "chart_data": {
                         "inclusive_chart_data": inclusive_chart_data,
