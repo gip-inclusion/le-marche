@@ -146,7 +146,8 @@ class CustomSignupForm(SignupForm, DsfrBaseForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        if self.cleaned_data["kind"] == User.KIND_BUYER:
+        # email is not in cleaned data when detected as duplicated
+        if self.cleaned_data["kind"] == User.KIND_BUYER and cleaned_data.get("email"):
             try:
                 professional_email_validator(cleaned_data["email"])
             except ValidationError as e:
