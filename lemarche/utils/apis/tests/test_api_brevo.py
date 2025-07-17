@@ -438,8 +438,8 @@ class BrevoContactsApiClientTest(TestCase):
         c = api_brevo.BrevoContactsApiClient()
         c.create_contact(self.user, list_id=1)
 
-    @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient.get_contact_by_email")
-    def test_create_contact_duplicate_error_with_recovery(self, mock_get_contact_by_email, mock_sleep):
+    @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient.get_contact_by_identifier")
+    def test_create_contact_duplicate_error_with_recovery(self, mock_get_contact_by_identifier, mock_sleep):
         """Test handling of duplicate contact error with successful ID recovery"""
         mock_api_instance = MagicMock()
 
@@ -450,7 +450,7 @@ class BrevoContactsApiClientTest(TestCase):
         mock_api_instance.create_contact.side_effect = duplicate_exception
 
         # Mock successful contact lookup
-        mock_get_contact_by_email.return_value = {"id": 55555}
+        mock_get_contact_by_identifier.return_value = 55555
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
             c = api_brevo.BrevoContactsApiClient()
@@ -462,7 +462,7 @@ class BrevoContactsApiClientTest(TestCase):
 
         # Response should contain the retrieved ID
         self.assertEqual(response["id"], 55555)
-        mock_get_contact_by_email.assert_called_once_with(self.user.email)
+        mock_get_contact_by_identifier.assert_called_once_with(self.user.email)
 
     def test_create_contact_rate_limit_with_retry(self, mock_sleep):
         """Test retry mechanism for rate limiting"""
@@ -656,7 +656,7 @@ class BrevoContactsApiClientTest(TestCase):
         client = api_brevo.BrevoContactsApiClient()
         user = UserFactory()
 
-        with patch.object(client, "get_contact_by_email", return_value={}):
+        with patch.object(client, "get_contact_by_identifier", return_value={}):
             with self.assertRaises(api_brevo.BrevoApiError) as context:
                 client.retrieve_and_update_user_brevo_contact_id(user)
 
@@ -668,7 +668,7 @@ class BrevoContactsApiClientTest(TestCase):
         client = api_brevo.BrevoContactsApiClient()
         user = UserFactory()
 
-        with patch.object(client, "get_contact_by_email", return_value={"name": "Test"}):
+        with patch.object(client, "get_contact_by_identifier", return_value={"name": "Test"}):
             with self.assertRaises(api_brevo.BrevoApiError) as context:
                 client.retrieve_and_update_user_brevo_contact_id(user)
 
@@ -680,14 +680,45 @@ class BrevoContactsApiClientTest(TestCase):
         client = api_brevo.BrevoContactsApiClient()
         user = UserFactory()
 
-        with patch.object(client, "get_contact_by_email", side_effect=Exception("Lookup error")):
+        with patch.object(client, "get_contact_by_identifier", side_effect=Exception("Lookup error")):
             with self.assertRaises(api_brevo.BrevoApiError) as context:
                 client.retrieve_and_update_user_brevo_contact_id(user)
 
             self.assertIn("Error retrieving contact ID", str(context.exception))
 
-    def test_get_contact_by_email_success(self, mock_sleep):
-        """Test get_contact_by_email success"""
+    def test_retrieve_and_update_user_brevo_contact_id_found_by_phone(self, mock_sleep):
+        """Test retrieve_and_update_user_brevo_contact_id when contact is found by phone after email fails"""
+        client = api_brevo.BrevoContactsApiClient()
+        user = UserFactory(phone="+33123456789")
+
+        # Mock the get_contact_by_identifier to return None for email and contact ID for phone
+        def mock_get_contact_by_identifier(identifier):
+            if identifier == user.email:
+                return None  # Not found by email
+            elif identifier == "+33123456789":  # Use the actual E164 format
+                return "54321"  # Found by phone
+            return None
+
+        with patch.object(client, "get_contact_by_identifier", side_effect=mock_get_contact_by_identifier):
+            client.retrieve_and_update_user_brevo_contact_id(user)
+
+        # Verify user was updated with the contact ID found by phone
+        user.refresh_from_db()
+        self.assertEqual(user.brevo_contact_id, 54321)
+
+    def test_retrieve_and_update_user_brevo_contact_id_phone_fallback_no_phone(self, mock_sleep):
+        """Test retrieve_and_update_user_brevo_contact_id when user has no phone number"""
+        client = api_brevo.BrevoContactsApiClient()
+        user = UserFactory(phone="")
+
+        with patch.object(client, "get_contact_by_identifier", return_value=None):
+            with self.assertRaises(api_brevo.BrevoApiError) as context:
+                client.retrieve_and_update_user_brevo_contact_id(user)
+
+            self.assertIn(f"Error retrieving contact ID for {user.id}", str(context.exception))
+
+    def test_get_contact_by_identifier_success(self, mock_sleep):
+        """Test get_contact_by_identifier success"""
         mock_api_instance = MagicMock()
 
         # Mock successful response
@@ -697,14 +728,13 @@ class BrevoContactsApiClientTest(TestCase):
 
         with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
             client = api_brevo.BrevoContactsApiClient()
-            result = client.get_contact_by_email("test@example.com")
+            result = client.get_contact_by_identifier("test@example.com")
 
-        self.assertEqual(result["id"], 12345)
-        self.assertEqual(result["email"], "test@example.com")
+        self.assertEqual(result, 12345)
         mock_api_instance.get_contact_info.assert_called_once_with("test@example.com")
 
-    def test_get_contact_by_email_non_404_error(self, mock_sleep):
-        """Test get_contact_by_email with non-404 API error that should be retried"""
+    def test_get_contact_by_identifier_non_404_error(self, mock_sleep):
+        """Test get_contact_by_identifier with non-404 API error that should be retried"""
         mock_api_instance = MagicMock()
 
         # Mock server error (not 404)
@@ -715,7 +745,7 @@ class BrevoContactsApiClientTest(TestCase):
             client = api_brevo.BrevoContactsApiClient()
 
             with self.assertRaises(api_brevo.BrevoApiError):
-                client.get_contact_by_email("test@example.com")
+                client.get_contact_by_identifier("test@example.com")
 
     def test_get_all_contacts_brevo_api_error_handling(self, mock_sleep):
         """Test get_all_contacts handling BrevoApiError in pagination loop"""

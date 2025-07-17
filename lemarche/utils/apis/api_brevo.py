@@ -248,12 +248,12 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
                 raise e  # Re-raise for retry logic
 
     @BrevoBaseApiClient.execute_with_retry_method(operation_name="getting contact by email")
-    def get_contact_by_email(self, email: str):
+    def get_contact_by_identifier(self, id: str) -> str | None:
         """
         Retrieves Brevo contact by email address
 
         Args:
-            email (str): Email address to search for
+            id (str): Email address or phone number to search for
 
         Returns:
             dict: Contact information if found, empty dict otherwise
@@ -262,11 +262,11 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
             BrevoApiError: When contact retrieval fails after all retries
         """
         try:
-            response = self.api_instance.get_contact_info(email)
-            return response.to_dict()
+            response = self.api_instance.get_contact_info(id)
+            return response.to_dict().get("id")
         except ApiException as e:
             if e.status == 404:  # Contact not found
-                return {}
+                return
             raise e  # Re-raise for retry logic
 
     def get_all_contacts(self, limit_max=None, since_days=None):
@@ -437,17 +437,19 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         """
         try:
             # Search for contact by email
-            existing_contact = self.get_contact_by_email(user.email)
-            if existing_contact:
-                contact_id = existing_contact.get("id")
-                if contact_id:
-                    user.brevo_contact_id = int(contact_id)
-                    user.save(update_fields=["brevo_contact_id"])
-                    self.logger.info(f"Brevo ID retrieved for {user.id}: {user.brevo_contact_id}")
-                else:
-                    raise BrevoApiError(f"No contact ID found for email {user.id}")
+            brevo_contact_id = self.get_contact_by_identifier(user.email)
+            # If not found by email, try to find by phone number
+            if not brevo_contact_id and user.phone:
+                brevo_contact_id = self.get_contact_by_identifier(user.phone.as_e164)
+
+            if brevo_contact_id:
+                user.brevo_contact_id = int(brevo_contact_id)
+                user.save(update_fields=["brevo_contact_id"])
+                self.logger.info(f"Brevo ID retrieved for {user.id}: {user.brevo_contact_id}")
+
+            # search for contact by phone number
             else:
-                raise BrevoApiError(f"No contact found for email {user.id}")
+                raise BrevoApiError(f"No contact ID found for email {user.id}")
         except Exception as lookup_error:
             self.logger.error(f"Error retrieving contact ID: {lookup_error}")
             raise BrevoApiError(f"Error retrieving contact ID for {user.id}", lookup_error)
