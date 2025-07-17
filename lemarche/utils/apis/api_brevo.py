@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import sib_api_v3_sdk
 from django.conf import settings
 from huey.contrib.djhuey import task
+from phonenumber_field.modelfields import PhoneNumberField
 from sib_api_v3_sdk.rest import ApiException
 
 from lemarche.tenders.enums import TenderSourcesChoices
@@ -19,6 +20,18 @@ from lemarche.utils.urls import get_object_admin_url, get_object_share_url
 logger = logging.getLogger(__name__)
 
 ENV_NOT_ALLOWED = ("dev", "test")
+
+
+def get_valid_number_for_brevo(phone_number: PhoneNumberField):
+    """
+    Returns a valid phone number for Brevo API.
+    If is not french phone number, returns an empty string.
+    If the phone number is None, returns empty string.
+    If the phone number is not valid, returns an empty string.
+    """
+    if not phone_number or not phone_number.is_valid() or phone_number.country_code != 33:
+        return ""
+    return str(phone_number.as_e164)
 
 
 @dataclass
@@ -199,7 +212,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
             CONTACT_ATTRIBUTES["DATE_INSCRIPTION"]: user.created_at,
             CONTACT_ATTRIBUTES["TYPE_ORGANISATION"]: user.buyer_kind_detail,
             CONTACT_ATTRIBUTES["NOM_ENTREPRISE"]: sanitize_to_send_by_email(user.company_name.capitalize()),
-            CONTACT_ATTRIBUTES["SMS"]: sanitize_to_send_by_email(user.phone_display),
+            CONTACT_ATTRIBUTES["SMS"]: get_valid_number_for_brevo(user.phone),
             CONTACT_ATTRIBUTES["MONTANT_BESOIN_ACHETEUR"]: None,
             CONTACT_ATTRIBUTES["TYPE_BESOIN_ACHETEUR"]: None,
             CONTACT_ATTRIBUTES["TYPE_VERTICALE_ACHETEUR"]: None,
@@ -215,28 +228,28 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
             ext_id=str(user.id),
             update_enabled=True,
         )
-
-        try:
-            api_response = self.api_instance.create_contact(new_contact).to_dict()
-            self.logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response.get('id')}")
-            return api_response
-        except ApiException as e:
-            # Analyze error type
-            error_body = self._get_error_body(e)
-            # Contact already exists - try to retrieve existing ID
-            if e.status == 400 and error_body and error_body.get("code") == "duplicate_parameter":
-                self.logger.info(f"Contact {user.id} already exists in Brevo, attempting to retrieve ID...")
-                self.retrieve_and_update_user_brevo_contact_id(user)
-                return {"id": user.brevo_contact_id}
-            raise e  # Re-raise for retry logic
+        if self.config.is_production_env:
+            try:
+                api_response = self.api_instance.create_contact(new_contact).to_dict()
+                self.logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response.get('id')}")
+                return api_response
+            except ApiException as e:
+                # Analyze error type
+                error_body = self._get_error_body(e)
+                # Contact already exists - try to retrieve existing ID
+                if e.status == 400 and error_body and error_body.get("code") == "duplicate_parameter":
+                    self.logger.info(f"Contact {user.id} already exists in Brevo, attempting to retrieve ID...")
+                    self.retrieve_and_update_user_brevo_contact_id(user)
+                    return {"id": user.brevo_contact_id}
+                raise e  # Re-raise for retry logic
 
     @BrevoBaseApiClient.execute_with_retry_method(operation_name="getting contact by email")
-    def get_contact_by_email(self, email: str):
+    def get_contact_by_identifier(self, id: str) -> str | None:
         """
         Retrieves Brevo contact by email address
 
         Args:
-            email (str): Email address to search for
+            id (str): Email address or phone number to search for
 
         Returns:
             dict: Contact information if found, empty dict otherwise
@@ -245,11 +258,11 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
             BrevoApiError: When contact retrieval fails after all retries
         """
         try:
-            response = self.api_instance.get_contact_info(email)
-            return response.to_dict()
+            response = self.api_instance.get_contact_info(id)
+            return response.to_dict().get("id")
         except ApiException as e:
             if e.status == 404:  # Contact not found
-                return {}
+                return
             raise e  # Re-raise for retry logic
 
     def get_all_contacts(self, limit_max=None, since_days=None):
@@ -420,17 +433,19 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         """
         try:
             # Search for contact by email
-            existing_contact = self.get_contact_by_email(user.email)
-            if existing_contact:
-                contact_id = existing_contact.get("id")
-                if contact_id:
-                    user.brevo_contact_id = int(contact_id)
-                    user.save(update_fields=["brevo_contact_id"])
-                    self.logger.info(f"Brevo ID retrieved for {user.id}: {user.brevo_contact_id}")
-                else:
-                    raise BrevoApiError(f"No contact ID found for email {user.id}")
+            brevo_contact_id = self.get_contact_by_identifier(user.email)
+            # If not found by email, try to find by phone number
+            if not brevo_contact_id and user.phone:
+                brevo_contact_id = self.get_contact_by_identifier(user.phone.as_e164)
+
+            if brevo_contact_id:
+                user.brevo_contact_id = int(brevo_contact_id)
+                user.save(update_fields=["brevo_contact_id"])
+                self.logger.info(f"Brevo ID retrieved for {user.id}: {user.brevo_contact_id}")
+
+            # search for contact by phone number
             else:
-                raise BrevoApiError(f"No contact found for email {user.id}")
+                raise BrevoApiError(f"No contact ID found for email {user.id}")
         except Exception as lookup_error:
             self.logger.error(f"Error retrieving contact ID: {lookup_error}")
             raise BrevoApiError(f"Error retrieving contact ID for {user.id}", lookup_error)
@@ -827,7 +842,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         return {
             # Default attributes
             SIAE_COMPANY_ATTRIBUTES["domain"]: siae.website,
-            SIAE_COMPANY_ATTRIBUTES["phone_number"]: siae.contact_phone_display,
+            SIAE_COMPANY_ATTRIBUTES["phone_number"]: get_valid_number_for_brevo(siae.contact_phone),
             # Custom attributes
             SIAE_COMPANY_ATTRIBUTES["app_id"]: siae.id,
             SIAE_COMPANY_ATTRIBUTES["siae"]: True,
@@ -920,25 +935,6 @@ class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
         return response.to_dict()
 
 
-def _cleanup_and_link_contacts(api_instance, entity_id, contact_list: list, link_body_class, patch_method_name):
-    """
-    Common utility to clean up contact list and execute linking API call
-
-    Args:
-        api_instance: Brevo API instance (DealsApi or CompaniesApi)
-        entity_id: ID of the entity (deal or company) to link contacts to
-        contact_list: List of contact IDs (may contain None values)
-        link_body_class: The Brevo SDK body class to use (Body2, Body5, etc.)
-        patch_method_name: Name of the API method to call
-    """
-
-    # link entity with contact_list
-    if len(contact_list):
-        body_link = link_body_class(link_contact_ids=contact_list)
-        patch_method = getattr(api_instance, patch_method_name)
-        patch_method(entity_id, body_link)
-
-
 def create_deal(tender, owner_email: str):
     """
     Creates a new deal in Brevo CRM from a tender and logs the result.
@@ -1011,11 +1007,8 @@ def link_deal_with_contact_list(tender, contact_list: list = None):
             if not contact_list:
                 contact_list = [tender.author.brevo_contact_id]
 
-            # Use common utility for linking
-
-            _cleanup_and_link_contacts(
-                api_instance, brevo_crm_deal_id, contact_list, sib_api_v3_sdk.Body5, "crm_deals_link_unlink_id_patch"
-            )
-
+            body_link = sib_api_v3_sdk.Body5(link_contact_ids=contact_list)
+            api_instance.crm_deals_link_unlink_id_patch(brevo_crm_deal_id, body_link)
+            logger.info("Brevo: Deal linked with contacts successfully")
         except ApiException as e:
             logger.error("Exception when calling Brevo->DealApi->crm_deals_link_unlink_id_patch: %s\n" % e)

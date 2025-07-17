@@ -3,6 +3,7 @@ from django.conf import settings
 from django.urls import reverse_lazy
 
 from lemarche.users.models import User
+from lemarche.utils.apis import api_brevo
 from lemarche.utils.emails import add_to_contact_list
 from lemarche.utils.urls import get_safe_url
 from lemarche.www.auth.tasks import send_signup_notification_email
@@ -80,13 +81,17 @@ class LeMarcheAccountAdapter(DefaultAccountAdapter):
 
         user.extra_data = extra_data
 
-        # add to Brevo list (to send welcome email + automation)
-        add_to_contact_list(user, "signup")
-        # signup notification email for the team
-        send_signup_notification_email(user)
-
         if commit:
             user.save()
             user.sectors.set(form.cleaned_data.get("sectors"))
+            try:
+                # add to Brevo list (to send welcome email + automation)
+                add_to_contact_list(user, "signup")
+            except api_brevo.BrevoApiError:
+                # Log the error but do not raise it, as this is not critical for user creation
+                # no need to add more logging here, as the BrevoApiError is already logged in add_to_contact_list
+                pass
+            # signup notification email for the team
+            send_signup_notification_email(user)
 
         return user
