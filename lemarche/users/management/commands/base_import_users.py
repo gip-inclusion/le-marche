@@ -1,5 +1,4 @@
 import csv
-from abc import ABC, abstractmethod
 
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError, transaction
@@ -8,7 +7,7 @@ from lemarche.users.models import User
 from lemarche.www.auth.tasks import send_new_user_password_reset_link
 
 
-class BaseImportUsersCommand(BaseCommand, ABC):
+class BaseImportUsersCommand(BaseCommand):
     """Base class for importing users from CSV files.
 
     Subclasses must implement:
@@ -103,17 +102,14 @@ class BaseImportUsersCommand(BaseCommand, ABC):
         """Hook for post-import actions that require the user object."""
         pass
 
-    @abstractmethod
     def get_user_kind(self) -> str:
         """Return the user kind (e.g., User.KIND_BUYER)."""
-        pass
+        raise NotImplementedError
 
-    @abstractmethod
     def get_user_fields(self, **kwargs) -> dict:
         """Return additional fields to set on user creation."""
-        pass
+        raise NotImplementedError
 
-    @abstractmethod
     def get_update_fields(self, **kwargs) -> dict:
         """Return fields to update for existing users."""
-        pass
+        raise NotImplementedError

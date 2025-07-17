@@ -18,4 +18,4 @@ class Command(BaseImportUsersCommand):
         }
 
     def get_update_fields(self, **kwargs) -> dict:
-        return False
+        return {}

@@ -25,7 +25,6 @@ class Command(BaseImportUsersCommand):
 
     def handle(self, *args, **options):
         # Get company before processing
-        print(options)
         self.company = Company.objects.get(slug=options["company_slug"])
         super().handle(*args, **options)
 
