@@ -114,7 +114,13 @@ def send_tender_emails_to_siaes(tender: Tender):
 
 # @task()
 def send_tender_email_to_siae(tendersiae: TenderSiae, email_subject: str, recipient_to_override: User = None):
-    email_template = TemplateTransactional.objects.get(code="TENDERS_SIAE_PRESENTATION")
+    template_code = (
+        "TENDERS_SIAE_PRESENTATION"
+        if tendersiae.tender.source != TenderSourcesChoices.SOURCE_TALLY
+        else "TALLY_TENDERS_SIAE_PRESENTATION"
+    )
+
+    email_template = TemplateTransactional.objects.get(code=template_code)
     # override siae.contact_email if email_to_override is provided
     email_to = recipient_to_override.email if recipient_to_override else tendersiae.siae.contact_email
     recipient_list = whitelist_recipient_list([email_to])
@@ -157,7 +163,7 @@ def send_tender_email_to_siae(tendersiae: TenderSiae, email_subject: str, recipi
             parent_content_object=tendersiae,
         )
 
-        # update tendersiae
+        # update tendersiae with the email send date
         tendersiae.email_send_date = timezone.now()
         tendersiae.save()
 
@@ -421,45 +427,54 @@ def send_siae_interested_email_to_author(tender: Tender):
     ).count()
 
     if (tender_siae_detail_contact_click_count > 0) and (tender_siae_detail_contact_click_count <= 50):
-        should_send_email = False
-
+        email_templates_names = {
+            "pro": {
+                "1": "TENDERS_AUTHOR_SIAE_INTERESTED_1",
+                "2": "TENDERS_AUTHOR_SIAE_INTERESTED_2",
+                "5": "TENDERS_AUTHOR_SIAE_INTERESTED_5",
+                "5+": "TENDERS_AUTHOR_SIAE_INTERESTED_5_MORE",
+            },
+            "tally": {
+                "1": "TALLY_TENDERS_AUTHOR_SIAE_INTERESTED_1",
+                "2": "TALLY_TENDERS_AUTHOR_SIAE_INTERESTED_2",
+                "5": "TALLY_TENDERS_AUTHOR_SIAE_INTERESTED_5",
+                "5+": "TALLY_TENDERS_AUTHOR_SIAE_INTERESTED_5_MORE",
+            },
+        }
+        email_templates_names_key = "tally" if tender.source == TenderSourcesChoices.SOURCE_TALLY else "pro"
         if tender_siae_detail_contact_click_count == 1:
-            should_send_email = True
-            email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_SIAE_INTERESTED_1")
+            email_template_name = email_templates_names[email_templates_names_key]["1"]
         elif tender_siae_detail_contact_click_count == 2:
-            should_send_email = True
-            email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_SIAE_INTERESTED_2")
+            email_template_name = email_templates_names[email_templates_names_key]["2"]
         elif tender_siae_detail_contact_click_count == 5:
-            should_send_email = True
-            email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_SIAE_INTERESTED_5")
+            email_template_name = email_templates_names[email_templates_names_key]["5"]
         elif tender_siae_detail_contact_click_count % 5 == 0:
-            should_send_email = True
-            email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_SIAE_INTERESTED_5_MORE")
+            email_template_name = email_templates_names[email_templates_names_key]["5+"]
         else:
-            pass
+            return
 
-        if should_send_email:
-            recipient_list = whitelist_recipient_list([tender.author.email])  # tender.contact_email ?
-            if len(recipient_list):
-                recipient_email = recipient_list[0]
-                recipient_name = tender.author.full_name
+        email_template = TemplateTransactional.objects.get(code=email_template_name)
+        recipient_list = whitelist_recipient_list([tender.author.email])  # tender.contact_email ?
+        if len(recipient_list):
+            recipient_email = recipient_list[0]
+            recipient_name = tender.author.full_name
 
-                variables = {
-                    "TENDER_ID": tender.id,
-                    "TENDER_TITLE": tender.title,
-                    "TENDER_AUTHOR_ID": tender.author.id,
-                    "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
-                    "TENDER_SIAE_INTERESTED_LIST_URL": f"{get_object_share_url(tender)}/prestataires",  # noqa
-                }
+            variables = {
+                "TENDER_ID": tender.id,
+                "TENDER_TITLE": tender.title,
+                "TENDER_AUTHOR_ID": tender.author.id,
+                "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
+                "TENDER_SIAE_INTERESTED_LIST_URL": f"{get_object_share_url(tender)}/prestataires",  # noqa
+            }
 
-                if not tender.contact_notifications_disabled:
-                    email_template.send_transactional_email(
-                        recipient_email=recipient_email,
-                        recipient_name=recipient_name,
-                        variables=variables,
-                        recipient_content_object=tender.author,
-                        parent_content_object=tender,
-                    )
+            if not tender.contact_notifications_disabled:
+                email_template.send_transactional_email(
+                    recipient_email=recipient_email,
+                    recipient_name=recipient_name,
+                    variables=variables,
+                    recipient_content_object=tender.author,
+                    parent_content_object=tender,
+                )
 
 
 def notify_admin_tender_created(tender: Tender):
@@ -507,7 +522,11 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
         }
 
         if kind in ["transactioned_question_7d", "transactioned_question_7d_reminder"]:
-            email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_TRANSACTIONED_QUESTION_7D")
+            if tender.source == TenderSourcesChoices.SOURCE_TALLY:
+                email_template_name = "TALLY_TENDERS_AUTHOR_TRANSACTIONED_QUESTION_7D"
+            else:
+                email_template_name = "TENDERS_AUTHOR_TRANSACTIONED_QUESTION_7D"
+            email_template = TemplateTransactional.objects.get(code=email_template_name)
             user_sesame_query_string = sesame_get_query_string(tender.author)  # TODO: sesame scope parameter
             answer_url_with_sesame_token = (
                 f"https://{get_domain_url()}"
@@ -520,7 +539,11 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
             # add timestamp
             tender.survey_transactioned_send_date = timezone.now()
         else:
-            email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_FEEDBACK_30D")
+            if tender.source == TenderSourcesChoices.SOURCE_TALLY:
+                email_template_name = "TALLY_TENDERS_AUTHOR_FEEDBACK_30D"
+            else:
+                email_template_name = "TENDERS_AUTHOR_FEEDBACK_30D"
+            email_template = TemplateTransactional.objects.get(code=email_template_name)
 
         if not tender.contact_notifications_disabled:
             email_template.send_transactional_email(
@@ -554,8 +577,12 @@ def send_tender_author_modification_request(tender: Tender):
         "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
         "TENDER_UPDATE_URL": tender_update_url,
     }
+    if tender.source == TenderSourcesChoices.SOURCE_TALLY:
+        email_template_name = "TALLY_TENDERS_AUTHOR_MODIFICATION_REQUEST"
+    else:
+        email_template_name = "TENDERS_AUTHOR_MODIFICATION_REQUEST"
 
-    email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_MODIFICATION_REQUEST")
+    email_template = TemplateTransactional.objects.get(code=email_template_name)
 
     if not tender.contact_notifications_disabled:
         email_template.send_transactional_email(
@@ -585,8 +612,11 @@ def send_tender_author_reject_message(tender: Tender):
         "TENDER_AUTHOR_ID": tender.author.id,
         "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
     }
-
-    email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_REJECT_MESSAGE")
+    if tender.source == TenderSourcesChoices.SOURCE_TALLY:
+        email_template_name = "TALLY_TENDERS_AUTHOR_REJECT_MESSAGE"
+    else:
+        email_template_name = "TENDERS_AUTHOR_REJECT_MESSAGE"
+    email_template = TemplateTransactional.objects.get(code=email_template_name)
 
     if not tender.contact_notifications_disabled:
         email_template.send_transactional_email(
@@ -667,7 +697,12 @@ def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_questio
 
 
 def send_super_siaes_email_to_author(tender: Tender, top_siaes: list[Siae]):
-    email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_SUPER_SIAES")
+    if tender.source == TenderSourcesChoices.SOURCE_TALLY:
+        email_template_name = "TALLY_TENDERS_AUTHOR_SUPER_SIAES"
+    else:
+        email_template_name = "TENDERS_AUTHOR_SUPER_SIAES"
+
+    email_template = TemplateTransactional.objects.get(code=email_template_name)
     recipient_list = whitelist_recipient_list([tender.author.email])
     if len(recipient_list):
         recipient_email = recipient_list[0]

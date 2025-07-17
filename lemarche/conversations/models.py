@@ -267,6 +267,12 @@ class TemplateTransactional(models.Model):
 
     @property
     def get_template_id(self):
+        """
+        Get the appropriate Brevo template ID based on context.
+        If the template has a code, it returns the Brevo ID.
+        Returns:
+            int: The Brevo template ID to use, or None if no ID is available
+        """
         if self.code:
             return self.brevo_id
         return None
@@ -285,6 +291,18 @@ class TemplateTransactional(models.Model):
         recipient_content_object=None,
         parent_content_object=None,
     ):
+        """Send a transactional email using Brevo with the template.
+        Args:
+            recipient_email (str): The email address of the recipient.
+            recipient_name (str): The name of the recipient.
+            variables (dict): Variables to replace in the template.
+            subject (str): Subject of the email.
+            from_email (str): Email address of the sender.
+            from_name (str): Name of the sender.
+            recipient_content_object (GenericForeignKey): The object that is the recipient of the email.
+            parent_content_object (GenericForeignKey): The object that is the parent of the email.
+
+        """
         if self.is_active:
             # check if recipient email doesn't associated to a user or associated user doesn't disable email group
             if self.group and self.group.disabled_for_email(recipient_email):
@@ -306,8 +324,9 @@ class TemplateTransactional(models.Model):
                 parent_content_object=parent_content_object,
                 extra_data={"source": "BREVO", "args": args},  # "response": result()
             )
+            brevo_email_client = api_brevo.BrevoTransactionalEmailApiClient()
 
-            api_brevo.send_transactional_email_with_template(**args)
+            brevo_email_client.send_transactional_email_with_template(**args)
 
 
 class TemplateTransactionalSendLog(models.Model):
