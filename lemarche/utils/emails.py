@@ -61,7 +61,7 @@ def add_to_contact_list(user, contact_type: str | int, tender=None):
 
     Args:
         user (User): the user how will be added in the contact list
-        contact_type (String): "signup", OR "buyer_search" else raise ValueError
+        contact_type (String): "signup" else raise ValueError
         tender: Optional tender object for buyer signup
 
     Raises:

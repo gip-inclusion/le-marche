@@ -20,7 +20,6 @@ from lemarche.conversations.models import Conversation
 from lemarche.favorites.models import FavoriteList
 from lemarche.siaes.models import Siae
 from lemarche.utils import settings_context_processors
-from lemarche.utils.emails import add_to_contact_list
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
@@ -56,13 +55,6 @@ class SiaeSearchResultsView(FormMixin, ListView):
             user = self.request.user
             self.filter_form = SiaeFilterForm(data=self.request.GET, advanced_search=user.is_authenticated)
         return self.filter_form
-
-    def get(self, request, *args, **kwargs):
-        user = self.request.user
-        if user.is_authenticated and user.is_buyer_pro:
-            if len(self.request.GET.keys()):
-                add_to_contact_list(self.request.user, "buyer_search")
-        return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
         """
