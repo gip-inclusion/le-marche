@@ -24,18 +24,8 @@ class ImportPurchasesCommandTest(TestCase):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         cls.sample_file = os.path.join(current_dir, "sample_purchases.csv")
 
-    def setUp(self):
-        self.csv_content = """Raison sociale du Fournisseur,SIRET,Dépense achat (€),Catégorie d'achat (optionnelle),Entité acheteuse (optionnelle)
-Entreprise Test 1,12345678901234,15000.50,Services informatiques,Service IT
-Entreprise Test 2,98765432109876,2500.00,Fournitures de bureau,Service RH
-Entreprise Test 3,11111111111111,75000.00,Matériel informatique,Service Achats
-Entreprise Test 4,22222222222222,1200.75,Formation,Service Formation
-Entreprise Test 5,33333333333333,50000.00,Maintenance,Service Technique"""  # noqa: E501
-
     def create_temp_csv_file(self, content=None):
         """Create a temporary CSV file for testing"""
-        if content is None:
-            content = self.csv_content
 
         temp_file = tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False)
         temp_file.write(content)
@@ -137,29 +127,23 @@ Entreprise Test 2,invalid_siret,2500.00,Fournitures de bureau,Service RH"""  # n
 
     def test_import_purchases_invalid_year(self):
         """Test import with invalid year"""
-        csv_file = self.create_temp_csv_file()
 
-        try:
-            with self.assertRaises(CommandError) as context:
-                call_command("import_purchases", csv_file, company_slug=self.company.slug, year=1800)  # Invalid year
+        with self.assertRaises(CommandError) as context:
+            call_command(
+                "import_purchases", self.sample_file, company_slug=self.company.slug, year=1800
+            )  # Invalid year
 
-            self.assertIn("Invalid year", str(context.exception))
-
-        finally:
-            os.unlink(csv_file)
+        self.assertIn("Invalid year", str(context.exception))
 
     def test_import_purchases_company_not_found(self):
         """Test import with non-existent company slug"""
-        csv_file = self.create_temp_csv_file()
 
-        try:
-            with self.assertRaises(CommandError) as context:
-                call_command("import_purchases", csv_file, company_slug="non-existent-company", year=self.current_year)
+        with self.assertRaises(CommandError) as context:
+            call_command(
+                "import_purchases", self.sample_file, company_slug="non-existent-company", year=self.current_year
+            )
 
-            self.assertIn("Company with slug non-existent-company not found", str(context.exception))
-
-        finally:
-            os.unlink(csv_file)
+        self.assertIn("Company with slug non-existent-company not found", str(context.exception))
 
     def test_import_purchases_missing_required_columns(self):
         """Test import with missing required columns"""
