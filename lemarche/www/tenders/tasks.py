@@ -154,8 +154,6 @@ def send_tender_email_to_siae(tendersiae: TenderSiae, email_subject: str, recipi
             "TENDERSIAE_ID": tendersiae.id,
         }
 
-        # Determine if the email should be sent via Tally Brevo
-
         email_template.send_transactional_email(
             recipient_email=recipient_email,
             recipient_name=recipient_name,
@@ -432,20 +430,33 @@ def send_siae_interested_email_to_author(tender: Tender):
         should_send_email = False
 
         email_template_name = None
-        prefix_for_tally = "TALLY_" if tender.source == TenderSourcesChoices.SOURCE_TALLY else ""
-
+        email_templates_names = {
+            "pro": {
+                "1": "TENDERS_AUTHOR_SIAE_INTERESTED_1",
+                "2": "TENDERS_AUTHOR_SIAE_INTERESTED_2",
+                "5": "TENDERS_AUTHOR_SIAE_INTERESTED_5",
+                "5+": "TENDERS_AUTHOR_SIAE_INTERESTED_5_MORE",
+            },
+            "tally": {
+                "1": "TALLY_TENDERS_AUTHOR_SIAE_INTERESTED_1",
+                "2": "TALLY_TENDERS_AUTHOR_SIAE_INTERESTED_2",
+                "5": "TALLY_TENDERS_AUTHOR_SIAE_INTERESTED_5",
+                "5+": "TALLY_TENDERS_AUTHOR_SIAE_INTERESTED_5_MORE",
+            },
+        }
+        email_templates_names_key = "tally" if tender.source == TenderSourcesChoices.SOURCE_TALLY else "pro"
         if tender_siae_detail_contact_click_count == 1:
             should_send_email = True
-            email_template_name = prefix_for_tally + "TENDERS_AUTHOR_SIAE_INTERESTED_1"
+            email_template_name = email_templates_names[email_templates_names_key]["1"]
         elif tender_siae_detail_contact_click_count == 2:
             should_send_email = True
-            email_template_name = prefix_for_tally + "TENDERS_AUTHOR_SIAE_INTERESTED_2"
+            email_template_name = email_templates_names[email_templates_names_key]["2"]
         elif tender_siae_detail_contact_click_count == 5:
             should_send_email = True
-            email_template_name = prefix_for_tally + "TENDERS_AUTHOR_SIAE_INTERESTED_5"
+            email_template_name = email_templates_names[email_templates_names_key]["5"]
         elif tender_siae_detail_contact_click_count % 5 == 0:
             should_send_email = True
-            email_template_name = prefix_for_tally + "TENDERS_AUTHOR_SIAE_INTERESTED_5_MORE"
+            email_template_name = email_templates_names[email_templates_names_key]["5+"]
         else:
             return
 
