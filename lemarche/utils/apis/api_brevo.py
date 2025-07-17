@@ -29,11 +29,7 @@ def get_valid_number_for_brevo(phone_number: PhoneNumberField):
     If the phone number is None, returns empty string.
     If the phone number is not valid, returns an empty string.
     """
-    if not phone_number:
-        return ""
-    if not phone_number.is_valid():
-        return ""
-    if phone_number.country_code != 33:
+    if not phone_number or not phone_number.is_valid() or phone_number.country_code != 33:
         return ""
     return str(phone_number.as_e164)
 
