@@ -295,7 +295,10 @@ class DashboardSiaeEditActivitiesViewTest(TestCase):
 
         self.assertContains(
             response,
-            reverse("dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.id]),
+            reverse(
+                "dashboard_siaes:siae_edit_activities_edit",
+                args=[self.siae_with_user.slug, siae_activity.sector.group.id],
+            ),
         )
 
 
@@ -435,13 +438,17 @@ class DashboardSiaeEditActivitiesEditViewTest(TestCase):
         self.assertEqual(self.siae_with_user.activities.count(), 1)
 
         self.client.force_login(UserFactory(kind=User.KIND_SIAE))
-        url = reverse("dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.id])
+        url = reverse(
+            "dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.sector.group.id]
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("dashboard:home"))
 
         self.client.force_login(self.user_siae)
-        url = reverse("dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.id])
+        url = reverse(
+            "dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.sector.group.id]
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -453,7 +460,9 @@ class DashboardSiaeEditActivitiesEditViewTest(TestCase):
         self.assertEqual(siae_activity.geo_range, siae_constants.GEO_RANGE_COUNTRY)
         self.assertIsNotNone(siae_activity.sector)
         self.client.force_login(self.user_siae)
-        url = reverse("dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.id])
+        url = reverse(
+            "dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.sector.group.id]
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -487,7 +496,9 @@ class DashboardSiaeEditActivitiesEditViewTest(TestCase):
         self.assertEqual(siae_activity.locations.count(), 0)
 
         self.client.force_login(self.user_siae)
-        url = reverse("dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.id])
+        url = reverse(
+            "dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.sector.group.id]
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -535,7 +546,9 @@ class DashboardSiaeEditActivitiesEditViewTest(TestCase):
         self.assertEqual(siae_activity.locations.count(), 2)
 
         self.client.force_login(self.user_siae)
-        url = reverse("dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.id])
+        url = reverse(
+            "dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.sector.group.id]
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
