@@ -219,8 +219,8 @@ class UserBuyerImportTestCase(TestCase):
                 5,
                 stdout=out,
             )
-            self.assertEqual(mock_add_to_contact_list.call_count, 2)
-            self.assertEqual(mock_send_new_user_password_reset_link.call_count, 1)
+        self.assertEqual(mock_add_to_contact_list.call_count, 2)
+        self.assertEqual(mock_send_new_user_password_reset_link.call_count, 1)
 
         self.assertQuerySetEqual(
             User.objects.all(),
@@ -308,7 +308,6 @@ class UserPartnerImportTestCase(TestCase):
         with patch(
             "lemarche.users.management.commands.base_import_users.send_new_user_password_reset_link"
         ) as mock_send_new_user_password_reset_link:
-
             call_command(
                 "import_partners",
                 "lemarche/fixtures/tests/partners_import.csv",
@@ -355,7 +354,7 @@ class UserPartnerImportTestCase(TestCase):
                 "USER_IMPORT_PARTNERS_FACILITATOR",
                 stdout=out,
             )
-            self.assertEqual(mock_send_new_user_password_reset_link.call_count, 2)
+        self.assertEqual(mock_send_new_user_password_reset_link.call_count, 2)
 
         self.assertQuerySetEqual(
             User.objects.all(),
