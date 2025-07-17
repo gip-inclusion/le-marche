@@ -226,9 +226,6 @@ class TemplateTransactional(models.Model):
     description = models.TextField(verbose_name="Description", blank=True)
     group = models.ForeignKey("EmailGroup", on_delete=models.CASCADE, null=True)
     brevo_id = models.IntegerField(verbose_name="Identifiant Brevo", unique=True, db_index=True, blank=True, null=True)
-    tally_brevo_id = models.IntegerField(
-        verbose_name="Identifiant Brevo Tally", unique=True, db_index=True, blank=True, null=True
-    )
     is_active = models.BooleanField(verbose_name="Actif", default=False)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
@@ -268,21 +265,16 @@ class TemplateTransactional(models.Model):
         self.full_clean()
         super().save(*args, **kwargs)
 
-    def get_template_id(self, is_from_tally=False):
+    @property
+    def get_template_id(self):
         """
         Get the appropriate Brevo template ID based on context.
-
-        Args:
-            is_from_tally (bool): If True and if tally_brevo_id exists, returns the Tally-specific ID.
-
+        If the template has a code, it returns the Brevo ID.
         Returns:
             int: The Brevo template ID to use, or None if no ID is available
         """
         if self.code:
-            if not is_from_tally or not self.tally_brevo_id:
-                return self.brevo_id
-            else:
-                return self.tally_brevo_id
+            return self.brevo_id
         return None
 
     def create_send_log(self, **kwargs):
@@ -298,7 +290,6 @@ class TemplateTransactional(models.Model):
         from_name=settings.DEFAULT_FROM_NAME,
         recipient_content_object=None,
         parent_content_object=None,
-        is_from_tally=False,
     ):
         """Send a transactional email using Brevo with the template.
         Args:
@@ -310,7 +301,6 @@ class TemplateTransactional(models.Model):
             from_name (str): Name of the sender.
             recipient_content_object (GenericForeignKey): The object that is the recipient of the email.
             parent_content_object (GenericForeignKey): The object that is the parent of the email.
-            is_from_tally (bool): Whether to send the email from Tally Brevo account.
 
         """
         if self.is_active:
@@ -319,7 +309,7 @@ class TemplateTransactional(models.Model):
                 return
 
             args = {
-                "template_id": self.get_template_id(is_from_tally=is_from_tally),
+                "template_id": self.get_template_id,
                 "recipient_email": recipient_email,
                 "recipient_name": recipient_name,
                 "variables": variables,
