@@ -127,13 +127,14 @@ class TemplateTransactionalModelTest(TestCase):
         self.assertEqual(self.tt_inactive.get_template_id, self.tt_inactive.brevo_id)
         self.assertEqual(self.tt_active_brevo.get_template_id, self.tt_active_brevo.brevo_id)
 
-    @patch("lemarche.conversations.models.api_brevo.send_transactional_email_with_template")
-    def test_send_transactional_email_brevo(self, mock_send_transactional_email_brevo):
+    @patch("lemarche.conversations.models.api_brevo.BrevoTransactionalEmailApiClient")
+    def test_send_transactional_email_brevo(self, mock_brevo_client_class):
+        mock_instance = mock_brevo_client_class.return_value
         self.tt_active_brevo.save()
         self.tt_active_brevo.send_transactional_email(
             recipient_email="test@example.com", recipient_name="test", variables={}
         )
-        mock_send_transactional_email_brevo.assert_called_once()
+        mock_instance.send_transactional_email_with_template.assert_called_once()
 
     @patch("lemarche.conversations.models.api_brevo.BrevoTransactionalEmailApiClient")
     def test_send_transactional_email_inactive(self, mock_brevo_client_class):
