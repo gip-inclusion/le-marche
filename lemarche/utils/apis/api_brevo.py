@@ -865,6 +865,7 @@ class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
         super().__init__(config)
         self.api_instance = sib_api_v3_sdk.TransactionalEmailsApi(self.api_client)
 
+    @task()
     def send_transactional_email_with_template(
         self,
         template_id: int,
@@ -1018,41 +1019,3 @@ def link_deal_with_contact_list(tender, contact_list: list = None):
 
         except ApiException as e:
             logger.error("Exception when calling Brevo->DealApi->crm_deals_link_unlink_id_patch: %s\n" % e)
-
-
-@task()
-def send_transactional_email_with_template(
-    template_id: int,
-    recipient_email: str,
-    recipient_name: str,
-    variables: dict,
-    subject=None,
-    from_email=settings.DEFAULT_FROM_EMAIL,
-    from_name=settings.DEFAULT_FROM_NAME,
-):
-    """
-    Send a transactional email using a Brevo template (Huey task)
-    Todo: remove this legacy function
-
-    Args:
-        template_id (int): The Brevo template ID
-        recipient_email (str): Email address of the recipient
-        recipient_name (str): Name of the recipient
-        variables (dict): Variables to substitute in the template
-        subject (str, optional): Custom subject line
-        from_email (str): Sender email address
-        from_name (str): Sender name
-
-    Returns:
-        dict: API response if successful
-    """
-    client = BrevoTransactionalEmailApiClient()
-    return client.send_transactional_email_with_template(
-        template_id=template_id,
-        recipient_email=recipient_email,
-        recipient_name=recipient_name,
-        variables=variables,
-        subject=subject,
-        from_email=from_email,
-        from_name=from_name,
-    )
