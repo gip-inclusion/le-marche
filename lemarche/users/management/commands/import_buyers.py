@@ -36,7 +36,7 @@ class Command(BaseImportUsersCommand):
 
     def _post_import_user(self, imported_user: dict, **kwargs) -> None:
         """Add email domain to company."""
-        self._add_email_dns_to_company(email=imported_user["EMAIL"], company=kwargs["company"])
+        self._add_email_dns_to_company(email=imported_user["EMAIL"], company=self.company)
 
     def _post_import_user_actions(self, user: User, **kwargs) -> None:
         """Add user to Brevo contact list."""
@@ -46,10 +46,9 @@ class Command(BaseImportUsersCommand):
         return User.KIND_BUYER
 
     def get_user_fields(self, **kwargs) -> dict:
-        company = kwargs["company"]
         return {
-            "company": company,
-            "company_name": company.name,
+            "company": self.company,
+            "company_name": self.company.name,
         }
 
     def get_update_fields(self, **kwargs) -> dict:
