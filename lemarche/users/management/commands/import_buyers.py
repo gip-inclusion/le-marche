@@ -45,14 +45,21 @@ class Command(BaseImportUsersCommand):
     def get_user_kind(self) -> str:
         return User.KIND_BUYER
 
-    def get_user_fields(self, **kwargs) -> dict:
+    def get_user_fields(self, imported_user: dict, **kwargs) -> dict:
+        user_fields = super().get_user_fields(imported_user, **kwargs)
+        user_fields.update(
+            {
+                "company": self.company,
+                "company_name": self.company.name,
+            }
+        )
+        return user_fields
+
+    def get_update_fields(self) -> dict:
         return {
             "company": self.company,
             "company_name": self.company.name,
         }
-
-    def get_update_fields(self, **kwargs) -> dict:
-        return self.get_user_fields(**kwargs)
 
     def _add_email_dns_to_company(self, email: str, company: Company) -> None:
         """If the email domain is not already in the company's email_domain_list, add it."""

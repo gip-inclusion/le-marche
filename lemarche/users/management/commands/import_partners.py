@@ -12,10 +12,10 @@ class Command(BaseImportUsersCommand):
     def get_user_kind(self) -> str:
         return User.KIND_PARTNER
 
-    def get_user_fields(self, **kwargs) -> dict:
-        return {
-            "partner_kind": user_constants.PARTNER_KIND_FACILITATOR,
-        }
+    def get_user_fields(self, imported_user: dict, **kwargs) -> dict:
+        user_fields = super().get_user_fields(imported_user, **kwargs)
+        user_fields.update({"partner_kind": user_constants.PARTNER_KIND_FACILITATOR})
+        return user_fields
 
-    def get_update_fields(self, **kwargs) -> dict:
+    def get_update_fields(self) -> dict:
         return {}

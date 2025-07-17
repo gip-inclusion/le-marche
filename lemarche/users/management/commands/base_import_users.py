@@ -51,14 +51,13 @@ class BaseImportUsersCommand(BaseCommand):
         Create a new user and send a password reset link to it.
         If the user already exists, update its fields.
         """
-        user_fields = self._get_base_user_fields(imported_user)
-        user_fields.update(self.get_user_fields(**kwargs))
+        user_fields = self.get_user_fields(imported_user, **kwargs)
 
         try:
             with transaction.atomic():
                 user = User.objects.create_user(**user_fields)
         except IntegrityError:  # email already exists
-            update_fields = self.get_update_fields(**kwargs)
+            update_fields = self.get_update_fields()
             if update_fields:
                 user = User.objects.get(email=imported_user["EMAIL"])
                 for field, value in update_fields.items():
@@ -76,20 +75,6 @@ class BaseImportUsersCommand(BaseCommand):
         # Post-import actions (e.g., add to Brevo list)
         self._post_import_user_actions(user, **kwargs)
 
-    def _get_base_user_fields(self, imported_user: dict) -> dict:
-        """Get the common fields for all user types."""
-        return {
-            "email": imported_user["EMAIL"],
-            "first_name": imported_user["FIRST_NAME"],
-            "last_name": imported_user["LAST_NAME"],
-            "phone": imported_user["PHONE"],
-            "kind": self.get_user_kind(),
-            "position": imported_user["POSITION"],
-            "accept_rgpd": True,
-            "accept_survey": True,
-            "password": None,
-        }
-
     def _get_extra_context(self, options: dict) -> dict:
         """Get extra context from options for subclasses."""
         return {}
@@ -102,14 +87,24 @@ class BaseImportUsersCommand(BaseCommand):
         """Hook for post-import actions that require the user object."""
         pass
 
+    def get_user_fields(self, imported_user: dict, **kwargs) -> dict:
+        """Get the fields ."""
+        return {
+            "email": imported_user["EMAIL"],
+            "first_name": imported_user["FIRST_NAME"],
+            "last_name": imported_user["LAST_NAME"],
+            "phone": imported_user["PHONE"],
+            "kind": self.get_user_kind(),
+            "position": imported_user["POSITION"],
+            "accept_rgpd": True,
+            "accept_survey": True,
+            "password": None,
+        }
+
     def get_user_kind(self) -> str:
         """Return the user kind (e.g., User.KIND_BUYER)."""
         raise NotImplementedError
 
-    def get_user_fields(self, **kwargs) -> dict:
-        """Return additional fields to set on user creation."""
-        raise NotImplementedError
-
-    def get_update_fields(self, **kwargs) -> dict:
+    def get_update_fields(self) -> dict:
         """Return fields to update for existing users."""
         raise NotImplementedError
