@@ -120,9 +120,6 @@ class UserModelQuerysetTest(TestCase):
 
 
 class UserModelSaveTest(TestCase):
-    def setUp(self):
-        pass
-
     def test_update_last_updated_fields(self):
         user = UserFactory()
         self.assertIsNone(user.api_key)
