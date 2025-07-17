@@ -1299,6 +1299,70 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertEqual(sync_log["status"], "success")
         self.assertTrue(len(siae.logs) > 0)
 
+    def test_cleanup_contact_list_with_valid_ids(self, mock_sleep):
+        """Test _cleanup_contact_list with list containing only valid contact IDs"""
+        client = api_brevo.BrevoCompanyApiClient()
+
+        contact_list = [111, 222, 333, 444]
+        result = client._cleanup_contact_list(contact_list)
+
+        self.assertEqual(result, [111, 222, 333, 444])
+        self.assertEqual(len(result), 4)
+
+    def test_cleanup_contact_list_with_none_values(self, mock_sleep):
+        """Test _cleanup_contact_list filters out None values"""
+        client = api_brevo.BrevoCompanyApiClient()
+
+        contact_list = [111, None, 222, None, 333]
+        result = client._cleanup_contact_list(contact_list)
+
+        self.assertEqual(result, [111, 222, 333])
+        self.assertEqual(len(result), 3)
+
+    def test_cleanup_contact_list_empty_list(self, mock_sleep):
+        """Test _cleanup_contact_list with empty list"""
+        client = api_brevo.BrevoCompanyApiClient()
+
+        contact_list = []
+        result = client._cleanup_contact_list(contact_list)
+
+        self.assertEqual(result, [])
+        self.assertEqual(len(result), 0)
+
+    def test_cleanup_contact_list_all_none_values(self, mock_sleep):
+        """Test _cleanup_contact_list with list containing only None values"""
+        client = api_brevo.BrevoCompanyApiClient()
+
+        contact_list = [None, None, None]
+        result = client._cleanup_contact_list(contact_list)
+
+        self.assertEqual(result, [])
+        self.assertEqual(len(result), 0)
+
+    def test_cleanup_contact_list_mixed_types(self, mock_sleep):
+        """Test _cleanup_contact_list with mixed valid and None values"""
+        client = api_brevo.BrevoCompanyApiClient()
+
+        contact_list = [None, 1, None, 2, 3, None, 4, None]
+        result = client._cleanup_contact_list(contact_list)
+
+        self.assertEqual(result, [1, 2, 3, 4])
+        self.assertEqual(len(result), 4)
+
+    def test_cleanup_contact_list_preserves_order(self, mock_sleep):
+        """Test _cleanup_contact_list preserves the order of valid contact IDs"""
+        client = api_brevo.BrevoCompanyApiClient()
+
+        contact_list = [999, None, 111, None, 555, 333]
+        result = client._cleanup_contact_list(contact_list)
+
+        self.assertEqual(result, [999, 111, 555, 333])
+        # Verify order is preserved
+        self.assertEqual(result[0], 999)
+        self.assertEqual(result[1], 111)
+        self.assertEqual(result[2], 555)
+        self.assertEqual(result[3], 333)
+
 
 @patch("lemarche.utils.apis.api_brevo.time.sleep")
 class BrevoTransactionalEmailApiClientTest(TestCase):
