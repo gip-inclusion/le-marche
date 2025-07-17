@@ -64,8 +64,8 @@ def create_template(apps, schema_editor):
     ]
 
     # Create all templates
-    for template in templates:
-        TemplateTransactional.objects.create(**template)
+    templates = [TemplateTransactional(**template) for template in templates]
+    TemplateTransactional.objects.bulk_create(templates)
 
 
 def delete_template(apps, schema_editor):
@@ -86,8 +86,7 @@ def delete_template(apps, schema_editor):
         "TALLY_TENDERS_AUTHOR_SUPER_SIAES",
     ]
 
-    for code in template_codes:
-        TemplateTransactional.objects.filter(code=code).delete()
+    TemplateTransactional.objects.filter(code__in=template_codes).delete()
 
 
 class Migration(migrations.Migration):

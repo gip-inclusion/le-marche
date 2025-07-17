@@ -427,9 +427,6 @@ def send_siae_interested_email_to_author(tender: Tender):
     ).count()
 
     if (tender_siae_detail_contact_click_count > 0) and (tender_siae_detail_contact_click_count <= 50):
-        should_send_email = False
-
-        email_template_name = None
         email_templates_names = {
             "pro": {
                 "1": "TENDERS_AUTHOR_SIAE_INTERESTED_1",
@@ -446,43 +443,38 @@ def send_siae_interested_email_to_author(tender: Tender):
         }
         email_templates_names_key = "tally" if tender.source == TenderSourcesChoices.SOURCE_TALLY else "pro"
         if tender_siae_detail_contact_click_count == 1:
-            should_send_email = True
             email_template_name = email_templates_names[email_templates_names_key]["1"]
         elif tender_siae_detail_contact_click_count == 2:
-            should_send_email = True
             email_template_name = email_templates_names[email_templates_names_key]["2"]
         elif tender_siae_detail_contact_click_count == 5:
-            should_send_email = True
             email_template_name = email_templates_names[email_templates_names_key]["5"]
         elif tender_siae_detail_contact_click_count % 5 == 0:
-            should_send_email = True
             email_template_name = email_templates_names[email_templates_names_key]["5+"]
         else:
             return
 
-        if should_send_email and email_template_name:
-            email_template = TemplateTransactional.objects.get(code=email_template_name)
-            recipient_list = whitelist_recipient_list([tender.author.email])  # tender.contact_email ?
-            if len(recipient_list):
-                recipient_email = recipient_list[0]
-                recipient_name = tender.author.full_name
+        email_template = TemplateTransactional.objects.get(code=email_template_name)
+        recipient_list = whitelist_recipient_list([tender.author.email])  # tender.contact_email ?
+        if len(recipient_list):
+            recipient_email = recipient_list[0]
+            recipient_name = tender.author.full_name
 
-                variables = {
-                    "TENDER_ID": tender.id,
-                    "TENDER_TITLE": tender.title,
-                    "TENDER_AUTHOR_ID": tender.author.id,
-                    "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
-                    "TENDER_SIAE_INTERESTED_LIST_URL": f"{get_object_share_url(tender)}/prestataires",  # noqa
-                }
+            variables = {
+                "TENDER_ID": tender.id,
+                "TENDER_TITLE": tender.title,
+                "TENDER_AUTHOR_ID": tender.author.id,
+                "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
+                "TENDER_SIAE_INTERESTED_LIST_URL": f"{get_object_share_url(tender)}/prestataires",  # noqa
+            }
 
-                if not tender.contact_notifications_disabled:
-                    email_template.send_transactional_email(
-                        recipient_email=recipient_email,
-                        recipient_name=recipient_name,
-                        variables=variables,
-                        recipient_content_object=tender.author,
-                        parent_content_object=tender,
-                    )
+            if not tender.contact_notifications_disabled:
+                email_template.send_transactional_email(
+                    recipient_email=recipient_email,
+                    recipient_name=recipient_name,
+                    variables=variables,
+                    recipient_content_object=tender.author,
+                    parent_content_object=tender,
+                )
 
 
 def notify_admin_tender_created(tender: Tender):
