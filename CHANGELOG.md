@@ -6,6 +6,23 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2025.5.0](https://github.com/gip-inclusion/le-marche/compare/v2025.4.0...v2025.5.0) (2025-07-17)
+
+
+### Features
+
+* **brevo:** Ajout d'emails transactionnels via compte Brevo spécifique à Tally ([#1733](https://github.com/gip-inclusion/le-marche/issues/1733)) ([8dc8acb](https://github.com/gip-inclusion/le-marche/commit/8dc8acbbe42123ca87443ca4ec8ddd50a3fe2db1))
+* **brevo:** Ajout de la synchronisation des entreprises 2/2 ([#1720](https://github.com/gip-inclusion/le-marche/issues/1720)) ([e0989a1](https://github.com/gip-inclusion/le-marche/commit/e0989a161fecd8c71efac451038de8f956c420ed))
+* Instructions automatiques pour les DDB ([#1726](https://github.com/gip-inclusion/le-marche/issues/1726)) ([831b8a0](https://github.com/gip-inclusion/le-marche/commit/831b8a08e7e4de808ce337e6d893aaba27d97b00))
+* Synchronisation des contacts  et entreprise (3/3) ([#1739](https://github.com/gip-inclusion/le-marche/issues/1739)) ([37564a8](https://github.com/gip-inclusion/le-marche/commit/37564a89e25f5c1221d6a1dd3a1d787a8c72a1f0))
+
+
+### Bug Fixes
+
+* Bug d'instruction de DDB manquant pour l'API ([#1740](https://github.com/gip-inclusion/le-marche/issues/1740)) ([eb7e879](https://github.com/gip-inclusion/le-marche/commit/eb7e8796f40444e9a8c91d55721cb41cb7fdab25))
+* Chargement des comptes structures très lents ([#1738](https://github.com/gip-inclusion/le-marche/issues/1738)) ([43fc91e](https://github.com/gip-inclusion/le-marche/commit/43fc91e6b1adaff0abe769bb2687651e84c025e5))
+* L'inscription avec une adresse déjà enregistrée causait un bug ([#1741](https://github.com/gip-inclusion/le-marche/issues/1741)) ([c31a0b0](https://github.com/gip-inclusion/le-marche/commit/c31a0b0c183c07eeb5d205a6cc7a41ac16158c2f))
+
 ## [2025.4.0](https://github.com/gip-inclusion/le-marche/compare/v2025.3.0...v2025.4.0) (2025-06-23)
 
 
