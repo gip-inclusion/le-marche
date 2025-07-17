@@ -691,7 +691,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
             else:
                 return self.api_instance.companies_post(company_brevo_body)
         except ApiException as e:
-            if is_update and (e.status == 404 or (e.status == 400 and self._is_company_not_found_error(e))):
+            if is_update and e.status == 404:
                 return self._handle_company_404_and_retry(company, self.create_or_update_buyer_company)
             raise e
 
@@ -919,25 +919,6 @@ class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
         return response.to_dict()
 
 
-def _cleanup_and_link_contacts(api_instance, entity_id, contact_list: list, link_body_class, patch_method_name):
-    """
-    Common utility to clean up contact list and execute linking API call
-
-    Args:
-        api_instance: Brevo API instance (DealsApi or CompaniesApi)
-        entity_id: ID of the entity (deal or company) to link contacts to
-        contact_list: List of contact IDs (may contain None values)
-        link_body_class: The Brevo SDK body class to use (Body2, Body5, etc.)
-        patch_method_name: Name of the API method to call
-    """
-
-    # link entity with contact_list
-    if len(contact_list):
-        body_link = link_body_class(link_contact_ids=contact_list)
-        patch_method = getattr(api_instance, patch_method_name)
-        patch_method(entity_id, body_link)
-
-
 def create_deal(tender, owner_email: str):
     """
     Creates a new deal in Brevo CRM from a tender and logs the result.
@@ -1010,12 +991,9 @@ def link_deal_with_contact_list(tender, contact_list: list = None):
             if not contact_list:
                 contact_list = [tender.author.brevo_contact_id]
 
-            # Use common utility for linking
-
-            _cleanup_and_link_contacts(
-                api_instance, brevo_crm_deal_id, contact_list, sib_api_v3_sdk.Body5, "crm_deals_link_unlink_id_patch"
-            )
-
+            body_link = sib_api_v3_sdk.Body5(link_contact_ids=contact_list)
+            api_instance.crm_deals_link_unlink_id_patch(brevo_crm_deal_id, body_link)
+            logger.info("Brevo: Deal linked with contacts successfully")
         except ApiException as e:
             logger.error("Exception when calling Brevo->DealApi->crm_deals_link_unlink_id_patch: %s\n" % e)
 
