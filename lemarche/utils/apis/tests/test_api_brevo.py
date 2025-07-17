@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from unittest import skip
 from unittest.mock import MagicMock, patch
 
 from django.test import TestCase, override_settings
@@ -1560,18 +1561,19 @@ class GetValidNumberForBrevoTest(TestCase):
         result = api_brevo.get_valid_number_for_brevo(user.phone)
         self.assertEqual(result, "+33612345678")
 
-    # todo : understand why the number is not valid for guadeloupe and for 07
-    # def test_get_valid_number_for_brevo_with_french_overseas_number(self):
-    #     """Test with French overseas territory number (Guadeloupe)"""
-    #     user = UserFactory(phone="0590123456")
-    #     result = api_brevo.get_valid_number_for_brevo(user.phone)
-    #     self.assertEqual(result, "+33590123456")
+    @skip("understand why the number is not valid for guadeloupe and for 07")
+    def test_get_valid_number_for_brevo_with_french_overseas_number(self):
+        """Test with French overseas territory number (Guadeloupe)"""
+        user = UserFactory(phone="0590123456")
+        result = api_brevo.get_valid_number_for_brevo(user.phone)
+        self.assertEqual(result, "+33590123456")
 
-    # def test_get_valid_number_for_brevo_with_french_mobile_07(self):
-    #     """Test with French mobile number starting with 07"""
-    #     user = UserFactory(phone="0712345678")
-    #     result = api_brevo.get_valid_number_for_brevo(user.phone)
-    #     self.assertEqual(result, "+33712345678")
+    @skip("understand why the number is not valid for 07")
+    def test_get_valid_number_for_brevo_with_french_mobile_07(self):
+        """Test with French mobile number starting with 07"""
+        user = UserFactory(phone="0712345678")
+        result = api_brevo.get_valid_number_for_brevo(user.phone)
+        self.assertEqual(result, "+33712345678")
 
     def test_get_valid_number_for_brevo_with_french_number_parentheses(self):
         """Test with French number containing parentheses"""
