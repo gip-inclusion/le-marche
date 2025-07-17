@@ -691,7 +691,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
             else:
                 return self.api_instance.companies_post(company_brevo_body)
         except ApiException as e:
-            if is_update and e.status == 404:
+            if is_update and (e.status == 404 or (e.status == 400 and self._is_company_not_found_error(e))):
                 return self._handle_company_404_and_retry(company, self.create_or_update_buyer_company)
             raise e
 
