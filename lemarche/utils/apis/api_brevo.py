@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import sib_api_v3_sdk
 from django.conf import settings
 from huey.contrib.djhuey import task
+from phonenumber_field.modelfields import PhoneNumberField
 from sib_api_v3_sdk.rest import ApiException
 
 from lemarche.tenders.enums import TenderSourcesChoices
@@ -19,6 +20,22 @@ from lemarche.utils.urls import get_object_admin_url, get_object_share_url
 logger = logging.getLogger(__name__)
 
 ENV_NOT_ALLOWED = ("dev", "test")
+
+
+def get_valid_number_for_brevo(phone_number: PhoneNumberField):
+    """
+    Returns a valid phone number for Brevo API.
+    If is not french phone number, returns an empty string.
+    If the phone number is None, returns empty string.
+    If the phone number is not valid, returns an empty string.
+    """
+    if not phone_number:
+        return ""
+    if not phone_number.is_valid():
+        return ""
+    if phone_number.country_code != 33:
+        return ""
+    return str(phone_number.as_e164)
 
 
 @dataclass
@@ -199,7 +216,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
             CONTACT_ATTRIBUTES["DATE_INSCRIPTION"]: user.created_at,
             CONTACT_ATTRIBUTES["TYPE_ORGANISATION"]: user.buyer_kind_detail,
             CONTACT_ATTRIBUTES["NOM_ENTREPRISE"]: sanitize_to_send_by_email(user.company_name.capitalize()),
-            CONTACT_ATTRIBUTES["SMS"]: sanitize_to_send_by_email(user.phone_display),
+            CONTACT_ATTRIBUTES["SMS"]: get_valid_number_for_brevo(user.phone),
             CONTACT_ATTRIBUTES["MONTANT_BESOIN_ACHETEUR"]: None,
             CONTACT_ATTRIBUTES["TYPE_BESOIN_ACHETEUR"]: None,
             CONTACT_ATTRIBUTES["TYPE_VERTICALE_ACHETEUR"]: None,
@@ -827,7 +844,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         return {
             # Default attributes
             SIAE_COMPANY_ATTRIBUTES["domain"]: siae.website,
-            SIAE_COMPANY_ATTRIBUTES["phone_number"]: siae.contact_phone_display,
+            SIAE_COMPANY_ATTRIBUTES["phone_number"]: get_valid_number_for_brevo(siae.contact_phone),
             # Custom attributes
             SIAE_COMPANY_ATTRIBUTES["app_id"]: siae.id,
             SIAE_COMPANY_ATTRIBUTES["siae"]: True,
