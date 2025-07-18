@@ -466,12 +466,12 @@ class DashboardSiaeEditActivitiesEditViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        sector_after = SectorFactory()
         data = {
-            "sector": sector_after.id,
-            "presta_type": [siae_constants.PRESTA_BUILD],
-            "geo_range": siae_constants.GEO_RANGE_CUSTOM,
-            "geo_range_custom_distance": 42,
+            "sector_group": siae_activity.sector.group.id,
+            "sectors": siae_activity.sector.id,
+            f"presta_type_{siae_activity.sector.id}": [siae_constants.PRESTA_BUILD],
+            f"geo_range_{siae_activity.sector.id}": siae_constants.GEO_RANGE_CUSTOM,
+            f"geo_range_custom_distance_{siae_activity.sector.id}": 42,
         }
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 302)
@@ -480,8 +480,6 @@ class DashboardSiaeEditActivitiesEditViewTest(TestCase):
         )
         self.assertEqual(self.siae_with_user.activities.count(), 1)
         updated_activity = self.siae_with_user.activities.first()
-        self.assertEqual(updated_activity.sector.group, sector_after.group)
-        self.assertEqual(updated_activity.sector, sector_after)
         self.assertEqual(updated_activity.presta_type, [siae_constants.PRESTA_BUILD])
         self.assertEqual(updated_activity.geo_range, siae_constants.GEO_RANGE_CUSTOM)
 
