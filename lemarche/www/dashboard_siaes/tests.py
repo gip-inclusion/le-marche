@@ -551,8 +551,8 @@ class DashboardSiaeEditActivitiesEditViewTest(TestCase):
         data = {
             "sector_group": siae_activity.sector.group.id,
             "sectors": siae_activity.sector.id,
-            f"presta_type_{siae_activity.id}": [siae_constants.PRESTA_DISP],
-            f"geo_range_{siae_activity.id}": siae_constants.GEO_RANGE_COUNTRY,
+            f"presta_type_{siae_activity.sector.id}": [siae_constants.PRESTA_DISP],
+            f"geo_range_{siae_activity.sector.id}": siae_constants.GEO_RANGE_COUNTRY,
         }
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 302)
