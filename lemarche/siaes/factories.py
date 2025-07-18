@@ -27,6 +27,11 @@ class SiaeGroupFactory(DjangoModelFactory):
         if extracted:
             self.siaes.add(*extracted)
 
+    @factory.post_generation
+    def sectors(self, create, extracted, **kwargs):
+        if extracted:
+            self.sectors.add(*extracted)
+
 
 class SiaeFactory(DjangoModelFactory):
     class Meta:
