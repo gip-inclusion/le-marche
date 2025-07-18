@@ -241,7 +241,7 @@ class SiaeActivityForm(forms.ModelForm):
     )
     locations = forms.ModelMultipleChoiceField(
         label="Localisation",
-        queryset=Perimeter.objects.none(),
+        queryset=Perimeter.objects.all(),
         to_field_name="slug",
         required=False,
         widget=CustomLocationWidget(  # displayed with a JS autocomplete library (see `perimeter_autocomplete_field.js`)  # noqa
