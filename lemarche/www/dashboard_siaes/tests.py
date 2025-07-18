@@ -502,26 +502,25 @@ class DashboardSiaeEditActivitiesEditViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        sector_after = SectorFactory()
         perimeter_city = PerimeterFactory(name="Azay-le-rideau", kind=Perimeter.KIND_CITY, insee_code="37190")
         perimeter_department = PerimeterFactory(
             name="Vienne", kind=Perimeter.KIND_DEPARTMENT, insee_code="86", region_code="75"
         )
         data = {
-            "sector": sector_after.id,
-            "presta_type": [siae_constants.PRESTA_BUILD],
-            "geo_range": siae_constants.GEO_RANGE_ZONES,
-            "locations": [perimeter_city.slug, perimeter_department.slug],
+            "sector_group": siae_activity.sector.group.id,
+            "sectors": siae_activity.sector.id,
+            f"presta_type_{siae_activity.sector.id}": [siae_constants.PRESTA_BUILD],
+            f"geo_range_{siae_activity.sector.id}": siae_constants.GEO_RANGE_ZONES,
+            f"locations_{siae_activity.sector.id}": [perimeter_city.slug, perimeter_department.slug],
         }
         response = self.client.post(url, data=data)
+
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
             response.url, reverse("dashboard_siaes:siae_edit_activities", args=[self.siae_with_user.slug])
         )
         self.assertEqual(self.siae_with_user.activities.count(), 1)
         updated_activity = self.siae_with_user.activities.first()
-        self.assertEqual(updated_activity.sector.group, sector_after.group)
-        self.assertEqual(updated_activity.sector, sector_after)
         self.assertEqual(updated_activity.presta_type, [siae_constants.PRESTA_BUILD])
         self.assertEqual(updated_activity.geo_range, siae_constants.GEO_RANGE_ZONES)
         self.assertEqual(updated_activity.locations.count(), 2)
