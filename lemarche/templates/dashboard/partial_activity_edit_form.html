@@ -1,8 +1,58 @@
 {% load dsfr_tags %}
 <div id="activity-edit-form-{{ object.pk }}" >
-  <form hx-post="{% url 'dashboard_siaes:siae_activities_edit' pk=object.pk %}">
+  <form
+    hx-post="{% url 'dashboard_siaes:siae_activities_edit' pk=object.pk %}"
+    x-data="{selectedGeoRange: '{{ form.geo_range.value }}' } "
+  >
+    <input type="hidden" name="presta_type" value="{{ object.presta_type }}">>
     {% csrf_token %}
-    {% dsfr_form form %}
+    {% dsfr_form_field form.presta_type %}
+
+
+
+
+    <fieldset
+        id="radio-id_geo_range_{{ sector_id }}"
+        class="fr-fieldset"
+        aria-labelledby="id_geo_range-legend"
+    >
+        <legend id="id_geo_range-legend" class="fr-fieldset__legend fr-text--regular">
+            <label>
+                <span class="fr-text--bold">Périmètre d'intervention</span>
+            </label>
+                *
+        </legend>
+        <div class="fr-fieldset__content">
+            <div class="fr-radio-group">
+                {% for value, label in form.geo_range.field.choices %}
+                    <div class="fr-radio-group">
+                        <input
+                            id="id_geo_range_{{ sector_id }}_{{ forloop.counter0 }}"
+                            type="radio"
+                            name="geo_range_{{ sector_id }}"
+                            value="{{ value }}"
+                            dsfr="dsfr"
+                            required=""
+                            x-model="selectedGeoRange"
+                            {% if existing_geo_range == value %}checked{% endif %}
+                        >
+                        <label class="fr-label" for="id_geo_range_{{ sector_id }}_{{ forloop.counter0 }}">
+                            {{ label }}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </fieldset>
+
+
+{#fixme pas de hardcode#}
+    <div x-show="selectedGeoRange === 'CUSTOM'">
+      {% dsfr_form_field form.geo_range_custom_distance %}
+    </div>
+
+{#  fixme aussi faire la selection des zones#}
+
   <button
       class="fr-btn fr-btn--secondary"
       hx-get="{% url 'dashboard_siaes:siae_activities_detail' pk=object.pk %}"
@@ -14,4 +64,3 @@
   <button class="fr-btn" type="submit">Enregistrer</button>
 </form>
 </div>
-
