@@ -59,10 +59,7 @@ class BaseImportUsersCommand(BaseCommand):
         except IntegrityError:  # email already exists
             update_fields = self.get_update_fields()
             if update_fields:
-                user = User.objects.get(email=imported_user["EMAIL"])
-                for field, value in update_fields.items():
-                    setattr(user, field, value)
-                user.save(update_fields=list(update_fields.keys()))
+                user = User.objects.filter(email=imported_user["EMAIL"]).update(**update_fields)
                 self.stdout.write(
                     f"L'utilisateur {imported_user['EMAIL']} est déjà inscrit, informations mises à jour."
                 )
