@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 
 import sib_api_v3_sdk
 from django.conf import settings
-from huey.contrib.djhuey import task
 from phonenumber_field.modelfields import PhoneNumberField
 from sib_api_v3_sdk.rest import ApiException
 
@@ -880,7 +879,6 @@ class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
         super().__init__(config)
         self.api_instance = sib_api_v3_sdk.TransactionalEmailsApi(self.api_client)
 
-    @task()
     def send_transactional_email_with_template(
         self,
         template_id: int,
