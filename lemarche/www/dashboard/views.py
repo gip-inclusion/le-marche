@@ -97,57 +97,50 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, TemplateView):
 
         # get purchase stats for the user
         purchases_stats = Purchase.objects.get_purchase_for_user(user).with_stats()
-        if purchases_stats.get("total_amount_annotated", 0) is not None:
+        if purchases_stats.get("total_amount_annotated") > 0:
             inclusive_chart_data = {
                 "labels": ["Achats inclusifs", "Achats non inclusifs"],
                 "dataset": [
-                    round(purchases_stats.get("total_inclusive_amount_annotated", 0) or 0),
-                    round(
-                        purchases_stats.get("total_amount_annotated", 0)
-                        - (purchases_stats.get("total_inclusive_amount_annotated", 0) or 0),
-                    ),
+                    purchases_stats.get("total_inclusive_amount_annotated"),
+                    purchases_stats.get("total_amount_annotated")
+                    - (purchases_stats.get("total_inclusive_amount_annotated")),
                 ],
             }
             insertion_handicap_chart_data = {
                 "labels": ["Structures d'insertion (IAE)", "Structures du Handicap (STPA)"],
                 "dataset": [
-                    round(purchases_stats.get("total_insertion_amount_annotated", 0) or 0),
-                    round(purchases_stats.get("total_handicap_amount_annotated", 0) or 0),
+                    purchases_stats.get("total_insertion_amount_annotated"),
+                    purchases_stats.get("total_handicap_amount_annotated"),
                 ],
             }
             siae_type_chart_data = {
                 "labels": [
                     kind
                     for kind in KIND_INSERTION_LIST + KIND_HANDICAP_LIST
-                    if purchases_stats.get(f"total_purchases_by_kind_{kind}", 0) is not None
+                    if purchases_stats.get(f"total_purchases_by_kind_{kind}") > 0
                 ],
                 "dataset": [
-                    round(purchases_stats.get(f"total_purchases_by_kind_{kind}", 0))
+                    purchases_stats.get(f"total_purchases_by_kind_{kind}")
                     for kind in KIND_INSERTION_LIST + KIND_HANDICAP_LIST
-                    if purchases_stats.get(f"total_purchases_by_kind_{kind}", 0) is not None
+                    if purchases_stats.get(f"total_purchases_by_kind_{kind}") > 0
                 ],
             }
 
             context.update(
                 {
-                    "total_purchases": purchases_stats.get("total_amount_annotated", 0),
-                    "total_suppliers": purchases_stats.get("total_suppliers_annotated", 0) or 0,
-                    "total_inclusive_suppliers": purchases_stats.get("total_inclusive_suppliers_annotated", 0) or 0,
-                    "total_inclusive_purchases": purchases_stats.get("total_inclusive_amount_annotated", 0) or 0,
+                    "total_purchases": purchases_stats.get("total_amount_annotated"),
+                    "total_suppliers": purchases_stats.get("total_suppliers_annotated"),
+                    "total_inclusive_suppliers": purchases_stats.get("total_inclusive_suppliers_annotated"),
+                    "total_inclusive_purchases": purchases_stats.get("total_inclusive_amount_annotated"),
                     "total_inclusive_purchases_percentage": purchases_stats.get(
-                        "total_inclusive_percentage_annotated", 0
-                    )
-                    or 0,
-                    "total_insertion_purchases": purchases_stats.get("total_insertion_amount_annotated", 0) or 0,
+                        "total_inclusive_percentage_annotated"
+                    ),
+                    "total_insertion_purchases": purchases_stats.get("total_insertion_amount_annotated"),
                     "total_insertion_purchases_percentage": purchases_stats.get(
-                        "total_insertion_percentage_annotated", 0
-                    )
-                    or 0,
-                    "total_handicap_purchases": purchases_stats.get("total_handicap_amount_annotated", 0) or 0,
-                    "total_handicap_purchases_percentage": purchases_stats.get(
-                        "total_handicap_percentage_annotated", 0
-                    )
-                    or 0,
+                        "total_insertion_percentage_annotated"
+                    ),
+                    "total_handicap_purchases": purchases_stats.get("total_handicap_amount_annotated"),
+                    "total_handicap_purchases_percentage": purchases_stats.get("total_handicap_percentage_annotated"),
                     # Data for json_script (secure JSON format)
                     "chart_data": {
                         "inclusive_chart_data": inclusive_chart_data,
