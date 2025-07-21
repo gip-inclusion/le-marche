@@ -2,6 +2,8 @@ from django.urls import include, path
 from django.views.generic.base import RedirectView
 
 from lemarche.www.dashboard_siaes.views import (
+    SiaeActivityDetailView,
+    SiaeActivityEditView,
     SiaeActivityPrestaGeoFormView,
     SiaeActivitySectorFormView,
     SiaeEditActivitiesCreateView,
@@ -70,6 +72,9 @@ urlpatterns = [
             ]
         ),
     ),
+    # Activities
+    path("activities/<int:pk>", SiaeActivityDetailView.as_view(), name="siae_activities_detail"),
+    path("activities/<int:pk>/modifier", SiaeActivityEditView.as_view(), name="siae_activities_edit"),
     # Edit Siae (old urls: redirect)
     path(
         "<str:slug>/modifier/info-contact/",
