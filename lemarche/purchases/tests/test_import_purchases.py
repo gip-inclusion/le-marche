@@ -24,7 +24,7 @@ class ImportPurchasesCommandTest(TestCase):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         cls.sample_file = os.path.join(current_dir, "sample_purchases.csv")
 
-    def create_temp_csv_file(self, content=None):
+    def create_temp_csv_file(self, content):
         """Create a temporary CSV file for testing"""
 
         temp_file = tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False)
