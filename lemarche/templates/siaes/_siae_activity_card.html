@@ -17,17 +17,13 @@
 
             <ul class="fr-grid-row fr-ml-5v">
                 {% for sector, activity in sectors.items %}
-                    <li class="fr-col-11">
-                        <p class="fr-text--bold">{{ sector }}</p>
-                        <p>
-                            <span class="fr-icon-briefcase-line" aria-hidden="true"></span>
-                            <span class="fr-sr-only">Type(s) de prestation :</span>
-                            <span>{{ activity.presta_type_display }}</span>
-                        </p>
-                        <p>
-                            <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
-                            <span>{{ activity.geo_range_pretty_display }}</span>
-                        </p>
+                    <li id="activity-li-{{ activity.id }}"
+                        class="fr-col-11"
+                        hx-get="{% url 'dashboard_siaes:siae_activities_detail' pk=activity.id %}"
+                        hx-trigger="load"
+                        hx-swap="innerHTML"
+                    >
+
                     </li>
 
                     <div class="fr-col-1 fr-btns-group fr-btns-group--inline-sm fr-ml-lg-2v fr-mt-n2v">
@@ -37,7 +33,12 @@
                                 x-init="initOptions('{{ activity.id }}','{{ activity.sector_group|escapejs }}')"
                                 @click="remove"
                                 title="Supprimer l'activité">
-                            <i class="ri-delete-bin-line ri-xl"></i>
+                        </button>
+                        <button id="siae-activity-update-btn"
+                                class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-edit-line"
+                                hx-get="{% url 'dashboard_siaes:siae_activities_edit' pk=activity.id %}"
+                                hx-target="#activity-li-{{ activity.id }}"
+                                title="Modifier l'activité">
                         </button>
                     </div>
                 {% endfor %}

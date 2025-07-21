@@ -429,6 +429,20 @@ class SiaeActivityPrestaGeoFormView(FormView):
         return context
 
 
+class SiaeActivityDetailView(DetailView):
+    template_name = "dashboard/partial_activity_detail.html"
+    model = SiaeActivity
+
+
+class SiaeActivityEditView(UpdateView):
+    template_name = "dashboard/partial_activity_edit_form.html"
+    form_class = SiaeActivityForm
+    model = SiaeActivity
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard_siaes:siae_activities_detail", kwargs={"pk": self.object.pk})
+
+
 class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeEditInfoForm
     template_name = "dashboard/siae_edit_info.html"
