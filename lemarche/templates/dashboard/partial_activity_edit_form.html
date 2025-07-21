@@ -1,0 +1,17 @@
+{% load dsfr_tags %}
+<div id="activity-edit-form-{{ object.pk }}" >
+  <form hx-post="{% url 'dashboard_siaes:siae_activities_edit' pk=object.pk %}">
+    {% csrf_token %}
+    {% dsfr_form form %}
+  <button
+      class="fr-btn fr-btn--secondary"
+      hx-get="{% url 'dashboard_siaes:siae_activities_detail' pk=object.pk %}"
+      hx-swap="outerHTML"
+      hx-target="#activity-edit-form-{{ object.pk }}"
+  >
+    Annuler
+  </button>
+  <button class="fr-btn" type="submit">Enregistrer</button>
+</form>
+</div>
+
