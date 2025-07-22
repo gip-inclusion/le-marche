@@ -438,12 +438,15 @@ class SiaeActivityCreateView(CreateView):
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
         self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
-        self.sector = self.request.GET.get("selected_sector")
+        # It's part of the url because it's necessary to also have it in POST
+        # to set the form prefix
+        self.sector_id = self.kwargs.get("sector_id")
 
     def get_context_data(self, **kwargs):
         """For POST url siae argument"""
         ctx = super().get_context_data(**kwargs)
         ctx["siae"] = self.siae
+        ctx["sector_id"] = self.sector_id
         return ctx
 
     def get_success_url(self):
@@ -457,9 +460,16 @@ class SiaeActivityCreateView(CreateView):
 
     def get_initial(self):
         """Set sector as initial data for hidden input sector field"""
+        # fixme maybe sector could be also set in form valid
         initial = super().get_initial()
-        initial["sector"] = self.sector
+        initial["sector"] = self.sector_id
         return initial
+
+    def get_form_kwargs(self):
+        """Add a prefix to form inputs name and id to avoid conflicts with other forms in the page"""
+        kwargs = super().get_form_kwargs()
+        kwargs["prefix"] = f"sector-{self.sector_id}"
+        return kwargs
 
 
 class SiaeActivityDetailView(DetailView):
