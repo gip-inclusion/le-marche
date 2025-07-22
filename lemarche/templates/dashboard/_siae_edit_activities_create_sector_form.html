@@ -5,19 +5,6 @@
         *
 </legend>
 
-{% if form.errors %}
-  <ul class="fr-messages-group fr-messages-group--error">
-    {% for field, errors in form.errors.items %}
-      {% for error in errors %}
-        <li class="fr-message fr-message--error">
-          <span class="fr-message__icon" aria-hidden="true"></span>
-          <span class="fr-message__text">{{ error }}</span>
-        </li>
-      {% endfor %}
-    {% endfor %}
-  </ul>
-{% endif %}
-
 <div class="fr-fieldset__content">
     <div class="fr-checkbox-group">
         <div x-data="{ selectedSectors: [{% if existing_sector_ids %}{% for sector_id in existing_sector_ids %}'{{ sector_id }}'{% if not forloop.last %},{% endif %}{% endfor %}{% endif %}] }"
@@ -41,9 +28,9 @@
                              * while still using the name="sectors" attribute for POST requests.
                             {% endcomment %}
                             
-                            hx-get="{% url 'dashboard_siaes:siae_activities_create' siae.slug %}"
+                            hx-get="{% if sector.linked_activity_id %}{% url 'dashboard_siaes:siae_activities_edit' pk=sector.linked_activity_id %}{% else %}{% url 'dashboard_siaes:siae_activities_create' siae.slug %}{% endif %}"
                             hx-vals='{"selected_sector": "{{ sector.id }}"}'
-                            hx-trigger="{% if sector.id|stringformat:'s' in existing_sector_ids %}load{% else %}change{% endif %}"
+                            hx-trigger="{% if sector.linked_activity_id %}load{% else %}change{% endif %}"
                             hx-target="#prestaGeoForm_{{ sector.id }}"
                             
                             x-model="selectedSectors"
