@@ -17,7 +17,6 @@ from lemarche.siaes.models import (
     SiaeOffer,
     SiaeUserRequest,
 )
-from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.www.siaes.widgets import CustomLocationWidget
 
 
@@ -213,12 +212,11 @@ class SiaeActivitiesCreateForm(forms.ModelForm):
 
 
 class SiaeActivityForm(forms.ModelForm):
-    sectors = GroupedModelMultipleChoiceField(
-        label="Activités",
+    sector = forms.ModelChoiceField(
+        label="Activité",
         queryset=Sector.objects.all(),
-        choices_groupby="group",
         required=True,
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.HiddenInput,
     )
 
     presta_type = forms.MultipleChoiceField(
@@ -253,32 +251,14 @@ class SiaeActivityForm(forms.ModelForm):
         # FIXME: help_text not displayed
     )
 
-    def __init__(self, *args, sector_group_id=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # these fields are autocompletes
         self.fields["locations"].choices = []
 
-        # TODO : work in progress for updateview
-        if self.instance and self.instance.pk:
-            self.fields["sectors"].initial = self.instance.sector
-            self.fields["presta_type"].initial = self.instance.presta_type
-            self.fields["geo_range"].initial = self.instance.geo_range
-            self.fields["geo_range_custom_distance"].initial = self.instance.geo_range_custom_distance
-            sector_group_id = self.instance.sector.group.id
-
-        # make sure sectors are sorted by group since we use the queryset to build the form
-        self.fields["sectors"].queryset = Sector.objects.form_filter_queryset(sector_group_id=sector_group_id)
-
     def clean(self):
         cleaned_data = super().clean()
-
-        # TODO : work in progress for updateview
-        sectors = cleaned_data.get("sectors")
-
-        if not sectors:
-            self.add_error("sectors", "Vous devez choisir au moins un secteur.")
-
         geo_range = cleaned_data.get("geo_range")
         geo_range_custom_distance = cleaned_data.get("geo_range_custom_distance")
 
@@ -295,7 +275,7 @@ class SiaeActivityForm(forms.ModelForm):
     class Meta:
         model = SiaeActivity
         fields = [
-            "sectors",
+            "sector",
             "presta_type",
             "geo_range",
             "geo_range_custom_distance",

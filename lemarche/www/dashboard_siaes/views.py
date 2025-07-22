@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
-from django.views.generic import DeleteView, DetailView, FormView, ListView, UpdateView
+from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
 from lemarche.sectors.models import Sector, SectorGroup
@@ -383,12 +383,6 @@ class SiaeActivitySectorFormView(FormView):
             self.siae_activities = SiaeActivity.objects.with_siae_and_sector_group(self.siae, sector_group_id)
         return super().get(request, *args, **kwargs)
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        sector_group_id = self.request.GET.get("sector_group_id")
-        kwargs["sector_group_id"] = sector_group_id
-        return kwargs
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["siae"] = self.siae
@@ -427,6 +421,38 @@ class SiaeActivityPrestaGeoFormView(FormView):
             except SiaeActivity.DoesNotExist:
                 pass
         return context
+
+
+class SiaeActivityCreateView(CreateView):
+    template_name = "dashboard/partial_activity_create_form.html"  # fixme inherit form
+    form_class = SiaeActivityForm
+    model = SiaeActivity
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
+        self.sector = self.request.GET.get("selected_sector")
+
+    def get_context_data(self, **kwargs):
+        """For POST url siae argument"""
+        ctx = super().get_context_data(**kwargs)
+        ctx["siae"] = self.siae
+        return ctx
+
+    def get_success_url(self):
+        """Redirect to the siae detail page"""
+        return reverse_lazy("dashboard_siaes:siae_activities_detail", kwargs={"pk": self.object.pk})
+
+    def form_valid(self, form):
+        """Bind to be created activity instance to siae instance"""
+        form.instance.siae = self.siae
+        return super().form_valid(form)
+
+    def get_initial(self):
+        """Set sector as initial data for hidden input sector field"""
+        initial = super().get_initial()
+        initial["sector"] = self.sector
+        return initial
 
 
 class SiaeActivityDetailView(DetailView):
