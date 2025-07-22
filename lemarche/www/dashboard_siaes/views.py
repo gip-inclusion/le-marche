@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
-from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, UpdateView
+from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, TemplateView, UpdateView
 from django.views.generic.edit import FormMixin
 
 from lemarche.sectors.models import Sector, SectorGroup
@@ -372,20 +372,20 @@ class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, SuccessMessageMixin, F
             return mark_safe(f"Les activités suivantes ont été modifiées avec succès : <strong>{sectors}</strong>.")
 
 
-class SiaeActivitySectorFormView(FormView):
+class SiaeActivitySectorFormView(TemplateView):
     template_name = "dashboard/_siae_edit_activities_create_sector_form.html"
-    form_class = SiaeActivityForm
 
     def get(self, request, *args, **kwargs):
         self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
-        sector_group_id = self.request.GET.get("sector_group_id")
-        if sector_group_id:
-            self.siae_activities = SiaeActivity.objects.with_siae_and_sector_group(self.siae, sector_group_id)
+        self.sector_group_id = self.request.GET.get("sector_group_id")
+        if self.sector_group_id:
+            self.siae_activities = SiaeActivity.objects.with_siae_and_sector_group(self.siae, self.sector_group_id)
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["siae"] = self.siae
+        context["sectors"] = Sector.objects.filter(group_id=self.sector_group_id)
 
         # Get existing sector ids and convert to string in order to be compared with html input value
         if hasattr(self, "siae_activities") and self.siae_activities:
