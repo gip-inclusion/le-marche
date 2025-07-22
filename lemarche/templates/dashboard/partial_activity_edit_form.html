@@ -4,46 +4,46 @@
     hx-post="{% url 'dashboard_siaes:siae_activities_edit' pk=object.pk %}"
     x-data="{selectedGeoRange: '{{ form.geo_range.value }}' } "
   >
-    <input type="hidden" name="presta_type" value="{{ object.presta_type }}">>
     {% csrf_token %}
+    {# sector is hiddeninput widget from form #}
+    {% dsfr_form_field form.sector %}
     {% dsfr_form_field form.presta_type %}
+    {% dsfr_form_field form.geo_range %}
 
 
-
-
-    <fieldset
-        id="radio-id_geo_range_{{ sector_id }}"
-        class="fr-fieldset"
-        aria-labelledby="id_geo_range-legend"
-    >
-        <legend id="id_geo_range-legend" class="fr-fieldset__legend fr-text--regular">
-            <label>
-                <span class="fr-text--bold">Périmètre d'intervention</span>
-            </label>
-                *
-        </legend>
-        <div class="fr-fieldset__content">
-            <div class="fr-radio-group">
-                {% for value, label in form.geo_range.field.choices %}
-                    <div class="fr-radio-group">
-                        <input
-                            id="id_geo_range_{{ sector_id }}_{{ forloop.counter0 }}"
-                            type="radio"
-                            name="geo_range_{{ sector_id }}"
-                            value="{{ value }}"
-                            dsfr="dsfr"
-                            required=""
-                            x-model="selectedGeoRange"
-                            {% if existing_geo_range == value %}checked{% endif %}
-                        >
-                        <label class="fr-label" for="id_geo_range_{{ sector_id }}_{{ forloop.counter0 }}">
-                            {{ label }}
-                        </label>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    </fieldset>
+{#    <fieldset#}
+{#        id="radio-id_geo_range_{{ sector_id }}"#}
+{#        class="fr-fieldset"#}
+{#        aria-labelledby="id_geo_range-legend"#}
+{#    >#}
+{#        <legend id="id_geo_range-legend" class="fr-fieldset__legend fr-text--regular">#}
+{#            <label>#}
+{#                <span class="fr-text--bold">Périmètre d'intervention</span>#}
+{#            </label>#}
+{#                *#}
+{#        </legend>#}
+{#        <div class="fr-fieldset__content">#}
+{#            <div class="fr-radio-group">#}
+{#                {% for value, label in form.geo_range.field.choices %}#}
+{#                    <div class="fr-radio-group">#}
+{#                        <input#}
+{#                            id="id_geo_range_{{ sector_id }}_{{ forloop.counter0 }}"#}
+{#                            type="radio"#}
+{#                            name="geo_range_{{ sector_id }}"#}
+{#                            value="{{ value }}"#}
+{#                            dsfr="dsfr"#}
+{#                            required=""#}
+{#                            x-model="selectedGeoRange"#}
+{#                            {% if existing_geo_range == value %}checked{% endif %}#}
+{#                        >#}
+{#                        <label class="fr-label" for="id_geo_range_{{ sector_id }}_{{ forloop.counter0 }}">#}
+{#                            {{ label }}#}
+{#                        </label>#}
+{#                    </div>#}
+{#                {% endfor %}#}
+{#            </div>#}
+{#        </div>#}
+{#    </fieldset>#}
 
 
 {#fixme pas de hardcode#}

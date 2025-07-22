@@ -472,6 +472,12 @@ class SiaeActivityEditView(UpdateView):
     form_class = SiaeActivityForm
     model = SiaeActivity
 
+    def get_form_kwargs(self):
+        """Add a prefix to form inputs name and id to avoid conflicts with other forms in the page"""
+        kwargs = super().get_form_kwargs()
+        kwargs["prefix"] = f"activity-{self.object.pk}"
+        return kwargs
+
     def get_success_url(self):
         return reverse_lazy("dashboard_siaes:siae_activities_detail", kwargs={"pk": self.object.pk})
 
