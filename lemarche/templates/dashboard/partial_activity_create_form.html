@@ -1,7 +1,7 @@
 {% load dsfr_tags %}
 <div id="activity-edit-form-{{ object.pk }}" >
   <form
-    hx-post="{% url 'dashboard_siaes:siae_activities_create' slug=siae.slug %}"
+    hx-post="{% url 'dashboard_siaes:siae_activities_create' slug=siae.slug sector_id=sector_id %}"
   >
     {% csrf_token %}
 
