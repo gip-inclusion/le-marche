@@ -1,0 +1,14 @@
+{% load dsfr_tags %}
+<div id="activity-edit-form-{{ object.pk }}" >
+  <form
+    hx-post="{% url 'dashboard_siaes:siae_activities_create' slug=siae.slug %}"
+  >
+    {% csrf_token %}
+
+    {% dsfr_form_field form.sector %}
+    {% dsfr_form_field form.presta_type %}
+    {% dsfr_form_field form.geo_range %}
+
+  <button class="fr-btn" type="submit">Enregistrer</button>
+</form>
+</div>
