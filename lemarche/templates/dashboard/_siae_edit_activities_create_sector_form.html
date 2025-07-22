@@ -22,7 +22,7 @@
     <div class="fr-checkbox-group">
         <div x-data="{ selectedSectors: [{% if existing_sector_ids %}{% for sector_id in existing_sector_ids %}'{{ sector_id }}'{% if not forloop.last %},{% endif %}{% endfor %}{% endif %}] }"
              class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
-            {% for sector in form.fields.sector.queryset %}
+            {% for sector in sectors %}
                 <div class="fr-card fr-card--no-background fr-col-12 fr-mb-2w fr-ml-lg-2w fr-px-2w fr-px-lg-4w fr-py-2v" style="border-radius: 8px;">
                     <div class="fr-checkbox-group fr-mt-0">
                         <input
