@@ -45,7 +45,11 @@ urlpatterns = [
                     RedirectView.as_view(pattern_name="dashboard_siaes:siae_edit_activities", permanent=False),
                     name="siae_edit_search",
                 ),
-                path("activites/ajouter", SiaeActivityCreateView.as_view(), name="siae_activities_create"),
+                path(
+                    "activites/ajouter/sector/<int:sector_id>",
+                    SiaeActivityCreateView.as_view(),
+                    name="siae_activities_create",
+                ),
                 path("activites/", SiaeEditActivitiesView.as_view(), name="siae_edit_activities"),
                 path("activites/creer", SiaeEditActivitiesCreateView.as_view(), name="siae_edit_activities_create"),
                 path(

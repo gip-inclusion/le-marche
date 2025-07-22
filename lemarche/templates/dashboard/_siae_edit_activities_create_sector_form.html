@@ -19,20 +19,10 @@
                             value="{{ sector.id }}"
                             dsfr="dsfr"
                             data-fr-js-checkbox-input="true"
-                            
-                            {% comment %}
-                             * We use hx-vals instead of adding the parameter directly to the URL
-                             * to prevent collisions with the name="sectors" attribute which would
-                             * otherwise cause duplicate parameters in the request.
-                             * This ensures we send only the specific sector ID we want in the URL
-                             * while still using the name="sectors" attribute for POST requests.
-                            {% endcomment %}
-                            
-                            hx-get="{% if sector.linked_activity_id %}{% url 'dashboard_siaes:siae_activities_edit' pk=sector.linked_activity_id %}{% else %}{% url 'dashboard_siaes:siae_activities_create' siae.slug %}{% endif %}"
-                            hx-vals='{"selected_sector": "{{ sector.id }}"}'
+
+                            hx-get="{% if sector.linked_activity_id %}{% url 'dashboard_siaes:siae_activities_edit' pk=sector.linked_activity_id %}{% else %}{% url 'dashboard_siaes:siae_activities_create' slug=siae.slug sector_id=sector.id%}{% endif %}"
                             hx-trigger="{% if sector.linked_activity_id %}load{% else %}change{% endif %}"
                             hx-target="#prestaGeoForm_{{ sector.id }}"
-                            
                             x-model="selectedSectors"
                         >
                         <label class="fr-label fr-mb-0" for="id_sectors_0_{{ forloop.counter0 }}">
