@@ -880,7 +880,6 @@ class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
         super().__init__(config)
         self.api_instance = sib_api_v3_sdk.TransactionalEmailsApi(self.api_client)
 
-    @task()
     def send_transactional_email_with_template(
         self,
         template_id: int,
@@ -924,14 +923,14 @@ class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
         if subject:
             data["subject"] = EMAIL_SUBJECT_PREFIX + subject
 
-        return self._send_email_with_retry(data)
+        return self._send_email(self.api_instance.send_transac_email, data)
 
-    @BrevoBaseApiClient.execute_with_retry_method(operation_name="sending transactional email")
-    def _send_email_with_retry(self, data):
+    @staticmethod
+    @task()
+    def _send_email(send_transac_email, data):
         """Execute the send email operation with retry logic"""
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
-        response = self.api_instance.send_transac_email(send_smtp_email)
-        self.logger.info("Brevo: send transactional email with template")
+        response = send_transac_email(send_smtp_email)
         return response.to_dict()
 
 
