@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import OuterRef, Subquery
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -385,7 +386,13 @@ class SiaeActivitySectorFormView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["siae"] = self.siae
-        context["sectors"] = Sector.objects.filter(group_id=self.sector_group_id)
+
+        # This subquery is used to find the link between a displayed sector and
+        # an already existing activity
+        activity_sector_subquery = SiaeActivity.objects.filter(siae=self.siae, sector=OuterRef("id")).values("id")
+        context["sectors"] = Sector.objects.filter(group_id=self.sector_group_id).annotate(
+            linked_activity_id=Subquery(activity_sector_subquery[:1])
+        )
 
         # Get existing sector ids and convert to string in order to be compared with html input value
         if hasattr(self, "siae_activities") and self.siae_activities:
