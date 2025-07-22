@@ -113,8 +113,8 @@ class BrevoBaseApiClient:
             self.logger.error(f"Failed after {max_retries} attempts to {operation_name}: {exception}")
             return False, 0
 
-    @classmethod
-    def execute_with_retry_method(cls, operation_name="API operation"):
+    @staticmethod
+    def execute_with_retry_method(operation_name="API operation"):
         """
         Class decorator to execute an API operation with retry logic
 
