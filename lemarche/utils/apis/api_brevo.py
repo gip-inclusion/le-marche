@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 
 import sib_api_v3_sdk
 from django.conf import settings
-from huey.contrib.djhuey import task
 from phonenumber_field.modelfields import PhoneNumberField
 from sib_api_v3_sdk.rest import ApiException
 
@@ -923,14 +922,14 @@ class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
         if subject:
             data["subject"] = EMAIL_SUBJECT_PREFIX + subject
 
-        return self._send_email(self.api_instance.send_transac_email, data)
+        return self._send_email_with_retry(data)
 
-    @staticmethod
-    @task()
-    def _send_email(send_transac_email, data):
+    @BrevoBaseApiClient.execute_with_retry_method(operation_name="sending transactional email")
+    def _send_email_with_retry(self, data):
         """Execute the send email operation with retry logic"""
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
-        response = send_transac_email(send_smtp_email)
+        response = self.api_instance.send_transac_email(send_smtp_email)
+        self.logger.info("Brevo: send transactional email with template")
         return response.to_dict()
 
 
