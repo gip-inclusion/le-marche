@@ -28,7 +28,12 @@
 
     <div x-show="selectedGeoRange === 'ZONES'">
       {% dsfr_form_field form.locations %}
-      {{ current_locations|json_script:"current-locations" }}
+      {# Sorry for this horror, apparently PerimetersMultiAutocomplete is supposed to work  #}
+      {# with that. because multple select can be shown on page, the 'script' json data needs#}
+      {# to have a unique id#}
+      {% with object.id|stringformat:'s'|add:"-current-locations-activity" as script_name %}
+        {{ current_locations|json_script:script_name }}
+      {% endwith %}
     </div>
 
   <button
@@ -51,7 +56,7 @@
       let LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR = '#{{ form.locations.id_for_label }}';
       let LOCATION_SELECTED_CONTAINER_SELECTOR = '#locations-selected-{{ form.locations.id_for_label }}';
       let LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX = 'hiddenLocation-{{ form.locations.id_for_label }}';
-      let LOCATION_CURRENT_ID = 'current-locations';
+      let LOCATION_CURRENT_ID = '{{ object.id }}-current-locations-activity';
       let locationsAutoComplete = new PerimetersMultiAutocomplete(
           LOCATION_AUTOCOMPLETE_ID,
           LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR,
