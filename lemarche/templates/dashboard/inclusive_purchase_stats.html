@@ -25,17 +25,17 @@
                                     <h3 class="fr-card__title">Vos statistiques d'achat</h3>
                                     <div class="fr-card__desc">
                                         <p class="fr-text--lead">
-                                            <strong>{{ total_purchases|floatformat:0|default:0 }}€</strong> d'achats réalisés
+                                            <strong>{{ total_purchases|floatformat:0 }} €</strong> d'achats réalisés
                                         </p>
                                         <p class="fr-text--lead">
-                                            <strong>{{ total_inclusive_purchases|floatformat:0|default:0 }}€</strong> d'achats inclusifs
+                                            <strong>{{ total_inclusive_purchases|floatformat:0 }} €</strong> d'achats inclusifs
                                         </p>
                                         <p class="fr-text--lead">
-                                            <strong>{{ total_inclusive_purchases_percentage|floatformat:1|default:0 }}%</strong> de vos achats sont inclusifs 👏
+                                            <strong>{{ total_inclusive_purchases_percentage|floatformat:1 }}%</strong> de vos achats sont inclusifs 👏
                                         </p>
                                         <hr class="fr-my-4v">
                                         <p class="fr-text--lead">
-                                            <strong>{{ total_inclusive_suppliers|default:0 }}</strong> fournisseur{{ total_inclusive_suppliers|pluralize }} sur les <strong>{{ total_suppliers|default:0 }}</strong> fournisseur{{ total_suppliers|pluralize }} référencé{{ total_suppliers|pluralize }} sont inclusifs !
+                                            <strong>{{ total_inclusive_suppliers }}</strong> fournisseur{{ total_inclusive_suppliers|pluralize }} sur les <strong>{{ total_suppliers|default:0 }}</strong> fournisseur{{ total_suppliers|pluralize }} référencé{{ total_suppliers|pluralize }} sont inclusifs !
                                         </p>
                                     </div>
                                 </div>
@@ -77,18 +77,18 @@
                                         <div class="fr-grid-row fr-grid-row--gutters">
                                             <div class="fr-col-6">
                                                 <p class="fr-text--lead">
-                                                    <strong>{{ total_insertion_purchases|floatformat:0|default:0 }}€</strong> pour les structures d'insertion
+                                                    <strong>{{ total_insertion_purchases|floatformat:0 }} €</strong> pour les structures d'insertion
                                                 </p>
                                                 <p class="fr-text--lead">
-                                                    soit <strong>{{ total_insertion_purchases_percentage|floatformat:1|default:0 }}%</strong>
+                                                    soit <strong>{{ total_insertion_purchases_percentage|floatformat:1 }}%</strong>
                                                 </p>
                                             </div>
                                             <div class="fr-col-6">
                                                 <p class="fr-text--lead">
-                                                    <strong>{{ total_handicap_purchases|floatformat:0|default:0 }}€</strong> pour les structures du Handicap
+                                                    <strong>{{ total_handicap_purchases|floatformat:0 }} €</strong> pour les structures du Handicap
                                                 </p>
                                                 <p class="fr-text--lead">
-                                                    soit <strong>{{ total_handicap_purchases_percentage|floatformat:1|default:0 }}%</strong>
+                                                    soit <strong>{{ total_handicap_purchases_percentage|floatformat:1 }}%</strong>
                                                 </p>
                                             </div>
                                         </div>
@@ -219,7 +219,7 @@
                                 callbacks: {
                                     label: function(context) {
                                         const amount = context.parsed.toLocaleString();
-                                        return ' ' + amount + '€';
+                                        return ' ' + amount + ' €';
                                     }
                                 },
                             },

@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from django.test import TestCase
 
 from lemarche.companies.factories import CompanyFactory
@@ -35,11 +33,8 @@ class PurchaseModelTest(TestCase):
         stats = Purchase.objects.get_purchase_for_user(user).with_stats()
         self.assertEqual(stats["total_amount_annotated"], 150000)
         self.assertEqual(stats["total_inclusive_amount_annotated"], 130000)
-        self.assertEqual(stats["total_inclusive_percentage_annotated"], Decimal("86.67"))
         self.assertEqual(stats["total_insertion_amount_annotated"], 90000)
-        self.assertEqual(stats["total_insertion_percentage_annotated"], Decimal("60.00"))
         self.assertEqual(stats["total_handicap_amount_annotated"], 40000)
-        self.assertEqual(stats["total_handicap_percentage_annotated"], Decimal("26.67"))
         self.assertEqual(stats["total_suppliers_annotated"], 7)
         self.assertEqual(stats["total_inclusive_suppliers_annotated"], 5)
         self.assertEqual(stats[f"total_purchases_by_kind_{KIND_INSERTION_LIST[0]}"], 50000)

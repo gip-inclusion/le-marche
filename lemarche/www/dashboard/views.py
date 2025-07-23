@@ -97,7 +97,8 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, TemplateView):
 
         # get purchase stats for the user
         purchases_stats = Purchase.objects.get_purchase_for_user(user).with_stats()
-        if purchases_stats.get("total_amount_annotated") > 0:
+        total_purchases = purchases_stats.get("total_amount_annotated")
+        if total_purchases > 0:
             inclusive_chart_data = {
                 "labels": ["Achats inclusifs", "Achats non inclusifs"],
                 "dataset": [
@@ -132,15 +133,20 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, TemplateView):
                     "total_suppliers": purchases_stats.get("total_suppliers_annotated"),
                     "total_inclusive_suppliers": purchases_stats.get("total_inclusive_suppliers_annotated"),
                     "total_inclusive_purchases": purchases_stats.get("total_inclusive_amount_annotated"),
-                    "total_inclusive_purchases_percentage": purchases_stats.get(
-                        "total_inclusive_percentage_annotated"
-                    ),
                     "total_insertion_purchases": purchases_stats.get("total_insertion_amount_annotated"),
-                    "total_insertion_purchases_percentage": purchases_stats.get(
-                        "total_insertion_percentage_annotated"
-                    ),
                     "total_handicap_purchases": purchases_stats.get("total_handicap_amount_annotated"),
-                    "total_handicap_purchases_percentage": purchases_stats.get("total_handicap_percentage_annotated"),
+                    "total_inclusive_purchases_percentage": round(
+                        purchases_stats.get("total_inclusive_amount_annotated") * 100 / total_purchases,
+                        2,
+                    ),
+                    "total_insertion_purchases_percentage": round(
+                        purchases_stats.get("total_insertion_amount_annotated") * 100 / total_purchases,
+                        2,
+                    ),
+                    "total_handicap_purchases_percentage": round(
+                        purchases_stats.get("total_handicap_amount_annotated") * 100 / total_purchases,
+                        2,
+                    ),
                     # Data for json_script (secure JSON format)
                     "chart_data": {
                         "inclusive_chart_data": inclusive_chart_data,

@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Count, DecimalField, ExpressionWrapper, F, Q, Sum
+from django.db.models import Count, ExpressionWrapper, IntegerField, Q, Sum
 from django.db.models.functions import Coalesce, Round
 from django.utils import timezone
 
@@ -13,27 +13,21 @@ class PurchaseQuerySet(models.QuerySet):
 
     def with_stats(self):
         aggregates = {
-            "total_amount_annotated": Coalesce(round(Sum("purchase_amount"), 0), 0),
-            "total_inclusive_amount_annotated": Coalesce(
-                round(Sum("purchase_amount", filter=Q(siae__isnull=False)), 0), 0
+            "total_amount_annotated": ExpressionWrapper(
+                Coalesce(Round(Sum("purchase_amount"), 0), 0),
+                output_field=IntegerField(),
             ),
-            "total_inclusive_percentage_annotated": ExpressionWrapper(
-                Round(F("total_inclusive_amount_annotated") / F("total_amount_annotated") * 100, 2),
-                output_field=DecimalField(max_digits=5, decimal_places=2),
+            "total_inclusive_amount_annotated": ExpressionWrapper(
+                Coalesce(Round(Sum("purchase_amount", filter=Q(siae__isnull=False)), 0), 0),
+                output_field=IntegerField(),
             ),
-            "total_insertion_amount_annotated": Coalesce(
-                round(Sum("purchase_amount", filter=Q(siae__kind__in=KIND_INSERTION_LIST)), 0), 0
+            "total_insertion_amount_annotated": ExpressionWrapper(
+                Coalesce(Round(Sum("purchase_amount", filter=Q(siae__kind__in=KIND_INSERTION_LIST)), 0), 0),
+                output_field=IntegerField(),
             ),
-            "total_handicap_amount_annotated": Coalesce(
-                round(Sum("purchase_amount", filter=Q(siae__kind__in=KIND_HANDICAP_LIST)), 0), 0
-            ),
-            "total_insertion_percentage_annotated": ExpressionWrapper(
-                Round(F("total_insertion_amount_annotated") / F("total_amount_annotated") * 100, 2),
-                output_field=DecimalField(max_digits=5, decimal_places=2),
-            ),
-            "total_handicap_percentage_annotated": ExpressionWrapper(
-                Round(F("total_handicap_amount_annotated") / F("total_amount_annotated") * 100, 2),
-                output_field=DecimalField(max_digits=5, decimal_places=2),
+            "total_handicap_amount_annotated": ExpressionWrapper(
+                Coalesce(Round(Sum("purchase_amount", filter=Q(siae__kind__in=KIND_HANDICAP_LIST)), 0), 0),
+                output_field=IntegerField(),
             ),
             "total_suppliers_annotated": Count("supplier_siret", distinct=True),
             "total_inclusive_suppliers_annotated": Count(
@@ -43,8 +37,9 @@ class PurchaseQuerySet(models.QuerySet):
 
         # get sum of purchases by siae__kind
         for kind in KIND_INSERTION_LIST + KIND_HANDICAP_LIST:
-            aggregates[f"total_purchases_by_kind_{kind}"] = Coalesce(
-                round(Sum("purchase_amount", filter=Q(siae__kind=kind)), 0), 0
+            aggregates[f"total_purchases_by_kind_{kind}"] = ExpressionWrapper(
+                Coalesce(Round(Sum("purchase_amount", filter=Q(siae__kind=kind)), 0), 0),
+                output_field=IntegerField(),
             )
 
         return self.aggregate(**aggregates)
