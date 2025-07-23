@@ -488,6 +488,12 @@ class SiaeActivityEditView(UpdateView):
         kwargs["prefix"] = f"activity-{self.object.pk}"
         return kwargs
 
+    def get_context_data(self, **kwargs):
+        """Really ugly but necessary to the even more ugly PerimetersMultiAutocomplete"""
+        ctx = super().get_context_data(**kwargs)
+        ctx["current_locations"] = list(self.object.locations.values("id", "slug", "name"))
+        return ctx
+
     def get_success_url(self):
         return reverse_lazy("dashboard_siaes:siae_activities_detail", kwargs={"pk": self.object.pk})
 
