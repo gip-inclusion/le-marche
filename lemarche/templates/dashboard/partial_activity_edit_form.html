@@ -28,6 +28,7 @@
 
     <div x-show="selectedGeoRange === 'ZONES'">
       {% dsfr_form_field form.locations %}
+      {{ current_locations|json_script:"current-locations" }}
     </div>
 
   <button
@@ -50,7 +51,7 @@
       let LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR = '#{{ form.locations.id_for_label }}';
       let LOCATION_SELECTED_CONTAINER_SELECTOR = '#locations-selected-{{ form.locations.id_for_label }}';
       let LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX = 'hiddenLocation-{{ form.locations.id_for_label }}';
-      let LOCATION_CURRENT_ID = 'current-locations-{{ form.locations.id_for_label }}';
+      let LOCATION_CURRENT_ID = 'current-locations';
       let locationsAutoComplete = new PerimetersMultiAutocomplete(
           LOCATION_AUTOCOMPLETE_ID,
           LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR,
