@@ -128,176 +128,162 @@
             </div>
         {% endif %}
     </div>
-    <!-- Using json_script template tag to pass data securely -->
-    {% if user.kind == "BUYER" and user.company %}{{ chart_data|json_script:"chart-data" }}{% endif %}
 {% endblock content %}
 {% block extra_js %}
-    <script type="text/javascript"
-            src="{% static 'vendor/chartjs@4.4.0.min.js' %}"></script>
-    <script type="text/javascript"
-            src="{% static 'vendor/chartjs-plugin-datalabels@2.0.0.min.js' %}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            {% if user.kind == "BUYER" and user.company %}
-                // Get data via json_script (secure Django method)
-                const chartDataElement = document.getElementById('chart-data');
-                if (chartDataElement) {
-                    const chartData = JSON.parse(chartDataElement.textContent);
-                    
-                    // Data for main chart (inclusive vs non inclusive)
-                    const inclusiveData = {
-                        labels: chartData.inclusive_chart_data.labels,
-                        datasets: [{
-                            data: [
-                                chartData.inclusive_chart_data.dataset[0],
-                                chartData.inclusive_chart_data.dataset[1]
-                            ],
-                            backgroundColor: [
-                                '#000091',
-                                '#e3e3fd'
-                            ],
-                            borderColor: '#ffffff',
-                            borderWidth: 2
-                        }]
-                    };
+    {% if chart_data_inclusive %}
+        <script type="text/javascript"
+                src="{% static 'vendor/chartjs@4.4.0.min.js' %}"></script>
+        <script type="text/javascript"
+                src="{% static 'vendor/chartjs-plugin-datalabels@2.0.0.min.js' %}"></script>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {        
+            // Data for main chart (inclusive vs non inclusive)
+            const inclusiveData = {
+                labels: {{ chart_data_inclusive.labels | safe }},
+                datasets: [{
+                    data: {{ chart_data_inclusive.dataset | safe }},
+                    backgroundColor: [
+                        '#000091',
+                        '#e3e3fd'
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            };
 
-                    // Data for detailed chart (insertion vs handicap)
-                    const insertionHandicapData = {
-                        labels: chartData.insertion_handicap_chart_data.labels,
-                        datasets: [{
-                            data: [
-                                chartData.insertion_handicap_chart_data.dataset[0],
-                                chartData.insertion_handicap_chart_data.dataset[1]
-                            ],
-                            backgroundColor: [
-                                '#ff9f40',
-                                '#4bc0c0'
-                            ],
-                            borderColor: '#ffffff',
-                            borderWidth: 2
-                        }]
-                    };
+            // Data for detailed chart (insertion vs handicap)
+            const insertionHandicapData = {
+                labels: {{ chart_data_insertion_handicap.labels | safe }},
+                datasets: [{
+                    data: {{ chart_data_insertion_handicap.dataset | safe }},
+                    backgroundColor: [
+                        '#ff9f40',
+                        '#4bc0c0'
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            };
 
-                    // Data for doughnut chart (structure Kind)
-                    const structureKindData = {
-                        labels: chartData.siae_type_chart_data.labels,
-                        datasets: [{
-                            data: chartData.siae_type_chart_data.dataset,
-                            backgroundColor: [
-                                '#1a92ec',
-                                '#ff3479',
-                                '#00c5c2',
-                                '#ff9f31',
-                                '#b200fe',
-                                '#ffd651',
-                                '#c8c9ce',
-                                '#a8e600',
-                                '#0b1e3d',
-                                '#f4b6c2',
-                            ],
-                            borderColor: '#ffffff',
-                            borderWidth: 2
-                        }]
-                    };
+            // Data for doughnut chart (structure Kind)
+            const structureKindData = {
+                labels: {{ chart_data_siae_type.labels | safe }},
+                datasets: [{
+                    data: {{ chart_data_siae_type.dataset | safe }},
+                    backgroundColor: [
+                        '#1a92ec',
+                        '#ff3479',
+                        '#00c5c2',
+                        '#ff9f31',
+                        '#b200fe',
+                        '#ffd651',
+                        '#c8c9ce',
+                        '#a8e600',
+                        '#0b1e3d',
+                        '#f4b6c2',
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            };
 
-                    // Common configuration for charts
-                    const commonOptions = {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    padding: 20,
-                                    usePointStyle: true,
-                                    font: {
-                                        size: 14
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        const amount = context.parsed.toLocaleString();
-                                        return ' ' + amount + ' €';
-                                    }
-                                },
-                            },
-                            datalabels: {
-                                formatter: (value, context) => {
-                                  return getPercentage(value, context);
-                                },
-                                color: '#fff',
-                                font: {
-                                  weight: 'bold',
-                                  size: 14
-                                }
+            // Common configuration for charts
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            font: {
+                                size: 14
                             }
                         }
-                    };
-                    function getPercentage(value, context) {
-                        const data = context.chart.data.datasets[0].data;
-                        const total = data.reduce((acc, val) => acc + val, 0);
-                        const percentage = (value / total * 100).toFixed(1);
-                        return percentage + '%';
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const amount = context.parsed.toLocaleString();
+                                return ' ' + amount + ' €';
+                            }
+                        },
+                    },
+                    datalabels: {
+                        formatter: (value, context) => {
+                            return getPercentage(value, context);
+                        },
+                        color: '#fff',
+                        font: {
+                            weight: 'bold',
+                            size: 14
+                        }
                     }
-
-                    // Main chart (inclusive vs non inclusive)
-                    const labelColors = ['#e3e3fd', '#000091'];
-                    new Chart(document.getElementById('inclusiveChart'), {
-                        type: 'doughnut',
-                        data: inclusiveData,
-                        options: {
-                            ...commonOptions,
-                            cutout: '50%',
-                            plugins: {
-                                ...commonOptions.plugins,   
-                                datalabels: {
-                                    formatter: (value, context) => {
-                                        return getPercentage(value, context);
-                                    },
-                                    color: (context) => {
-                                        return labelColors[context.dataIndex];
-                                    },
-                                    font: {
-                                        weight: 'bold',
-                                        size: 14
-                                    }
-                                }
-                            }                            
-                        },
-                        plugins: [ChartDataLabels]
-                    });
-
-                    // Doughnut chart (insertion vs handicap)
-                    new Chart(document.getElementById('insertionHandicapChart'), {
-                        type: 'doughnut',
-                        data: insertionHandicapData,
-                        options: {
-                            ...commonOptions,
-                            cutout: '50%',
-                            plugins: {
-                                ...commonOptions.plugins,
-                            }
-                        },
-                        plugins: [ChartDataLabels]
-                    });
-
-                    // Doughnut chart (structure Kind)
-                    new Chart(document.getElementById('structureKindChart'), {
-                        type: 'doughnut',
-                        data: structureKindData,
-                        options: {
-                            ...commonOptions,
-                            cutout: '50%',
-                            plugins: {
-                                ...commonOptions.plugins,
-                            }
-                        },
-                        plugins: [ChartDataLabels]
-                    });
                 }
-            {% endif %}
+            };
+            function getPercentage(value, context) {
+                const data = context.chart.data.datasets[0].data;
+                const total = data.reduce((acc, val) => acc + val, 0);
+                const percentage = (value / total * 100).toFixed(1);
+                return percentage + '%';
+            }
+
+            // Main chart (inclusive vs non inclusive)
+            const labelColors = ['#e3e3fd', '#000091'];
+            new Chart(document.getElementById('inclusiveChart'), {
+                type: 'doughnut',
+                data: inclusiveData,
+                options: {
+                    ...commonOptions,
+                    cutout: '50%',
+                    plugins: {
+                        ...commonOptions.plugins,   
+                        datalabels: {
+                            formatter: (value, context) => {
+                                return getPercentage(value, context);
+                            },
+                            color: (context) => {
+                                return labelColors[context.dataIndex];
+                            },
+                            font: {
+                                weight: 'bold',
+                                size: 14
+                            }
+                        }
+                    }                            
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            // Doughnut chart (insertion vs handicap)
+            new Chart(document.getElementById('insertionHandicapChart'), {
+                type: 'doughnut',
+                data: insertionHandicapData,
+                options: {
+                    ...commonOptions,
+                    cutout: '50%',
+                    plugins: {
+                        ...commonOptions.plugins,
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            // Doughnut chart (structure Kind)
+            new Chart(document.getElementById('structureKindChart'), {
+                type: 'doughnut',
+                data: structureKindData,
+                options: {
+                    ...commonOptions,
+                    cutout: '50%',
+                    plugins: {
+                        ...commonOptions.plugins,
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
         });
-    </script>
+        </script>
+    {% endif %}
 {% endblock extra_js %}

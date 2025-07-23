@@ -99,7 +99,7 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, TemplateView):
         purchases_stats = Purchase.objects.get_purchase_for_user(user).with_stats()
         total_purchases = purchases_stats.get("total_amount_annotated")
         if total_purchases > 0:
-            inclusive_chart_data = {
+            chart_data_inclusive = {
                 "labels": ["Achats inclusifs", "Achats non inclusifs"],
                 "dataset": [
                     purchases_stats.get("total_inclusive_amount_annotated"),
@@ -107,14 +107,14 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, TemplateView):
                     - (purchases_stats.get("total_inclusive_amount_annotated")),
                 ],
             }
-            insertion_handicap_chart_data = {
+            chart_data_insertion_handicap = {
                 "labels": ["Structures d'insertion (IAE)", "Structures du Handicap (STPA)"],
                 "dataset": [
                     purchases_stats.get("total_insertion_amount_annotated"),
                     purchases_stats.get("total_handicap_amount_annotated"),
                 ],
             }
-            siae_type_chart_data = {
+            chart_data_siae_type = {
                 "labels": [
                     kind
                     for kind in KIND_INSERTION_LIST + KIND_HANDICAP_LIST
@@ -147,12 +147,9 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, TemplateView):
                         purchases_stats.get("total_handicap_amount_annotated") * 100 / total_purchases,
                         2,
                     ),
-                    # Data for json_script (secure JSON format)
-                    "chart_data": {
-                        "inclusive_chart_data": inclusive_chart_data,
-                        "insertion_handicap_chart_data": insertion_handicap_chart_data,
-                        "siae_type_chart_data": siae_type_chart_data,
-                    },
+                    "chart_data_inclusive": chart_data_inclusive,
+                    "chart_data_insertion_handicap": chart_data_insertion_handicap,
+                    "chart_data_siae_type": chart_data_siae_type,
                 }
             )
         return context
