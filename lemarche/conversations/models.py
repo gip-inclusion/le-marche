@@ -11,8 +11,8 @@ from django.utils.text import slugify
 from django_extensions.db.fields import ShortUUIDField
 from shortuuid import uuid
 
+from lemarche.conversations.tasks import send_transactional_email
 from lemarche.users import constants as user_constants
-from lemarche.utils.apis import api_brevo
 from lemarche.utils.data import add_validation_error
 
 
@@ -324,9 +324,9 @@ class TemplateTransactional(models.Model):
                 parent_content_object=parent_content_object,
                 extra_data={"source": "BREVO", "args": args},  # "response": result()
             )
-            brevo_email_client = api_brevo.BrevoTransactionalEmailApiClient()
 
-            brevo_email_client.send_transactional_email_with_template(**args)
+            # send email with async task
+            send_transactional_email(args)
 
 
 class TemplateTransactionalSendLog(models.Model):
