@@ -44,12 +44,13 @@
 
 <script type="text/javascript" defer>
     /*Wrapped in a function to avoid scope clash with other forms instances*/
+    {# fixme This stuff is a nightmare and should be reworked #}
     (function() {
-      let LOCATION_AUTOCOMPLETE_ID = 'id_locations';
-      let LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR = '#dir_form_locations';
-      let LOCATION_SELECTED_CONTAINER_SELECTOR = '#locations-selected';
-      let LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX = 'hiddenLocation';
-      let LOCATION_CURRENT_ID = 'current-locations';
+      let LOCATION_AUTOCOMPLETE_ID = 'id_locations-{{ form.locations.id_for_label }}';
+      let LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR = '#{{ form.locations.id_for_label }}';
+      let LOCATION_SELECTED_CONTAINER_SELECTOR = '#locations-selected-{{ form.locations.id_for_label }}';
+      let LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX = 'hiddenLocation-{{ form.locations.id_for_label }}';
+      let LOCATION_CURRENT_ID = 'current-locations-{{ form.locations.id_for_label }}';
       let locationsAutoComplete = new PerimetersMultiAutocomplete(
           LOCATION_AUTOCOMPLETE_ID,
           LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR,
