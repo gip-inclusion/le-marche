@@ -3,6 +3,16 @@
   <form
     hx-post="{% url 'dashboard_siaes:siae_activities_edit' pk=object.pk %}"
     x-data="{selectedGeoRange: '{{ form.geo_range.value }}' } "
+    x-init="() => {
+        const radioInputs = document.getElementsByName('{{ form.geo_range.html_name }}');
+        radioInputs.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    selectedGeoRange = this.value;
+                }
+            });
+        });
+    }"
   >
     {% csrf_token %}
     {# sector is hiddeninput widget from form #}
@@ -11,47 +21,14 @@
     {% dsfr_form_field form.geo_range %}
 
 
-{#    <fieldset#}
-{#        id="radio-id_geo_range_{{ sector_id }}"#}
-{#        class="fr-fieldset"#}
-{#        aria-labelledby="id_geo_range-legend"#}
-{#    >#}
-{#        <legend id="id_geo_range-legend" class="fr-fieldset__legend fr-text--regular">#}
-{#            <label>#}
-{#                <span class="fr-text--bold">Périmètre d'intervention</span>#}
-{#            </label>#}
-{#                *#}
-{#        </legend>#}
-{#        <div class="fr-fieldset__content">#}
-{#            <div class="fr-radio-group">#}
-{#                {% for value, label in form.geo_range.field.choices %}#}
-{#                    <div class="fr-radio-group">#}
-{#                        <input#}
-{#                            id="id_geo_range_{{ sector_id }}_{{ forloop.counter0 }}"#}
-{#                            type="radio"#}
-{#                            name="geo_range_{{ sector_id }}"#}
-{#                            value="{{ value }}"#}
-{#                            dsfr="dsfr"#}
-{#                            required=""#}
-{#                            x-model="selectedGeoRange"#}
-{#                            {% if existing_geo_range == value %}checked{% endif %}#}
-{#                        >#}
-{#                        <label class="fr-label" for="id_geo_range_{{ sector_id }}_{{ forloop.counter0 }}">#}
-{#                            {{ label }}#}
-{#                        </label>#}
-{#                    </div>#}
-{#                {% endfor %}#}
-{#            </div>#}
-{#        </div>#}
-{#    </fieldset>#}
-
-
 {#fixme pas de hardcode#}
     <div x-show="selectedGeoRange === 'CUSTOM'">
       {% dsfr_form_field form.geo_range_custom_distance %}
     </div>
 
-{#  fixme aussi faire la selection des zones#}
+    <div x-show="selectedGeoRange === 'ZONES'">
+      {% dsfr_form_field form.locations %}
+    </div>
 
   <button
       class="fr-btn fr-btn--secondary"
