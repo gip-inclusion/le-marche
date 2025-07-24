@@ -80,6 +80,13 @@ class InclusivePurchaseStatsDashboardViewTest(TestCase):
         self.user = UserFactory(kind=User.KIND_BUYER, company=company)
         self.url = reverse("dashboard:inclusive_purchase_stats")
 
+    def test_user_siae_should_not_see_stats(self):
+        user_siae = UserFactory(kind=User.KIND_SIAE)
+        self.client.force_login(user_siae)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Cette page est réservée aux acheteurs ayant une entreprise associée.")
+
     def test_user_without_company_should_not_see_stats(self):
         user_without_company = UserFactory(kind=User.KIND_BUYER)
         self.client.force_login(user_without_company)
