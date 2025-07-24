@@ -97,54 +97,53 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, TemplateView):
 
         # get purchase stats for the user
         purchases_stats = Purchase.objects.get_purchase_for_user(user).with_stats()
-        total_purchases = purchases_stats.get("total_amount_annotated")
+        total_purchases = purchases_stats["total_amount_annotated"]
         if total_purchases > 0:
             chart_data_inclusive = {
                 "labels": ["Achats inclusifs", "Achats non inclusifs"],
                 "dataset": [
-                    purchases_stats.get("total_inclusive_amount_annotated"),
-                    purchases_stats.get("total_amount_annotated")
-                    - (purchases_stats.get("total_inclusive_amount_annotated")),
+                    purchases_stats["total_inclusive_amount_annotated"],
+                    purchases_stats["total_amount_annotated"] - (purchases_stats["total_inclusive_amount_annotated"]),
                 ],
             }
             chart_data_insertion_handicap = {
                 "labels": ["Structures d'insertion (IAE)", "Structures du Handicap (STPA)"],
                 "dataset": [
-                    purchases_stats.get("total_insertion_amount_annotated"),
-                    purchases_stats.get("total_handicap_amount_annotated"),
+                    purchases_stats["total_insertion_amount_annotated"],
+                    purchases_stats["total_handicap_amount_annotated"],
                 ],
             }
             chart_data_siae_type = {
                 "labels": [
                     kind
                     for kind in KIND_INSERTION_LIST + KIND_HANDICAP_LIST
-                    if purchases_stats.get(f"total_purchases_by_kind_{kind}") > 0
+                    if purchases_stats[f"total_purchases_by_kind_{kind}"] > 0
                 ],
                 "dataset": [
-                    purchases_stats.get(f"total_purchases_by_kind_{kind}")
+                    purchases_stats[f"total_purchases_by_kind_{kind}"]
                     for kind in KIND_INSERTION_LIST + KIND_HANDICAP_LIST
-                    if purchases_stats.get(f"total_purchases_by_kind_{kind}") > 0
+                    if purchases_stats[f"total_purchases_by_kind_{kind}"] > 0
                 ],
             }
 
             context.update(
                 {
-                    "total_purchases": purchases_stats.get("total_amount_annotated"),
-                    "total_suppliers": purchases_stats.get("total_suppliers_annotated"),
-                    "total_inclusive_suppliers": purchases_stats.get("total_inclusive_suppliers_annotated"),
-                    "total_inclusive_purchases": purchases_stats.get("total_inclusive_amount_annotated"),
-                    "total_insertion_purchases": purchases_stats.get("total_insertion_amount_annotated"),
-                    "total_handicap_purchases": purchases_stats.get("total_handicap_amount_annotated"),
+                    "total_purchases": purchases_stats["total_amount_annotated"],
+                    "total_suppliers": purchases_stats["total_suppliers_annotated"],
+                    "total_inclusive_suppliers": purchases_stats["total_inclusive_suppliers_annotated"],
+                    "total_inclusive_purchases": purchases_stats["total_inclusive_amount_annotated"],
+                    "total_insertion_purchases": purchases_stats["total_insertion_amount_annotated"],
+                    "total_handicap_purchases": purchases_stats["total_handicap_amount_annotated"],
                     "total_inclusive_purchases_percentage": round(
-                        purchases_stats.get("total_inclusive_amount_annotated") * 100 / total_purchases,
+                        purchases_stats["total_inclusive_amount_annotated"] * 100 / total_purchases,
                         2,
                     ),
                     "total_insertion_purchases_percentage": round(
-                        purchases_stats.get("total_insertion_amount_annotated") * 100 / total_purchases,
+                        purchases_stats["total_insertion_amount_annotated"] * 100 / total_purchases,
                         2,
                     ),
                     "total_handicap_purchases_percentage": round(
-                        purchases_stats.get("total_handicap_amount_annotated") * 100 / total_purchases,
+                        purchases_stats["total_handicap_amount_annotated"] * 100 / total_purchases,
                         2,
                     ),
                     "chart_data_inclusive": chart_data_inclusive,
