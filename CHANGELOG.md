@@ -6,6 +6,27 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2025.5.0](https://github.com/gip-inclusion/le-marche/compare/v2025.4.0...v2025.5.0) (2025-07-24)
+
+
+### Features
+
+* **brevo:** Ajout d'emails transactionnels via compte Brevo spécifique à Tally ([#1733](https://github.com/gip-inclusion/le-marche/issues/1733)) ([8dc8acb](https://github.com/gip-inclusion/le-marche/commit/8dc8acbbe42123ca87443ca4ec8ddd50a3fe2db1))
+* **brevo:** Ajout de la synchronisation des entreprises 2/2 ([#1720](https://github.com/gip-inclusion/le-marche/issues/1720)) ([e0989a1](https://github.com/gip-inclusion/le-marche/commit/e0989a161fecd8c71efac451038de8f956c420ed))
+* Import par lot d'utilisateurs de type partenaire pour les facilitateurs ([#1737](https://github.com/gip-inclusion/le-marche/issues/1737)) ([e0df268](https://github.com/gip-inclusion/le-marche/commit/e0df268d0dc89c625c55cb33cad7e6d5bed4096d))
+* Instructions automatiques pour les DDB ([#1726](https://github.com/gip-inclusion/le-marche/issues/1726)) ([831b8a0](https://github.com/gip-inclusion/le-marche/commit/831b8a08e7e4de808ce337e6d893aaba27d97b00))
+* **Part d'achats inclusifs:** Création du modèle de données ([#1736](https://github.com/gip-inclusion/le-marche/issues/1736)) ([99f1662](https://github.com/gip-inclusion/le-marche/commit/99f1662ae420649bc5db17225ffe19821a9bb6d9))
+* **Part d'achats inclusifs:** page de visualisation des statistiques ([#1742](https://github.com/gip-inclusion/le-marche/issues/1742)) ([6b51a46](https://github.com/gip-inclusion/le-marche/commit/6b51a46c3f3e35d30532ca17d6c8826c997eb03b))
+* Synchronisation des contacts  et entreprise (3/3) ([#1739](https://github.com/gip-inclusion/le-marche/issues/1739)) ([37564a8](https://github.com/gip-inclusion/le-marche/commit/37564a89e25f5c1221d6a1dd3a1d787a8c72a1f0))
+
+
+### Bug Fixes
+
+* Bug d'instruction de DDB manquant pour l'API ([#1740](https://github.com/gip-inclusion/le-marche/issues/1740)) ([eb7e879](https://github.com/gip-inclusion/le-marche/commit/eb7e8796f40444e9a8c91d55721cb41cb7fdab25))
+* Chargement des comptes structures très lents ([#1738](https://github.com/gip-inclusion/le-marche/issues/1738)) ([43fc91e](https://github.com/gip-inclusion/le-marche/commit/43fc91e6b1adaff0abe769bb2687651e84c025e5))
+* L'envoi de mail transactionnel passe par une tache Huey ([#1743](https://github.com/gip-inclusion/le-marche/issues/1743)) ([e9c40be](https://github.com/gip-inclusion/le-marche/commit/e9c40be81092e711b9b154c86427aea6f40a68d0))
+* L'inscription avec une adresse déjà enregistrée causait un bug ([#1741](https://github.com/gip-inclusion/le-marche/issues/1741)) ([c31a0b0](https://github.com/gip-inclusion/le-marche/commit/c31a0b0c183c07eeb5d205a6cc7a41ac16158c2f))
+
 ## [2025.4.0](https://github.com/gip-inclusion/le-marche/compare/v2025.3.0...v2025.4.0) (2025-06-23)
 
 
