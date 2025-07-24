@@ -3,7 +3,10 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.urls import reverse
 
+from lemarche.companies.factories import CompanyFactory
 from lemarche.conversations.models import EmailGroup
+from lemarche.purchases.factories import PurchaseFactory
+from lemarche.siaes.constants import KIND_HANDICAP_LIST, KIND_INSERTION_LIST
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 
@@ -39,6 +42,7 @@ class DashboardHomeViewTest(TestCase):
         self.assertContains(response, "Valoriser mes achats")
         self.assertContains(response, "API")
         self.assertContains(response, "M'informer sur les achats inclusifs")
+        self.assertContains(response, "Ma part d'achat inclusif")
         self.assertNotContains(response, "Ajouter une structure")
 
     def test_user_siae_should_display_custom_dashboard(self):
@@ -51,6 +55,7 @@ class DashboardHomeViewTest(TestCase):
         self.assertContains(response, "Solutions et ressources")
         self.assertContains(response, "Aides-territoires")
         self.assertNotContains(response, "Mes besoins")
+        self.assertNotContains(response, "Ma part d'achat inclusif")
         # self.assertNotContains(response, "API")
 
     def test_user_has_api_key_should_see_api_token(self):
@@ -67,6 +72,92 @@ class DashboardHomeViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(User.objects.get(id=self.user.id).dashboard_last_seen_date)
+
+
+class InclusivePurchaseStatsDashboardViewTest(TestCase):
+    def setUp(self):
+        company = CompanyFactory()
+        self.user = UserFactory(kind=User.KIND_BUYER, company=company)
+        self.url = reverse("dashboard:inclusive_purchase_stats")
+
+    def test_user_siae_should_not_see_stats(self):
+        user_siae = UserFactory(kind=User.KIND_SIAE)
+        self.client.force_login(user_siae)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Cette page est réservée aux acheteurs ayant une entreprise associée.")
+
+    def test_user_without_company_should_not_see_stats(self):
+        user_without_company = UserFactory(kind=User.KIND_BUYER)
+        self.client.force_login(user_without_company)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Cette page est réservée aux acheteurs ayant une entreprise associée.")
+
+    def test_view_without_purchases_should_not_display_stats(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Vous n'avez pas encore communiqué vos achats.")
+
+    def test_view_should_display_stats_with_inclusive_purchases(self):
+        self.client.force_login(self.user)
+
+        # Create a purchase
+        PurchaseFactory(company=self.user.company, siae=None, purchase_amount=10000)
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ma part d'achat inclusif")
+        self.assertContains(response, "<strong>10\xa0000 €</strong> d'achats réalisés")
+        self.assertContains(response, "<strong>0 €</strong> d'achats inclusifs")
+        self.assertContains(response, "<strong>0,0%</strong> de vos achats sont inclusifs")
+
+    def test_view_should_display_stats_with_inclusive_purchases_only_insertion(self):
+        self.client.force_login(self.user)
+        PurchaseFactory(company=self.user.company, siae=None, purchase_amount=10000)
+        PurchaseFactory(company=self.user.company, siae__kind=KIND_INSERTION_LIST[0], purchase_amount=20000)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ma part d'achat inclusif")
+        self.assertContains(response, "<strong>30\xa0000 €</strong> d'achats réalisés")
+        self.assertContains(response, "<strong>20\xa0000 €</strong> d'achats inclusifs")
+        self.assertContains(response, "<strong>66,7%</strong> de vos achats sont inclusifs")
+        self.assertContains(
+            response,
+            "<strong>1</strong> fournisseur sur les <strong>2</strong> fournisseurs référencés sont inclusifs",
+        )
+
+    def test_view_should_display_stats_with_inclusive_purchases_only_handicap(self):
+        self.client.force_login(self.user)
+        PurchaseFactory(company=self.user.company, siae=None, purchase_amount=10000)
+        PurchaseFactory(company=self.user.company, siae__kind=KIND_HANDICAP_LIST[0], purchase_amount=20000)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ma part d'achat inclusif")
+        self.assertContains(response, "<strong>30\xa0000 €</strong> d'achats réalisés")
+        self.assertContains(response, "<strong>20\xa0000 €</strong> d'achats inclusifs")
+        self.assertContains(response, "<strong>66,7%</strong> de vos achats sont inclusifs")
+        self.assertContains(
+            response,
+            "<strong>1</strong> fournisseur sur les <strong>2</strong> fournisseurs référencés sont inclusifs",
+        )
+
+    def test_view_should_display_stats_with_inclusive_purchases_insertion_and_handicap(self):
+        self.client.force_login(self.user)
+        PurchaseFactory(company=self.user.company, siae=None, purchase_amount=10000)
+        PurchaseFactory(company=self.user.company, siae__kind=KIND_INSERTION_LIST[0], purchase_amount=20000)
+        PurchaseFactory(company=self.user.company, siae__kind=KIND_HANDICAP_LIST[0], purchase_amount=30000)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ma part d'achat inclusif")
+        self.assertContains(response, "<strong>60\xa0000 €</strong> d'achats réalisés")
+        self.assertContains(response, "<strong>50\xa0000 €</strong> d'achats inclusifs")
+        self.assertContains(response, "<strong>83,3%</strong> de vos achats sont inclusifs")
+        self.assertContains(
+            response,
+            "<strong>2</strong> fournisseurs sur les <strong>3</strong> fournisseurs référencés sont inclusifs",
+        )
 
 
 class DisabledEmailEditViewTest(TestCase):

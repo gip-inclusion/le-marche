@@ -1,5 +1,48 @@
 from django.db import models
+from django.db.models import Count, ExpressionWrapper, IntegerField, Q, Sum
+from django.db.models.functions import Coalesce, Round
 from django.utils import timezone
+
+from lemarche.siaes.constants import KIND_HANDICAP_LIST, KIND_INSERTION_LIST
+from lemarche.users.models import User
+
+
+class PurchaseQuerySet(models.QuerySet):
+    def get_purchase_for_user(self, user: User):
+        return self.filter(company=user.company)
+
+    def with_stats(self):
+        aggregates = {
+            "total_amount_annotated": ExpressionWrapper(
+                Coalesce(Round(Sum("purchase_amount"), 0), 0),
+                output_field=IntegerField(),
+            ),
+            "total_inclusive_amount_annotated": ExpressionWrapper(
+                Coalesce(Round(Sum("purchase_amount", filter=Q(siae__isnull=False)), 0), 0),
+                output_field=IntegerField(),
+            ),
+            "total_insertion_amount_annotated": ExpressionWrapper(
+                Coalesce(Round(Sum("purchase_amount", filter=Q(siae__kind__in=KIND_INSERTION_LIST)), 0), 0),
+                output_field=IntegerField(),
+            ),
+            "total_handicap_amount_annotated": ExpressionWrapper(
+                Coalesce(Round(Sum("purchase_amount", filter=Q(siae__kind__in=KIND_HANDICAP_LIST)), 0), 0),
+                output_field=IntegerField(),
+            ),
+            "total_suppliers_annotated": Count("supplier_siret", distinct=True),
+            "total_inclusive_suppliers_annotated": Count(
+                "supplier_siret", filter=Q(siae__isnull=False), distinct=True
+            ),
+        }
+
+        # get sum of purchases by siae__kind
+        for kind in KIND_INSERTION_LIST + KIND_HANDICAP_LIST:
+            aggregates[f"total_purchases_by_kind_{kind}"] = ExpressionWrapper(
+                Coalesce(Round(Sum("purchase_amount", filter=Q(siae__kind=kind)), 0), 0),
+                output_field=IntegerField(),
+            )
+
+        return self.aggregate(**aggregates)
 
 
 class Purchase(models.Model):
@@ -60,6 +103,8 @@ class Purchase(models.Model):
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
+    objects = models.Manager.from_queryset(PurchaseQuerySet)()
+
     class Meta:
         verbose_name = "Achat"
         verbose_name_plural = "Achats"
@@ -67,6 +112,7 @@ class Purchase(models.Model):
             models.Index(fields=["supplier_siret"]),
             models.Index(fields=["purchase_year"]),
         ]
+        ordering = ["created_at"]
 
     def __str__(self):
         return f"{self.supplier_name} - {self.purchase_amount}€ ({self.purchase_year})"

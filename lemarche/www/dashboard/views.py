@@ -2,10 +2,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import DetailView, FormView, UpdateView
+from django.views.generic import DetailView, FormView, TemplateView, UpdateView
 
 from content_manager.models import ContentPage, Tag
 from lemarche.cms.models import ArticleList
+from lemarche.purchases.models import Purchase
+from lemarche.siaes.constants import KIND_HANDICAP_LIST, KIND_INSERTION_LIST
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
@@ -79,6 +81,76 @@ class DashboardHomeView(LoginRequiredMixin, DetailView):
             context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
             context["siae_count"] = Siae.objects.is_live().count()
             context["tender_count"] = Tender.objects.sent().count() + 30  # historic number (before form)
+        return context
+
+
+class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, TemplateView):
+
+    template_name = "dashboard/inclusive_purchase_stats.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+
+        if user.kind != User.KIND_BUYER and user.company is None:
+            return context
+
+        # get purchase stats for the user
+        purchases_stats = Purchase.objects.get_purchase_for_user(user).with_stats()
+        total_purchases = purchases_stats["total_amount_annotated"]
+        if total_purchases > 0:
+            chart_data_inclusive = {
+                "labels": ["Achats inclusifs", "Achats non inclusifs"],
+                "dataset": [
+                    purchases_stats["total_inclusive_amount_annotated"],
+                    purchases_stats["total_amount_annotated"] - (purchases_stats["total_inclusive_amount_annotated"]),
+                ],
+            }
+            chart_data_insertion_handicap = {
+                "labels": ["Structures d'insertion (IAE)", "Structures du Handicap (STPA)"],
+                "dataset": [
+                    purchases_stats["total_insertion_amount_annotated"],
+                    purchases_stats["total_handicap_amount_annotated"],
+                ],
+            }
+            chart_data_siae_type = {
+                "labels": [
+                    kind
+                    for kind in KIND_INSERTION_LIST + KIND_HANDICAP_LIST
+                    if purchases_stats[f"total_purchases_by_kind_{kind}"] > 0
+                ],
+                "dataset": [
+                    purchases_stats[f"total_purchases_by_kind_{kind}"]
+                    for kind in KIND_INSERTION_LIST + KIND_HANDICAP_LIST
+                    if purchases_stats[f"total_purchases_by_kind_{kind}"] > 0
+                ],
+            }
+
+            context.update(
+                {
+                    "total_purchases": purchases_stats["total_amount_annotated"],
+                    "total_suppliers": purchases_stats["total_suppliers_annotated"],
+                    "total_inclusive_suppliers": purchases_stats["total_inclusive_suppliers_annotated"],
+                    "total_inclusive_purchases": purchases_stats["total_inclusive_amount_annotated"],
+                    "total_insertion_purchases": purchases_stats["total_insertion_amount_annotated"],
+                    "total_handicap_purchases": purchases_stats["total_handicap_amount_annotated"],
+                    "total_inclusive_purchases_percentage": round(
+                        purchases_stats["total_inclusive_amount_annotated"] * 100 / total_purchases,
+                        2,
+                    ),
+                    "total_insertion_purchases_percentage": round(
+                        purchases_stats["total_insertion_amount_annotated"] * 100 / total_purchases,
+                        2,
+                    ),
+                    "total_handicap_purchases_percentage": round(
+                        purchases_stats["total_handicap_amount_annotated"] * 100 / total_purchases,
+                        2,
+                    ),
+                    "chart_data_inclusive": chart_data_inclusive,
+                    "chart_data_insertion_handicap": chart_data_insertion_handicap,
+                    "chart_data_siae_type": chart_data_siae_type,
+                }
+            )
         return context
 
 
