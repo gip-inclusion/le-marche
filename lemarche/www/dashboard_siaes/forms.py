@@ -255,7 +255,7 @@ class SiaeActivityForm(forms.ModelForm):
 
         if geo_range == siae_constants.GEO_RANGE_ZONES:
             if not cleaned_data.get("locations"):
-                self.add_error(None, "Vous devez choisir au moins une zone d'intervention personnalisée.")
+                self.add_error("locations", "Vous devez choisir au moins une zone d'intervention personnalisée.")
         else:
             cleaned_data["locations"] = []
         return cleaned_data
