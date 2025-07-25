@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import OuterRef, Subquery
 from django.http import HttpResponseRedirect
@@ -313,15 +314,23 @@ class SiaeActivityCreateView(SiaeMemberRequiredMixin, CreateView):
         return kwargs
 
 
-class SiaeActivityDetailView(DetailView):
+class SiaeActivityDetailView(UserPassesTestMixin, DetailView):
     template_name = "dashboard/partial_activity_detail.html"
     model = SiaeActivity
 
+    def test_func(self):
+        """Check that only user linked to the Siae can see this activity"""
+        return SiaeActivity.objects.filter(pk=self.kwargs["pk"], siae__users=self.request.user).exists()
 
-class SiaeActivityEditView(UpdateView):
+
+class SiaeActivityEditView(UserPassesTestMixin, UpdateView):
     template_name = "dashboard/partial_activity_edit_form.html"
     form_class = SiaeActivityForm
     model = SiaeActivity
+
+    def test_func(self):
+        """Check that only user linked to the Siae can edit this activity"""
+        return SiaeActivity.objects.filter(pk=self.kwargs["pk"], siae__users=self.request.user).exists()
 
     def get_form_kwargs(self):
         """Add a prefix to form inputs name and id to avoid conflicts with other forms in the page"""
