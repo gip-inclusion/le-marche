@@ -13,6 +13,8 @@
             });
         });
     }"
+    {# This form submission is triggered by an external event. #}
+    hx-trigger="submit, submitAllForms from:body"
   >
     {% csrf_token %}
 
