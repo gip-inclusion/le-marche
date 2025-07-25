@@ -242,7 +242,7 @@ class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, TemplateView):
         return context
 
 
-class SiaeActivitySectorFormView(TemplateView):
+class SiaeActivitySectorFormView(SiaeMemberRequiredMixin, TemplateView):
     template_name = "dashboard/_siae_edit_activities_create_sector_form.html"
 
     def get(self, request, *args, **kwargs):
@@ -271,7 +271,7 @@ class SiaeActivitySectorFormView(TemplateView):
         return context
 
 
-class SiaeActivityCreateView(CreateView):
+class SiaeActivityCreateView(SiaeMemberRequiredMixin, CreateView):
     template_name = "dashboard/partial_activity_create_form.html"  # fixme inherit form
     form_class = SiaeActivityForm
     model = SiaeActivity
