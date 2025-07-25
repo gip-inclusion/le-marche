@@ -42,3 +42,21 @@
         </div>
     </div>
 </div>
+
+<ul class="fr-mt-2v fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-sm fr-btns-group--icon-left">
+  <li>
+    <button class="fr-btn"
+            {# This button will trigger an event that will submit all forms that are loaded #}
+            {# asynchronously in the above loop #}
+            onclick="htmx.trigger('body', 'submitAllForms')"
+    >
+        Enregistrer
+    </button>
+  </li>
+  <li>
+    <a class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-go-back-line"
+       href="{% url 'dashboard_siaes:siae_edit_activities' siae.slug %}">
+      <span>Annuler</span>
+    </a>
+  </li>
+</ul>
