@@ -1,7 +1,5 @@
 {% extends "layouts/base.html" %}
 {% load static dsfr_tags %}
-{% block extra_css %}
-{% endblock extra_css %}
 {% block page_title %}
     {{ page_title }}{{ block.super }}
 {% endblock page_title %}
@@ -14,11 +12,6 @@
             <div class="fr-col-12">
                 <form method="post" action="">
                     {% csrf_token %}
-                    {% if form.non_field_errors %}
-                        <section class="fr-my-4v fr-input-group fr-input-group--error">
-                            {{ form.non_field_errors }}
-                        </section>
-                    {% endif %}
                     <div class="fr-grid-row">
                         <div class="fr-col-12">
                             <h3>{{ page_title }}</h3>
@@ -85,18 +78,6 @@
 {% endblock content %}
 {% block extra_js %}
     <script type="text/javascript"
-            src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
-    <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function() {
-            // -------------------------------------------------------------------
-            // init locations autocomplete form fields
-            const LOCATION_AUTOCOMPLETE_ID = 'id_locations';
-            const LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR = '#dir_form_locations';
-            const LOCATION_SELECTED_CONTAINER_SELECTOR = '#locations-selected';
-            const LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX = 'hiddenLocation';
-            const LOCATION_CURRENT_ID = 'current-locations';
-            const locationsAutoComplete = new PerimetersMultiAutocomplete(LOCATION_AUTOCOMPLETE_ID, LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR, LOCATION_SELECTED_CONTAINER_SELECTOR, LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX, LOCATION_CURRENT_ID);
-            locationsAutoComplete.init();
-        });
+            src="{% static 'js/perimeter_autocomplete_field.js' %}">
     </script>
 {% endblock extra_js %}
