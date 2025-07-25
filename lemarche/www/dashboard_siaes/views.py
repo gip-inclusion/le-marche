@@ -402,34 +402,6 @@ class SiaeActivitySectorFormView(TemplateView):
         return context
 
 
-class SiaeActivityPrestaGeoFormView(FormView):
-    template_name = "dashboard/_siae_edit_activities_create_presta_geo_form.html"
-    form_class = SiaeActivityForm
-
-    def get(self, request, *args, **kwargs):
-        self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
-        return super().get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        sector_id = self.request.GET.get("sectors")
-        if sector_id:
-            context["sector_id"] = sector_id
-
-            # Get existing activity data
-            try:
-                existing_activity = SiaeActivity.objects.get(siae=self.siae, sector_id=sector_id)
-                context["existing_presta_types"] = existing_activity.presta_type
-                context["existing_geo_range"] = existing_activity.geo_range
-                context["existing_geo_range_custom_distance"] = existing_activity.geo_range_custom_distance
-
-                if hasattr(existing_activity, "locations"):
-                    context["existing_locations"] = existing_activity.locations.all()
-            except SiaeActivity.DoesNotExist:
-                pass
-        return context
-
-
 class SiaeActivityCreateView(CreateView):
     template_name = "dashboard/partial_activity_create_form.html"  # fixme inherit form
     form_class = SiaeActivityForm
