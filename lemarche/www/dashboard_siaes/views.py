@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
-from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, TemplateView, UpdateView
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView
 from django.views.generic.edit import FormMixin
 
 from lemarche.sectors.models import Sector, SectorGroup
@@ -17,7 +17,6 @@ from lemarche.utils.apis import api_brevo
 from lemarche.utils.mixins import SiaeMemberRequiredMixin, SiaeUserAndNotMemberRequiredMixin, SiaeUserRequiredMixin
 from lemarche.utils.s3 import S3Upload
 from lemarche.www.dashboard_siaes.forms import (
-    SiaeActivitiesCreateForm,
     SiaeActivityForm,
     SiaeClientReferenceFormSet,
     SiaeEditContactForm,
@@ -179,67 +178,16 @@ class SiaeEditActivitiesDeleteView(SiaeMemberRequiredMixin, SuccessMessageMixin,
         return mark_safe(f"Votre activité <strong>{self.object.sector}</strong> a été supprimée avec succès.")
 
 
-class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, FormView):
+class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, TemplateView):
+    """Display a page with a select displaying sector groups that
+    will call dashboard_siaes:siae_activities_sector_form uppon
+    change and load an htmx partial"""
+
     template_name = "dashboard/siae_edit_activities_create.html"
-    form_class = SiaeActivitiesCreateForm
 
     def get(self, request, *args, **kwargs):
         self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
         return super().get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
-        created_count = 0
-        created_siae_activities = []
-        selected_sectors = request.POST.getlist("sectors")
-
-        for sector_id in selected_sectors:
-            sector = Sector.objects.get(id=sector_id)
-            presta_type = self.request.POST.getlist(f"presta_type_{sector_id}")
-            geo_range = self.request.POST.get(f"geo_range_{sector_id}")
-            geo_range_custom_distance = self.request.POST.get(f"geo_range_custom_distance_{sector_id}")
-            locations = self.request.POST.getlist(f"locations_{sector_id}")
-
-            form_data = {
-                "siae": self.siae.id,
-                "sectors": [sector],
-                "presta_type": presta_type,
-                "geo_range": geo_range,
-                "geo_range_custom_distance": geo_range_custom_distance,
-                "locations": [loc for loc in locations if loc],
-            }
-
-            form = SiaeActivityForm(data=form_data)
-
-            if form.is_valid():
-                if SiaeActivity.objects.filter(siae=self.siae, sector=sector).exists():
-                    # If SiaeActivity already exists, skip it
-                    continue
-                siae_activity = SiaeActivity.objects.create(
-                    siae=self.siae,
-                    sector=sector,
-                    presta_type=form.cleaned_data["presta_type"],
-                    geo_range=form.cleaned_data["geo_range"],
-                    geo_range_custom_distance=form.cleaned_data["geo_range_custom_distance"],
-                )
-                siae_activity.locations.set(form.cleaned_data["locations"])
-                created_count += 1
-                created_siae_activities.append(sector.name)
-            else:
-                return self.form_invalid(form)
-
-        # If no sector is selected or no new activity is created, show an error message
-        if not selected_sectors or created_count == 0:
-            form = self.get_form()
-            form.add_error(None, "Veuillez sélectionner au moins une nouvelle activité.")
-            return self.form_invalid(form)
-
-        messages.success(
-            self.request,
-            self.get_success_message(created_siae_activities, created_count),
-        )
-
-        return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -260,90 +208,23 @@ class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, FormView):
 
         return context
 
-    def get_success_url(self):
-        return reverse_lazy("dashboard_siaes:siae_edit_activities", args=[self.kwargs.get("slug")])
 
-    def get_success_message(self, created_siae_activities, created_count):
-        if created_count == 1:
-            return mark_safe(f"Votre activité <strong>{created_siae_activities[0]}</strong> a été créée avec succès.")
-        else:
-            sectors = ", ".join([sector for sector in created_siae_activities])
-            return mark_safe(f"Les activités suivantes ont été créées avec succès : <strong>{sectors}</strong>.")
+class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, TemplateView):
+    """Display a page with a select displaying an already selected sector group
+    that will call dashboard_siaes:siae_activities_sector_form uppon
+    change and load an htmx partial"""
 
-
-class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, SuccessMessageMixin, FormView):
     template_name = "dashboard/siae_edit_activities_create.html"
-    form_class = SiaeActivitiesCreateForm
-    success_message = "Votre activité a été modifiée avec succès."
 
     def get(self, request, *args, **kwargs):
         self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
         self.sector_group_id = self.kwargs["sector_group_id"]
-        self.siae_activities = SiaeActivity.objects.with_siae_and_sector_group(self.siae, self.sector_group_id)
-        self.locations = self.siae_activities.get_related_locations()
-
         return super().get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
-        self.sector_group_id = self.kwargs["sector_group_id"]
-        self.siae_activities = SiaeActivity.objects.with_siae_and_sector_group(self.siae, self.sector_group_id)
-        self.locations = self.siae_activities.get_related_locations()
-
-        updated_count = 0
-        updated_siae_activities = []
-        selected_sectors = request.POST.getlist("sectors")
-
-        # Create a dictionary to easily access activities by sector ID
-        activities_by_sector = {str(activity.sector.id): activity for activity in self.siae_activities}
-
-        for sector_id in selected_sectors:
-            # Check if SiaeActivity already exists for this sector
-            if sector_id in activities_by_sector:
-                activity = activities_by_sector[sector_id]
-                sector = activity.sector
-
-                presta_type = self.request.POST.getlist(f"presta_type_{sector_id}")
-                geo_range = self.request.POST.get(f"geo_range_{sector_id}")
-                geo_range_custom_distance = self.request.POST.get(f"geo_range_custom_distance_{sector_id}")
-                locations = self.request.POST.getlist(f"locations_{sector_id}")
-
-                form_data = {
-                    "siae": self.siae.id,
-                    "sectors": [sector.id],
-                    "presta_type": presta_type,
-                    "geo_range": geo_range,
-                    "geo_range_custom_distance": geo_range_custom_distance,
-                    "locations": [loc for loc in locations if loc],
-                }
-
-                form = SiaeActivityForm(data=form_data, instance=activity)
-
-                if form.is_valid():
-                    activity.presta_type = form.cleaned_data["presta_type"]
-                    activity.geo_range = form.cleaned_data["geo_range"]
-                    activity.geo_range_custom_distance = form.cleaned_data["geo_range_custom_distance"]
-                    activity.save()
-
-                    activity.locations.set(form.cleaned_data["locations"])
-
-                    updated_count += 1
-                    updated_siae_activities.append(sector.name)
-                else:
-                    return self.form_invalid(form)
-
-        messages.success(
-            self.request,
-            self.get_success_message(updated_siae_activities, updated_count),
-        )
-
-        return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Modifier une activité"
         context["siae"] = self.siae
-        context["current_locations"] = list(self.locations.values("id", "slug", "name"))
         context["breadcrumb_data"] = {
             "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
             "links": [
@@ -357,20 +238,8 @@ class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, SuccessMessageMixin, F
         }
 
         context["sector_groups"] = SectorGroup.objects.all()
-        context["sector_group_id"] = self.kwargs.get("sector_group_id")
+        context["sector_group_id"] = self.sector_group_id
         return context
-
-    def get_success_url(self):
-        return reverse_lazy("dashboard_siaes:siae_edit_activities", args=[self.kwargs.get("slug")])
-
-    def get_success_message(self, updated_siae_activities, updated_count):
-        if updated_count == 1:
-            return mark_safe(
-                f"Votre activité <strong>{updated_siae_activities[0]}</strong> a été modifiée avec succès."
-            )
-        else:
-            sectors = ", ".join([sector for sector in updated_siae_activities])
-            return mark_safe(f"Les activités suivantes ont été modifiées avec succès : <strong>{sectors}</strong>.")
 
 
 class SiaeActivitySectorFormView(TemplateView):
