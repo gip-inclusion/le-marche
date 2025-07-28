@@ -1,0 +1,178 @@
+[
+    {
+        "model": "purchases.purchase",
+        "pk": 1,
+        "fields": {
+            "supplier_name": "Place net SARL",
+            "supplier_siret": "80746896300036",
+            "purchase_amount": "15600.60",
+            "purchase_category": "Entretien",
+            "buying_entity": "USS Enterprise - Assurance",
+            "company": 1,
+            "purchase_year": 2024,
+            "siae": null,
+            "created_at": "2025-07-28T14:25:01.083Z",
+            "updated_at": "2025-07-28T14:25:01.083Z"
+        }
+    },
+    {
+        "model": "purchases.purchase",
+        "pk": 2,
+        "fields": {
+            "supplier_name": "BALUCHON A TABLE CITOYENS",
+            "supplier_siret": "80746931700018",
+            "purchase_amount": "5696.00",
+            "purchase_category": "Traiteur",
+            "buying_entity": "USS Enterprise - Assurance",
+            "company": 1,
+            "purchase_year": 2024,
+            "siae": 1,
+            "created_at": "2025-07-28T14:25:01.083Z",
+            "updated_at": "2025-07-28T14:25:01.083Z"
+        }
+    },
+    {
+        "model": "purchases.purchase",
+        "pk": 3,
+        "fields": {
+            "supplier_name": "LA COLLECTERIE",
+            "supplier_siret": "75187049400026",
+            "purchase_amount": "25000.00",
+            "purchase_category": "Recyclage",
+            "buying_entity": "USS Enterprise - Informatique",
+            "company": 1,
+            "purchase_year": 2024,
+            "siae": 2,
+            "created_at": "2025-07-28T14:25:01.083Z",
+            "updated_at": "2025-07-28T14:25:01.083Z"
+        }
+    },
+    {
+        "model": "purchases.purchase",
+        "pk": 4,
+        "fields": {
+            "supplier_name": "Bâtiment Pro Services",
+            "supplier_siret": "45678912345678",
+            "purchase_amount": "45000.00",
+            "purchase_category": "Maintenance",
+            "buying_entity": "USS Enterprise - Bâtiment",
+            "company": 1,
+            "purchase_year": 2024,
+            "siae": null,
+            "created_at": "2025-07-28T14:25:01.083Z",
+            "updated_at": "2025-07-28T14:25:01.083Z"
+        }
+    },
+    {
+        "model": "purchases.purchase",
+        "pk": 5,
+        "fields": {
+            "supplier_name": "ASSOC TREMPLIN TRAVAIL SOLIDARITE",
+            "supplier_siret": "35402087700024",
+            "purchase_amount": "8500.00",
+            "purchase_category": "Nettoyage",
+            "buying_entity": "USS Enterprise - Informatique",
+            "company": 1,
+            "purchase_year": 2024,
+            "siae": 14,
+            "created_at": "2025-07-28T14:25:01.083Z",
+            "updated_at": "2025-07-28T14:25:01.083Z"
+        }
+    },
+    {
+        "model": "purchases.purchase",
+        "pk": 6,
+        "fields": {
+            "supplier_name": "DMULTIPLE LA BRIQUETERIE",
+            "supplier_siret": "41273578900023",
+            "purchase_amount": "32000.00",
+            "purchase_category": "Transport",
+            "buying_entity": "USS Enterprise - Bâtiment",
+            "company": 1,
+            "purchase_year": 2024,
+            "siae": 11,
+            "created_at": "2025-07-28T14:25:01.083Z",
+            "updated_at": "2025-07-28T14:25:01.083Z"
+        }
+    },
+    {
+        "model": "purchases.purchase",
+        "pk": 7,
+        "fields": {
+            "supplier_name": "Formation Excellence",
+            "supplier_siret": "65432109876543",
+            "purchase_amount": "12000.00",
+            "purchase_category": "Formation",
+            "buying_entity": "USS Enterprise - Informatique",
+            "company": 1,
+            "purchase_year": 2024,
+            "siae": null,
+            "created_at": "2025-07-28T14:25:01.083Z",
+            "updated_at": "2025-07-28T14:25:01.083Z"
+        }
+    },
+    {
+        "model": "purchases.purchase",
+        "pk": 8,
+        "fields": {
+            "supplier_name": "Sécurité Pro",
+            "supplier_siret": "21098765432109",
+            "purchase_amount": "18000.00",
+            "purchase_category": "Sécurité",
+            "buying_entity": "USS Enterprise - Assurance",
+            "company": 1,
+            "purchase_year": 2024,
+            "siae": null,
+            "created_at": "2025-07-28T14:25:01.083Z",
+            "updated_at": "2025-07-28T14:25:01.083Z"
+        }
+    },
+    {
+        "model": "purchases.purchase",
+        "pk": 9,
+        "fields": {
+            "supplier_name": "ADAPEI PAPILLONS BLANCS D'ALSACE",
+            "supplier_siret": "77564261400405",
+            "purchase_amount": "58890.00",
+            "purchase_category": "Maintenance",
+            "buying_entity": "USS Enterprise - Bâtiment",
+            "company": 1,
+            "purchase_year": 2024,
+            "siae": 3836,
+            "created_at": "2025-07-28T14:25:01.083Z",
+            "updated_at": "2025-07-28T14:25:01.083Z"
+        }
+    },
+    {
+        "model": "purchases.purchase",
+        "pk": 10,
+        "fields": {
+            "supplier_name": "MATUVU",
+            "supplier_siret": "41273578900023",
+            "purchase_amount": "9500.00",
+            "purchase_category": "Communication",
+            "buying_entity": "USS Enterprise - Informatique",
+            "company": 1,
+            "purchase_year": 2025,
+            "siae": null,
+            "created_at": "2025-07-28T14:25:01.083Z",
+            "updated_at": "2025-07-28T14:25:01.083Z"
+        }
+    },
+    {
+        "model": "purchases.purchase",
+        "pk": 11,
+        "fields": {
+            "supplier_name": "ADAPEI PAPILLONS BLANCS D'ALSACE",
+            "supplier_siret": "77564261400405",
+            "purchase_amount": "75000.00",
+            "purchase_category": "Maintenance",
+            "buying_entity": "USS Enterprise - Bâtiment",
+            "company": 1,
+            "purchase_year": 2025,
+            "siae": 3836,
+            "created_at": "2025-07-28T14:25:01.083Z",
+            "updated_at": "2025-07-28T14:25:01.083Z"
+        }
+    }
+]
