@@ -338,10 +338,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-# French number formatting (spaces for thousands)
-USE_THOUSAND_SEPARATOR = True
-NUMBER_GROUPING = 3
-
 SITE_ID = 1
 
 PHONENUMBER_DEFAULT_REGION = "FR"
