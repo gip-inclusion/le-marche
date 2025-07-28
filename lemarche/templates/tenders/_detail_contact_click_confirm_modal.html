@@ -9,7 +9,7 @@
                     </div>
                     <form method="post" action="{% url 'tenders:detail-contact-click-stat' tender.slug %}?siae_id={{ siae_id }}">
                         <div class="fr-modal__content">
-                            {% if questions_formset %}
+                            {% if questions_formset.total_form_count %}
                                 <div id="detail_contact_click_confirm_modal_title" class="fr-modal__title">
                                   L'acheteur vous a posé quelques questions
                                 </div>
@@ -53,7 +53,7 @@
                                 </li>
                                 <li>
                                     <button type="submit" class="fr-btn">
-                                    {% if questions_formset %}
+                                    {% if questions_formset.total_form_count %}
                                         Envoyer mes réponses
                                     {% else %}
                                         Oui
