@@ -63,7 +63,7 @@ class DashboardFavoriteListCreateView(LoginRequiredMixin, SuccessMessageMixin, C
 
 class DashboardFavoriteListDetailView(FavoriteListOwnerRequiredMixin, DetailView):
     template_name = "favorites/dashboard_favorite_list_detail.html"
-    queryset = FavoriteList.objects.prefetch_related("siaes", "siaes__activities__sector_group").all()
+    queryset = FavoriteList.objects.prefetch_related("siaes", "siaes__activities__sector__group").all()
     context_object_name = "favorite_list"
 
     def get_context_data(self, **kwargs):
