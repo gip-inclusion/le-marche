@@ -80,11 +80,11 @@
             </div>
         {% endif %}
         <!-- tender questions -->
-        {% if source_form or not source_form and tender.questions_list|length %}
+        {% if tender.questions_list|length %}
             <hr>
             <h2>
                 {% if source_form or user == tender.author %}
-                    Questions à poser aux prestataires ciblés
+                    Questions à poser aux fournisseurs ciblés
                 {% else %}
                     Questions du client
                 {% endif %}
