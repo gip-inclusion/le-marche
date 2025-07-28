@@ -108,10 +108,9 @@ class InclusivePurchaseStatsDashboardViewTest(TestCase):
 
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Ma part d'achat inclusif")
-        self.assertContains(response, "<strong>10000 €</strong> d'achats réalisés")
-        self.assertContains(response, "<strong>0 €</strong> d'achats inclusifs")
-        self.assertContains(response, "<strong>0,0%</strong> de vos achats sont inclusifs")
+        self.assertEqual(response.context["total_purchases"], 10000)
+        self.assertEqual(response.context["total_inclusive_purchases"], 0)
+        self.assertEqual(response.context["total_inclusive_purchases_percentage"], 0)
 
     def test_view_should_display_stats_with_inclusive_purchases_only_insertion(self):
         self.client.force_login(self.user)
@@ -119,10 +118,9 @@ class InclusivePurchaseStatsDashboardViewTest(TestCase):
         PurchaseFactory(company=self.user.company, siae__kind=KIND_INSERTION_LIST[0], purchase_amount=20000)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Ma part d'achat inclusif")
-        self.assertContains(response, "<strong>30000 €</strong> d'achats réalisés")
-        self.assertContains(response, "<strong>20000 €</strong> d'achats inclusifs")
-        self.assertContains(response, "<strong>66,7%</strong> de vos achats sont inclusifs")
+        self.assertEqual(response.context["total_purchases"], 30000)
+        self.assertEqual(response.context["total_inclusive_purchases"], 20000)
+        self.assertEqual(response.context["total_inclusive_purchases_percentage"], 66.67)
         self.assertContains(
             response,
             "<strong>1</strong> fournisseur sur les <strong>2</strong> fournisseurs référencés sont inclusifs",
@@ -134,10 +132,9 @@ class InclusivePurchaseStatsDashboardViewTest(TestCase):
         PurchaseFactory(company=self.user.company, siae__kind=KIND_HANDICAP_LIST[0], purchase_amount=20000)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Ma part d'achat inclusif")
-        self.assertContains(response, "<strong>30000 €</strong> d'achats réalisés")
-        self.assertContains(response, "<strong>20000 €</strong> d'achats inclusifs")
-        self.assertContains(response, "<strong>66,7%</strong> de vos achats sont inclusifs")
+        self.assertEqual(response.context["total_purchases"], 30000)
+        self.assertEqual(response.context["total_inclusive_purchases"], 20000)
+        self.assertEqual(response.context["total_inclusive_purchases_percentage"], 66.67)
         self.assertContains(
             response,
             "<strong>1</strong> fournisseur sur les <strong>2</strong> fournisseurs référencés sont inclusifs",
@@ -150,10 +147,9 @@ class InclusivePurchaseStatsDashboardViewTest(TestCase):
         PurchaseFactory(company=self.user.company, siae__kind=KIND_HANDICAP_LIST[0], purchase_amount=30000)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Ma part d'achat inclusif")
-        self.assertContains(response, "<strong>60000 €</strong> d'achats réalisés")
-        self.assertContains(response, "<strong>50000 €</strong> d'achats inclusifs")
-        self.assertContains(response, "<strong>83,3%</strong> de vos achats sont inclusifs")
+        self.assertEqual(response.context["total_purchases"], 60000)
+        self.assertEqual(response.context["total_inclusive_purchases"], 50000)
+        self.assertEqual(response.context["total_inclusive_purchases_percentage"], 83.33)
         self.assertContains(
             response,
             "<strong>2</strong> fournisseurs sur les <strong>3</strong> fournisseurs référencés sont inclusifs",
