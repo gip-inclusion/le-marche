@@ -6,6 +6,34 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2025.5.0](https://github.com/gip-inclusion/le-marche/compare/v2025.4.0...v2025.5.0) (2025-07-28)
+
+
+### Features
+
+* Ajout de données factices pour les démos de la page "Ma part d'achat inclusif" ([#1750](https://github.com/gip-inclusion/le-marche/issues/1750)) ([9519936](https://github.com/gip-inclusion/le-marche/commit/9519936e07cd5c77cd0c15c345f77375d93e40aa))
+* **brevo:** Ajout d'emails transactionnels via compte Brevo spécifique à Tally ([#1733](https://github.com/gip-inclusion/le-marche/issues/1733)) ([8dc8acb](https://github.com/gip-inclusion/le-marche/commit/8dc8acbbe42123ca87443ca4ec8ddd50a3fe2db1))
+* **brevo:** Ajout de la synchronisation des entreprises 2/2 ([#1720](https://github.com/gip-inclusion/le-marche/issues/1720)) ([e0989a1](https://github.com/gip-inclusion/le-marche/commit/e0989a161fecd8c71efac451038de8f956c420ed))
+* Import par lot d'utilisateurs de type partenaire pour les facilitateurs ([#1737](https://github.com/gip-inclusion/le-marche/issues/1737)) ([e0df268](https://github.com/gip-inclusion/le-marche/commit/e0df268d0dc89c625c55cb33cad7e6d5bed4096d))
+* Instructions automatiques pour les DDB ([#1726](https://github.com/gip-inclusion/le-marche/issues/1726)) ([831b8a0](https://github.com/gip-inclusion/le-marche/commit/831b8a08e7e4de808ce337e6d893aaba27d97b00))
+* Ne pas afficher les questions suggérées pour les Appels d'Offres ([#1748](https://github.com/gip-inclusion/le-marche/issues/1748)) ([46c46a8](https://github.com/gip-inclusion/le-marche/commit/46c46a899695c3f4e25d546860e6c32da539a13b))
+* **Part d'achats inclusifs:** Création du modèle de données ([#1736](https://github.com/gip-inclusion/le-marche/issues/1736)) ([99f1662](https://github.com/gip-inclusion/le-marche/commit/99f1662ae420649bc5db17225ffe19821a9bb6d9))
+* **Part d'achats inclusifs:** page de visualisation des statistiques ([#1742](https://github.com/gip-inclusion/le-marche/issues/1742)) ([6b51a46](https://github.com/gip-inclusion/le-marche/commit/6b51a46c3f3e35d30532ca17d6c8826c997eb03b))
+* Synchronisation des contacts  et entreprise (3/3) ([#1739](https://github.com/gip-inclusion/le-marche/issues/1739)) ([37564a8](https://github.com/gip-inclusion/le-marche/commit/37564a89e25f5c1221d6a1dd3a1d787a8c72a1f0))
+
+
+### Bug Fixes
+
+* Bug d'instruction de DDB manquant pour l'API ([#1740](https://github.com/gip-inclusion/le-marche/issues/1740)) ([eb7e879](https://github.com/gip-inclusion/le-marche/commit/eb7e8796f40444e9a8c91d55721cb41cb7fdab25))
+* Bug sur l'affichage de la liste des favoris ([#1746](https://github.com/gip-inclusion/le-marche/issues/1746)) ([a6b7b27](https://github.com/gip-inclusion/le-marche/commit/a6b7b27f61cf45007735b14ec3dcee178c7fcc19))
+* Chargement des comptes structures très lents ([#1738](https://github.com/gip-inclusion/le-marche/issues/1738)) ([43fc91e](https://github.com/gip-inclusion/le-marche/commit/43fc91e6b1adaff0abe769bb2687651e84c025e5))
+* Correction de l'affichage des coordonnées sur un dépôt de besoin ([#1744](https://github.com/gip-inclusion/le-marche/issues/1744)) ([4ab1499](https://github.com/gip-inclusion/le-marche/commit/4ab1499995ab60024f6ad1e97daf46b7f83b25ca))
+* Correction des tests sur le formatage des nombres sur la page de visualisation de la part d'achats inclusifs ([#1747](https://github.com/gip-inclusion/le-marche/issues/1747)) ([f536588](https://github.com/gip-inclusion/le-marche/commit/f536588de49e435db0d729f9e9eca042fc26ed5a))
+* L'envoi de mail transactionnel passe par une tache Huey ([#1743](https://github.com/gip-inclusion/le-marche/issues/1743)) ([e9c40be](https://github.com/gip-inclusion/le-marche/commit/e9c40be81092e711b9b154c86427aea6f40a68d0))
+* L'inscription avec une adresse déjà enregistrée causait un bug ([#1741](https://github.com/gip-inclusion/le-marche/issues/1741)) ([c31a0b0](https://github.com/gip-inclusion/le-marche/commit/c31a0b0c183c07eeb5d205a6cc7a41ac16158c2f))
+* Lorsque l'acheteur n'avait aucune question, la texte de la modale n'était pas adapté ([#1745](https://github.com/gip-inclusion/le-marche/issues/1745)) ([f4d7e8a](https://github.com/gip-inclusion/le-marche/commit/f4d7e8a4a752ad331ff2b5a5a2d3e96adc08cdbb))
+* Suppression de la validation des urls via des appels http ([#1749](https://github.com/gip-inclusion/le-marche/issues/1749)) ([8e09168](https://github.com/gip-inclusion/le-marche/commit/8e0916867446423e4931425b11c8cef340aec032))
+
 ## [2025.4.0](https://github.com/gip-inclusion/le-marche/compare/v2025.3.0...v2025.4.0) (2025-06-23)
 
 
