@@ -25,7 +25,7 @@
                                 name="sector_group_id"
                                 required=""
                                 hx-get="{% url 'dashboard_siaes:siae_activities_sector_form' siae.slug %}{% if sector_group_id %}?sector_group_id={{ sector_group_id }}{% endif %}"
-                                hx-trigger="{% if sector_group_id %}load{% else %}change{% endif %}"
+                                hx-trigger="load, change"
                                 hx-target="#checkboxes-id_sectors"
                                 {% if sector_group_id %}
                                     disabled
