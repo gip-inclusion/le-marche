@@ -742,13 +742,13 @@ class TenderDetailViewTest(TestCase):
         self.client.force_login(self.user_buyer_1)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
-        self.assertContains(response, "Questions à poser aux prestataires ciblés")
+        self.assertContains(response, "Questions à poser aux fournisseurs ciblés")
         # tender without questions: section should be hidden
         tender_2 = TenderFactory(author=self.user_buyer_2, constraints="")
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, "Questions à poser aux prestataires ciblés")
+        self.assertNotContains(response, "Questions à poser aux fournisseurs ciblés")
         self.assertNotContains(response, "Questions du client")
 
     def test_tender_attachment_display(self):
