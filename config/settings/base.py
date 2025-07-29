@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-import datetime
 import locale
 import os
 
@@ -548,9 +547,6 @@ MARCHE_APPROCH_TOKEN_RECETTE = env.str("MARCHE_APPROCH_TOKEN_RECETTE", "set-it")
 # API Emplois de l'inclusion
 API_EMPLOIS_INCLUSION_URL = "https://emplois.inclusion.beta.gouv.fr/api/v1"
 API_EMPLOIS_INCLUSION_TOKEN = env.str("API_EMPLOIS_INCLUSION_TOKEN", "set-it")
-
-DATACUBE_API_TOKEN = env.str("DATACUBE_API_TOKEN", "")
-DATACUBE_API_TENDER_START_DATE = datetime.datetime(2023, 1, 1, tzinfo=datetime.timezone.utc)
 
 EMPLOIS_INCLUSION_HELP_URL = "https://aide.emplois.inclusion.beta.gouv.fr"
 
