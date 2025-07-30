@@ -592,7 +592,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.select_related("author")
+        qs = qs.select_related("author", "location")
         qs = qs.with_siae_stats()
         # qs = qs.with_question_stats()  # doesn't work when chaining these 2 querysets: adds duplicates...
         return qs
@@ -610,6 +610,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             "tendersiae__detail_display_date__isnull",
             "tendersiae__detail_contact_click_date__isnull",
             "tendersiae__detail_not_interested_click_date__isnull",
+            "author__company_id__exact",
         ]:
             return True
         return super().lookup_allowed(lookup, *args, **kwargs)
