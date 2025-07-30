@@ -592,7 +592,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.select_related("author")
+        qs = qs.select_related("author", "location")
         qs = qs.with_siae_stats()
         # qs = qs.with_question_stats()  # doesn't work when chaining these 2 querysets: adds duplicates...
         return qs
