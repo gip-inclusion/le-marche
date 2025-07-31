@@ -1,7 +1,14 @@
+from datetime import timedelta
+from io import StringIO
+
+from django.core.management import call_command
+from django.db.models import Q
 from django.test import TestCase
+from django.utils import timezone
 
 from lemarche.companies.factories import CompanyFactory
-from lemarche.companies.models import Company
+from lemarche.companies.models import Company, CompanySiaeClientReferenceMatch
+from lemarche.siaes.factories import SiaeClientReferenceFactory, SiaeFactory
 from lemarche.tenders.factories import TenderFactory
 from lemarche.users.factories import UserFactory
 
@@ -36,3 +43,234 @@ class CompanyQuerysetTest(TestCase):
         # user_tender_count
         self.assertEqual(company_queryset.get(id=self.company.id).user_tender_count_annotated, 0)
         self.assertEqual(company_queryset.get(id=self.company_with_users.id).user_tender_count_annotated, 2)
+
+
+class CompanySiaeClientReferenceMatchCommandTest(TestCase):
+    def setUp(self):
+        self.siae1 = SiaeFactory()
+        self.siae2 = SiaeFactory()
+        self.siae3 = SiaeFactory()
+
+        self.company1 = CompanyFactory(name="Serenity Solutions")
+        self.company2 = CompanyFactory(name="Bativia")
+        self.company3 = CompanyFactory(name="Heliosys")
+
+    def test_command_with_no_recent_client_references(self):
+        """Test when there are no recent client references"""
+
+        call_command("find_company_siae_client_reference_matches", wet_run=True)
+        self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 0)
+
+    def test_command_with_default_parameters(self):
+        """Test command with default parameters"""
+        SiaeClientReferenceFactory(
+            name=self.company1.name, siae=self.siae1, created_at=timezone.now() - timedelta(days=1)
+        )
+        call_command("find_company_siae_client_reference_matches")
+
+        # Verify no match is created in dry-run mode
+        self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 0)
+
+    def test_command_with_wet_run(self):
+        """Test command in wet-run mode (actual creation)"""
+        client_ref1 = SiaeClientReferenceFactory(
+            name=self.company1.name, siae=self.siae1, created_at=timezone.now() - timedelta(days=1)
+        )
+        SiaeClientReferenceFactory(name="Optimizia", siae=self.siae1, created_at=timezone.now() - timedelta(days=1))
+        call_command("find_company_siae_client_reference_matches", wet_run=True)
+
+        # Verify match is created
+        self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 1)
+        match = CompanySiaeClientReferenceMatch.objects.first()
+        self.assertEqual(match.company, self.company1)
+        self.assertEqual(match.siae_client_reference, client_ref1)
+        self.assertEqual(match.similarity_score, 1.0)
+        self.assertEqual(match.company_name, self.company1.name)
+        self.assertEqual(match.client_reference_name, client_ref1.name)
+        self.assertEqual(match.moderation_status, CompanySiaeClientReferenceMatch.MODERATION_STATUS_PENDING)
+        self.assertIsNone(match.moderated_by)
+
+    def test_command_with_custom_days(self):
+        """Test command with custom number of days"""
+        # Create an old client reference
+        SiaeClientReferenceFactory(
+            name=self.company2.name, siae=self.siae2, created_at=timezone.now() - timedelta(days=20)
+        )
+
+        # Test with 10 days - should exclude the old reference
+        call_command("find_company_siae_client_reference_matches", days=10, wet_run=True)
+        self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 0)
+
+        # Test with 30 days (default) - should include the old reference
+        call_command("find_company_siae_client_reference_matches", wet_run=True)
+        self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 1)
+
+    def test_command_with_custom_min_score(self):
+        """Test command with custom similarity score"""
+
+        # Create a new client reference with a similar name : Serenity Solutions <-> Sérénité Solutions (score: 0.440)
+        SiaeClientReferenceFactory(
+            name="Sérénité Solutions", siae=self.siae3, created_at=timezone.now() - timedelta(days=1)
+        )
+
+        # Test with high score (0.8)
+        call_command("find_company_siae_client_reference_matches", min_score=0.8, wet_run=True)
+        self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 0)
+
+        # Test with low score (0.1)
+        call_command("find_company_siae_client_reference_matches", min_score=0.1, wet_run=True)
+        self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 1)
+
+    def test_command_with_limit(self):
+        """Test command with match limit"""
+        # Create multiple companies and references to have many potential matches
+        for i in range(6):
+            company_name = f"TestCorp {i}"
+            CompanyFactory(name=company_name)
+            SiaeClientReferenceFactory(
+                name=company_name, siae=self.siae1, created_at=timezone.now() - timedelta(days=1)
+            )
+
+        # Test with limit of 5
+        stdout = StringIO()
+        call_command("find_company_siae_client_reference_matches", limit=5, wet_run=True, stdout=stdout)
+        self.assertIn("Reached limit of 5 matches", stdout.getvalue())
+        self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 5)
+
+    def test_command_excludes_empty_names(self):
+        """Test that command excludes empty names"""
+
+        # create a company with empty name
+        CompanyFactory(name="")
+        # create a client reference with empty name
+        SiaeClientReferenceFactory(name="", siae=self.siae1, created_at=timezone.now() - timedelta(days=1))
+
+        call_command("find_company_siae_client_reference_matches", wet_run=True)
+
+        # Verify no match is created with empty names
+        matches = CompanySiaeClientReferenceMatch.objects.filter(Q(company_name="") | Q(client_reference_name=""))
+        self.assertEqual(matches.count(), 0)
+
+    def test_command_handles_existing_match_with_better_similarity_score(self):
+        """Test that command handles existing match with better similarity score"""
+
+        client_ref = SiaeClientReferenceFactory(
+            name="Sérénité Solutions", siae=self.siae1, created_at=timezone.now() - timedelta(days=1)
+        )
+
+        call_command("find_company_siae_client_reference_matches", wet_run=True)
+
+        self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 1)
+        match = CompanySiaeClientReferenceMatch.objects.first()
+        self.assertEqual(match.company, self.company1)
+        self.assertEqual(match.siae_client_reference, client_ref)
+        self.assertEqual(match.similarity_score, 0.44)
+        self.assertEqual(match.company_name, self.company1.name)
+        self.assertEqual(match.client_reference_name, client_ref.name)
+
+        # simulate moderation approval
+        match.moderation_status = CompanySiaeClientReferenceMatch.MODERATION_STATUS_APPROVED
+        match.save()
+
+        # remove accent from client reference name to test small better similarity score
+        client_ref.name = "Serenité Solutions"
+        client_ref.save()
+
+        stdout = StringIO()
+        call_command("find_company_siae_client_reference_matches", wet_run=True, stdout=stdout)
+        self.assertIn(
+            f"Match already exists for {client_ref.name} but better match found, updating it", stdout.getvalue()
+        )
+
+        self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 1)
+        match = CompanySiaeClientReferenceMatch.objects.first()
+        self.assertEqual(match.company, self.company1)
+        self.assertEqual(match.siae_client_reference, client_ref)  # same client reference
+        self.assertEqual(match.similarity_score, 0.8)  # similarity score updated
+        self.assertEqual(match.company_name, self.company1.name)
+        self.assertEqual(match.client_reference_name, client_ref.name)  # client reference name updated
+        self.assertEqual(match.moderation_status, CompanySiaeClientReferenceMatch.MODERATION_STATUS_APPROVED)
+
+    def test_command_handles_existing_match_with_lower_similarity_score(self):
+        """Test that command handles existing match with lower similarity score"""
+
+        client_ref = SiaeClientReferenceFactory(
+            name="Sérénité Solutions", siae=self.siae1, created_at=timezone.now() - timedelta(days=1)
+        )
+
+        call_command("find_company_siae_client_reference_matches", wet_run=True)
+
+        self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 1)
+        match = CompanySiaeClientReferenceMatch.objects.first()
+        self.assertEqual(match.company, self.company1)
+        self.assertEqual(match.siae_client_reference, client_ref)
+        self.assertEqual(match.similarity_score, 0.44)
+        self.assertEqual(match.company_name, self.company1.name)
+        self.assertEqual(match.client_reference_name, client_ref.name)
+
+        # simulate moderation approval
+        match.moderation_status = CompanySiaeClientReferenceMatch.MODERATION_STATUS_APPROVED
+        match.save()
+
+        # update client reference name to test lower similarity score
+        client_ref.name = "Serenité Problème"
+        client_ref.save()
+
+        stdout = StringIO()
+        call_command("find_company_siae_client_reference_matches", wet_run=True, stdout=stdout)
+        self.assertIn(
+            f"Match already exists for {client_ref.name} but no better match found, deleting it", stdout.getvalue()
+        )
+        self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 0)
+
+    def test_command_matches_are_ordered_by_similarity_score(self):
+        """Test that matches are ordered by similarity score"""
+
+        CompanyFactory(name="Bati")
+
+        client_ref = SiaeClientReferenceFactory(
+            name="Bativi", siae=self.siae1, created_at=timezone.now() - timedelta(days=1)
+        )
+
+        call_command("find_company_siae_client_reference_matches", wet_run=True)
+
+        # self.company2 (Bativia) should be the first match (similarity score is 0.6666667)
+        # Bativi is more similar to Bativia than Bati
+        self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 1)
+        match = CompanySiaeClientReferenceMatch.objects.first()
+        self.assertEqual(match.company, self.company2)
+        self.assertEqual(match.siae_client_reference, client_ref)
+        self.assertEqual(match.similarity_score, 0.6666667)
+        self.assertEqual(match.company_name, self.company2.name)
+        self.assertEqual(match.client_reference_name, client_ref.name)
+
+    def test_command_with_spaces(self):
+        """Test with spaces"""
+        client_ref_spaces = SiaeClientReferenceFactory(
+            name="  Bati via ", siae=self.siae1, created_at=timezone.now() - timedelta(days=1)
+        )
+
+        call_command("find_company_siae_client_reference_matches", wet_run=True)
+
+        # Verify a match is created despite spaces
+        self.assertIsNotNone(
+            CompanySiaeClientReferenceMatch.objects.filter(
+                company=self.company2, siae_client_reference=client_ref_spaces
+            ).first()
+        )
+
+    def test_command_with_special_characters(self):
+        # Test with similar special characters
+        company_accents = CompanyFactory(name="Café & Co")
+        client_ref_accents = SiaeClientReferenceFactory(
+            name="Cafe et Co", siae=self.siae1, created_at=timezone.now() - timedelta(days=1)
+        )
+
+        call_command("find_company_siae_client_reference_matches", wet_run=True)
+
+        # Verify a match is created despite accent differences (Café & Co <-> Cafe et Co)
+        self.assertIsNotNone(
+            CompanySiaeClientReferenceMatch.objects.filter(
+                company=company_accents, siae_client_reference=client_ref_accents
+            ).first()
+        )
