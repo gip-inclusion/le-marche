@@ -7,14 +7,12 @@ register = template.Library()
 
 
 @register.simple_tag
-def siae_sectors_display(object, display_max=5, current_search_query="", output_format="string"):
+def siae_sectors_display(siae_group, display_max=5, current_search_query="", output_format="string"):
     """
     Pretty rendering of M2M fields.
-    - object can be SectorGroup, SiaeActivity...
     """
-
     values = []
-    for sector in object.sectors.all():
+    for sector in siae_group.sectors.all():
         values.append({"slug": sector.slug, "name": sector.name})
 
     # if the search query contains sectors, filter values on these sectors
@@ -39,7 +37,7 @@ def siae_sectors_display(object, display_max=5, current_search_query="", output_
 
 
 @register.inclusion_tag("utils/templatetags/siae_sectors_display.html")
-def siae_sector_groups_display(object, display_max=5, current_sector_groups=[]):
+def siae_sector_groups_display(siae, display_max, current_sector_groups):
     """
     Pretty rendering of M2M field SectorGroup for Siae.
     """
@@ -50,7 +48,7 @@ def siae_sector_groups_display(object, display_max=5, current_sector_groups=[]):
     current_values = []
     # Add sector groups from current_sector_groups if they are in object's activities
     for sector_group in current_sector_groups:
-        if any(activity.sector.group.slug == sector_group.slug for activity in object.activities.all()):
+        if any(activity.sector.group.slug == sector_group.slug for activity in siae.activities.all()):
             if sector_group.slug not in seen_slugs:
                 current_values.append(sector_group.name)
                 seen_slugs.add(sector_group.slug)
@@ -58,7 +56,7 @@ def siae_sector_groups_display(object, display_max=5, current_sector_groups=[]):
     values = []
 
     # Add remaining sector groups from object's activities
-    for activity in object.activities.all():
+    for activity in siae.activities.all():
         if activity.sector.group.slug not in seen_slugs:
             values.append(activity.sector.group.name)
             seen_slugs.add(activity.sector.group.slug)

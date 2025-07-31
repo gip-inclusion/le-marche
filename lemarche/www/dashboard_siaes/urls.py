@@ -2,6 +2,10 @@ from django.urls import include, path
 from django.views.generic.base import RedirectView
 
 from lemarche.www.dashboard_siaes.views import (
+    SiaeActivityCreateView,
+    SiaeActivityDetailView,
+    SiaeActivityEditView,
+    SiaeActivitySectorFormView,
     SiaeEditActivitiesCreateView,
     SiaeEditActivitiesDeleteView,
     SiaeEditActivitiesEditView,
@@ -40,15 +44,25 @@ urlpatterns = [
                     RedirectView.as_view(pattern_name="dashboard_siaes:siae_edit_activities", permanent=False),
                     name="siae_edit_search",
                 ),
+                path(
+                    "activites/ajouter/sector/<int:sector_id>",
+                    SiaeActivityCreateView.as_view(),
+                    name="siae_activities_create",
+                ),
                 path("activites/", SiaeEditActivitiesView.as_view(), name="siae_edit_activities"),
                 path("activites/creer", SiaeEditActivitiesCreateView.as_view(), name="siae_edit_activities_create"),
+                path(
+                    "activites/creer/sectorgroup/",
+                    SiaeActivitySectorFormView.as_view(),
+                    name="siae_activities_sector_form",
+                ),
                 path(
                     "activites/<str:activity_id>/supprimer/",
                     SiaeEditActivitiesDeleteView.as_view(),
                     name="siae_edit_activities_delete",
                 ),
                 path(
-                    "activites/<str:activity_id>/modifier/",
+                    "activites/<int:sector_group_id>/modifier/",
                     SiaeEditActivitiesEditView.as_view(),
                     name="siae_edit_activities_edit",
                 ),
@@ -58,6 +72,9 @@ urlpatterns = [
             ]
         ),
     ),
+    # Activities
+    path("activites/<int:pk>", SiaeActivityDetailView.as_view(), name="siae_activities_detail"),
+    path("activites/<int:pk>/modifier", SiaeActivityEditView.as_view(), name="siae_activities_edit"),
     # Edit Siae (old urls: redirect)
     path(
         "<str:slug>/modifier/info-contact/",
