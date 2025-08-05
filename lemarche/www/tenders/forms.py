@@ -463,11 +463,14 @@ class SiaeSelectFieldsForm(forms.Form):
     """Form used to select fields to appear in the downloaded file"""
 
     format = forms.ChoiceField(choices=(("xlsx", ".xlsx"), ("csv", ".csv")), label="Format")
+    selected_fields = forms.MultipleChoiceField(
+        label="Colonnes à sélectionner", widget=forms.CheckboxSelectMultiple, required=False
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        fields = [
+        selectable_fields = [
             ("name", None),
             ("siret", None),
             ("kind", None),
@@ -486,7 +489,10 @@ class SiaeSelectFieldsForm(forms.Form):
             ("contact_email", None),
             ("contact_phone", None),
         ]
+        # Set label from model if not provided in tuple
+        selectable_fields = [
+            (field_name, field_label if field_label else Siae._meta.get_field(field_name).verbose_name)
+            for field_name, field_label in selectable_fields
+        ]
 
-        for field_name, field_label in fields:
-            field_label = field_label if field_label else Siae._meta.get_field(field_name).verbose_name
-            self.fields[field_name] = forms.BooleanField(required=False, label=field_label)
+        self.fields["selected_fields"].choices = selectable_fields

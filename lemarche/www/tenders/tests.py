@@ -2117,7 +2117,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         ):  # That status is implicit, it switches to targeted when no status is given
             response = self.client.get(
                 reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
-                + "?tendersiae_status=&download_form-format=csv&download_form-name=on"
+                + "?tendersiae_status=&download_form-format=csv&download_form-selected_fields=name"
             )
             content = response.content.decode("utf-8")
             csv_reader = csv.DictReader(content.splitlines())
@@ -2127,7 +2127,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         with self.subTest(status="VIEWED"):
             response = self.client.get(
                 reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
-                + "?tendersiae_status=VIEWED&download_form-format=csv&download_form-name=on"
+                + "?tendersiae_status=VIEWED&download_form-format=csv&download_form-selected_fields=name"
             )
             content = response.content.decode("utf-8")
             csv_reader = csv.DictReader(content.splitlines())
@@ -2137,7 +2137,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         with self.subTest(status="INTERESTED"):
             response = self.client.get(
                 reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
-                + "?tendersiae_status=INTERESTED&download_form-format=csv&download_form-name=on"
+                + "?tendersiae_status=INTERESTED&download_form-format=csv&download_form-selected_fields=name"
             )
             content = response.content.decode("utf-8")
             csv_reader = csv.DictReader(content.splitlines())
@@ -2147,7 +2147,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
     def test_download_csv(self):
         response = self.client.get(
             reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
-            + "?download_form-format=csv&tendersiae_status=INTERESTED&download_form-name=on"
+            + "?download_form-format=csv&tendersiae_status=INTERESTED&download_form-selected_fields=name"
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "text/csv")
@@ -2173,7 +2173,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
     def test_download_xlsx(self):
         response = self.client.get(
             reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
-            + "?download_form-format=xlsx&tendersiae_status=INTERESTED&download_form-name=on"
+            + "?download_form-format=xlsx&tendersiae_status=INTERESTED&download_form-selected_fields=name"
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")

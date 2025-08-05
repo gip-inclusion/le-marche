@@ -781,8 +781,7 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
         """Return the list of siae fields to be included as columns in the file"""
         form = SiaeSelectFieldsForm(data=self.request.GET, prefix="download_form")
         if form.is_valid():
-            selected_fields = [key for key, value in form.cleaned_data.items() if value and key != "format"]
-            return selected_fields
+            return form.cleaned_data["selected_fields"]
 
     def get_filename(self, extension: str) -> str:
         """Get name for the exported file, according status and format."""
