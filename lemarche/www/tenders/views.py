@@ -743,7 +743,6 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
 class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
     http_method_names = ["get"]
     model = Tender
-    FIELD_LIST = get_siae_fields(with_contact_info=True)
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
@@ -769,12 +768,16 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
 
         question_list = TenderQuestion.objects.filter(tender=self.object).order_by("id").values_list("text", flat=True)
 
-        header_list = generate_header(self.FIELD_LIST) + list(question_list)
+        header_list = generate_header(self.get_selected_fields()) + list(question_list)
 
         if self.request.GET.get("format") == "csv":
             return self.get_csv_response(siae_qs, header_list)
         else:
             return self.get_xlxs_response(siae_qs, header_list)
+
+    def get_selected_fields(self):
+        """Return the list of siae fields to be included as columns in the file"""
+        return get_siae_fields(with_contact_info=True)
 
     def get_filename(self, extension: str) -> str:
         """Get name for the exported file, according status and format."""
@@ -798,7 +801,7 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
 
         for siae in siae_qs:
             writer.writerow(
-                generate_siae_row(siae, self.FIELD_LIST)
+                generate_siae_row(siae, self.get_selected_fields())
                 + [question_answer.answer for question_answer in siae.questions_for_tender]
             )
 
@@ -824,7 +827,7 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
         # rows
         row_number = 2
         for siae in siae_qs:
-            siae_row = generate_siae_row(siae, self.FIELD_LIST) + [
+            siae_row = generate_siae_row(siae, self.get_selected_fields()) + [
                 question_answer.answer for question_answer in siae.questions_for_tender
             ]
             for index, row_item in enumerate(siae_row, start=1):
