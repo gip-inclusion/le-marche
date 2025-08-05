@@ -37,7 +37,7 @@ from lemarche.users.models import User
 from lemarche.utils import constants, settings_context_processors
 from lemarche.utils.data import get_choice
 from lemarche.utils.emails import add_to_contact_list
-from lemarche.utils.export import generate_header, generate_siae_row, get_siae_fields
+from lemarche.utils.export import generate_header, generate_siae_row
 from lemarche.utils.mixins import (
     SesameSiaeMemberRequiredMixin,
     SesameTenderAuthorRequiredMixin,
@@ -47,6 +47,7 @@ from lemarche.utils.mixins import (
 )
 from lemarche.www.siaes.forms import SiaeFilterForm
 from lemarche.www.tenders.forms import (
+    SiaeSelectFieldsForm,
     TenderCreateStepConfirmationForm,
     TenderCreateStepContactForm,
     TenderCreateStepDetailForm,
@@ -722,6 +723,7 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
         siae_search_form = self.filter_form if self.filter_form else SiaeFilterForm(data=self.request.GET)
         context["form"] = siae_search_form
         context["current_search_query"] = self.request.GET.urlencode()
+        context["download_form"] = SiaeSelectFieldsForm(prefix="download_form")
         if len(self.request.GET.keys()):
             if siae_search_form.is_valid():
                 current_locations = siae_search_form.cleaned_data.get("locations")
@@ -770,14 +772,17 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
 
         header_list = generate_header(self.get_selected_fields()) + list(question_list)
 
-        if self.request.GET.get("format") == "csv":
+        if self.request.GET.get("download_form-format") == "csv":
             return self.get_csv_response(siae_qs, header_list)
         else:
             return self.get_xlxs_response(siae_qs, header_list)
 
     def get_selected_fields(self):
         """Return the list of siae fields to be included as columns in the file"""
-        return get_siae_fields(with_contact_info=True)
+        form = SiaeSelectFieldsForm(data=self.request.GET, prefix="download_form")
+        if form.is_valid():
+            selected_fields = [key for key, value in form.cleaned_data.items() if value and key != "format"]
+            return selected_fields
 
     def get_filename(self, extension: str) -> str:
         """Get name for the exported file, according status and format."""

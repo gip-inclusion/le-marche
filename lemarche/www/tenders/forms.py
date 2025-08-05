@@ -457,3 +457,31 @@ class TenderDetailGetParams(forms.Form):
 
     siae_id = forms.ModelChoiceField(queryset=Siae.objects.all(), required=False)
     user_id = forms.ModelChoiceField(queryset=User.objects.all(), required=False)
+
+
+class SiaeSelectFieldsForm(forms.Form):
+    """Form used to select fields to appear in the downloaded file"""
+
+    format = forms.ChoiceField(choices=(("xlsx", ".xlsx"), ("csv", ".csv")), label="Format")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        fields = [
+            "name",
+            "siret",
+            "kind",
+            "address",
+            "region",
+            "department",
+            "ca",
+            # "client_references",
+            # "siaelabel_set",
+            "employees_insertion_count",
+            "employees_permanent_count",
+        ]
+
+        for field_name in fields:
+            self.fields[field_name] = forms.BooleanField(
+                required=False, label=Siae._meta.get_field(field_name).verbose_name
+            )
