@@ -133,8 +133,25 @@
                                                       <form method="get"
                                                             id="download-form"
                                                             action="{% url 'tenders:download-siae-list' slug=tender.slug %}">
-                                                        {% dsfr_form download_form %}
+                                                        {% dsfr_form_field download_form.format %}
+                                                        {# real checkbox are hidden here, they are used for form submission #}
+                                                        <div style="display:none;"> {{ download_form.selected_fields }} </div>
                                                         <input type="hidden" name="tendersiae_status" value="{{ status|default:"" }}">
+
+                                                        {# These clickable tags will act as checkboxes, and their value will be linked #}
+                                                        {# to the real checkboxes via js #}
+                                                        <ul class="fr-tags-group">
+                                                            {% for tag in download_form.selected_fields %}
+                                                            <li>
+                                                                <button class="fr-tag"
+                                                                        aria-pressed="{% if tag.data.selected %}true{% else %}false{% endif %}"
+                                                                        data-target-id="{{ tag.id_for_label }}">
+                                                                    {{ tag.choice_label }}
+                                                                </button>
+                                                            </li>
+                                                            {% endfor %}
+                                                        </ul>
+
                                                       </form>
 
                                                     </div>
@@ -194,4 +211,31 @@
         locationsAutoComplete.init();
     });
     </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+          // Select all tags used to select exports
+          const tags = document.querySelectorAll('.fr-tags-group .fr-tag');
+
+          tags.forEach(tag => {
+              tag.addEventListener('click', function (event) {
+                  // Prevent form submission on button click
+                  event.preventDefault();
+
+                  // get checkbox id
+                  const targetId = this.dataset.targetId;
+                  if (!targetId) return;
+
+                  // Get hidden checkbox id
+                  const targetCheckbox = document.getElementById(targetId);
+                  if (!targetCheckbox) return;
+
+                  // Invert checkbox state
+                  targetCheckbox.checked = !targetCheckbox.checked;
+
+                  // Update visual state for tag
+                  this.setAttribute('aria-pressed', targetCheckbox.checked);
+              });
+          });
+      });
+      </script>
 {% endblock extra_js %}

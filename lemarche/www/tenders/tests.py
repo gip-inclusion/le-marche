@@ -2079,7 +2079,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
     def setUp(self):
         self.user = UserFactory(kind=User.KIND_BUYER)
 
-        siae_1 = SiaeFactory(name="siae_1")
+        siae_1 = SiaeFactory(name="siae_1", kind=siae_constants.KIND_ETTI)
         siae_2 = SiaeFactory(name="siae_2")
         siae_3 = SiaeFactory(name="siae_3")
 
@@ -2109,6 +2109,18 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         QuestionAnswerFactory(question=q2, siae=siae_2, answer="answer_for_q2_from_siae_2")
 
         self.client.force_login(self.user)
+
+    def test_filter_columns(self):
+        """Checks that the filtering form appearing on the tender siae list page is also filtering
+        results in downloaded tender siaes"""
+        response = self.client.get(
+            reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
+            + "?tendersiae_status=&download_form-format=csv&kind=ETTI"
+        )
+        content = response.content.decode("utf-8")
+        csv_reader = csv.DictReader(content.splitlines())
+        rows = list(csv_reader)
+        self.assertEqual(len(rows), 1)  # There is one kind ETTI siae in our sample data
 
     def test_filtering(self):
 
