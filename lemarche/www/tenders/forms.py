@@ -468,20 +468,25 @@ class SiaeSelectFieldsForm(forms.Form):
         super().__init__(*args, **kwargs)
 
         fields = [
-            "name",
-            "siret",
-            "kind",
-            "address",
-            "region",
-            "department",
-            "ca",
-            # "client_references",
-            # "siaelabel_set",
-            "employees_insertion_count",
-            "employees_permanent_count",
+            ("name", None),
+            ("siret", None),
+            ("kind", None),
+            ("address", None),
+            ("city", None),
+            ("post_code", None),
+            ("region", None),
+            ("department", None),
+            ("ca", None),
+            ("client_reference_list_display", "Références client"),
+            ("label_list_display", "Certifications et labels"),
+            ("employees_insertion_count", None),
+            ("employees_permanent_count", None),
+            ("contact_first_name", None),
+            ("contact_last_name", None),
+            ("contact_email", None),
+            ("contact_phone", None),
         ]
 
-        for field_name in fields:
-            self.fields[field_name] = forms.BooleanField(
-                required=False, label=Siae._meta.get_field(field_name).verbose_name
-            )
+        for field_name, field_label in fields:
+            field_label = field_label if field_label else Siae._meta.get_field(field_name).verbose_name
+            self.fields[field_name] = forms.BooleanField(required=False, label=field_label)
