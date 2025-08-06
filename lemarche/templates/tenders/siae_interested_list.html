@@ -220,4 +220,34 @@
         locationsAutoComplete.init();
     });
     </script>
+    <script>
+        /*Script to add the filter form parameter to the form used to download results in a file.
+        * Results in the file should be filtered just as the ones displayed on the page*/
+
+        // Get download-form
+        const downloadForm = document.getElementById('download-form');
+
+        // listen to submit button event
+        downloadForm.addEventListener('submit', function(event) {
+
+            // get current url param, used to filter results
+            const currentUrlParams = new URLSearchParams(window.location.search);
+
+            // create a hidden input in the download form for each url param
+            for (const [key, value] of currentUrlParams.entries()) {
+
+                // check if not empty
+                if (value) {
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = key;
+                    hiddenInput.value = value;
+                    hiddenInput.className = 'filter-param'; // handy class
+                    // add to download-form
+                    this.appendChild(hiddenInput);
+                }
+            }
+            // submission will go on and params to url will be added according to the download form
+        });
+    </script>
 {% endblock extra_js %}
