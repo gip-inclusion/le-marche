@@ -2115,7 +2115,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         results in downloaded tender siaes"""
         response = self.client.get(
             reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
-            + "?tendersiae_status=&download_form-format=csv&kind=ETTI"
+            + "?tendersiae_status=VIEWED&download_form-format=csv&download_form-selected_fields=name&kind=ETTI"
         )
         content = response.content.decode("utf-8")
         csv_reader = csv.DictReader(content.splitlines())
