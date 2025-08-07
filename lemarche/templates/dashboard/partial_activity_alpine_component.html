@@ -15,11 +15,8 @@
                   'DELETE',
                   '{% if sector.linked_activity_id %}{% url 'dashboard_siaes:siae_edit_activities_delete' slug=siae.slug activity_id=sector.linked_activity_id %}{% endif %}',
                   {},
-                ).then(function() {
-                  console.log('supprim');
-                  this.linkedActivityId = null;
-                  console.log('after delete', this.linkedActivityId);
-                });
+                );
+                this.linkedActivityId = null;
             }
 
             if (this.sectorIsSelected && !this.linkedActivityId) {

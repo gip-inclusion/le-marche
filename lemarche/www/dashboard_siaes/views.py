@@ -170,7 +170,9 @@ class SiaeEditActivitiesDeleteView(SiaeMemberRequiredMixin, SuccessMessageMixin,
         siae = Siae.objects.get(slug=self.kwargs.get("slug"))
         return get_object_or_404(SiaeActivity, id=self.kwargs.get("activity_id"), siae=siae)
 
-    def dispatch(self, request, *args, **kwargs):
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
         # empty response, for htmx
         return HttpResponse(status=204)
 
