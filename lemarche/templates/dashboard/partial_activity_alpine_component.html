@@ -9,10 +9,6 @@
             value="{{ sector.id }}"
             dsfr="dsfr"
             data-fr-js-checkbox-input="true"
-
-            hx-get="{% if sector.linked_activity_id %}{% url 'dashboard_siaes:siae_activities_edit' pk=sector.linked_activity_id %}{% else %}{% url 'dashboard_siaes:siae_activities_create' slug=siae.slug sector_id=sector.id%}{% endif %}"
-            hx-trigger="{% if sector.linked_activity_id %}load{% else %}change{% endif %}"
-            hx-target="#prestaGeoForm_{{ sector.id }}"
             x-model="sectorIsSelected"
         >
         <label class="fr-label fr-mb-0" for="id_sectors_0_{{ forloop.counter0 }}">
@@ -20,11 +16,17 @@
         </label>
     </div>
 
-    <div
-        id="prestaGeoForm_{{ sector.id }}"
-        class="fr-mt-1w fr-ml-lg-4w"
-        x-show="sectorIsSelected"
-    >
-        <!-- Presta and Geo form -->
-    </div>
+    <template x-if="sectorIsSelected">
+      <!-- Div where actual activity edit or create form is stored -->
+      <div
+          id="prestaGeoForm_{{ sector.id }}"
+          class="fr-mt-1w fr-ml-lg-4w"
+          hx-get="{% if sector.linked_activity_id %}{% url 'dashboard_siaes:siae_activities_edit' pk=sector.linked_activity_id %}{% else %}{% url 'dashboard_siaes:siae_activities_create' slug=siae.slug sector_id=sector.id%}{% endif %}"
+          {# refresh htmx #}
+          x-init="$nextTick(() => { htmx.process(document.getElementById('prestaGeoForm_{{ sector.id }}')) })"
+          hx-trigger="load"
+          hx-swap="innerHTML"
+      >
+      </div>
+    </template>
 </div>
