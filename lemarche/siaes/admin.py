@@ -861,7 +861,7 @@ class SiaeGroupAdmin(admin.ModelAdmin):
             "Détails",
             {
                 "fields": (
-                    "sector",
+                    "sectors",
                     "year_constitution",
                     "siae_count",
                     "siae_count_last_updated",
