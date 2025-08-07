@@ -9,36 +9,7 @@
     <div class="fr-checkbox-group">
         <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
             {% for sector in sectors %}
-                <div class="fr-card fr-card--no-background fr-col-12 fr-mb-2w fr-ml-lg-2w fr-px-2w fr-px-lg-4w fr-py-2v" style="border-radius: 8px;"
-                     x-data="{ sectorIsSelected: {% if sector.id in existing_sector_ids %}true{% else %}false{% endif %} }"
-                >
-                    <div class="fr-checkbox-group fr-mt-0">
-                        <input
-                            type="checkbox"
-                            name="sectors"
-                            id="id_sectors_0_{{ forloop.counter0 }}"
-                            value="{{ sector.id }}"
-                            dsfr="dsfr"
-                            data-fr-js-checkbox-input="true"
-
-                            hx-get="{% if sector.linked_activity_id %}{% url 'dashboard_siaes:siae_activities_edit' pk=sector.linked_activity_id %}{% else %}{% url 'dashboard_siaes:siae_activities_create' slug=siae.slug sector_id=sector.id%}{% endif %}"
-                            hx-trigger="{% if sector.linked_activity_id %}load{% else %}change{% endif %}"
-                            hx-target="#prestaGeoForm_{{ sector.id }}"
-                            x-model="sectorIsSelected"
-                        >
-                        <label class="fr-label fr-mb-0" for="id_sectors_0_{{ forloop.counter0 }}">
-                            <span class="fr-text--bold">{{ sector }}</span>
-                        </label>
-                    </div>
-                    
-                    <div 
-                        id="prestaGeoForm_{{ sector.id }}"
-                        class="fr-mt-1w fr-ml-lg-4w"
-                        x-show="sectorIsSelected"
-                    >
-                        <!-- Presta and Geo form -->
-                    </div>
-                </div>
+              {% include "dashboard/partial_activity_alpine_component.html" with sector=sector existing_sector_ids=existing_sector_ids %}
             {% endfor %}
         </div>
     </div>
