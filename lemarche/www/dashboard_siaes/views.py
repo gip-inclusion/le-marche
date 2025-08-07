@@ -266,7 +266,7 @@ class SiaeActivitySectorFormView(SiaeMemberRequiredMixin, TemplateView):
 
         # Get existing sector ids and convert to string in order to be compared with html input value
         if hasattr(self, "siae_activities") and self.siae_activities:
-            existing_sector_ids = [str(activity.sector.id) for activity in self.siae_activities]
+            existing_sector_ids = [activity.sector.id for activity in self.siae_activities]
             context["existing_sector_ids"] = existing_sector_ids
 
         return context
