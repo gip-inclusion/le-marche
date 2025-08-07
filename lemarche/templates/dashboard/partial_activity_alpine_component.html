@@ -4,9 +4,6 @@
         linkedActivityId: {% if sector.linked_activity_id %}{{ sector.linked_activity_id }}{% else %}null{% endif %},
 
         handleCheckboxChange() {
-            console.log('handleCheckboxChange');
-            console.log('selected', this.sectorIsSelected);
-            console.log('linkedActivityId', this.linkedActivityId);
 
             // If there is an existing id and we uncheck the checkbox, the object will be deleted
             if (!this.sectorIsSelected && this.linkedActivityId) {
