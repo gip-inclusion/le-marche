@@ -345,6 +345,12 @@ class SiaeActivityEditView(UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy("dashboard_siaes:siae_activities_detail", kwargs={"pk": self.object.pk})
 
+    def form_invalid(self, form):
+        """Form htmx, not sent in case of valid form because lost in redirect"""
+        response = super().form_invalid(form)
+        response.headers["formInvalid"] = "true"
+        return response
+
 
 class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeEditInfoForm
