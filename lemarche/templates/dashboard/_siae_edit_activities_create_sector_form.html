@@ -20,7 +20,7 @@
     <button class="fr-btn"
             {# This button will trigger an event that will submit all forms that are loaded #}
             {# asynchronously in the above loop #}
-            onclick="htmx.trigger('body', 'submitAllForms')"
+            onclick="submitAllForms()"
     >
         Enregistrer
     </button>
@@ -32,3 +32,45 @@
     </a>
   </li>
 </ul>
+
+<script>
+  /*
+  * Trigger an submitAllForms listened by all forms, then loop over all forms to listen for this event.
+  * Wait for all forms to be submitted
+  * If all forms are submitted, change page. If validation errors, stay on page to display errors.
+  * */
+  async function submitAllForms() {
+
+      let activityForms = document.querySelectorAll('.activity-form-class')
+      htmx.trigger('body', 'submitAllForms')
+
+      const submissionPromises = Array.from(activityForms).map(form => {
+          return new Promise((resolve, reject) => {
+              form.addEventListener('htmx:afterRequest', function (event) {
+                  if (event.detail.successful) {
+                      // a custom header from the view is sent on invalid response
+                      if (event.detail.xhr.getResponseHeader('formInvalid')) {
+                          reject(new Error("Invalid form"));
+                      } else {
+                          resolve(true);
+                      }
+                  } else {
+                      reject(new Error("Error submitting form", event.detail.xhr.status))
+                  }
+              });
+          });
+      });
+
+      // Wait for all forms to be submitted
+      const results = await Promise.allSettled(submissionPromises);
+      // Check for failed promises
+      const failedSubmissions = results.filter(result => result.status === 'rejected');
+
+      if (failedSubmissions.length === 0) {
+          console.log("okkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+      } else {
+          console.log("erreur")
+      }
+
+  }
+</script>
