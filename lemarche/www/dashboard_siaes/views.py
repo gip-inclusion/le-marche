@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import OuterRef, Subquery
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -170,11 +170,11 @@ class SiaeEditActivitiesDeleteView(SiaeMemberRequiredMixin, SuccessMessageMixin,
         siae = Siae.objects.get(slug=self.kwargs.get("slug"))
         return get_object_or_404(SiaeActivity, id=self.kwargs.get("activity_id"), siae=siae)
 
-    def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.delete()
-        # empty response, for htmx
-        return HttpResponse(status=204)
+    def get_success_url(self):
+        return reverse_lazy("dashboard_siaes:siae_edit_activities", args=[self.kwargs.get("slug")])
+
+    def get_success_message(self, cleaned_data):
+        return mark_safe(f"Votre activité <strong>{self.object.sector}</strong> a été supprimée avec succès.")
 
 
 class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, TemplateView):
