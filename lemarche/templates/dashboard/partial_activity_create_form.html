@@ -1,23 +1,23 @@
 {% load dsfr_tags %}
-<div>
-  <form
-    class="activity-form-class"
-    hx-post="{% url 'dashboard_siaes:siae_activities_create' slug=siae.slug sector_id=sector_id %}"
-    x-data="{selectedGeoRange: '{{ form.geo_range.value }}' } "
-    x-init="() => {
-        const radioInputs = document.getElementsByName('{{ form.geo_range.html_name }}');
-        radioInputs.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.checked) {
-                    selectedGeoRange = this.value;
-                }
-            });
-        });
-    }"
-    {# This form submission is triggered by an external event. #}
-    hx-trigger="submitAllForms from:body"
-    hx-swap="outerHTML"
-  >
+
+<form
+  class="activity-form-class"
+  hx-post="{% url 'dashboard_siaes:siae_activities_create' slug=siae.slug sector_id=sector_id %}"
+  x-data="{selectedGeoRange: '{{ form.geo_range.value }}' } "
+  x-init="() => {
+      const radioInputs = document.getElementsByName('{{ form.geo_range.html_name }}');
+      radioInputs.forEach(radio => {
+          radio.addEventListener('change', function() {
+              if (this.checked) {
+                  selectedGeoRange = this.value;
+              }
+          });
+      });
+  }"
+  {# This form submission is triggered by an external event. #}
+  hx-trigger="submitAllForms from:body"
+  hx-swap="outerHTML"
+>
     {% csrf_token %}
 
     {% dsfr_form_field form.sector %}
@@ -36,7 +36,6 @@
 
   <button class="fr-btn" type="submit">Enregistrer</button>
 </form>
-</div>
 
 <script type="text/javascript" defer>
     /*Wrapped in a function to avoid scope clash with other forms instances*/
