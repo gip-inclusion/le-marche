@@ -1,6 +1,7 @@
 {% load dsfr_tags %}
-<div id="activity-edit-form-{{ object.pk }}" >
+<div>
   <form
+    class="activity-form-class"
     hx-post="{% url 'dashboard_siaes:siae_activities_create' slug=siae.slug sector_id=sector_id %}"
     x-data="{selectedGeoRange: '{{ form.geo_range.value }}' } "
     x-init="() => {
@@ -15,7 +16,6 @@
     }"
     {# This form submission is triggered by an external event. #}
     hx-trigger="submitAllForms from:body"
-    hx-target="#activity-edit-form-{{ object.pk }}"
     hx-swap="outerHTML"
   >
     {% csrf_token %}
