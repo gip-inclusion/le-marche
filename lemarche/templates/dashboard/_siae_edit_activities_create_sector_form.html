@@ -67,7 +67,7 @@
       const failedSubmissions = results.filter(result => result.status === 'rejected');
 
       if (failedSubmissions.length === 0) {
-          console.log("okkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+          window.location.href = "{% url 'dashboard_siaes:siae_edit_activities' slug=siae.slug %}";
       } else {
           console.log("erreur")
       }
