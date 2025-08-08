@@ -34,12 +34,6 @@
                                 @click="remove"
                                 title="Supprimer l'activité">
                         </button>
-                        <button id="siae-activity-update-btn"
-                                class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-edit-line"
-                                hx-get="{% url 'dashboard_siaes:siae_activities_edit' pk=activity.id %}"
-                                hx-target="#activity-li-{{ activity.id }}"
-                                title="Modifier l'activité">
-                        </button>
                     </div>
                 {% endfor %}
             </ul>

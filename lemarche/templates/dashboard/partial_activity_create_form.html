@@ -24,7 +24,6 @@
     {% dsfr_form_field form.presta_type %}
     {% dsfr_form_field form.geo_range %}
 
-    {#fixme pas de hardcode#}
     <div x-show="selectedGeoRange === 'CUSTOM'">
       {% dsfr_form_field form.geo_range_custom_distance %}
     </div>
@@ -33,8 +32,6 @@
       {% dsfr_form_field form.locations %}
     </div>
 
-
-  <button class="fr-btn" type="submit">Enregistrer</button>
 </form>
 
 <script type="text/javascript" defer>

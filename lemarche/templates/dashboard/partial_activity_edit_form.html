@@ -24,8 +24,6 @@
     {% dsfr_form_field form.presta_type %}
     {% dsfr_form_field form.geo_range %}
 
-
-{#fixme pas de hardcode#}
     <div x-show="selectedGeoRange === 'CUSTOM'">
       {% dsfr_form_field form.geo_range_custom_distance %}
     </div>
@@ -40,15 +38,6 @@
       {% endwith %}
     </div>
 
-  <button
-      class="fr-btn fr-btn--secondary"
-      hx-get="{% url 'dashboard_siaes:siae_activities_detail' pk=object.pk %}"
-      hx-swap="outerHTML"
-      hx-target="#activity-edit-form-{{ object.pk }}"
-  >
-    Annuler
-  </button>
-  <button class="fr-btn" type="submit">Enregistrer</button>
 </form>
 
 <script type="text/javascript" defer>
