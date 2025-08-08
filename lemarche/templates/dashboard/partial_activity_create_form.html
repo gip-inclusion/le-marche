@@ -14,7 +14,9 @@
         });
     }"
     {# This form submission is triggered by an external event. #}
-    hx-trigger="submit, submitAllForms from:body"
+    hx-trigger="submitAllForms from:body"
+    hx-target="#activity-edit-form-{{ object.pk }}"
+    hx-swap="outerHTML"
   >
     {% csrf_token %}
 

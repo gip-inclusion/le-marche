@@ -13,6 +13,10 @@
             });
         });
     }"
+    {# This form submission is triggered by an external event. #}
+    hx-trigger="submitAllForms from:body"
+    hx-target="#activity-edit-form-{{ object.pk }}"
+    hx-swap="outerHTML"
   >
     {% csrf_token %}
     {# sector is hiddeninput widget from form #}
