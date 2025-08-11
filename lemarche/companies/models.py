@@ -97,7 +97,7 @@ class CompanySiaeClientReferenceMatch(models.Model):
     company = models.ForeignKey(
         Company, verbose_name="Entreprise", on_delete=models.CASCADE, related_name="siae_client_reference_matches"
     )
-    siae_client_reference = models.ForeignKey(
+    siae_client_reference = models.OneToOneField(
         "siaes.SiaeClientReference",
         verbose_name="Référence client SIAE",
         on_delete=models.CASCADE,
