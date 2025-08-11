@@ -106,18 +106,6 @@ class Command(BaseCommand):
 
             # link to only one company per reference, the most similar one
             if similar_company := similar_companies.first():
-                # Check if match already exists
-                existing_match = CompanySiaeClientReferenceMatch.objects.filter(
-                    company=similar_company, siae_client_reference=client_reference
-                ).first()
-
-                if existing_match:
-                    self.stdout_info(
-                        f"Match already exists: {similar_company.name} <-> {client_reference.name} "
-                        f"(score: {existing_match.similarity_score:.6f})"
-                    )
-                    continue
-
                 matches_found += 1
                 self.stdout_info(
                     f"Potential match: {similar_company.name} <-> {client_reference.name} "
