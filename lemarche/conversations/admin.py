@@ -187,8 +187,8 @@ class TemplateTransactionalSendLogAdmin(admin.ModelAdmin):
         ("recipient_content_type", admin.RelatedOnlyFieldListFilter),
         ("parent_content_type", admin.RelatedOnlyFieldListFilter),
     ]
-    search_fields = ["id", "template_transactional"]
-    search_help_text = "Cherche sur les champs : ID, Template transactionnel"
+    search_fields = ["id", "template_transactional__name", "template_transactional__code"]
+    search_help_text = "Cherche sur les champs : ID, Nom du template, Code du template"
 
     readonly_fields = [field.name for field in TemplateTransactionalSendLog._meta.fields]
 
