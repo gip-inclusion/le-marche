@@ -105,8 +105,11 @@ class CompanySiaeClientReferenceMatch(models.Model):
     )
 
     # Matching algorithm data
-    similarity_score = models.FloatField(
-        verbose_name="Score de similarité", help_text="Score de similarité trigram entre les noms"
+    similarity_score = models.DecimalField(
+        verbose_name="Score de similarité",
+        help_text="Score de similarité trigram entre les noms",
+        max_digits=7,
+        decimal_places=6,
     )
     company_name = models.CharField(
         verbose_name="Nom de l'entreprise",
