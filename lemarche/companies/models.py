@@ -85,14 +85,10 @@ class CompanySiaeClientReferenceMatch(models.Model):
     that can be moderated by human admins.
     """
 
-    MODERATION_STATUS_PENDING = "pending"
-    MODERATION_STATUS_APPROVED = "approved"
-    MODERATION_STATUS_REJECTED = "rejected"
-    MODERATION_STATUS_CHOICES = [
-        (MODERATION_STATUS_PENDING, "En attente"),
-        (MODERATION_STATUS_APPROVED, "Approuvé"),
-        (MODERATION_STATUS_REJECTED, "Rejeté"),
-    ]
+    class ModerationStatus(models.TextChoices):
+        PENDING = "pending", "En attente"
+        APPROVED = "approved", "Approuvé"
+        REJECTED = "rejected", "Rejeté"
 
     company = models.ForeignKey(
         Company, verbose_name="Entreprise", on_delete=models.CASCADE, related_name="siae_client_reference_matches"
@@ -126,8 +122,8 @@ class CompanySiaeClientReferenceMatch(models.Model):
     moderation_status = models.CharField(
         verbose_name="Statut de modération",
         max_length=20,
-        choices=MODERATION_STATUS_CHOICES,
-        default=MODERATION_STATUS_PENDING,
+        choices=ModerationStatus.choices,
+        default=ModerationStatus.PENDING,
     )
     moderated_by = models.ForeignKey(
         "users.User",

@@ -120,7 +120,7 @@ class Command(BaseCommand):
                         similarity_score=similar_company.similarity,
                         company_name=similar_company.name,
                         client_reference_name=client_reference.name,
-                        moderation_status=CompanySiaeClientReferenceMatch.MODERATION_STATUS_PENDING,
+                        moderation_status=CompanySiaeClientReferenceMatch.ModerationStatus.PENDING,
                     )
                     matches_created += 1
                     self.stdout_success(f"Created match #{matches_created}")

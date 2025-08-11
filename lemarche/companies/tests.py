@@ -87,7 +87,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
         self.assertEqual(match.similarity_score, 1.0)
         self.assertEqual(match.company_name, self.company1.name)
         self.assertEqual(match.client_reference_name, client_ref1.name)
-        self.assertEqual(match.moderation_status, CompanySiaeClientReferenceMatch.MODERATION_STATUS_PENDING)
+        self.assertEqual(match.moderation_status, CompanySiaeClientReferenceMatch.ModerationStatus.PENDING)
         self.assertIsNone(match.moderated_by)
 
     def test_command_with_custom_days(self):
@@ -169,7 +169,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
         self.assertEqual(match.client_reference_name, client_ref.name)
 
         # simulate moderation approval
-        match.moderation_status = CompanySiaeClientReferenceMatch.MODERATION_STATUS_APPROVED
+        match.moderation_status = CompanySiaeClientReferenceMatch.ModerationStatus.APPROVED
         match.save()
 
         # remove accent from client reference name to test small better similarity score
@@ -189,7 +189,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
         self.assertEqual(match.similarity_score, 0.8)  # similarity score updated
         self.assertEqual(match.company_name, self.company1.name)
         self.assertEqual(match.client_reference_name, client_ref.name)  # client reference name updated
-        self.assertEqual(match.moderation_status, CompanySiaeClientReferenceMatch.MODERATION_STATUS_APPROVED)
+        self.assertEqual(match.moderation_status, CompanySiaeClientReferenceMatch.ModerationStatus.APPROVED)
 
     def test_command_handles_existing_match_with_lower_similarity_score_under_limit(self):
         """Test that command handles existing match with lower similarity score"""
@@ -209,7 +209,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
         self.assertEqual(match.client_reference_name, client_ref.name)
 
         # simulate moderation approval
-        match.moderation_status = CompanySiaeClientReferenceMatch.MODERATION_STATUS_APPROVED
+        match.moderation_status = CompanySiaeClientReferenceMatch.ModerationStatus.APPROVED
         match.save()
 
         # update client reference name to test lower similarity score under limit

@@ -45,11 +45,7 @@ class ModerationStatusFilter(admin.SimpleListFilter):
     parameter_name = "moderation_status"
 
     def lookups(self, request, model_admin):
-        return (
-            ("pending", "En attente"),
-            ("approved", "Approuvé"),
-            ("rejected", "Rejeté"),
-        )
+        return CompanySiaeClientReferenceMatch.ModerationStatus.choices
 
     def queryset(self, request, queryset):
         value = self.value()
