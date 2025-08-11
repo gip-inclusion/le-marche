@@ -191,7 +191,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
         self.assertEqual(match.client_reference_name, client_ref.name)  # client reference name updated
         self.assertEqual(match.moderation_status, CompanySiaeClientReferenceMatch.MODERATION_STATUS_APPROVED)
 
-    def test_command_handles_existing_match_with_lower_similarity_score(self):
+    def test_command_handles_existing_match_with_lower_similarity_score_under_limit(self):
         """Test that command handles existing match with lower similarity score"""
 
         client_ref = SiaeClientReferenceFactory(
@@ -212,7 +212,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
         match.moderation_status = CompanySiaeClientReferenceMatch.MODERATION_STATUS_APPROVED
         match.save()
 
-        # update client reference name to test lower similarity score
+        # update client reference name to test lower similarity score under limit
         client_ref.name = "Serenité Problème"
         client_ref.save()
 
@@ -222,6 +222,41 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
             f"Match already exists for {client_ref.name} but no better match found, deleting it", stdout.getvalue()
         )
         self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 0)
+
+    def test_command_handles_existing_match_with_lower_similarity_score_over_limit(self):
+        """Test that command handles existing match with lower similarity score over limit"""
+
+        client_ref = SiaeClientReferenceFactory(
+            name="Sérénité Solutions", siae=self.siae1, created_at=timezone.now() - timedelta(days=1)
+        )
+
+        call_command("find_company_siae_client_reference_matches", wet_run=True)
+
+        self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 1)
+        match1 = CompanySiaeClientReferenceMatch.objects.first()
+        self.assertEqual(match1.company, self.company1)
+        self.assertEqual(match1.siae_client_reference, client_ref)
+        self.assertEqual(match1.similarity_score, 0.44)
+        self.assertEqual(match1.company_name, self.company1.name)
+        self.assertEqual(match1.client_reference_name, client_ref.name)
+
+        # update client reference name to test lower similarity score over limit
+        client_ref.name = "Sérénité Solutiont"
+        client_ref.save()
+
+        stdout = StringIO()
+        call_command("find_company_siae_client_reference_matches", wet_run=True, stdout=stdout)
+        self.assertIn(
+            f"Match already exists for {client_ref.name} but no better match found, deleting it", stdout.getvalue()
+        )
+        self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 1)
+        match2 = CompanySiaeClientReferenceMatch.objects.first()
+        self.assertNotEqual(match2.pk, match1.pk)
+        self.assertEqual(match2.company, self.company1)
+        self.assertEqual(match2.siae_client_reference, client_ref)
+        self.assertEqual(match2.similarity_score, 0.3333333)
+        self.assertEqual(match2.company_name, self.company1.name)
+        self.assertEqual(match2.client_reference_name, client_ref.name)
 
     def test_command_matches_are_ordered_by_similarity_score(self):
         """Test that matches are ordered by similarity score"""

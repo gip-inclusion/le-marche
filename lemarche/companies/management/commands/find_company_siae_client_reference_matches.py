@@ -66,18 +66,24 @@ class Command(BaseCommand):
                 break
 
             # check if match already exists for this client reference
-            existing_match = CompanySiaeClientReferenceMatch.objects.filter(
-                siae_client_reference=client_reference
-            ).first()
+            existing_match = (
+                CompanySiaeClientReferenceMatch.objects.filter(siae_client_reference=client_reference)
+                .order_by("-updated_at")
+                .first()
+            )
             if existing_match:
-                # search for a better match with the same company
+                # if match update date is more recent than reference update date, do nothing
+                if existing_match.updated_at > client_reference.updated_at:
+                    continue
+
+                # else search for a better match with the same company
                 new_similarity = (
                     companies.filter(id=existing_match.company_id)
                     .annotate(similarity=TrigramSimilarity("name", client_reference.name))
                     .filter(similarity__gte=min_score)
                     .first()
                 )
-                if new_similarity and new_similarity.similarity > existing_match.similarity_score:
+                if new_similarity and round(new_similarity.similarity, 6) > existing_match.similarity_score:
                     self.stdout_info(
                         f"Match already exists for {client_reference.name} but better match found, updating it"
                     )
@@ -108,14 +114,14 @@ class Command(BaseCommand):
                 if existing_match:
                     self.stdout_info(
                         f"Match already exists: {similar_company.name} <-> {client_reference.name} "
-                        f"(score: {existing_match.similarity_score:.3f})"
+                        f"(score: {existing_match.similarity_score:.6f})"
                     )
                     continue
 
                 matches_found += 1
                 self.stdout_info(
                     f"Potential match: {similar_company.name} <-> {client_reference.name} "
-                    f"(score: {similar_company.similarity:.3f})"
+                    f"(score: {similar_company.similarity:.6f})"
                 )
 
                 if wet_run:
