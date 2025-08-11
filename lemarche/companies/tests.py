@@ -1,4 +1,5 @@
 from datetime import timedelta
+from decimal import Decimal
 from io import StringIO
 
 from django.core.management import call_command
@@ -164,7 +165,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
         match = CompanySiaeClientReferenceMatch.objects.first()
         self.assertEqual(match.company, self.company1)
         self.assertEqual(match.siae_client_reference, client_ref)
-        self.assertEqual(match.similarity_score, 0.44)
+        self.assertEqual(match.similarity_score, Decimal("0.44"))
         self.assertEqual(match.company_name, self.company1.name)
         self.assertEqual(match.client_reference_name, client_ref.name)
 
@@ -186,7 +187,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
         match = CompanySiaeClientReferenceMatch.objects.first()
         self.assertEqual(match.company, self.company1)
         self.assertEqual(match.siae_client_reference, client_ref)  # same client reference
-        self.assertEqual(match.similarity_score, 0.8)  # similarity score updated
+        self.assertEqual(match.similarity_score, Decimal("0.8"))  # similarity score updated
         self.assertEqual(match.company_name, self.company1.name)
         self.assertEqual(match.client_reference_name, client_ref.name)  # client reference name updated
         self.assertEqual(match.moderation_status, CompanySiaeClientReferenceMatch.ModerationStatus.APPROVED)
@@ -204,7 +205,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
         match = CompanySiaeClientReferenceMatch.objects.first()
         self.assertEqual(match.company, self.company1)
         self.assertEqual(match.siae_client_reference, client_ref)
-        self.assertEqual(match.similarity_score, 0.44)
+        self.assertEqual(match.similarity_score, Decimal("0.44"))
         self.assertEqual(match.company_name, self.company1.name)
         self.assertEqual(match.client_reference_name, client_ref.name)
 
@@ -236,7 +237,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
         match1 = CompanySiaeClientReferenceMatch.objects.first()
         self.assertEqual(match1.company, self.company1)
         self.assertEqual(match1.siae_client_reference, client_ref)
-        self.assertEqual(match1.similarity_score, 0.44)
+        self.assertEqual(match1.similarity_score, Decimal("0.44"))
         self.assertEqual(match1.company_name, self.company1.name)
         self.assertEqual(match1.client_reference_name, client_ref.name)
 
@@ -254,7 +255,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
         self.assertNotEqual(match2.pk, match1.pk)
         self.assertEqual(match2.company, self.company1)
         self.assertEqual(match2.siae_client_reference, client_ref)
-        self.assertEqual(match2.similarity_score, 0.3333333)
+        self.assertEqual(match2.similarity_score, Decimal("0.333333"))
         self.assertEqual(match2.company_name, self.company1.name)
         self.assertEqual(match2.client_reference_name, client_ref.name)
 
@@ -275,7 +276,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
         match = CompanySiaeClientReferenceMatch.objects.first()
         self.assertEqual(match.company, self.company2)
         self.assertEqual(match.siae_client_reference, client_ref)
-        self.assertEqual(match.similarity_score, 0.6666667)
+        self.assertEqual(match.similarity_score, Decimal("0.666667"))
         self.assertEqual(match.company_name, self.company2.name)
         self.assertEqual(match.client_reference_name, client_ref.name)
 
