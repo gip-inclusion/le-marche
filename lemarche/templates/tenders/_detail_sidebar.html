@@ -14,11 +14,15 @@
         <!-- tender basic view stat -->
         {% if tender.siae_email_link_click_date_or_detail_display_date_count > 0 %}
             <div class="fr-col-12">
-                <div class="fr-alert fr-alert--warning">
+                <div class="fr-alert fr-alert--info">
+                    {% if tender.siae_email_link_click_date_or_detail_display_date_count < 5 %}
+                      <p>{{ incitative_message }}</p>
+                    {% else %}
                     <p>
-                        Déjà {{ tender.siae_email_link_click_date_or_detail_display_date_count }} prestataire{{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize }} inclusif{{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize }}
+                        Déjà {{ tender.siae_email_link_click_date_or_detail_display_date_count }} fournisseur{{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize }} inclusif{{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize }}
                         {{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize:"a,ont" }} vu le besoin de ce client.
                     </p>
+                    {% endif %}
                 </div>
             </div>
         {% endif %}
