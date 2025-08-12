@@ -2159,7 +2159,8 @@ class TenderSiaeDownloadViewTestCase(TestCase):
     def test_download_csv(self):
         response = self.client.get(
             reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
-            + "?download_form-format=csv&tendersiae_status=INTERESTED&download_form-selected_fields=name"
+            + "?download_form-format=csv&tendersiae_status=INTERESTED"
+            "&download_form-selected_fields=name&download_form-selected_fields=siae_answers"
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "text/csv")
@@ -2185,7 +2186,8 @@ class TenderSiaeDownloadViewTestCase(TestCase):
     def test_download_xlsx(self):
         response = self.client.get(
             reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
-            + "?download_form-format=xlsx&tendersiae_status=INTERESTED&download_form-selected_fields=name"
+            + "?download_form-format=xlsx&tendersiae_status=INTERESTED"
+            "&download_form-selected_fields=name&download_form-selected_fields=siae_answers"
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")

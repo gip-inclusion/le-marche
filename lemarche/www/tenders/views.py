@@ -774,9 +774,15 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
         else:
             return HttpResponse(400)
 
-        question_list = TenderQuestion.objects.filter(tender=self.object).order_by("id").values_list("text", flat=True)
+        if "siae_answers" in self.selected_fields:
+            self.question_list = list(
+                TenderQuestion.objects.filter(tender=self.object).order_by("id").values_list("text", flat=True)
+            )
+            self.selected_fields.remove("siae_answers")
+        else:
+            self.question_list = []
 
-        header_list = self.get_selected_fields_labels(form) + list(question_list)
+        header_list = self.get_selected_fields_labels(form)
 
         if self.request.GET.get("download_form-format") == "csv":
             return self.get_csv_response(siae_qs, header_list)
@@ -788,7 +794,7 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
         selected_values = form.cleaned_data["selected_fields"]
 
         choices_dict = dict(form.fields["selected_fields"].choices)
-        selected_labels = [choices_dict.get(value) for value in selected_values]
+        selected_labels = [choices_dict[value] for value in selected_values] + self.question_list
 
         return selected_labels
 
@@ -815,7 +821,11 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
         for siae in siae_qs:
             writer.writerow(
                 generate_siae_row(siae, self.selected_fields)
-                + [question_answer.answer for question_answer in siae.questions_for_tender]
+                + (
+                    [question_answer.answer for question_answer in siae.questions_for_tender]
+                    if self.question_list
+                    else []
+                )
             )
 
         return response
@@ -840,9 +850,9 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
         # rows
         row_number = 2
         for siae in siae_qs:
-            siae_row = generate_siae_row(siae, self.selected_fields) + [
-                question_answer.answer for question_answer in siae.questions_for_tender
-            ]
+            siae_row = generate_siae_row(siae, self.selected_fields) + (
+                [question_answer.answer for question_answer in siae.questions_for_tender] if self.question_list else []
+            )
             for index, row_item in enumerate(siae_row, start=1):
                 cell = ws.cell(row=row_number, column=index)
                 cell.value = row_item

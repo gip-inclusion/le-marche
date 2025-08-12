@@ -488,6 +488,7 @@ class SiaeSelectFieldsForm(forms.Form):
             ("contact_last_name", None),
             ("contact_email", None),
             ("contact_phone", None),
+            ("siae_answers", "Réponse aux questions"),
         ]
         # Set label from model if not provided in tuple
         selectable_fields = [
