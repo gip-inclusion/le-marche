@@ -1189,7 +1189,7 @@ class TenderDetailViewTest(TestCase):
         self.assertEqual(self.tender_1.tendersiae_set.first().siae, self.siae_3)
         self.assertIsNone(self.tender_1.tendersiae_set.first().email_link_click_date)
         self.assertIsNotNone(self.tender_1.tendersiae_set.first().detail_display_date)
-        self.assertContains(response, "Déjà 5 fournisseurs inclusifs ont vu le besoin de ce client.", html=True)
+        self.assertContains(response, "Soyez le premier à répondre à cet appel d'offres.", html=True)
 
     def test_badge_is_new_for_siaes(self):
         # assert the new badge is here
