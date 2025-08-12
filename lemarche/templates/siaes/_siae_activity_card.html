@@ -30,7 +30,7 @@
                         <button id="siae-activity-delete-modal-btn"
                                 class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-delete-line"
                                 x-data="activityItem"
-                                x-init="initOptions('{{ activity.id }}','{{ activity.sector_group|escapejs }}')"
+                                x-init="initOptions('{{ activity.id }}','{{ activity.sector|escapejs }}')"
                                 @click="remove"
                                 title="Supprimer l'activité">
                         </button>
