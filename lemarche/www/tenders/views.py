@@ -41,7 +41,7 @@ from lemarche.utils.export import generate_header, generate_siae_row, get_siae_f
 from lemarche.utils.mixins import (
     SesameSiaeMemberRequiredMixin,
     SesameTenderAuthorRequiredMixin,
-    SiaeUserRequiredOrSiaeIdParamMixin,
+    SiaeUserRequiredOrSiaeUUIDParamMixin,
     TenderAuthorOrAdminRequiredIfNotSentMixin,
     TenderAuthorOrAdminRequiredMixin,
 )
@@ -518,7 +518,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
         return context
 
 
-class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, UpdateView):
+class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeUUIDParamMixin, UpdateView):
     """
     Endpoint to track 'interested' button click
     We might also send a notification to the buyer
@@ -531,7 +531,8 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
         self.object = self.get_object()
-        self.siae_id = request.GET.get("siae_id", None)
+        self.siae_uuid = request.GET.get("siae_uuid", None)
+        self.siae_id = None
         self.questions = self.object.questions.all()
         self.answers_formset_class = formset_factory(form=QuestionAnswerForm, extra=0)
         self.siae_select_form_class = SiaeSelectionForm
@@ -545,8 +546,8 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
             )
             siae_total_count = Siae.objects.filter(users=self.request.user, tendersiae__tender=self.object).count()
 
-        else:  # has siae_id
-            siae_qs = Siae.objects.filter(id=self.siae_id)
+        else:  # has siae_uuid
+            siae_qs = Siae.objects.filter(uuid=self.siae_uuid)
             siae_total_count = 1
 
         initial_data = [
@@ -577,8 +578,9 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
             else:  # No siae select, mean only one matched siae
                 siae_qs = Siae.objects.filter(users=self.request.user, tendersiae__tender=self.object)
         else:
-            siae_qs = Siae.objects.filter(id=self.siae_id)
-
+            siae_qs = Siae.objects.filter(uuid=self.siae_uuid)
+            if siae_qs:
+                self.siae_id = siae_qs.first().id
         if self.answers_formset.is_valid():
             with transaction.atomic():  # Rollback all answers if any problem appears, e.g. when going back in browser
                 for answer_form in self.answers_formset:
@@ -638,7 +640,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
         return ctx
 
 
-class TenderDetailNotInterestedClickView(SiaeUserRequiredOrSiaeIdParamMixin, DetailView):
+class TenderDetailNotInterestedClickView(SiaeUserRequiredOrSiaeUUIDParamMixin, DetailView):
     """
     Endpoint to handle 'not interested' button click
     """
@@ -652,7 +654,11 @@ class TenderDetailNotInterestedClickView(SiaeUserRequiredOrSiaeIdParamMixin, Det
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         user = self.request.user
-        siae_id = request.GET.get("siae_id", None)
+        siae_uuid = request.GET.get("siae_uuid", None)
+        if siae_uuid:
+            siae_id = Siae.objects.get(uuid=siae_uuid).id
+        else:
+            siae_id = None
 
         if user.is_authenticated:
             TenderSiae.objects.filter(
@@ -665,7 +671,7 @@ class TenderDetailNotInterestedClickView(SiaeUserRequiredOrSiaeIdParamMixin, Det
             )
         else:
             TenderSiae.objects.filter(
-                tender=self.object, siae_id=int(siae_id), detail_not_interested_click_date__isnull=True
+                tender=self.object, siae__uuid=siae_uuid, detail_not_interested_click_date__isnull=True
             ).update(
                 detail_not_interested_feedback=self.request.POST.get("detail_not_interested_feedback", ""),
                 detail_not_interested_click_date=timezone.now(),
@@ -674,7 +680,7 @@ class TenderDetailNotInterestedClickView(SiaeUserRequiredOrSiaeIdParamMixin, Det
         # redirect
         return HttpResponseRedirect(self.get_success_url(siae_id))
 
-    def get_success_url(self, siae_id=None):
+    def get_success_url(self, siae_id):
         success_url = reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
         if siae_id:
             success_url += f"?siae_id={siae_id}"
