@@ -768,31 +768,29 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
             )
         ).order_by("name")
 
+        form = SiaeSelectFieldsForm(data=self.request.GET, prefix="download_form")
+        if form.is_valid():
+            self.selected_fields = form.cleaned_data.get("selected_fields")
+        else:
+            return None
+
         question_list = TenderQuestion.objects.filter(tender=self.object).order_by("id").values_list("text", flat=True)
 
-        header_list = self.get_selected_fields_labels() + list(question_list)
+        header_list = self.get_selected_fields_labels(form) + list(question_list)
 
         if self.request.GET.get("download_form-format") == "csv":
             return self.get_csv_response(siae_qs, header_list)
         else:
             return self.get_xlxs_response(siae_qs, header_list)
 
-    def get_selected_fields(self):
-        """Return the list of siae fields to be included as columns in the file"""
-        form = SiaeSelectFieldsForm(data=self.request.GET, prefix="download_form")
-        if form.is_valid():
-            return form.cleaned_data["selected_fields"]
-
-    def get_selected_fields_labels(self):
+    def get_selected_fields_labels(self, form):
         """For each selected siae field in the form, return the corresponding label"""
-        form = SiaeSelectFieldsForm(data=self.request.GET, prefix="download_form")
-        if form.is_valid():
-            selected_values = form.cleaned_data["selected_fields"]
+        selected_values = form.cleaned_data["selected_fields"]
 
-            choices_dict = dict(form.fields["selected_fields"].choices)
-            selected_labels = [choices_dict.get(value) for value in selected_values]
+        choices_dict = dict(form.fields["selected_fields"].choices)
+        selected_labels = [choices_dict.get(value) for value in selected_values]
 
-            return selected_labels
+        return selected_labels
 
     def get_filename(self, extension: str) -> str:
         """Get name for the exported file, according status and format."""
@@ -816,7 +814,7 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
 
         for siae in siae_qs:
             writer.writerow(
-                generate_siae_row(siae, self.get_selected_fields())
+                generate_siae_row(siae, self.selected_fields)
                 + [question_answer.answer for question_answer in siae.questions_for_tender]
             )
 
@@ -842,7 +840,7 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
         # rows
         row_number = 2
         for siae in siae_qs:
-            siae_row = generate_siae_row(siae, self.get_selected_fields()) + [
+            siae_row = generate_siae_row(siae, self.selected_fields) + [
                 question_answer.answer for question_answer in siae.questions_for_tender
             ]
             for index, row_item in enumerate(siae_row, start=1):
