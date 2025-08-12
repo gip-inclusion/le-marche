@@ -772,7 +772,7 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
         if form.is_valid():
             self.selected_fields = form.cleaned_data.get("selected_fields")
         else:
-            return None
+            return HttpResponse(400)
 
         question_list = TenderQuestion.objects.filter(tender=self.object).order_by("id").values_list("text", flat=True)
 
