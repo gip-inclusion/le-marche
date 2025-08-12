@@ -145,7 +145,7 @@ class SiaeEditActivitiesView(SiaeMemberRequiredMixin, DetailView):
         context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
         context["breadcrumb_current"] = f"{self.object.name_display} : modifier"
 
-        siae_activities = SiaeActivity.objects.with_sector_and_sector_group(self.object)
+        siae_activities = SiaeActivity.objects.with_sector_and_sector_group(self.object).order_by("sector")
 
         grouped_activities = {}
 
