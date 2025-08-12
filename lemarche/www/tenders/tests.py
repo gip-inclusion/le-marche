@@ -1356,16 +1356,16 @@ class TenderDetailContactClickStatViewTest(TestCase):
                 self.tender_contact_click_stat_url,
             )
             self.assertEqual(response.status_code, 302)
-        # authorized with siae_id parameter
+        # authorized with siae_uuid parameter
         self.client.logout()
         response = self.client.post(
-            f"{self.tender_contact_click_stat_url}?siae_id={self.siae.id}",
+            f"{self.tender_contact_click_stat_url}?siae_uuid={self.siae.uuid}",
         )
         self.assertEqual(response.status_code, 302)
-        # forbidden because wrong siae_id parameter
+        # forbidden because wrong siae_uuid parameter
         self.client.logout()
         response = self.client.post(
-            f"{self.tender_contact_click_stat_url}?siae_id=test",
+            f"{self.tender_contact_click_stat_url}?siae_uuid=test",
         )
         self.assertEqual(response.status_code, 403)
 
@@ -1427,7 +1427,7 @@ class TenderDetailContactClickStatViewTest(TestCase):
         self.assertNotContains(response, self.cta_message_success)
         # click on button
         response = self.client.post(
-            f"{self.tender_contact_click_stat_url}?siae_id={siae_2.id}",
+            f"{self.tender_contact_click_stat_url}?siae_uuid={siae_2.uuid}",
             data={
                 # No questions from buyer
                 "form-TOTAL_FORMS": 0,
@@ -1446,7 +1446,7 @@ class TenderDetailContactClickStatViewTest(TestCase):
         # clicking again on the button doesn't update detail_contact_click_date
         # Note: button will disappear on reload anyway
         response = self.client.post(
-            f"{self.tender_contact_click_stat_url}?siae_id={siae_2.id}",
+            f"{self.tender_contact_click_stat_url}?siae_uuid={siae_2.uuid}",
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
@@ -1514,14 +1514,16 @@ class TenderDetailNotInterestedClickView(TestCase):
         self.assertNotContains(response, 'id="detail_not_interested_click_confirm_modal"')
         self.assertContains(response, self.cta_message_success)
 
-    def test_user_can_notify_not_interested_wish_with_siae_id_in_url(self):
+    def test_user_can_notify_not_interested_wish_with_siae_uuid_in_url(self):
         # wrong siae_id
-        response = self.client.post(f"{self.tender_not_interested_url}?siae_id=999999", data={}, follow=True)
-        self.assertEqual(response.status_code, 404)
+        response = self.client.post(f"{self.tender_not_interested_url}?siae_uuid=999999", data={}, follow=True)
+        self.assertEqual(response.status_code, 403)
         # workflow
         tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
         self.assertIsNone(tendersiae.detail_not_interested_click_date)
-        response = self.client.post(f"{self.tender_not_interested_url}?siae_id={self.siae.id}", data={}, follow=True)
+        response = self.client.post(
+            f"{self.tender_not_interested_url}?siae_uuid={self.siae.uuid}", data={}, follow=True
+        )
         self.assertNotContains(response, self.cta_message)
         self.assertNotContains(response, 'id="detail_not_interested_click_confirm_modal"')
         self.assertContains(response, self.cta_message_success)
@@ -1532,17 +1534,17 @@ class TenderDetailNotInterestedClickView(TestCase):
         self.assertNotContains(response, 'id="detail_not_interested_click_confirm_modal"')
         self.assertContains(response, self.cta_message_success)
 
-    def test_user_can_notify_not_interested_wish_with_siae_id_and_answer_in_url(self):
+    def test_user_can_notify_not_interested_wish_with_siae_uuid_and_answer_in_url(self):
         # wrong siae_id
         response = self.client.post(
-            f"{self.tender_not_interested_url}?siae_id=999999&not_interested=True", data={}, follow=True
+            f"{self.tender_not_interested_url}?siae_uuid=999999&not_interested=True", data={}, follow=True
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
         # workflow
         tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
         self.assertIsNone(tendersiae.detail_not_interested_click_date)
         response = self.client.post(
-            f"{self.tender_not_interested_url}?siae_id={self.siae.id}&not_interested=True", data={}, follow=True
+            f"{self.tender_not_interested_url}?siae_uuid={self.siae.uuid}&not_interested=True", data={}, follow=True
         )
         self.assertNotContains(response, self.cta_message)
         self.assertNotContains(response, 'dialog id="detail_not_interested_click_confirm_modal"')
@@ -2162,7 +2164,7 @@ class TenderQuestionAnswerTestCase(TestCase):
         """Unauthenticated users should also be granted the right to answers questions"""
         url = (
             reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
-            + f"?siae_id={self.siae_1.id}"
+            + f"?siae_uuid={self.siae_1.uuid}"
         )
 
         # Assert no answers created yet
