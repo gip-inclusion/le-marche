@@ -270,8 +270,17 @@ class SiaeActivitySectorFormView(SiaeMemberRequiredMixin, TemplateView):
         return context
 
 
-class SiaeActivityCreateView(SiaeMemberRequiredMixin, CreateView):
-    template_name = "dashboard/partial_activity_create_form.html"  # fixme inherit form
+class HtmxActivityValidationMixin:
+
+    def form_invalid(self, form):
+        """Form htmx, not sent in case of valid form because lost in redirect"""
+        response = super().form_invalid(form)
+        response.headers["formInvalid"] = "true"
+        return response
+
+
+class SiaeActivityCreateView(HtmxActivityValidationMixin, SiaeMemberRequiredMixin, CreateView):
+    template_name = "dashboard/partial_activity_create_form.html"
     form_class = SiaeActivityForm
     model = SiaeActivity
 
@@ -300,7 +309,6 @@ class SiaeActivityCreateView(SiaeMemberRequiredMixin, CreateView):
 
     def get_initial(self):
         """Set sector as initial data for hidden input sector field"""
-        # fixme maybe sector could be also set in form valid
         initial = super().get_initial()
         initial["sector"] = self.sector_id
         return initial
@@ -321,7 +329,7 @@ class SiaeActivityDetailView(UserPassesTestMixin, DetailView):
         return SiaeActivity.objects.filter(pk=self.kwargs["pk"], siae__users=self.request.user).exists()
 
 
-class SiaeActivityEditView(UserPassesTestMixin, UpdateView):
+class SiaeActivityEditView(HtmxActivityValidationMixin, UserPassesTestMixin, UpdateView):
     template_name = "dashboard/partial_activity_edit_form.html"
     form_class = SiaeActivityForm
     model = SiaeActivity
@@ -344,12 +352,6 @@ class SiaeActivityEditView(UserPassesTestMixin, UpdateView):
 
     def get_success_url(self):
         return reverse_lazy("dashboard_siaes:siae_activities_detail", kwargs={"pk": self.object.pk})
-
-    def form_invalid(self, form):
-        """Form htmx, not sent in case of valid form because lost in redirect"""
-        response = super().form_invalid(form)
-        response.headers["formInvalid"] = "true"
-        return response
 
 
 class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
