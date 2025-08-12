@@ -37,7 +37,7 @@ from lemarche.users.models import User
 from lemarche.utils import constants, settings_context_processors
 from lemarche.utils.data import get_choice
 from lemarche.utils.emails import add_to_contact_list
-from lemarche.utils.export import generate_header, generate_siae_row
+from lemarche.utils.export import generate_siae_row
 from lemarche.utils.mixins import (
     SesameSiaeMemberRequiredMixin,
     SesameTenderAuthorRequiredMixin,
@@ -770,7 +770,7 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
 
         question_list = TenderQuestion.objects.filter(tender=self.object).order_by("id").values_list("text", flat=True)
 
-        header_list = generate_header(self.get_selected_fields()) + list(question_list)
+        header_list = self.get_selected_fields_labels() + list(question_list)
 
         if self.request.GET.get("download_form-format") == "csv":
             return self.get_csv_response(siae_qs, header_list)
@@ -782,6 +782,17 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
         form = SiaeSelectFieldsForm(data=self.request.GET, prefix="download_form")
         if form.is_valid():
             return form.cleaned_data["selected_fields"]
+
+    def get_selected_fields_labels(self):
+        """For each selected siae field in the form, return the corresponding label"""
+        form = SiaeSelectFieldsForm(data=self.request.GET, prefix="download_form")
+        if form.is_valid():
+            selected_values = form.cleaned_data["selected_fields"]
+
+            choices_dict = dict(form.fields["selected_fields"].choices)
+            selected_labels = [choices_dict.get(value) for value in selected_values]
+
+            return selected_labels
 
     def get_filename(self, extension: str) -> str:
         """Get name for the exported file, according status and format."""
