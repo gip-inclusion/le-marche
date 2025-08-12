@@ -91,6 +91,14 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
         self.assertEqual(match.moderation_status, CompanySiaeClientReferenceMatch.ModerationStatus.PENDING)
         self.assertIsNone(match.moderated_by)
 
+        # admin action ?
+        client_ref1.updated_at = timezone.now() - timedelta(days=1)
+        client_ref1.save()
+
+        call_command("find_company_siae_client_reference_matches", wet_run=False, stdout=StringIO())
+
+        self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 1)
+
     def test_command_with_custom_days(self):
         """Test command with custom number of days"""
         # Create an old client reference

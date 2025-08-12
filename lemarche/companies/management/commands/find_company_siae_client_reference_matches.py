@@ -81,21 +81,28 @@ class Command(BaseCommand):
                     companies.filter(id=existing_match.company_id)
                     .annotate(similarity=TrigramSimilarity("name", client_reference.name))
                     .filter(similarity__gte=min_score)
+                    .order_by("-similarity")
                     .first()
                 )
                 if new_similarity and round(new_similarity.similarity, 6) > existing_match.similarity_score:
-                    self.stdout_info(
-                        f"Match already exists for {client_reference.name} but better match found, updating it"
-                    )
-                    existing_match.client_reference_name = client_reference.name
-                    existing_match.similarity_score = new_similarity.similarity
-                    existing_match.save()
+                    if wet_run:
+                        self.stdout_info(
+                            f"Match already exists for {client_reference.name} but better match found, updating it"
+                        )
+                        existing_match.client_reference_name = client_reference.name
+                        existing_match.similarity_score = new_similarity.similarity
+                        existing_match.save()
+                    else:
+                        self.stdout_info(f"Would update match for {client_reference.name}")
                     continue
                 else:
-                    self.stdout_info(
-                        f"Match already exists for {client_reference.name} but no better match found, deleting it"
-                    )
-                    existing_match.delete()
+                    if wet_run:
+                        self.stdout_info(
+                            f"Match already exists for {client_reference.name} but no better match found, deleting it"
+                        )
+                        existing_match.delete()
+                    else:
+                        self.stdout_info(f"Would delete match for {client_reference.name}")
 
             # find companies with similar names using trigram similarity
             similar_companies = (
