@@ -59,7 +59,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
     def test_command_with_no_recent_client_references(self):
         """Test when there are no recent client references"""
 
-        call_command("find_company_siae_client_reference_matches", wet_run=True)
+        call_command("find_company_siae_client_reference_matches", wet_run=True, stdout=StringIO())
         self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 0)
 
     def test_command_with_default_parameters(self):
@@ -67,7 +67,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
         SiaeClientReferenceFactory(
             name=self.company1.name, siae=self.siae1, created_at=timezone.now() - timedelta(days=1)
         )
-        call_command("find_company_siae_client_reference_matches")
+        call_command("find_company_siae_client_reference_matches", stdout=StringIO())
 
         # Verify no match is created in dry-run mode
         self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 0)
@@ -78,7 +78,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
             name=self.company1.name, siae=self.siae1, created_at=timezone.now() - timedelta(days=1)
         )
         SiaeClientReferenceFactory(name="Optimizia", siae=self.siae1, created_at=timezone.now() - timedelta(days=1))
-        call_command("find_company_siae_client_reference_matches", wet_run=True)
+        call_command("find_company_siae_client_reference_matches", wet_run=True, stdout=StringIO())
 
         # Verify match is created
         self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 1)
@@ -99,11 +99,11 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
         )
 
         # Test with 10 days - should exclude the old reference
-        call_command("find_company_siae_client_reference_matches", days=10, wet_run=True)
+        call_command("find_company_siae_client_reference_matches", days=10, wet_run=True, stdout=StringIO())
         self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 0)
 
         # Test with 30 days (default) - should include the old reference
-        call_command("find_company_siae_client_reference_matches", wet_run=True)
+        call_command("find_company_siae_client_reference_matches", wet_run=True, stdout=StringIO())
         self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 1)
 
     def test_command_with_custom_min_score(self):
@@ -115,11 +115,11 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
         )
 
         # Test with high score (0.8)
-        call_command("find_company_siae_client_reference_matches", min_score=0.8, wet_run=True)
+        call_command("find_company_siae_client_reference_matches", min_score=0.8, wet_run=True, stdout=StringIO())
         self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 0)
 
         # Test with low score (0.1)
-        call_command("find_company_siae_client_reference_matches", min_score=0.1, wet_run=True)
+        call_command("find_company_siae_client_reference_matches", min_score=0.1, wet_run=True, stdout=StringIO())
         self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 1)
 
     def test_command_with_limit(self):
@@ -146,7 +146,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
         # create a client reference with empty name
         SiaeClientReferenceFactory(name="", siae=self.siae1, created_at=timezone.now() - timedelta(days=1))
 
-        call_command("find_company_siae_client_reference_matches", wet_run=True)
+        call_command("find_company_siae_client_reference_matches", wet_run=True, stdout=StringIO())
 
         # Verify no match is created with empty names
         matches = CompanySiaeClientReferenceMatch.objects.filter(Q(company_name="") | Q(client_reference_name=""))
@@ -159,7 +159,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
             name="Sérénité Solutions", siae=self.siae1, created_at=timezone.now() - timedelta(days=1)
         )
 
-        call_command("find_company_siae_client_reference_matches", wet_run=True)
+        call_command("find_company_siae_client_reference_matches", wet_run=True, stdout=StringIO())
 
         self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 1)
         match = CompanySiaeClientReferenceMatch.objects.first()
@@ -199,7 +199,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
             name="Sérénité Solutions", siae=self.siae1, created_at=timezone.now() - timedelta(days=1)
         )
 
-        call_command("find_company_siae_client_reference_matches", wet_run=True)
+        call_command("find_company_siae_client_reference_matches", wet_run=True, stdout=StringIO())
 
         self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 1)
         match = CompanySiaeClientReferenceMatch.objects.first()
@@ -231,7 +231,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
             name="Sérénité Solutions", siae=self.siae1, created_at=timezone.now() - timedelta(days=1)
         )
 
-        call_command("find_company_siae_client_reference_matches", wet_run=True)
+        call_command("find_company_siae_client_reference_matches", wet_run=True, stdout=StringIO())
 
         self.assertEqual(CompanySiaeClientReferenceMatch.objects.count(), 1)
         match1 = CompanySiaeClientReferenceMatch.objects.first()
@@ -268,7 +268,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
             name="Bativi", siae=self.siae1, created_at=timezone.now() - timedelta(days=1)
         )
 
-        call_command("find_company_siae_client_reference_matches", wet_run=True)
+        call_command("find_company_siae_client_reference_matches", wet_run=True, stdout=StringIO())
 
         # self.company2 (Bativia) should be the first match (similarity score is 0.6666667)
         # Bativi is more similar to Bativia than Bati
@@ -302,7 +302,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
             name="Cafe et Co", siae=self.siae1, created_at=timezone.now() - timedelta(days=1)
         )
 
-        call_command("find_company_siae_client_reference_matches", wet_run=True)
+        call_command("find_company_siae_client_reference_matches", wet_run=True, stdout=StringIO())
 
         # Verify a match is created despite accent differences (Café & Co <-> Cafe et Co)
         self.assertIsNotNone(
