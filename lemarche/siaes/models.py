@@ -1108,6 +1108,14 @@ class Siae(models.Model):
             latest_activity_at = self.updated_at
         return latest_activity_at
 
+    @property
+    def client_reference_list_display(self) -> str:
+        return ", ".join(self.client_references.values_list("name", flat=True))
+
+    @property
+    def label_list_display(self) -> str:
+        return ", ".join(self.siaelabel_set.values_list("label__name", flat=True))
+
     def sector_groups_list_string(self, display_max=3):
         # Retrieve sectors from activities instead of directly from the sectors field
         sectors_name_list = list(set(self.activities.values_list("sector__group__name", flat=True)))

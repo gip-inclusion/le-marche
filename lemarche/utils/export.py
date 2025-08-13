@@ -35,7 +35,8 @@ SIAE_CUSTOM_FIELDS = ["Inscrite", "Lien vers le marché"]
 
 
 def get_siae_fields(with_contact_info=False):
-    siae_field_list = SIAE_FIELDS_TO_EXPORT
+    # To not copy reference
+    siae_field_list = [] + SIAE_FIELDS_TO_EXPORT
     if with_contact_info:
         siae_field_list += SIAE_CONTACT_FIELDS
     siae_field_list += SIAE_CUSTOM_FIELDS

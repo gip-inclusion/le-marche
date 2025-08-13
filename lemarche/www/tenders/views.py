@@ -37,7 +37,7 @@ from lemarche.users.models import User
 from lemarche.utils import constants, settings_context_processors
 from lemarche.utils.data import get_choice
 from lemarche.utils.emails import add_to_contact_list
-from lemarche.utils.export import generate_header, generate_siae_row, get_siae_fields
+from lemarche.utils.export import generate_siae_row
 from lemarche.utils.mixins import (
     SesameSiaeMemberRequiredMixin,
     SesameTenderAuthorRequiredMixin,
@@ -47,6 +47,7 @@ from lemarche.utils.mixins import (
 )
 from lemarche.www.siaes.forms import SiaeFilterForm
 from lemarche.www.tenders.forms import (
+    SiaeSelectFieldsForm,
     TenderCreateStepConfirmationForm,
     TenderCreateStepContactForm,
     TenderCreateStepDetailForm,
@@ -722,6 +723,7 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
         siae_search_form = self.filter_form if self.filter_form else SiaeFilterForm(data=self.request.GET)
         context["form"] = siae_search_form
         context["current_search_query"] = self.request.GET.urlencode()
+        context["download_form"] = SiaeSelectFieldsForm(prefix="download_form")
         if len(self.request.GET.keys()):
             if siae_search_form.is_valid():
                 current_locations = siae_search_form.cleaned_data.get("locations")
@@ -743,7 +745,6 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
 class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
     http_method_names = ["get"]
     model = Tender
-    FIELD_LIST = get_siae_fields(with_contact_info=True)
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
@@ -767,14 +768,35 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
             )
         ).order_by("name")
 
-        question_list = TenderQuestion.objects.filter(tender=self.object).order_by("id").values_list("text", flat=True)
+        form = SiaeSelectFieldsForm(data=self.request.GET, prefix="download_form")
+        if form.is_valid():
+            self.selected_fields = form.cleaned_data.get("selected_fields")
+        else:
+            return HttpResponse(400)
 
-        header_list = generate_header(self.FIELD_LIST) + list(question_list)
+        if "siae_answers" in self.selected_fields:
+            self.question_list = list(
+                TenderQuestion.objects.filter(tender=self.object).order_by("id").values_list("text", flat=True)
+            )
+            self.selected_fields.remove("siae_answers")
+        else:
+            self.question_list = []
 
-        if self.request.GET.get("format") == "csv":
+        header_list = self.get_selected_fields_labels(form)
+
+        if self.request.GET.get("download_form-format") == "csv":
             return self.get_csv_response(siae_qs, header_list)
         else:
             return self.get_xlxs_response(siae_qs, header_list)
+
+    def get_selected_fields_labels(self, form):
+        """For each selected siae field in the form, return the corresponding label"""
+        selected_values = form.cleaned_data["selected_fields"]
+
+        choices_dict = dict(form.fields["selected_fields"].choices)
+        selected_labels = [choices_dict[value] for value in selected_values] + self.question_list
+
+        return selected_labels
 
     def get_filename(self, extension: str) -> str:
         """Get name for the exported file, according status and format."""
@@ -798,8 +820,12 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
 
         for siae in siae_qs:
             writer.writerow(
-                generate_siae_row(siae, self.FIELD_LIST)
-                + [question_answer.answer for question_answer in siae.questions_for_tender]
+                generate_siae_row(siae, self.selected_fields)
+                + (
+                    [question_answer.answer for question_answer in siae.questions_for_tender]
+                    if self.question_list
+                    else []
+                )
             )
 
         return response
@@ -824,9 +850,9 @@ class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
         # rows
         row_number = 2
         for siae in siae_qs:
-            siae_row = generate_siae_row(siae, self.FIELD_LIST) + [
-                question_answer.answer for question_answer in siae.questions_for_tender
-            ]
+            siae_row = generate_siae_row(siae, self.selected_fields) + (
+                [question_answer.answer for question_answer in siae.questions_for_tender] if self.question_list else []
+            )
             for index, row_item in enumerate(siae_row, start=1):
                 cell = ws.cell(row=row_number, column=index)
                 cell.value = row_item

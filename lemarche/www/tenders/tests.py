@@ -2079,7 +2079,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
     def setUp(self):
         self.user = UserFactory(kind=User.KIND_BUYER)
 
-        siae_1 = SiaeFactory(name="siae_1")
+        siae_1 = SiaeFactory(name="siae_1", kind=siae_constants.KIND_ETTI)
         siae_2 = SiaeFactory(name="siae_2")
         siae_3 = SiaeFactory(name="siae_3")
 
@@ -2110,6 +2110,18 @@ class TenderSiaeDownloadViewTestCase(TestCase):
 
         self.client.force_login(self.user)
 
+    def test_filter_columns(self):
+        """Checks that the filtering form appearing on the tender siae list page is also filtering
+        results in downloaded tender siaes"""
+        response = self.client.get(
+            reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
+            + "?tendersiae_status=VIEWED&download_form-format=csv&download_form-selected_fields=name&kind=ETTI"
+        )
+        content = response.content.decode("utf-8")
+        csv_reader = csv.DictReader(content.splitlines())
+        rows = list(csv_reader)
+        self.assertEqual(len(rows), 1)  # There is one kind ETTI siae in our sample data
+
     def test_filtering(self):
 
         with self.subTest(
@@ -2117,7 +2129,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         ):  # That status is implicit, it switches to targeted when no status is given
             response = self.client.get(
                 reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
-                + "?tendersiae_status=&format=csv"
+                + "?tendersiae_status=&download_form-format=csv&download_form-selected_fields=name"
             )
             content = response.content.decode("utf-8")
             csv_reader = csv.DictReader(content.splitlines())
@@ -2127,7 +2139,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         with self.subTest(status="VIEWED"):
             response = self.client.get(
                 reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
-                + "?tendersiae_status=VIEWED&format=csv"
+                + "?tendersiae_status=VIEWED&download_form-format=csv&download_form-selected_fields=name"
             )
             content = response.content.decode("utf-8")
             csv_reader = csv.DictReader(content.splitlines())
@@ -2137,7 +2149,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         with self.subTest(status="INTERESTED"):
             response = self.client.get(
                 reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
-                + "?tendersiae_status=INTERESTED&format=csv"
+                + "?tendersiae_status=INTERESTED&download_form-format=csv&download_form-selected_fields=name"
             )
             content = response.content.decode("utf-8")
             csv_reader = csv.DictReader(content.splitlines())
@@ -2147,7 +2159,8 @@ class TenderSiaeDownloadViewTestCase(TestCase):
     def test_download_csv(self):
         response = self.client.get(
             reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
-            + "?format=csv&tendersiae_status=INTERESTED"
+            + "?download_form-format=csv&tendersiae_status=INTERESTED"
+            "&download_form-selected_fields=name&download_form-selected_fields=siae_answers"
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "text/csv")
@@ -2173,7 +2186,8 @@ class TenderSiaeDownloadViewTestCase(TestCase):
     def test_download_xlsx(self):
         response = self.client.get(
             reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
-            + "?format=xlsx&tendersiae_status=INTERESTED"
+            + "?download_form-format=xlsx&tendersiae_status=INTERESTED"
+            "&download_form-selected_fields=name&download_form-selected_fields=siae_answers"
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
@@ -2191,10 +2205,10 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         self.assertEqual(sheet["A2"].value, "siae_1")
         self.assertEqual(sheet["A3"].value, "siae_2")
 
-        self.assertEqual(sheet["X1"].value, "question_1_title")
-        self.assertEqual(sheet["X2"].value, "answer_for_q1_from_siae_1")
-        self.assertEqual(sheet["X3"].value, "answer_for_q1_from_siae_2")
+        self.assertEqual(sheet["B1"].value, "question_1_title")
+        self.assertEqual(sheet["B2"].value, "answer_for_q1_from_siae_1")
+        self.assertEqual(sheet["B3"].value, "answer_for_q1_from_siae_2")
 
-        self.assertEqual(sheet["Y1"].value, "question_2_title")
-        self.assertEqual(sheet["Y2"].value, "answer_for_q2_from_siae_1")
-        self.assertEqual(sheet["Y3"].value, "answer_for_q2_from_siae_2")
+        self.assertEqual(sheet["C1"].value, "question_2_title")
+        self.assertEqual(sheet["C2"].value, "answer_for_q2_from_siae_1")
+        self.assertEqual(sheet["C3"].value, "answer_for_q2_from_siae_2")

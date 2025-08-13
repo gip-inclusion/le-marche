@@ -457,3 +457,43 @@ class TenderDetailGetParams(forms.Form):
 
     siae_id = forms.ModelChoiceField(queryset=Siae.objects.all(), required=False)
     user_id = forms.ModelChoiceField(queryset=User.objects.all(), required=False)
+
+
+class SiaeSelectFieldsForm(forms.Form):
+    """Form used to select fields to appear in the downloaded file"""
+
+    format = forms.ChoiceField(choices=(("xlsx", ".xlsx"), ("csv", ".csv")), label="Format")
+    selected_fields = forms.MultipleChoiceField(
+        label="Colonnes à sélectionner", widget=forms.CheckboxSelectMultiple, required=False
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        selectable_fields = [
+            ("name", None),
+            ("siret", None),
+            ("kind", None),
+            ("address", None),
+            ("city", None),
+            ("post_code", None),
+            ("region", None),
+            ("department", None),
+            ("ca", None),
+            ("client_reference_list_display", "Références client"),
+            ("label_list_display", "Certifications et labels"),
+            ("employees_insertion_count", None),
+            ("employees_permanent_count", None),
+            ("contact_first_name", None),
+            ("contact_last_name", None),
+            ("contact_email", None),
+            ("contact_phone", None),
+            ("siae_answers", "Réponse aux questions"),
+        ]
+        # Set label from model if not provided in tuple
+        selectable_fields = [
+            (field_name, field_label if field_label else Siae._meta.get_field(field_name).verbose_name)
+            for field_name, field_label in selectable_fields
+        ]
+
+        self.fields["selected_fields"].choices = selectable_fields
