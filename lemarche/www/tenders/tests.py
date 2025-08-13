@@ -1063,7 +1063,7 @@ class TenderDetailViewTest(TestCase):
         self.assertContains(response, "Lien partagé")
         # tender_4 siae user interested but logged out (with siae_id parameter)
         self.client.logout()
-        url = reverse("tenders:detail", kwargs={"slug": tender_4.slug}) + f"?siae_id={self.siae_1.id}"
+        url = reverse("tenders:detail", kwargs={"slug": tender_4.slug}) + f"?siae_uuid={self.siae_1.uuid}"
         response = self.client.get(url)
         self.assertContains(response, "Contactez le client dès maintenant")
         self.assertNotContains(response, tender_4.contact_email)
@@ -1088,7 +1088,7 @@ class TenderDetailViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Soyez le premier à répondre à cet appel d'offres.", html=True)
         # reload anonymous user with siae_id (already in tendersiae)
-        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug}) + f"?siae_id={self.siae_2.id}"
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug}) + f"?siae_uuid={self.siae_2.uuid}"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.tender_1.tendersiae_set.count(), 4)  # unchanged
@@ -1101,7 +1101,7 @@ class TenderDetailViewTest(TestCase):
         self.assertNotContains(response, "contactez dès maintenant le client")
         # reload logged in user with siae_id (updates detail_display_date, but not email_link_click_date)
         self.client.force_login(self.siae_user_2)
-        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug}) + f"?siae_id={self.siae_2.id}"
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug}) + f"?siae_uuid={self.siae_2.uuid}"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.tender_1.tendersiae_set.count(), 4)  # unchanged
@@ -1138,7 +1138,7 @@ class TenderDetailViewTest(TestCase):
         # reload anonymous user with siae_id & user_id (already in tendersiae)
         url = (
             reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
-            + f"?siae_id={self.siae_2.id}&user_id={self.siae_user_2.id}"
+            + f"?siae_uuid={self.siae_2.uuid}&user_id={self.siae_user_2.id}"
         )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -1423,7 +1423,7 @@ class TenderDetailContactClickStatViewTest(TestCase):
         self.assertIsNone(self.tender.tendersiae_set.first().detail_contact_click_date)
         self.assertIsNone(self.tender.tendersiae_set.last().detail_contact_click_date)
         # first load
-        response = self.client.get(f"{self.tender_detail_url}?siae_id={siae_2.id}")
+        response = self.client.get(f"{self.tender_detail_url}?siae_uuid={siae_2.uuid}")
         self.assertNotContains(response, self.cta_message_success)
         # click on button
         response = self.client.post(
@@ -1441,7 +1441,7 @@ class TenderDetailContactClickStatViewTest(TestCase):
         self.assertIsNotNone(siae_2_detail_contact_click_date)
         self.assertIsNone(self.tender.tendersiae_set.last().detail_contact_click_date)
         # reload page
-        response = self.client.get(f"{self.tender_detail_url}?siae_id={siae_2.id}")
+        response = self.client.get(f"{self.tender_detail_url}?siae_uuid={siae_2.uuid}")
         self.assertContains(response, self.cta_message_success)
         # clicking again on the button doesn't update detail_contact_click_date
         # Note: button will disappear on reload anyway
@@ -1529,7 +1529,7 @@ class TenderDetailNotInterestedClickView(TestCase):
         self.assertContains(response, self.cta_message_success)
         tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
         self.assertIsNotNone(tendersiae.detail_not_interested_click_date)
-        response = self.client.get(f"{self.tender_detail_url}?siae_id={self.siae.id}")
+        response = self.client.get(f"{self.tender_detail_url}?siae_uuid={self.siae.uuid}")
         self.assertNotContains(response, self.cta_message)
         self.assertNotContains(response, 'id="detail_not_interested_click_confirm_modal"')
         self.assertContains(response, self.cta_message_success)
@@ -1552,7 +1552,7 @@ class TenderDetailNotInterestedClickView(TestCase):
         # self.assertNotContains(response, self.cta_message_success)
         tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
         self.assertIsNotNone(tendersiae.detail_not_interested_click_date)
-        response = self.client.get(f"{self.tender_detail_url}?siae_id={self.siae.id}")
+        response = self.client.get(f"{self.tender_detail_url}?siae_uuid={self.siae.uuid}")
         self.assertNotContains(response, self.cta_message)
         self.assertNotContains(response, 'id="detail_not_interested_click_confirm_modal"')
         self.assertContains(response, self.cta_message_success)
