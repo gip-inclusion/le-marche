@@ -300,7 +300,7 @@ class SiaeActivityCreateView(HtmxActivityValidationMixin, SiaeMemberRequiredMixi
 
     def get_success_url(self):
         """Redirect to the siae detail page"""
-        return reverse_lazy("dashboard_siaes:siae_activities_detail", kwargs={"pk": self.object.pk})
+        return reverse_lazy("dashboard_siaes:siae_activities_edit", kwargs={"pk": self.object.pk})
 
     def form_valid(self, form):
         """Bind to be created activity instance to siae instance"""
@@ -351,7 +351,7 @@ class SiaeActivityEditView(HtmxActivityValidationMixin, UserPassesTestMixin, Upd
         return ctx
 
     def get_success_url(self):
-        return reverse_lazy("dashboard_siaes:siae_activities_detail", kwargs={"pk": self.object.pk})
+        return reverse_lazy("dashboard_siaes:siae_activities_edit", kwargs={"pk": self.object.pk})
 
 
 class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
