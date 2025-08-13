@@ -5,6 +5,22 @@ import uuid
 from django.db import migrations, models
 
 
+def gen_uuid(apps, schema_editor):
+    """Even if we have passed a callable to the default value, it's called only once, hence all the rows
+    share the same uuid.
+    Here we generate a new uuid for each row.
+    """
+    SiaeModel = apps.get_model("siaes", "Siae")
+    for row in SiaeModel.objects.all():
+        row.uuid = uuid.uuid4()
+        row.save(update_fields=["uuid"])
+
+    HistoricalSiaeModel = apps.get_model("siaes", "HistoricalSiae")
+    for row in HistoricalSiaeModel.objects.all():
+        row.uuid = uuid.uuid4()
+        row.save(update_fields=["uuid"])
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -15,9 +31,20 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="historicalsiae",
             name="uuid",
-            field=models.UUIDField(default=uuid.uuid4, editable=False),
+            field=models.UUIDField(default=uuid.uuid4, editable=True),
         ),
         migrations.AddField(
+            model_name="siae",
+            name="uuid",
+            field=models.UUIDField(default=uuid.uuid4, editable=True),
+        ),
+        migrations.RunPython(gen_uuid, reverse_code=migrations.RunPython.noop),
+        migrations.AlterField(
+            model_name="historicalsiae",
+            name="uuid",
+            field=models.UUIDField(default=uuid.uuid4, editable=False),
+        ),
+        migrations.AlterField(
             model_name="siae",
             name="uuid",
             field=models.UUIDField(default=uuid.uuid4, editable=False),
