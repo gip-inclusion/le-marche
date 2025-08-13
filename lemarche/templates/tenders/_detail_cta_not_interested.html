@@ -7,7 +7,7 @@
             </p>
             <div class="fr-card__desc">
                 {% if user_can_click %}
-                    <button type="button" id="show-tender-not-interested-modal-btn" class="fr-btn" data-fr-opened="false" aria-controls="detail_not_interested_click_confirm_modal" data-siae-id="{{ siae_id }}" title="{{ tender.cta_not_interested_card_button_text|safe }}">
+                    <button type="button" id="show-tender-not-interested-modal-btn" class="fr-btn" data-fr-opened="false" aria-controls="detail_not_interested_click_confirm_modal" title="{{ tender.cta_not_interested_card_button_text|safe }}">
                         {{ tender.cta_not_interested_card_button_text|safe }}
                     </button>
                 {% else %}

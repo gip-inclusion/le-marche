@@ -8,7 +8,7 @@
                     </div>
                     <div class="fr-modal__content">
                         <h3 id="detail_not_interested_click_confirm_modal_title" class="fr-modal__title">Pas intéressé ?</h3>
-                        <form method="post" action="{% url 'tenders:detail-not-interested-click' tender.slug %}?siae_id={{ siae_id }}">
+                        <form method="post" action="{% url 'tenders:detail-not-interested-click' tender.slug %}?siae_uuid={{ siae_uuid }}">
                             {% csrf_token %}
                             <div class="fr-input-group">
                                 <label class="fr-label" for="id_detail_not_interested_feedback">Afin d'améliorer la pertinence des demandes que nous vous envoyons, expliquez-nous pourquoi celle-ci ne vous intéresse pas.</label>
