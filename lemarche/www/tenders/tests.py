@@ -1,7 +1,7 @@
 import csv
 import json
 from datetime import timedelta
-from io import BytesIO
+from io import BytesIO, StringIO
 from unittest.mock import patch
 
 import openpyxl
@@ -9,6 +9,7 @@ from django.conf import settings
 from django.contrib.messages import get_messages
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -1082,7 +1083,7 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Déjà 3 prestataires inclusifs")
+        self.assertContains(response, "Soyez le premier à répondre à cet appel d'offres.", html=True)
         # reload anonymous user with siae_id (already in tendersiae)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug}) + f"?siae_id={self.siae_2.id}"
         response = self.client.get(url)
@@ -1093,7 +1094,7 @@ class TenderDetailViewTest(TestCase):
         self.assertIsNone(self.tender_1.tendersiae_set.first().user)
         self.assertIsNone(self.tender_1.tendersiae_set.first().detail_display_date)
         self.assertIsNotNone(self.tender_1.tendersiae_set.last().detail_display_date)
-        self.assertContains(response, "Déjà 4 prestataires inclusifs")
+        self.assertContains(response, "Soyez le premier à répondre à cet appel d'offres.", html=True)
         self.assertNotContains(response, "contactez dès maintenant le client")
         # reload logged in user with siae_id (updates detail_display_date, but not email_link_click_date)
         self.client.force_login(self.siae_user_2)
@@ -1105,7 +1106,7 @@ class TenderDetailViewTest(TestCase):
         siae_2_detail_display_date = self.tender_1.tendersiae_set.first().detail_display_date
         self.assertIsNotNone(siae_2_detail_display_date)  # detail_display_date updated
         self.assertIsNotNone(self.tender_1.tendersiae_set.last().detail_display_date)
-        self.assertContains(response, "Déjà 4 prestataires inclusifs")
+        self.assertContains(response, "Soyez le premier à répondre à cet appel d'offres.", html=True)
         self.assertNotContains(response, "contactez dès maintenant le client")
         # reload (doesn't update detail_display_date)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
@@ -1113,7 +1114,7 @@ class TenderDetailViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.tender_1.tendersiae_set.count(), 4)  # unchanged
         self.assertEqual(self.tender_1.tendersiae_set.first().detail_display_date, siae_2_detail_display_date)
-        self.assertContains(response, "Déjà 4 prestataires inclusifs")
+        self.assertContains(response, "Soyez le premier à répondre à cet appel d'offres.", html=True)
         self.assertNotContains(response, "contactez dès maintenant le client")
 
     def test_update_tendersiae_stats_on_tender_view_with_siae_id_and_user_id(self):
@@ -1130,7 +1131,7 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Déjà 3 prestataires inclusifs")
+        self.assertContains(response, "Soyez le premier à répondre à cet appel d'offres.", html=True)
         # reload anonymous user with siae_id & user_id (already in tendersiae)
         url = (
             reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
@@ -1144,7 +1145,7 @@ class TenderDetailViewTest(TestCase):
         self.assertIsNotNone(self.tender_1.tendersiae_set.first().user)  # user updated
         self.assertIsNone(self.tender_1.tendersiae_set.first().detail_display_date)
         self.assertIsNotNone(self.tender_1.tendersiae_set.last().detail_display_date)
-        self.assertContains(response, "Déjà 4 prestataires inclusifs")
+        self.assertContains(response, "Soyez le premier à répondre à cet appel d'offres.", html=True)
         self.assertNotContains(response, "contactez dès maintenant le client")
 
     def test_create_tendersiae_stats_on_tender_view_by_existing_user(self):
@@ -1159,7 +1160,8 @@ class TenderDetailViewTest(TestCase):
         # first load anonymous user
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
-        self.assertContains(response, "Déjà 3 prestataires inclusifs")
+        self.assertContains(response, "Soyez le premier à répondre à cet appel d'offres.", html=True)
+
         # first load, new user has already 1 siae contacted, we update only this one
         self.client.force_login(self.siae_user_2)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
@@ -1169,7 +1171,7 @@ class TenderDetailViewTest(TestCase):
         self.assertEqual(self.tender_1.tendersiae_set.first().siae, self.siae_2)
         self.assertIsNone(self.tender_1.tendersiae_set.first().email_link_click_date)
         self.assertIsNotNone(self.tender_1.tendersiae_set.first().detail_display_date)
-        self.assertContains(response, "Déjà 4 prestataires inclusifs")
+        self.assertContains(response, "Soyez le premier à répondre à cet appel d'offres.", html=True)
 
     def test_create_tendersiae_stats_on_tender_view_by_new_user(self):
         self.assertEqual(self.tender_1.tendersiae_set.count(), 3)
@@ -1178,7 +1180,7 @@ class TenderDetailViewTest(TestCase):
         # first load anonymous user
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
-        self.assertContains(response, "Déjà 3 prestataires inclusifs")
+        self.assertContains(response, "Soyez le premier à répondre à cet appel d'offres.", html=True)
         # first load, new user has 2 siaes
         self.client.force_login(self.siae_user_2)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
@@ -1188,7 +1190,7 @@ class TenderDetailViewTest(TestCase):
         self.assertEqual(self.tender_1.tendersiae_set.first().siae, self.siae_3)
         self.assertIsNone(self.tender_1.tendersiae_set.first().email_link_click_date)
         self.assertIsNotNone(self.tender_1.tendersiae_set.first().detail_display_date)
-        self.assertContains(response, "Déjà 5 prestataires inclusifs")
+        self.assertContains(response, "Soyez le premier à répondre à cet appel d'offres.", html=True)
 
     def test_badge_is_new_for_siaes(self):
         # assert the new badge is here
@@ -1220,6 +1222,60 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": self.tender_5.slug})
         response = self.client.get(url)
         self.assertContains(response, " a été rejeté.")
+
+
+class TenderDetailIncitativeMessageTestCase(TestCase):
+
+    def setUp(self):
+        self.siae_user_1 = UserFactory(kind=User.KIND_SIAE)
+        self.tender_1 = TenderFactory(
+            kind=tender_constants.KIND_TENDER,
+            amount=tender_constants.AMOUNT_RANGE_100_150,
+            accept_share_amount=True,
+            response_kind=[tender_constants.RESPONSE_KIND_EMAIL],
+            status=Tender.StatusChoices.STATUS_SENT,
+            first_sent_at=timezone.now(),
+        )
+
+    def test_more_than_4_intereested_siaes(self):
+        """Check that the incitative message is replaced by a message about the number of already interested siaes
+        when more than 4 siaes are interested"""
+        for i in range(5):
+            TenderSiae.objects.create(
+                tender=self.tender_1,
+                siae=SiaeFactory(users=[self.siae_user_1]),
+                source="EMAIL",
+                detail_contact_click_date=timezone.now(),
+            )
+        # Update siae_detail_contact_click_count
+        call_command("update_tender_count_fields", stdout=StringIO())
+
+        self.client.force_login(self.siae_user_1)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["tender"].siae_detail_contact_click_count, 5)
+        self.assertContains(response, "5 fournisseurs inclusifs ont pris contact avec l’acheteur.", html=True)
+
+    def test_less_than_4_intereested_siaes(self):
+        for i in range(2):
+            TenderSiae.objects.create(
+                tender=self.tender_1,
+                siae=SiaeFactory(users=[self.siae_user_1]),
+                source="EMAIL",
+                detail_contact_click_date=timezone.now(),
+            )
+        # Update siae_detail_contact_click_count
+        call_command("update_tender_count_fields", stdout=StringIO())
+
+        self.client.force_login(self.siae_user_1)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["tender"].siae_detail_contact_click_count, 2)
+        self.assertContains(response, "Soyez le premier à répondre à cet appel d'offres.", html=True)
 
 
 class TenderDetailContactClickStatViewTest(TestCase):

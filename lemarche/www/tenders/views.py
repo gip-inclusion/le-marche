@@ -468,6 +468,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
             if user_kind == User.KIND_SIAE and self.object.kind == tender_constants.KIND_PROJECT
             else self.object.get_kind_display()
         )
+        context["incitative_message"] = self.get_incitative_message()
         if self.siae:
             context["siae_id"] = self.siae.id
             context["siae_has_detail_contact_click_date"] = TenderSiae.objects.filter(
@@ -517,6 +518,19 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
             else:
                 pass
         return context
+
+    def get_incitative_message(self):
+        """Return correct wording for each kind of tender"""
+        match self.object.get_kind_display():
+            case tender_constants.KIND_TENDER_DISPLAY:
+                message = "Soyez le premier à répondre à cet appel d'offres."
+            case tender_constants.KIND_QUOTE_DISPLAY:
+                message = "Soyez le premier à répondre à cette demande de devis."
+            case tender_constants.KIND_PROJECT_DISPLAY:
+                message = "Soyez le premier à répondre à ce projet d'achat"
+            case _:
+                raise NotImplementedError(f"Unknown tender kind: {self.object.kind}")
+        return message
 
 
 class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, UpdateView):

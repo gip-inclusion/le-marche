@@ -12,16 +12,17 @@
 {% else %}
     {% if not tender.deadline_date_outdated %}
         <!-- tender basic view stat -->
-        {% if tender.siae_email_link_click_date_or_detail_display_date_count > 0 %}
-            <div class="fr-col-12">
-                <div class="fr-alert fr-alert--warning">
-                    <p>
-                        Déjà {{ tender.siae_email_link_click_date_or_detail_display_date_count }} prestataire{{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize }} inclusif{{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize }}
-                        {{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize:"a,ont" }} vu le besoin de ce client.
-                    </p>
-                </div>
+        <div class="fr-col-12">
+            <div class="fr-alert fr-alert--info">
+                {% if tender.siae_detail_contact_click_count < 5 %}
+                  <p>{{ incitative_message }}</p>
+                {% else %}
+                <p>
+                  {{ tender.siae_detail_contact_click_count }} fournisseurs inclusifs ont pris contact avec l’acheteur.
+                </p>
+                {% endif %}
             </div>
-        {% endif %}
+        </div>
         {% if not tender.response_is_anonymous %}
             <!-- logged in user -->
             {% if user.is_authenticated %}
