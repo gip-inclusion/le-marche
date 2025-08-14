@@ -10,15 +10,6 @@ INSTALLED_APPS += ["django_extensions", "debug_toolbar"]  # noqa F405
 
 MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]  # noqa F405
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "0.0.0.0",
-    os.environ.get("CURRENT_HOST"),
-    # for review apps (in case you want to change the DEBUG value)
-    ".cleverapps.io",
-]
-
 # For Docker env (and debug toolbar in particular)
 import socket
 
