@@ -2,6 +2,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import Exists, OuterRef
+from django.db.models.query import Prefetch
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -10,6 +12,7 @@ from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView
 
 from lemarche.favorites.models import FavoriteItem, FavoriteList
+from lemarche.networks.models import Network
 from lemarche.siaes.models import Siae
 from lemarche.utils import settings_context_processors
 from lemarche.utils.mixins import FavoriteListOwnerRequiredMixin
@@ -63,7 +66,15 @@ class DashboardFavoriteListCreateView(LoginRequiredMixin, SuccessMessageMixin, C
 
 class DashboardFavoriteListDetailView(FavoriteListOwnerRequiredMixin, DetailView):
     template_name = "favorites/dashboard_favorite_list_detail.html"
-    queryset = FavoriteList.objects.prefetch_related("siaes", "siaes__activities__sector__group").all()
+    queryset = FavoriteList.objects.prefetch_related(
+        Prefetch(
+            "siaes",
+            Siae.objects.annotate(
+                is_in_the_hosmoz_network=Exists(Network.objects.filter(slug="hosmoz", siaes__pk=OuterRef("pk")))
+            ),
+        ),
+        "siaes__activities__sector__group",
+    ).all()
     context_object_name = "favorite_list"
 
     def get_context_data(self, **kwargs):

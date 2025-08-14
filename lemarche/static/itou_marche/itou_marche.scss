@@ -5,7 +5,8 @@ $yellow-super-badge--borders-color: #fcc63a;
 
 .lemarche {
     &--align-right {
-        float: right;
+        display: flex;
+        justify-content: flex-end;
     }
 
     &-super-badge {
@@ -242,7 +243,7 @@ p.fr-tag--green-emeraude {
 }
 
 .fr-background-alt--white {
-    background:  #ffffff;
+    background: #ffffff;
 }
 
 .rounded-iframe {
@@ -281,7 +282,7 @@ p.fr-tag--green-emeraude {
 }
 
 .center-text {
-  //height: 100vh;
-  line-height: 1vh;
-  text-align: center;
+    //height: 100vh;
+    line-height: 1vh;
+    text-align: center;
 }

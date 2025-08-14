@@ -28,6 +28,12 @@
                                 {% endif %}
                             </h1>
                             {% include "includes/_super_badge.html" with siae=siae %}
+                            {% if siae.is_in_the_hosmoz_network %}
+                                <a class="fr-tag"
+                                   href="{% url 'siae:search_results' %}?networks=hosmoz"
+                                   target="_blank"
+                                   title="Fait partie du réseau Hosmoz">Hosmoz</a>
+                            {% endif %}
                             <p class="fr-text--sm">
                                 <i>(Dernière activité il y a {{ siae.latest_activity_at|timesince }})</i>
                             </p>
