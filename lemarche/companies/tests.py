@@ -294,7 +294,7 @@ class CompanySiaeClientReferenceMatchCommandTest(TestCase):
             name="  Bati via ", siae=self.siae1, created_at=timezone.now() - timedelta(days=1)
         )
 
-        call_command("find_company_siae_client_reference_matches", wet_run=True)
+        call_command("find_company_siae_client_reference_matches", wet_run=True, stdout=StringIO())
 
         # Verify a match is created despite spaces
         self.assertIsNotNone(

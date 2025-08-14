@@ -58,38 +58,17 @@ class Command(BaseCommand):
         self.stdout_info(f"Found {companies.count()} companies to match against")
 
         matches_found = 0
-        matches_created = 0
 
         for client_reference in recent_client_references:
             if matches_found >= limit:
                 self.stdout_info(f"Reached limit of {limit} matches")
                 break
 
-            if self._handle_existing_match(client_reference, companies, min_score, wet_run):
-                continue
+            matches_found += self._handle_client_reference_match(client_reference, companies, min_score, wet_run)
 
-            # find companies with similar names using trigram similarity
-            similar_companies = (
-                companies.annotate(similarity=TrigramSimilarity("name", client_reference.name))
-                .filter(similarity__gte=min_score)
-                .order_by("-similarity")
-            )
+        self._print_summary(recent_client_references.count(), matches_found, wet_run, min_score, days)
 
-            # link to only one company per reference, the most similar one
-            if similar_company := similar_companies.first():
-                matches_found += 1
-                self.stdout_info(
-                    f"Potential match: {similar_company.name} <-> {client_reference.name} "
-                    f"(score: {similar_company.similarity:.6f})"
-                )
-
-                if wet_run:
-                    self._create_match(similar_company, client_reference)
-                    matches_created += 1
-
-        self._print_summary(recent_client_references.count(), matches_found, matches_created, wet_run, min_score, days)
-
-    def _handle_existing_match(self, client_reference, companies, min_score, wet_run):
+    def _handle_client_reference_match(self, client_reference, companies, min_score, wet_run):
         """Handle existing match logic for a client reference."""
         existing_match = (
             CompanySiaeClientReferenceMatch.objects.filter(siae_client_reference=client_reference)
@@ -97,42 +76,66 @@ class Command(BaseCommand):
             .first()
         )
 
-        if not existing_match:
-            return False
+        if existing_match:  # handle existing match
+            # if match update date is more recent than reference update date, do nothing
+            if existing_match.updated_at > client_reference.updated_at:
+                return 0  # the match is up to date, do nothing
 
-        # if match update date is more recent than reference update date, do nothing
-        if existing_match.updated_at > client_reference.updated_at:
-            return True
+            # else search for a better match with the same company
+            new_similarity = (
+                companies.filter(id=existing_match.company_id)
+                .annotate(similarity=TrigramSimilarity("name", client_reference.name))
+                .filter(similarity__gte=min_score)
+                .order_by("-similarity")
+                .first()
+            )
 
-        # else search for a better match with the same company
-        new_similarity = (
-            companies.filter(id=existing_match.company_id)
-            .annotate(similarity=TrigramSimilarity("name", client_reference.name))
+            if new_similarity and round(new_similarity.similarity, 6) > existing_match.similarity_score:
+                # better match found with the same company, update the match to avoid more moderation
+                if wet_run:
+                    self.stdout_info(
+                        f"Match already exists for {client_reference.name} but better match found, updating it"
+                    )
+                    existing_match.client_reference_name = client_reference.name
+                    existing_match.similarity_score = new_similarity.similarity
+                    existing_match.save()
+                else:
+                    self.stdout_info(f"Would update match for {client_reference.name}")
+                return 0  # the match is now up to date, do nothing otherwise
+            else:
+                # no better match found, delete the match
+                if wet_run:
+                    self.stdout_info(
+                        f"Match already exists for {client_reference.name} but no better match found, deleting it"
+                    )
+                    existing_match.delete()
+                else:
+                    self.stdout_info(f"Would delete match for {client_reference.name}")
+
+        return self._search_and_create_new_matches(client_reference, companies, min_score, wet_run)
+
+    def _search_and_create_new_matches(self, client_reference, companies, min_score, wet_run):
+        matches_found = 0
+
+        # find companies with similar names using trigram similarity
+        similar_companies = (
+            companies.annotate(similarity=TrigramSimilarity("name", client_reference.name))
             .filter(similarity__gte=min_score)
             .order_by("-similarity")
-            .first()
         )
 
-        if new_similarity and round(new_similarity.similarity, 6) > existing_match.similarity_score:
+        # link to only one company per reference, the most similar one
+        if similar_company := similar_companies.first():
+            matches_found += 1
+            self.stdout_info(
+                f"Potential match: {similar_company.name} <-> {client_reference.name} "
+                f"(score: {similar_company.similarity:.6f})"
+            )
+
             if wet_run:
-                self.stdout_info(
-                    f"Match already exists for {client_reference.name} but better match found, updating it"
-                )
-                existing_match.client_reference_name = client_reference.name
-                existing_match.similarity_score = new_similarity.similarity
-                existing_match.save()
-            else:
-                self.stdout_info(f"Would update match for {client_reference.name}")
-            return True
-        else:
-            if wet_run:
-                self.stdout_info(
-                    f"Match already exists for {client_reference.name} but no better match found, deleting it"
-                )
-                existing_match.delete()
-            else:
-                self.stdout_info(f"Would delete match for {client_reference.name}")
-            return False
+                self._create_match(similar_company, client_reference)
+
+        return matches_found
 
     def _create_match(self, similar_company, client_reference):
         """Create a new match between company and client reference."""
@@ -146,17 +149,12 @@ class Command(BaseCommand):
         )
         self.stdout_success(f"Created match #{similar_company.similarity:.6f}")
 
-    def _print_summary(self, references_count, matches_found, matches_created, wet_run, min_score, days):
+    def _print_summary(self, references_count, matches_found, wet_run, min_score, days):
         """Print summary of the matching process."""
         msg_success = [
             "----- Company <-> SiaeClientReference Matching -----",
             f"Processed {references_count} recent SiaeClientReference",
-            f"Found {matches_found} potential matches",
-            (
-                f"Created {matches_created} new matches"
-                if wet_run
-                else f"Would create {matches_found} matches (dry run)"
-            ),
+            (f"Created {matches_found} new matches" if wet_run else f"Would create {matches_found} matches (dry run)"),
             f"Minimum similarity score: {min_score}",
             f"Days back: {days}",
         ]
