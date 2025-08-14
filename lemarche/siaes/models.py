@@ -14,6 +14,7 @@ from django.db.models import (
     Case,
     CharField,
     Count,
+    Exists,
     F,
     IntegerField,
     OuterRef,
@@ -33,6 +34,7 @@ from django.utils.text import slugify
 from phonenumber_field.modelfields import PhoneNumberField
 from simple_history.models import HistoricalRecords
 
+from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.tasks import set_siae_coords
@@ -204,7 +206,7 @@ class SiaeQuerySet(models.QuerySet):
         return self.prefetch_related("offers", "client_references", "labels_old", "images")
 
     def search_query_set(self):
-        return self.is_live().exclude(kind="OPCS").prefetch_many_to_many()
+        return self.is_live().exclude(kind="OPCS").with_hosmoz_network().prefetch_many_to_many()
 
     def tender_matching_query_set(self):
         return self.is_live().exclude(kind="OPCS").has_contact_email()
@@ -460,6 +462,11 @@ class SiaeQuerySet(models.QuerySet):
                 default=False,
                 output_field=BooleanField(),
             ),
+        )
+
+    def with_hosmoz_network(self):
+        return self.annotate(
+            is_in_the_hosmoz_network=Exists(Network.objects.filter(slug="hosmoz", siaes__pk=OuterRef("pk")))
         )
 
     def content_not_filled(self):
@@ -1115,6 +1122,9 @@ class Siae(models.Model):
     @property
     def label_list_display(self) -> str:
         return ", ".join(self.siaelabel_set.values_list("label__name", flat=True))
+
+    def is_in_the_hosmoz_network(self):
+        return self.networks.filter(slug="hosmoz").exists()
 
     def sector_groups_list_string(self, display_max=3):
         # Retrieve sectors from activities instead of directly from the sectors field
