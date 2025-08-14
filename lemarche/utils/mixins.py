@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import redirect_to_login
@@ -171,15 +173,22 @@ class TenderAuthorOrAdminRequiredIfNotSentMixin(UserPassesTestMixin):
         return HttpResponseRedirect(reverse_lazy("wagtail_serve", args=("",)))
 
 
-class SiaeUserRequiredOrSiaeIdParamMixin(UserPassesTestMixin):
+class SiaeUserRequiredOrSiaeUUIDParamMixin(UserPassesTestMixin):
     def test_func(self):
-        """Authorize authenticated SIAE or numeric siae id"""
-        siae_id = self.request.GET.get("siae_id", None)
+        """Authorize authenticated SIAE or uuid siae id"""
+        siae_uuid = self.request.GET.get("siae_uuid", None)
 
-        if (self.request.user.is_authenticated and self.request.user.kind == User.KIND_SIAE) or (
-            siae_id and siae_id.isnumeric()
-        ):
+        if self.request.user.is_authenticated and self.request.user.kind == User.KIND_SIAE:
             return True
+        elif siae_uuid:
+            try:  # check if siae_uuid is a valid UUID4
+                UUID(siae_uuid, version=4)
+            except ValueError:
+                return False
+            else:
+                return True
+        else:
+            return False
 
     def handle_no_permission(self):
         return HttpResponseForbidden()
