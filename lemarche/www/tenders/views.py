@@ -419,7 +419,6 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
         self.object = self.get_object()
         user = self.request.user
         get_params_form = TenderDetailGetParams(request.GET)
-        print("raaaaaaaaaaaaa")
         if get_params_form.is_valid():
             self.siae = get_params_form.cleaned_data["siae_uuid"]
             self.user_from_get = get_params_form.cleaned_data["user_id"]
