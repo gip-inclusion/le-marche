@@ -252,14 +252,14 @@ class Command(BaseCommand):
             if (
                 "brand" not in c1_siae
                 or c1_siae["brand"] == ""
-                or not Siae.objects.filter(Q(name=c1_siae["brand"]) | Q(brand=c1_siae["brand"])).exists()
+                or not Siae.objects.is_live().filter(Q(name=c1_siae["brand"]) | Q(brand=c1_siae["brand"])).exists()
             ):
                 siae = Siae.objects.create(**c1_siae)
 
                 self.stdout_info(f"New Siae created / {siae.id} / {siae.name} / {siae.siret}")
             else:
                 logger.error(
-                    "Brand name is already used by another SIAE during creation: %s",
+                    "Brand name is already used by another live SIAE during creation: %s",
                     c1_siae,
                 )
 
@@ -283,14 +283,15 @@ class Command(BaseCommand):
             if (
                 "brand" not in c1_siae_filtered
                 or c1_siae_filtered["brand"] == ""
-                or not Siae.objects.exclude(c1_id=c4_siae.c1_id)
+                or not Siae.objects.is_live()
+                .exclude(c1_id=c4_siae.c1_id)
                 .filter(Q(name=c1_siae_filtered["brand"]) | Q(brand=c1_siae_filtered["brand"]))
                 .exists()
             ):
                 Siae.objects.filter(c1_id=c4_siae.c1_id).update(**c1_siae_filtered)  # avoid updated_at change
             else:
                 logger.error(
-                    "Brand name is already used by another SIAE during update: %s",
+                    "Brand name is already used by another live SIAE during update: %s",
                     c1_siae,
                 )
 
