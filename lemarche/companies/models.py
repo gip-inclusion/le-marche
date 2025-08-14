@@ -77,3 +77,73 @@ class Company(models.Model):
         """Generate the slug field before saving."""
         self.set_slug()
         super().save(*args, **kwargs)
+
+
+class CompanySiaeClientReferenceMatch(models.Model):
+    """
+    Model to store potential matches between Company and SiaeClientReference
+    that can be moderated by human admins.
+    """
+
+    class ModerationStatus(models.TextChoices):
+        PENDING = "pending", "En attente"
+        APPROVED = "approved", "Approuvé"
+        REJECTED = "rejected", "Rejeté"
+
+    company = models.ForeignKey(
+        Company, verbose_name="Entreprise", on_delete=models.CASCADE, related_name="siae_client_reference_matches"
+    )
+    siae_client_reference = models.OneToOneField(
+        "siaes.SiaeClientReference",
+        verbose_name="Référence client SIAE",
+        on_delete=models.CASCADE,
+        related_name="company_matches",
+    )
+
+    # Matching algorithm data
+    similarity_score = models.DecimalField(
+        verbose_name="Score de similarité",
+        help_text="Score de similarité trigram entre les noms",
+        max_digits=7,
+        decimal_places=6,
+    )
+    company_name = models.CharField(
+        verbose_name="Nom de l'entreprise",
+        max_length=255,
+        help_text="Nom de l'entreprise au moment de la correspondance",
+    )
+    client_reference_name = models.CharField(
+        verbose_name="Nom de la référence client",
+        max_length=255,
+        help_text="Nom de la référence client au moment de la correspondance",
+    )
+
+    # Moderation
+    moderation_status = models.CharField(
+        verbose_name="Statut de modération",
+        max_length=20,
+        choices=ModerationStatus.choices,
+        default=ModerationStatus.PENDING,
+    )
+    moderated_by = models.ForeignKey(
+        "users.User",
+        verbose_name="Modéré par",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="company_matches_moderated",
+    )
+    moderated_at = models.DateTimeField(verbose_name="Date de modération", null=True, blank=True)
+    moderation_notes = models.TextField(verbose_name="Notes de modération", blank=True)
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Correspondance entreprise-référence client"
+        verbose_name_plural = "Correspondances entreprise-référence client"
+        unique_together = ["company", "siae_client_reference"]
+        ordering = ["-similarity_score", "-created_at"]
+
+    def __str__(self):
+        return f"{self.company_name} <-> {self.client_reference_name} ({self.similarity_score:.2f})"
