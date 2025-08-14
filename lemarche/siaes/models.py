@@ -1444,6 +1444,50 @@ class SiaeActivityQuerySet(models.QuerySet):
 
         return qs
 
+    def with_sector_and_sector_group(self, siae):
+        """
+        Filter the queryset to include only those SiaeActivities that belong to a specific Siae
+        and are associated with a sector and its group.
+
+        Args:
+            siae (Siae): The Siae instance to filter the activities for.
+
+        Returns:
+            QuerySet: A queryset of SiaeActivities that match the specified siae, with sector
+            and sector group information included.
+        """
+
+        return self.filter(siae=siae).select_related("sector", "sector__group")
+
+    def with_siae_and_sector_group(self, siae, sector_group_id):
+        """
+        Filter the queryset to include only those SiaeActivities that belong to a specific Siae
+        and are associated with a given sector group.
+
+        Args:
+            siae (Siae): The Siae instance to filter the activities for.
+            sector_group_id (int): The ID of the sector group to filter the activities by.
+
+        Returns:
+            QuerySet: A queryset of SiaeActivities that match the specified siae and sector group.
+        """
+
+        qs = (
+            self.select_related("siae", "sector__group")
+            .prefetch_related("locations")
+            .filter(siae=siae, sector__group_id=sector_group_id)
+            .distinct()
+        )
+        return qs
+
+    def get_related_locations(self):
+        """
+        Return a queryset of perimeters associated with SiaeActivities
+        present in the current queryset.
+        """
+        qs = Perimeter.objects.filter(siae_activities__in=self).prefetch_related("siaeactivity").distinct()
+        return qs
+
 
 class SiaeActivity(models.Model):
     siae = models.ForeignKey(

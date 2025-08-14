@@ -10,137 +10,55 @@
     <div class="fr-container">
         <div class="fr-grid-row">
             <div class="fr-col-12">
-                <form method="post" action="">
-                    {% csrf_token %}
-                    {% if form.non_field_errors %}
-                        <section class="fr-my-4v fr-input-group fr-input-group--error">
-                            {{ form.non_field_errors }}
-                        </section>
-                    {% endif %}
-                    <div class="fr-grid-row">
-                        <div class="fr-col-12">
-                            <h3>{{ page_title }}</h3>
+                <div class="fr-grid-row">
+                    <div class="fr-col-12">
+                        <h3>{{ page_title }}</h3>
+                    </div>
+                </div>
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    <div class="fr-col-12 fr-col-lg-8">
+                        <div class="fr-input-group fr-mb-lg-8w">
+                            <label class="fr-label" for="select-id_sector_group">Secteurs d'activités *</label>
+                            <select
+                                id="select-id_sector_group"
+                                class="fr-select"
+                                name="sector_group_id"
+                                required=""
+                                hx-get="{% url 'dashboard_siaes:siae_activities_sector_form' siae.slug %}{% if sector_group_id %}?sector_group_id={{ sector_group_id }}{% endif %}"
+                                hx-trigger="load, change"
+                                hx-target="#checkboxes-id_sectors"
+                                {% if sector_group_id %}
+                                    disabled
+                                {% endif %}
+                            >
+                                <option value="" selected="">----- Sélectionnez un secteur -----</option>
+                                {% for value in sector_groups %}
+                                    <option value="{{ value.pk }}" {% if value.pk == sector_group_id %}selected{% endif %}>{{ value.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <fieldset id="checkboxes-id_sectors" class="fr-fieldset" aria-labelledby="id_sectors-legend">
+                            <!-- Sectors form -->
+                        </fieldset>
+                    </div>
+                    <div class="fr-col-12 fr-col-lg-4">
+                        <div class="fr-callout fr-p-4v">
+                            <h3 class="fr-callout__title fr-text--sm">
+                                <span class="fr-icon-information-line" aria-hidden="true"></span> Secteur d'activité
+                            </h3>
+                            <p class="fr-callout__text fr-text--sm fr-pl-7v">
+                                Améliorez votre référencement en indiquant tous les secteurs d'activités sur lesquels votre struture est positionnée.
+                            </p>
                         </div>
                     </div>
-                    <div class="fr-grid-row fr-grid-row--gutters">
-                        <div class="fr-col-12 fr-col-lg-8">
-                            {% dsfr_form_field form.sector %}
-                        </div>
-                        <div class="fr-col-12 fr-col-lg-4">
-                            <div class="fr-callout fr-p-4v">
-                                <h3 class="fr-callout__title fr-text--sm">
-                                    <span class="fr-icon-information-line" aria-hidden="true"></span> Secteur d'activité
-                                </h3>
-                                <p class="fr-callout__text fr-text--sm fr-pl-7v">
-                                    Améliorez votre référencement en indiquant tous les secteurs d'activités sur lesquels votre struture est positionnée.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="fr-grid-row fr-grid-row--gutters">
-                        <div class="fr-col-12 fr-col-lg-8">{% dsfr_form_field form.presta_type %}</div>
-                        <div class="fr-col-12 fr-col-lg-4">
-                            <div class="fr-callout fr-p-4v">
-                                <h3 class="fr-callout__title fr-text--sm">
-                                    <span class="fr-icon-information-line" aria-hidden="true"></span> Type de prestation
-                                </h3>
-                                <p class="fr-callout__text fr-text--sm fr-pl-7v">
-                                    Vous pourrez ensuite détailler vos prestations dans la section <i>offre commerciale</i>.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="fr-grid-row fr-grid-row--gutters">
-                        <div class="fr-col-12 fr-col-lg-8">
-                            {% dsfr_form_field form.geo_range %}
-                            <div id="geo_range_custom_distance_wrapper">{% dsfr_form_field form.geo_range_custom_distance %}</div>
-                            <div id="geo_range_locations_wrapper" class="fr-input-group">
-                                {{ form.locations }}
-                                {{ current_locations|json_script:"current-locations" }}
-                            </div>
-                        </div>
-                        <div class="fr-col-12 fr-col-lg-4">
-                            <div class="fr-callout fr-p-4v">
-                                <h3 class="fr-callout__title fr-text--sm">
-                                    <span class="fr-icon-information-line" aria-hidden="true"></span> Périmètre d'intervention
-                                </h3>
-                                <p class="fr-callout__text fr-text--sm fr-pl-7v">
-                                    Le périmètre d'intervention est un critère essentiel dans le choix des acheteurs. Il est nécessaire de bien le renseigner.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="fr-grid-row fr-grid-row--gutters fr-mt-3v fr-mt-lg-5v">
-                        <div class="fr-col-12 fr-col-lg-8">
-                            <ul class="fr-mt-2v fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-sm fr-btns-group--icon-left">
-                                <li>
-                                    <button type="submit" class="fr-btn">Enregistrer</button>
-                                </li>
-                                <li>
-                                    <a class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-go-back-line"
-                                       href="{% url 'dashboard_siaes:siae_edit_activities' siae.slug %}">
-                                        <span>Annuler</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 {% endblock content %}
 {% block extra_js %}
     <script type="text/javascript"
-            src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
-    <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function() {
-
-            // -------------------------------------------------------------------
-            // init locations autocomplete form fields
-            const LOCATION_AUTOCOMPLETE_ID = 'id_locations';
-            const LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR = '#dir_form_locations';
-            const LOCATION_SELECTED_CONTAINER_SELECTOR = '#locations-selected';
-            const LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX = 'hiddenLocation';
-            const LOCATION_CURRENT_ID = 'current-locations';
-            const locationsAutoComplete = new PerimetersMultiAutocomplete(LOCATION_AUTOCOMPLETE_ID, LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR, LOCATION_SELECTED_CONTAINER_SELECTOR, LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX, LOCATION_CURRENT_ID);
-            locationsAutoComplete.init();
-            // -------------------------------------------------------------------
-            
-
-            // -------------------------------------------------------------------
-            // geo range custom distance input
-            let geoRangeCustomDistanceInput = document.getElementById('id_geo_range_custom_distance');
-            let geoRangeCustomDistanceInputGroup = document.getElementById('geo_range_custom_distance_wrapper');
-            let geoRangeLocationsInputGroup = document.getElementById('geo_range_locations_wrapper');
-
-            function toggleGeoRangeFieldsAccordingToRadio(value) {
-                geoRangeLocationsInputGroup.style.display = 'none';
-                geoRangeCustomDistanceInputGroup.style.display = 'none';
-                geoRangeCustomDistanceInput.disabled = true;
-
-                if (value === 'CUSTOM') {
-                    geoRangeCustomDistanceInput.disabled = false;
-                    geoRangeCustomDistanceInputGroup.style.display = 'block';
-                } else if (value === 'ZONES') {
-                    geoRangeLocationsInputGroup.style.display = 'block';
-                }
-            }
-
-            let geoRangeRadios = document.querySelectorAll('input[type=radio][name="geo_range"]');
-            // init
-            geoRangeLocationsInputGroup.style.display = 'none';
-            geoRangeCustomDistanceInputGroup.style.display = 'none';
-            geoRangeRadios.forEach(radio => {
-                if (radio.checked) {
-                    toggleGeoRangeFieldsAccordingToRadio(radio.value);
-                }
-            });
-            // on change
-            geoRangeRadios.forEach(radio => radio.addEventListener('change', () => {
-                toggleGeoRangeFieldsAccordingToRadio(radio.value);
-            }));
-            // -------------------------------------------------------------------
-        });
+            src="{% static 'js/perimeter_autocomplete_field.js' %}">
     </script>
 {% endblock extra_js %}

@@ -1,0 +1,76 @@
+{% load static dsfr_tags %}
+
+<legend id="id_sectors-legend" class="fr-fieldset__legend fr-text--regular fr-mb-3v">
+    <label>Veuillez sélectionner vos activités </label>
+        *
+</legend>
+
+<div class="fr-fieldset__content">
+    <div class="fr-checkbox-group">
+        <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+            {% for sector in sectors %}
+              {% include "dashboard/partial_activity_alpine_component.html" with sector=sector existing_sector_ids=existing_sector_ids %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<ul class="fr-mt-2v fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-sm fr-btns-group--icon-left">
+  <li>
+    <button class="fr-btn"
+            {# This button will trigger an event that will submit all forms that are loaded #}
+            {# asynchronously in the above loop #}
+            onclick="submitAllForms()"
+    >
+        Enregistrer
+    </button>
+  </li>
+  <li>
+    <a class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-go-back-line"
+       href="{% url 'dashboard_siaes:siae_edit_activities' siae.slug %}">
+      <span>Annuler</span>
+    </a>
+  </li>
+</ul>
+
+<script>
+  /*
+  * Trigger an submitAllForms listened by all forms, then loop over all forms to listen for this event.
+  * Wait for all forms to be submitted
+  * If all forms are submitted, change page. If validation errors, stay on page to display errors.
+  * */
+  async function submitAllForms() {
+
+      let activityForms = document.querySelectorAll('.activity-form-class')
+      htmx.trigger('body', 'submitAllForms')
+
+      const submissionPromises = Array.from(activityForms).map(form => {
+          return new Promise((resolve, reject) => {
+              form.addEventListener('htmx:afterRequest', function (event) {
+                  if (event.detail.successful) {
+                      // a custom header from the view is sent on invalid response
+                      if (event.detail.xhr.getResponseHeader('formInvalid')) {
+                          reject(new Error("Invalid form"));
+                      } else {
+                          resolve(true);
+                      }
+                  } else {
+                      reject(new Error("Error submitting form", event.detail.xhr.status))
+                  }
+              });
+          });
+      });
+
+      // Wait for all forms to be submitted
+      const results = await Promise.allSettled(submissionPromises);
+      // Check for failed promises
+      const failedSubmissions = results.filter(result => result.status === 'rejected');
+
+      if (failedSubmissions.length === 0) {
+          window.location.href = "{% url 'dashboard_siaes:siae_edit_activities' slug=siae.slug %}";
+      } else {
+          console.log("erreur")
+      }
+
+  }
+</script>

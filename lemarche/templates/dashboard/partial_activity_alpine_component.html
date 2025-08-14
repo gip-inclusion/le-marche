@@ -1,0 +1,59 @@
+<div class="fr-card fr-card--no-background fr-col-12 fr-mb-2w fr-ml-lg-2w fr-px-2w fr-px-lg-4w fr-py-2v" style="border-radius: 8px;"
+     x-data="{
+        sectorIsSelected: {% if sector.id in existing_sector_ids %}true{% else %}false{% endif %},
+        linkedActivityId: {% if sector.linked_activity_id %}{{ sector.linked_activity_id }}{% else %}null{% endif %},
+
+        handleCheckboxChange() {
+
+            // If there is an existing id and we uncheck the checkbox, the object will be deleted
+            if (!this.sectorIsSelected && this.linkedActivityId) {
+                // call to delete the activity
+                htmx.ajax(
+                  'DELETE',
+                  '{% if sector.linked_activity_id %}{% url 'dashboard_siaes:siae_edit_activities_delete' slug=siae.slug activity_id=sector.linked_activity_id %}{% endif %}',
+                  {},
+                );
+                this.linkedActivityId = null;
+            }
+
+            if (this.sectorIsSelected && !this.linkedActivityId) {
+                // to display the create form when user clicks on the checkbox that was previously unchecked
+                htmx.ajax('GET', '{% url 'dashboard_siaes:siae_activities_create' slug=siae.slug sector_id=sector.id%}',
+                 {
+                    target: '#prestaGeoForm_{{ sector.id }}',
+                    swap: 'innerHTML'
+                    }
+                 );
+            }
+        }
+     }"
+>
+    <div class="fr-checkbox-group fr-mt-0">
+        <input
+            type="checkbox"
+            name="sectors"
+            id="id_sectors_0_{{ forloop.counter0 }}"
+            value="{{ sector.id }}"
+            dsfr="dsfr"
+            data-fr-js-checkbox-input="true"
+            x-model="sectorIsSelected"
+            x-on:change="handleCheckboxChange()"
+        >
+        <label class="fr-label fr-mb-0" for="id_sectors_0_{{ forloop.counter0 }}">
+            <span class="fr-text--bold">{{ sector }}</span>
+        </label>
+    </div>
+
+    <template x-if="sectorIsSelected">
+      <!-- Div where actual activity edit or create form is stored -->
+      <div
+          id="prestaGeoForm_{{ sector.id }}"
+          class="fr-mt-1w fr-ml-lg-4w"
+          {# Htmx is only used for update #}
+          hx-get="{% if sector.linked_activity_id %}{% url 'dashboard_siaes:siae_activities_edit' pk=sector.linked_activity_id %}{% endif %}"
+          hx-trigger="load"
+          hx-swap="innerHTML"
+      >
+      </div>
+    </template>
+</div>

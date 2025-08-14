@@ -13,8 +13,8 @@
     </div>
     {% if siae.activities.count %}
         <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-            {% for activity in siae.activities.all %}
-                <div class="fr-col-12 fr-col-lg-8">{% include "siaes/_siae_activity_card.html" with activity=activity %}</div>
+            {% for group, sectors in grouped_activities.items %}
+                <div class="fr-col-12 fr-col-lg-8">{% include "siaes/_siae_activity_card.html" with group=group sectors=sectors %}</div>
             {% endfor %}
         </div>
     {% endif %}
@@ -24,5 +24,12 @@
 {% endblock modals %}
 {% block extra_js %}
     <script type="text/javascript"
-            src="{% static 'js/siae_activity_delete.js' %}"></script>
+            src="{% static 'js/siae_activity_delete.js' %}"
+    >
+    </script>
+    <script type="text/javascript"
+            src="{% static 'js/perimeter_autocomplete_field.js' %}"
+    >
+    </script>
+
 {% endblock extra_js %}

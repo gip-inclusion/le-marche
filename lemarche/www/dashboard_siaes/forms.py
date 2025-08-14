@@ -199,12 +199,14 @@ class SiaeUserRequestForm(forms.ModelForm):
         fields = []
 
 
-class SiaeActivitiesCreateForm(forms.ModelForm):
+class SiaeActivityForm(forms.ModelForm):
     sector = forms.ModelChoiceField(
         label="Activité",
-        queryset=Sector.objects.form_filter_queryset(),
+        queryset=Sector.objects.all(),
         required=True,
+        widget=forms.HiddenInput,
     )
+
     presta_type = forms.MultipleChoiceField(
         label=SiaeActivity._meta.get_field("presta_type").verbose_name,
         choices=siae_constants.PRESTA_CHOICES,
@@ -253,7 +255,7 @@ class SiaeActivitiesCreateForm(forms.ModelForm):
 
         if geo_range == siae_constants.GEO_RANGE_ZONES:
             if not cleaned_data.get("locations"):
-                self.add_error(None, "Vous devez choisir au moins une zone d'intervention personnalisée.")
+                self.add_error("locations", "Vous devez choisir au moins une zone d'intervention personnalisée.")
         else:
             cleaned_data["locations"] = []
         return cleaned_data

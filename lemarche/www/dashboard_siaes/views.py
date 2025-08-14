@@ -1,21 +1,24 @@
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import OuterRef, Subquery
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
-from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView
 from django.views.generic.edit import FormMixin
 
+from lemarche.sectors.models import Sector, SectorGroup
 from lemarche.siaes.models import Siae, SiaeActivity, SiaeUser, SiaeUserRequest
 from lemarche.utils import settings_context_processors
 from lemarche.utils.apis import api_brevo
 from lemarche.utils.mixins import SiaeMemberRequiredMixin, SiaeUserAndNotMemberRequiredMixin, SiaeUserRequiredMixin
 from lemarche.utils.s3 import S3Upload
 from lemarche.www.dashboard_siaes.forms import (
-    SiaeActivitiesCreateForm,
+    SiaeActivityForm,
     SiaeClientReferenceFormSet,
     SiaeEditContactForm,
     SiaeEditInfoForm,
@@ -141,14 +144,27 @@ class SiaeEditActivitiesView(SiaeMemberRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
         context["breadcrumb_current"] = f"{self.object.name_display} : modifier"
+
+        siae_activities = SiaeActivity.objects.with_sector_and_sector_group(self.object).order_by("sector")
+
+        grouped_activities = {}
+
+        for activity in siae_activities:
+            group = activity.sector.group
+            sector = activity.sector
+
+            if group not in grouped_activities:
+                grouped_activities[group] = {}
+
+            grouped_activities[group][sector] = activity
+
+        context["grouped_activities"] = grouped_activities
         return context
 
 
 class SiaeEditActivitiesDeleteView(SiaeMemberRequiredMixin, SuccessMessageMixin, DeleteView):
     template_name = "dashboard/_siae_activity_delete_modal.html"
     model = SiaeActivity
-    # success_url = reverse_lazy("dashboard_siaes:siae_edit_activities")
-    # success_message = "Votre activité a été supprimée avec succès."
 
     def get_object(self):
         siae = Siae.objects.get(slug=self.kwargs.get("slug"))
@@ -161,30 +177,16 @@ class SiaeEditActivitiesDeleteView(SiaeMemberRequiredMixin, SuccessMessageMixin,
         return mark_safe(f"Votre activité <strong>{self.object.sector}</strong> a été supprimée avec succès.")
 
 
-class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, CreateView):
+class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, TemplateView):
+    """Display a page with a select displaying sector groups that
+    will call dashboard_siaes:siae_activities_sector_form uppon
+    change and load an htmx partial"""
+
     template_name = "dashboard/siae_edit_activities_create.html"
-    form_class = SiaeActivitiesCreateForm
 
     def get(self, request, *args, **kwargs):
         self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
         return super().get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
-        return super().post(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        siae_activity = form.save(commit=False)
-        siae_activity.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
-        siae_activity.save()
-        form.save_m2m()
-
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            self.get_success_message(form.cleaned_data),
-        )
-        return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -201,37 +203,27 @@ class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, CreateView):
             ],
             "current": context["page_title"],
         }
+        context["sector_groups"] = SectorGroup.objects.all()
+
         return context
 
-    def get_success_url(self):
-        return reverse_lazy("dashboard_siaes:siae_edit_activities", args=[self.kwargs.get("slug")])
 
-    def get_success_message(self, cleaned_data):
-        return mark_safe(f"Votre activité <strong>{cleaned_data['sector']}</strong> a été créée avec succès.")
+class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, TemplateView):
+    """Display a page with a select displaying an already selected sector group
+    that will call dashboard_siaes:siae_activities_sector_form uppon
+    change and load an htmx partial"""
 
-
-class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     template_name = "dashboard/siae_edit_activities_create.html"
-    form_class = SiaeActivitiesCreateForm
-    success_message = "Votre activité a été modifiée avec succès."
 
     def get(self, request, *args, **kwargs):
         self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
+        self.sector_group_id = self.kwargs["sector_group_id"]
         return super().get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
-        return super().post(request, *args, **kwargs)
-
-    def get_object(self):
-        return get_object_or_404(SiaeActivity, siae__slug=self.kwargs.get("slug"), id=self.kwargs.get("activity_id"))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Modifier une activité"
         context["siae"] = self.siae
-        context["activity"] = self.object
-        context["current_locations"] = list(self.object.locations.values("id", "slug", "name"))
         context["breadcrumb_data"] = {
             "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
             "links": [
@@ -243,10 +235,123 @@ class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, SuccessMessageMixin, U
             ],
             "current": context["page_title"],
         }
+
+        context["sector_groups"] = SectorGroup.objects.all()
+        context["sector_group_id"] = self.sector_group_id
         return context
 
+
+class SiaeActivitySectorFormView(SiaeMemberRequiredMixin, TemplateView):
+    template_name = "dashboard/_siae_edit_activities_create_sector_form.html"
+
+    def get(self, request, *args, **kwargs):
+        self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
+        self.sector_group_id = self.request.GET.get("sector_group_id")
+        if self.sector_group_id:
+            self.siae_activities = SiaeActivity.objects.with_siae_and_sector_group(self.siae, self.sector_group_id)
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["siae"] = self.siae
+
+        # This subquery is used to find the link between a displayed sector and
+        # an already existing activity
+        activity_sector_subquery = SiaeActivity.objects.filter(siae=self.siae, sector=OuterRef("id")).values("id")
+        context["sectors"] = Sector.objects.filter(group_id=self.sector_group_id).annotate(
+            linked_activity_id=Subquery(activity_sector_subquery[:1])
+        )
+
+        # Get existing sector ids and convert to string in order to be compared with html input value
+        if hasattr(self, "siae_activities") and self.siae_activities:
+            existing_sector_ids = [activity.sector.id for activity in self.siae_activities]
+            context["existing_sector_ids"] = existing_sector_ids
+
+        return context
+
+
+class HtmxActivityValidationMixin:
+
+    def form_invalid(self, form):
+        """Form htmx, not sent in case of valid form because lost in redirect"""
+        response = super().form_invalid(form)
+        response.headers["formInvalid"] = "true"
+        return response
+
+
+class SiaeActivityCreateView(HtmxActivityValidationMixin, SiaeMemberRequiredMixin, CreateView):
+    template_name = "dashboard/partial_activity_create_form.html"
+    form_class = SiaeActivityForm
+    model = SiaeActivity
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
+        # It's part of the url because it's necessary to also have it in POST
+        # to set the form prefix
+        self.sector_id = self.kwargs.get("sector_id")
+
+    def get_context_data(self, **kwargs):
+        """For POST url siae argument"""
+        ctx = super().get_context_data(**kwargs)
+        ctx["siae"] = self.siae
+        ctx["sector_id"] = self.sector_id
+        return ctx
+
     def get_success_url(self):
-        return reverse_lazy("dashboard_siaes:siae_edit_activities", args=[self.kwargs.get("slug")])
+        """Redirect to the siae detail page"""
+        return reverse_lazy("dashboard_siaes:siae_activities_edit", kwargs={"pk": self.object.pk})
+
+    def form_valid(self, form):
+        """Bind to be created activity instance to siae instance"""
+        form.instance.siae = self.siae
+        return super().form_valid(form)
+
+    def get_initial(self):
+        """Set sector as initial data for hidden input sector field"""
+        initial = super().get_initial()
+        initial["sector"] = self.sector_id
+        return initial
+
+    def get_form_kwargs(self):
+        """Add a prefix to form inputs name and id to avoid conflicts with other forms in the page"""
+        kwargs = super().get_form_kwargs()
+        kwargs["prefix"] = f"sector-{self.sector_id}"
+        return kwargs
+
+
+class SiaeActivityDetailView(UserPassesTestMixin, DetailView):
+    template_name = "dashboard/partial_activity_detail.html"
+    model = SiaeActivity
+
+    def test_func(self):
+        """Check that only user linked to the Siae can see this activity"""
+        return SiaeActivity.objects.filter(pk=self.kwargs["pk"], siae__users=self.request.user).exists()
+
+
+class SiaeActivityEditView(HtmxActivityValidationMixin, UserPassesTestMixin, UpdateView):
+    template_name = "dashboard/partial_activity_edit_form.html"
+    form_class = SiaeActivityForm
+    model = SiaeActivity
+
+    def test_func(self):
+        """Check that only user linked to the Siae can edit this activity"""
+        return SiaeActivity.objects.filter(pk=self.kwargs["pk"], siae__users=self.request.user).exists()
+
+    def get_form_kwargs(self):
+        """Add a prefix to form inputs name and id to avoid conflicts with other forms in the page"""
+        kwargs = super().get_form_kwargs()
+        kwargs["prefix"] = f"activity-{self.object.pk}"
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        """Really ugly but necessary to the even more ugly PerimetersMultiAutocomplete"""
+        ctx = super().get_context_data(**kwargs)
+        ctx["current_locations"] = list(self.object.locations.values("id", "slug", "name"))
+        return ctx
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard_siaes:siae_activities_edit", kwargs={"pk": self.object.pk})
 
 
 class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
