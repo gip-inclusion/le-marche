@@ -5,18 +5,17 @@
             {% if tender.contact_company_name_display %}
                 <div class="fr-col-md-4" title="Entreprise">
                     <span class="fr-icon-building-line" aria-hidden="true"></span>
-                    <strong>{{ tender.contact_company_name_display }}</strong>
-                </div>
-            {% endif %}
-            {% for label in tender.author.company.labels.all %}
-                <div class="fr-col-md-4" title="Label">
+                  <strong>{{ tender.contact_company_name_display }}</strong>
+                  {% for label in tender.author.company.labels.all %}
                     <img src="{{ label.logo_url }}"
                          class="fr-responsive-img"
-                         style="width: 40px; height: 40px; object-fit: contain;"
+                         style="width: 40px; height: 40px; object-fit: contain; display: inline-block; vertical-align: middle; margin-left: 8px;"
                          alt="Logo du label {{ label.name }}"
                          loading="lazy"/>
-                  </div>
-            {% endfor %}
+                  {% endfor %}
+                </div>
+            {% endif %}
+
 
             <div class="fr-col-md-4" title="Lieu d'intervention">
                 <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
