@@ -9,12 +9,13 @@
                 </div>
             {% endif %}
             {% for label in tender.author.company.labels.all %}
-              <div class="fr-col-md-4" title="Label">
-                <img src="{{ label.logo_url }}" class="fr-responsive-img"
-                     style="width: 40px; height: 40px; object-fit: contain;" alt="Logo du label {{ label.name }}"
-                     loading="lazy"/>
-                {{ label.name }}
-              </div>
+                <div class="fr-col-md-4" title="Label">
+                    <img src="{{ label.logo_url }}"
+                         class="fr-responsive-img"
+                         style="width: 40px; height: 40px; object-fit: contain;"
+                         alt="Logo du label {{ label.name }}"
+                         loading="lazy"/>
+                  </div>
             {% endfor %}
 
             <div class="fr-col-md-4" title="Lieu d'intervention">
@@ -88,6 +89,29 @@
                 </ul>
             </div>
         {% endif %}
+
+
+        <hr>
+        <h2>Engagement de l'entreprise</h2>
+
+        <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+          {% for label in tender.author.company.labels.all %}
+            <div class="fr-col-3 fr-col-md-2 text-center">
+              <img src="{{ label.logo_url }}"
+                   class="fr-responsive-img fr-mx-2w"
+                   width="40"
+                   height="40"
+                   alt="Logo du label {{ label.name }}"
+                   loading="lazy"
+              />
+            </div>
+          {% endfor %}
+        </div>
+
+      {% if tender.author.company.get_label_sentence_display %}
+          <p>{{ tender.author.company.get_label_sentence_display }}</p>
+        {% endif %}
+
         <!-- tender questions -->
         {% if tender.questions_list|length %}
             <hr>
