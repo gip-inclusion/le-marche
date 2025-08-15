@@ -16,6 +16,8 @@ from django.utils import timezone
 from sesame.utils import get_query_string as sesame_get_query_string
 from sib_api_v3_sdk.models.create_update_contact_model import CreateUpdateContactModel
 
+from lemarche.companies.factories import CompanyFactory
+from lemarche.companies.models import CompanyLabel
 from lemarche.conversations.factories import TemplateTransactionalFactory
 from lemarche.conversations.models import EmailGroup
 from lemarche.perimeters.factories import PerimeterFactory
@@ -1276,6 +1278,36 @@ class TenderDetailIncitativeMessageTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["tender"].siae_detail_contact_click_count, 2)
         self.assertContains(response, "Soyez le premier à répondre à cet appel d'offres.", html=True)
+
+
+class TenderDetailLabelTestCase(TestCase):
+
+    def setUp(self):
+        siae = SiaeFactory()
+        buyer_company = CompanyFactory(
+            name="World Company",
+            labels=[
+                CompanyLabel.objects.create(name="RFAR"),
+                CompanyLabel.objects.create(name="B-Corp"),
+            ],
+        )
+
+        self.buyer_user = UserFactory(kind=User.KIND_BUYER, company=buyer_company)
+        self.tender = TenderFactory(kind=tender_constants.KIND_TENDER, author=self.buyer_user, siaes=[siae])
+
+    def test_companylabel_in_tender_detail(self):
+        """Check that a custom message is displayed when both company label are present"""
+        self.client.force_login(self.buyer_user)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertContains(
+            response,
+            "L’organisation de cet acheteur est certifié RFAR et B-Corp, "
+            "garantissant son engagement envers des relations fournisseurs responsables et son impact social",
+            html=True,
+        )
 
 
 class TenderDetailContactClickStatViewTest(TestCase):
