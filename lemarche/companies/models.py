@@ -7,6 +7,18 @@ from django_better_admin_arrayfield.models.fields import ArrayField
 from lemarche.utils.constants import ADMIN_FIELD_HELP_TEXT, RECALCULATED_FIELD_HELP_TEXT
 
 
+class CompanyLabel(models.Model):
+    name = models.CharField(verbose_name="Nom", max_length=255)
+    logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500)
+
+    class Meta:
+        verbose_name = "Label"
+        verbose_name_plural = "Labels"
+
+    def __str__(self):
+        return self.name
+
+
 class CompanyQuerySet(models.QuerySet):
     def has_user(self):
         return self.filter(users__isnull=False).distinct()
@@ -31,6 +43,7 @@ class Company(models.Model):
     siret = models.CharField(verbose_name="Siret", max_length=14, blank=True)
     website = models.URLField(verbose_name="Site web", blank=True)
     logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True)
+    labels = models.ManyToManyField(CompanyLabel, verbose_name="Labels", blank=True)
 
     email_domain_list = ArrayField(
         verbose_name="Liste des noms de domaine d'e-mails",
