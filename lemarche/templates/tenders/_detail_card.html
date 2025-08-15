@@ -91,25 +91,27 @@
         {% endif %}
 
 
-        <hr>
-        <h2>Engagement de l'entreprise</h2>
+        {% if tender.author.company.labels.all %}
+          <hr>
+          <h2>Engagement de l'entreprise</h2>
 
-        <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
-          {% for label in tender.author.company.labels.all %}
-            <div class="fr-col-3 fr-col-md-2 text-center">
-              <img src="{{ label.logo_url }}"
-                   class="fr-responsive-img fr-mx-2w"
-                   width="40"
-                   height="40"
-                   alt="Logo du label {{ label.name }}"
-                   loading="lazy"
-              />
-            </div>
-          {% endfor %}
-        </div>
+          <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+            {% for label in tender.author.company.labels.all %}
+              <div class="fr-col-3 fr-col-md-2 text-center">
+                <img src="{{ label.logo_url }}"
+                     class="fr-responsive-img fr-mx-2w"
+                     width="40"
+                     height="40"
+                     alt="Logo du label {{ label.name }}"
+                     loading="lazy"
+                />
+              </div>
+            {% endfor %}
+          </div>
 
-      {% if tender.author.company.get_label_sentence_display %}
-        <p>{{ tender.author.company.get_label_sentence_display }}</p>
+        {% if tender.author.company.get_label_sentence_display %}
+          <p>{{ tender.author.company.get_label_sentence_display }}</p>
+        {% endif %}
       {% endif %}
 
         <!-- tender questions -->
