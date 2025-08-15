@@ -91,6 +91,24 @@ class Company(models.Model):
         self.set_slug()
         super().save(*args, **kwargs)
 
+    @property
+    def get_label_sentence_display(self) -> str:
+        labels = self.labels.values_list("name", flat=True)
+        if "RFAR" in labels and "B-Corp" in labels:
+            return (
+                "L’organisation de cet acheteur est certifié RFAR et B-Corp,"
+                " garantissant son engagement envers des relations fournisseurs responsables et son impact social"
+            )
+        elif "RFAR" in labels:
+            return (
+                "L’organisation de cet acheteur est certifié RFAR,"
+                " garantissant son engagement envers des relations fournisseurs responsables"
+            )
+        elif "B-Corp" in labels:
+            return "L’organisation de cet acheteur est certifiée B-Corp, garantissant son engagement social"
+        else:
+            return ""
+
 
 class CompanySiaeClientReferenceMatch(models.Model):
     """
