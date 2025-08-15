@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.utils.html import format_html, mark_safe
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 
-from lemarche.companies.models import Company, CompanySiaeClientReferenceMatch
+from lemarche.companies.models import Company, CompanyLabel, CompanySiaeClientReferenceMatch
 from lemarche.utils.admin.admin_site import admin_site
 
 
@@ -54,6 +54,14 @@ class ModerationStatusFilter(admin.SimpleListFilter):
         return queryset
 
 
+@admin.register(CompanyLabel, site=admin_site)
+class CompanyLabelAdmin(admin.ModelAdmin):
+    list_display = ["id", "name"]
+    search_fields = ["id", "name"]
+    search_help_text = "Cherche sur les champs : ID et nom"
+    ordering = ["name"]
+
+
 @admin.register(Company, site=admin_site)
 class CompanyAdmin(admin.ModelAdmin, DynamicArrayMixin):
     list_display = [
@@ -77,7 +85,7 @@ class CompanyAdmin(admin.ModelAdmin, DynamicArrayMixin):
         (
             None,
             {
-                "fields": ("name", "slug", "description", "siret", "website", "email_domain_list"),
+                "fields": ("name", "slug", "description", "siret", "website", "email_domain_list", "labels"),
             },
         ),
         ("Logo", {"fields": ("logo_url", "logo_url_display")}),
