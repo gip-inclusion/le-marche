@@ -109,8 +109,8 @@
         </div>
 
       {% if tender.author.company.get_label_sentence_display %}
-          <p>{{ tender.author.company.get_label_sentence_display }}</p>
-        {% endif %}
+        <p>{{ tender.author.company.get_label_sentence_display }}</p>
+      {% endif %}
 
         <!-- tender questions -->
         {% if tender.questions_list|length %}
