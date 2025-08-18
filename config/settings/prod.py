@@ -6,18 +6,6 @@ from .sentry import sentry_init
 
 env = environ.Env()
 
-
-ALLOWED_HOSTS = [
-    "inclusion.beta.gouv.fr",
-    "lemarche.inclusion.beta.gouv.fr",
-    "api.lemarche.inclusion.beta.gouv.fr",
-    "bitoubi-django.cleverapps.io",
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://lemarche.inclusion.beta.gouv.fr",
-]
-
 SECURE_SSL_REDIRECT = env.str("SECURE_SSL_REDIRECT", True)
 
 MEDIA_URL = f"https://{S3_STORAGE_ENDPOINT_DOMAIN}/"  # noqa

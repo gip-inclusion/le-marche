@@ -47,6 +47,7 @@ $ source ./env.local.sh
 #### Installation & lancement
 
 Prérequis :
+
 - packets python à installer : poetry, python3.9, python3.9-dev, default-libmysqlclient-dev
 - initialiser une db Postgres (ne pas oublier l'extension PostGIS)
 
@@ -77,8 +78,6 @@ Pour la configuration Django, vérifiez le fichier [config/settings/dev.py](./co
 
 Pour un déploiement local **avec Docker**, dupliquez le fichier `env.docker_default.local` en `env.docker.local` et apportez-y les modifications nécessaires (bien que la plupart des paramètres devraient fonctionner _hors de la boîte_).
 
-> :information_source: pour accéder à l'environnemnt depuis une autre machine, pensez à définir la variable d'environnemnt `CURRENT_HOST` dans le fichier d'environnement
-
 #### Lancement Docker Compose
 
 Après création du fichier `env.docker.local` :
@@ -104,9 +103,10 @@ Après création du fichier `env.docker.local` :
 
 ## Utilisation
 
-Une fois lancé, l'application est disponible sur http://localhost:8880/.
+Une fois lancé, l'application est disponible sur <http://localhost:8880/>.
 
 Le dépôt de besoin utilise les périmètres. Il est possible de les charger avec les commandes Django :
+
 ```bash
 django-admin import_regions
 django-admin import_departements
@@ -116,11 +116,13 @@ django-admin import_communes
 ### Données de test
 
 - fixtures :
+
 ```bash
 ls -d lemarche/fixtures/django/* | xargs django-admin loaddata
 ```
 
 - commande Django :
+
 ```bash
 django-admin create_content_pages
 ```
@@ -158,7 +160,7 @@ $ poetry run poe export_dev
 Et pour connaître les dépendances à mettre à jour :
 
 ```bash
-$ poetry show --outdated
+poetry show --outdated
 ```
 
 ### Migrations
@@ -219,20 +221,25 @@ poetry run python manage.py test -- lemarche.api.siaes.tests.SiaeListApiTest
 #### Huey storage mode
 
 Mode direct (sans task queue) :
+
 ```
 export CONNECTION_MODE_TASKS="direct"
 ```
 
 Mode redis :
+
 ```
 export CONNECTION_MODE_TASKS="redis"
 ```
+
 Mode sqlite :
+
 ```
 export CONNECTION_MODE_TASKS="sqlite"
 ```
 
 Mode redis :
+
 ```
 export CONNECTION_MODE_TASKS="redis"
 ```
@@ -241,6 +248,7 @@ export CONNECTION_MODE_TASKS="redis"
 
 1/ Lancer un serveur local
 2/ Dans un autre shell lancer la commande
+
 ```
 /manage.py run_huey
 ```
