@@ -80,3 +80,4 @@ class FavoriteItem(models.Model):
         verbose_name = "Structure en favoris"
         verbose_name_plural = "Structures en favoris"
         ordering = ["-created_at"]
+        constraints = [models.UniqueConstraint(fields=["siae", "favorite_list"], name="unique_favorite_item")]
