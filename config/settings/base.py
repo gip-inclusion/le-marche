@@ -196,6 +196,8 @@ WAGTAIL_APPS = [
 INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + DJANGO_DSFR_APPS + THIRD_PARTY_APPS + LOCAL_APPS + WAGTAIL_APPS
 
 MIDDLEWARE = [
+    # Beta redirect middleware - must be first to catch all requests
+    "lemarche.utils.remove_beta_redirect_middleware.RemoveBetaRedirectMiddleware",
     # Generate request Id
     "django_datadog_logger.middleware.request_id.RequestIdMiddleware",
     # Django stack
