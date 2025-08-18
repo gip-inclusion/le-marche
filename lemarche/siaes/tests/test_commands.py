@@ -161,23 +161,28 @@ class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
 
         # Run command (should not raise exception)
         os.environ["API_EMPLOIS_INCLUSION_TOKEN"] = "test"
-        with self.assertLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion", level="ERROR") as log:
-            call_command("sync_with_emplois_inclusion", stdout=StringIO())
 
-        # Verify warning was logged
-        self.assertIn("Brand name is already used by another live SIAE during creation", log.output[0])
+        with self.subTest(existing_siae_is_delisted=False):
+            with self.assertLogs(
+                "lemarche.siaes.management.commands.sync_with_emplois_inclusion", level="ERROR"
+            ) as log:
+                call_command("sync_with_emplois_inclusion", stdout=StringIO())
 
-        # Verify only one SIAE exist, not duplicate
-        self.assertEqual(Siae.objects.count(), 1)
+            # Verify warning was logged
+            self.assertIn("Brand name is already used by another live SIAE during creation", log.output[0])
 
-        # Delisted SIAE should not be taken into account
-        siae.is_delisted = True
-        siae.save()
-        with self.assertNoLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion"):
-            call_command("sync_with_emplois_inclusion", stdout=StringIO())
+            # Verify only one SIAE exist, not duplicate
+            self.assertEqual(Siae.objects.count(), 1)
 
-        self.assertEqual(Siae.objects.count(), 2)
-        self.assertEqual(Siae.objects.exclude(pk=siae.pk).first().name, "New SIAE")
+        with self.subTest(existing_siae_is_delisted=True):
+            # Delisted SIAE should not be taken into account
+            siae.is_delisted = True
+            siae.save()
+            with self.assertNoLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion"):
+                call_command("sync_with_emplois_inclusion", stdout=StringIO())
+
+            self.assertEqual(Siae.objects.count(), 2)
+            self.assertEqual(Siae.objects.exclude(pk=siae.pk).first().name, "New SIAE")
 
     @patch("lemarche.utils.apis.api_emplois_inclusion.get_siae_list")
     def test_sync_with_emplois_inclusion_with_duplicate_brand_name_on_update(self, mock_get_siae_list):
@@ -241,26 +246,31 @@ class SyncWithEmploisInclusionCommandTest(TransactionTestCase):
 
         # Run command (should not raise exception)
         os.environ["API_EMPLOIS_INCLUSION_TOKEN"] = "test"
-        with self.assertLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion", level="ERROR") as log:
-            call_command("sync_with_emplois_inclusion", stdout=StringIO())
 
-        # Verify warning was logged
-        self.assertIn("Brand name is already used by another live SIAE during update", log.output[0])
+        with self.subTest(existing_siae_is_delisted=False):
+            with self.assertLogs(
+                "lemarche.siaes.management.commands.sync_with_emplois_inclusion", level="ERROR"
+            ) as log:
+                call_command("sync_with_emplois_inclusion", stdout=StringIO())
 
-        # Verify both SIAEs exist
-        self.assertEqual(Siae.objects.count(), 3)
-        self.assertEqual(Siae.objects.filter(brand="Duplicate Brand").count(), 1)
+            # Verify warning was logged
+            self.assertIn("Brand name is already used by another live SIAE during update", log.output[0])
 
-        self.assertEqual(Siae.objects.filter(name="Other New SIAE").count(), 1)  # error logged but sync continued
+            # Verify both SIAEs exist
+            self.assertEqual(Siae.objects.count(), 3)
+            self.assertEqual(Siae.objects.filter(brand="Duplicate Brand").count(), 1)
 
-        # Delisted SIAE should not be taken into account
-        siae.is_delisted = True
-        siae.save()
-        with self.assertNoLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion"):
-            call_command("sync_with_emplois_inclusion", stdout=StringIO())
+            self.assertEqual(Siae.objects.filter(name="Other New SIAE").count(), 1)  # error logged but sync continued
 
-        self.assertEqual(Siae.objects.filter(brand="Duplicate Brand").count(), 2)
-        self.assertEqual(Siae.objects.is_live().filter(brand="Duplicate Brand").count(), 1)
+        with self.subTest(existing_siae_is_delisted=True):
+            # Delisted SIAE should not be taken into account
+            siae.is_delisted = True
+            siae.save()
+            with self.assertNoLogs("lemarche.siaes.management.commands.sync_with_emplois_inclusion"):
+                call_command("sync_with_emplois_inclusion", stdout=StringIO())
+
+            self.assertEqual(Siae.objects.filter(brand="Duplicate Brand").count(), 2)
+            self.assertEqual(Siae.objects.is_live().filter(brand="Duplicate Brand").count(), 1)
 
     @patch("lemarche.utils.apis.api_emplois_inclusion.get_siae_list")
     def test_sync_with_emplois_inclusion_with_kind_not_supported(self, mock_get_siae_list):
