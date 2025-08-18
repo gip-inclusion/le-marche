@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from lemarche.favorites.factories import FavoriteListFactory
+from lemarche.favorites.models import FavoriteItem
 from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
@@ -48,3 +49,38 @@ class DashboardFavoriteListViewTest(TestCase):
         with self.assertNumQueries(10):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
+
+
+class DashboardFavoriteDeleteViewTest(TestCase):
+
+    def setUp(self):
+        self.user = UserFactory(kind=User.KIND_BUYER)
+        self.siae_1 = SiaeFactory(name="SIAE_1")
+        self.siae_2 = SiaeFactory(name="SIAE_2")
+        FavoriteListFactory(slug="list-1", user=self.user, siaes=[self.siae_1, self.siae_2])
+
+        self.client.force_login(self.user)
+
+    def test_delete_favorite_item(self):
+        self.assertEqual(FavoriteItem.objects.count(), 2)
+
+        url = reverse(
+            "dashboard_favorites:item_delete",
+            kwargs={"slug": "completly-random-string", "siae_slug": self.siae_1.slug},
+        )
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(FavoriteItem.objects.count(), 1)
+
+    def test_delete_favorite_item_failed(self):
+        FavoriteListFactory(slug="list-2", user=self.user, siaes=[self.siae_1, self.siae_2])
+        self.assertEqual(FavoriteItem.objects.count(), 4)
+
+        url = reverse(
+            "dashboard_favorites:item_delete",
+            kwargs={"slug": "completly-random-string", "siae_slug": self.siae_1.slug},
+        )
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code, 302)

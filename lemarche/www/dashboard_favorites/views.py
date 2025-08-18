@@ -114,23 +114,14 @@ class DashboardFavoriteListDeleteView(FavoriteListOwnerRequiredMixin, SuccessMes
 
 
 class DashboardFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
-    # FavoriteListOwnerRequiredMixin  # doesn't work because we don't have the FavoriteList slug
     template_name = "favorites/_favorite_item_remove_modal.html"
     model = FavoriteItem
-    # success_message = "La structure a été supprimée de votre liste d'achat avec succès."
-    success_url = reverse_lazy("dashboard_favorites:list_detail")
 
     def get_object(self):
         """
         - there should theoretically be only 1 Siae per user's lists (an Siae cannot belong to other list)
         - in the future it could be possible to add an Siae to multiple user lists
         """
-        # try:
-        #     favorite_list = FavoriteList.objects.get(slug=self.kwargs.get("slug"))
-        #     siae = Siae.objects.get(slug=self.kwargs.get("siae_slug"))
-        #     return get_object_or_404(FavoriteItem, favorite_list=favorite_list, siae=siae)
-        # except:  # noqa
-        #     raise Http404
         siae = Siae.objects.get(slug=self.kwargs.get("siae_slug"))
         return get_object_or_404(FavoriteItem, favorite_list__user=self.request.user, siae=siae)
 
@@ -139,7 +130,13 @@ class DashboardFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, D
         request_referer = self.request.META.get("HTTP_REFERER", "")
         if request_referer:
             return request_referer
-        return super().get_success_url()
+        else:
+            return reverse_lazy(
+                "dashboard_favorites:list_detail",
+                kwargs={
+                    "slug": self.object.favorite_list.slug,
+                },
+            )
 
     def get_success_message(self, cleaned_data):
         return mark_safe(
