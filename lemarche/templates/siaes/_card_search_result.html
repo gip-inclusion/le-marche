@@ -32,6 +32,14 @@
                 <div class="fr-col-12 fr-col-lg-4">
                     <ul class="fr-tags-group lemarche--align-right">
                         <li>{% include "includes/_super_badge.html" with siae=siae %}</li>
+                        {% if siae.is_in_the_hosmoz_network %}
+                            <li>
+                                <a class="fr-tag"
+                                   href="{% url 'siae:search_results' %}?networks=hosmoz"
+                                   target="_blank"
+                                   title="Fait partie du réseau Hosmoz">Hosmoz</a>
+                            </li>
+                        {% endif %}
                         {% if siae.is_qpv %}
                             <li>
                                 <span class="fr-tag"

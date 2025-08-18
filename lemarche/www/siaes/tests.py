@@ -50,6 +50,26 @@ class SiaeSearchDisplayResultsTest(TestCase):
         self.assertContains(response, "pas encore inscrite")
 
 
+class SiaeSearchHosmozNetworkTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.network = NetworkFactory(slug="hosmoz")
+
+    def test_search_hosmoz_badge_should_be_displayed_if_siae_is_in_hosmoz_network(self):
+        siae = SiaeFactory()
+        siae.networks.add(self.network)
+
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        self.assertContains(response, "Hosmoz")
+
+    def test_search_hosmoz_badge_should_not_be_displayed_if_siae_is_not_in_hosmoz_network(self):
+        SiaeFactory()
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        self.assertNotContains(response, "Hosmoz")
+
+
 class SiaeSearchNumQueriesTest(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -1169,3 +1189,13 @@ class SiaeDetailTest(TestCase):
         self.client.force_login(self.user_admin)
         response = self.client.get(url)
         self.assertContains(response, "Informations Admin")
+
+    def test_should_display_hosmoz_badge(self):
+        url = reverse("siae:detail", args=[self.siae.slug])
+        # anonymous
+        response = self.client.get(url)
+        self.assertNotContains(response, "Hosmoz")
+
+        NetworkFactory(slug="hosmoz", siaes=[self.siae])
+        response = self.client.get(url)
+        self.assertContains(response, "Hosmoz")
