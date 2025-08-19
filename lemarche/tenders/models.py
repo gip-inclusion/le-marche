@@ -1133,6 +1133,8 @@ class TenderSiae(models.Model):
     ]
     READONLY_FIELDS = FIELDS_RELATION + FIELDS_SURVEY_TRANSACTIONED + FIELDS_STATS_TIMESTAMPS
 
+    uuid = models.UUIDField(default=uuid4, editable=False)
+
     tender = models.ForeignKey("tenders.Tender", verbose_name="Besoin d'achat", on_delete=models.CASCADE)
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
     user = models.ForeignKey(
