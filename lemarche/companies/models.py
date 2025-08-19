@@ -4,19 +4,8 @@ from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django_better_admin_arrayfield.models.fields import ArrayField
 
+from lemarche.labels.models import Label
 from lemarche.utils.constants import ADMIN_FIELD_HELP_TEXT, RECALCULATED_FIELD_HELP_TEXT
-
-
-class CompanyLabel(models.Model):
-    name = models.CharField(verbose_name="Nom", max_length=255)
-    logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500)
-
-    class Meta:
-        verbose_name = "Label"
-        verbose_name_plural = "Labels"
-
-    def __str__(self):
-        return self.name
 
 
 class CompanyQuerySet(models.QuerySet):
@@ -43,7 +32,7 @@ class Company(models.Model):
     siret = models.CharField(verbose_name="Siret", max_length=14, blank=True)
     website = models.URLField(verbose_name="Site web", blank=True)
     logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True)
-    labels = models.ManyToManyField(CompanyLabel, verbose_name="Labels", blank=True)
+    labels = models.ManyToManyField(Label, verbose_name="Labels", blank=True)
 
     email_domain_list = ArrayField(
         verbose_name="Liste des noms de domaine d'e-mails",
@@ -93,18 +82,18 @@ class Company(models.Model):
 
     @property
     def get_label_sentence_display(self) -> str:
-        labels = self.labels.values_list("name", flat=True)
-        if "RFAR" in labels and "B-Corp" in labels:
+        labels = self.labels.values_list("slug", flat=True)
+        if "rfar" in labels and "b-corp" in labels:
             return (
                 "L’organisation de cet acheteur est certifié RFAR et B-Corp,"
                 " garantissant son engagement envers des relations fournisseurs responsables et son impact social"
             )
-        elif "RFAR" in labels:
+        elif "rfar" in labels:
             return (
                 "L’organisation de cet acheteur est certifié RFAR,"
                 " garantissant son engagement envers des relations fournisseurs responsables"
             )
-        elif "B-Corp" in labels:
+        elif "b-corp" in labels:
             return "L’organisation de cet acheteur est certifiée B-Corp, garantissant son engagement social"
         else:
             return ""

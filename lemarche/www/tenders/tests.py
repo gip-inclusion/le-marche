@@ -17,9 +17,9 @@ from sesame.utils import get_query_string as sesame_get_query_string
 from sib_api_v3_sdk.models.create_update_contact_model import CreateUpdateContactModel
 
 from lemarche.companies.factories import CompanyFactory
-from lemarche.companies.models import CompanyLabel
 from lemarche.conversations.factories import TemplateTransactionalFactory
 from lemarche.conversations.models import EmailGroup
+from lemarche.labels.factories import LabelFactory
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
@@ -1287,8 +1287,8 @@ class TenderDetailLabelTestCase(TestCase):
         buyer_company = CompanyFactory(
             name="World Company",
             labels=[
-                CompanyLabel.objects.create(name="RFAR"),
-                CompanyLabel.objects.create(name="B-Corp"),
+                LabelFactory(name="RFAR"),
+                LabelFactory(name="B-Corp"),
             ],
         )
 
