@@ -221,6 +221,10 @@ MIDDLEWARE = [
     "django_datadog_logger.middleware.request_log.RequestLoggingMiddleware",
 ]
 
+if env.bool("ENABLE_BETA_REDIRECT_MIDDLEWARE", False):
+    # Beta redirect middleware - must be first to catch all requests
+    MIDDLEWARE.insert(0, "lemarche.utils.remove_beta_redirect_middleware.RemoveBetaRedirectMiddleware")
+
 ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
