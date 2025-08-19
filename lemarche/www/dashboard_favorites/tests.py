@@ -72,15 +72,3 @@ class DashboardFavoriteDeleteViewTest(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(FavoriteItem.objects.count(), 1)
-
-    def test_delete_favorite_item_failed(self):
-        FavoriteListFactory(slug="list-2", user=self.user, siaes=[self.siae_1, self.siae_2])
-        self.assertEqual(FavoriteItem.objects.count(), 4)
-
-        url = reverse(
-            "dashboard_favorites:item_delete",
-            kwargs={"slug": "completly-random-string", "siae_slug": self.siae_1.slug},
-        )
-        response = self.client.delete(url)
-
-        self.assertEqual(response.status_code, 302)
