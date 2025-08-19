@@ -19,8 +19,7 @@ class RemoveBetaRedirectMiddleware:
                 main_host = request.get_host().replace(".beta", "")
 
                 # Build the redirect URL
-                scheme = "https" if request.is_secure() else "http"
-                redirect_url = f"{scheme}://{main_host}{request.get_full_path()}"
+                redirect_url = f"https://{main_host}{request.get_full_path()}"
 
                 return HttpResponsePermanentRedirect(redirect_url)
 
