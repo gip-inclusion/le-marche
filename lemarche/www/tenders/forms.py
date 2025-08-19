@@ -5,6 +5,7 @@ from ckeditor.widgets import CKEditorWidget
 from django import forms
 
 from lemarche.sectors.models import Sector
+from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
 from lemarche.tenders.models import Tender, TenderSiae
