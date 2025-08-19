@@ -414,6 +414,7 @@ class SiaeFavoriteForm(forms.ModelForm):
         label="Liste à associer",
         queryset=FavoriteList.objects.none(),
         widget=forms.RadioSelect,
+        required=False,
     )
 
     class Meta:
