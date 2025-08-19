@@ -173,16 +173,16 @@ class TenderAuthorOrAdminRequiredIfNotSentMixin(UserPassesTestMixin):
         return HttpResponseRedirect(reverse_lazy("wagtail_serve", args=("",)))
 
 
-class SiaeUserRequiredOrSiaeUUIDParamMixin(UserPassesTestMixin):
+class SiaeUserRequiredOrTenderSiaeUUIDParamMixin(UserPassesTestMixin):
     def test_func(self):
         """Authorize authenticated SIAE or uuid siae id"""
-        siae_uuid = self.request.GET.get("siae_uuid", None)
+        tender_siae_uuid = self.request.GET.get("tender_siae_uuid", None)
 
         if self.request.user.is_authenticated and self.request.user.kind == User.KIND_SIAE:
             return True
-        elif siae_uuid:
-            try:  # check if siae_uuid is a valid UUID4
-                UUID(siae_uuid, version=4)
+        elif tender_siae_uuid:
+            try:  # check if tender_siae_uuid is a valid UUID4
+                UUID(tender_siae_uuid, version=4)
             except ValueError:
                 return False
             else:

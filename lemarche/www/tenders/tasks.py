@@ -128,9 +128,9 @@ def send_tender_email_to_siae(tendersiae: TenderSiae, email_subject: str, recipi
         recipient_email = recipient_list[0]
         recipient_name = tendersiae.siae.contact_email_name_display
 
-        tender_url = f"{get_object_share_url(tendersiae.tender)}?siae_uuid={tendersiae.siae.uuid}"
+        tender_url = f"{get_object_share_url(tendersiae.tender)}?tender_siae_uuid={tendersiae.uuid}"
         tender_not_interested_url = (
-            f"{get_object_share_url(tendersiae.tender)}?siae_uuid={tendersiae.siae.uuid}&not_interested=True"
+            f"{get_object_share_url(tendersiae.tender)}?tender_siae_uuid={tendersiae.uuid}&not_interested=True"
         )
         if recipient_to_override:
             tender_url += f"&user_id={recipient_to_override.id}"
@@ -288,7 +288,7 @@ def send_tender_contacted_reminder_email_to_siae(tendersiae: TenderSiae, email_t
             "TENDER_PERIMETERS": tendersiae.tender.location_display,
             "TENDER_AMOUNT": tendersiae.tender.amount_display,
             "TENDER_DEADLINE_DATE": date_to_string(tendersiae.tender.deadline_date),
-            "TENDER_URL": f"{get_object_share_url(tendersiae.tender)}?siae_uuid={tendersiae.siae.uuid}&mtm_campaign=relance-esi-contactees",  # noqa
+            "TENDER_URL": f"{get_object_share_url(tendersiae.tender)}?tender_siae_uuid={tendersiae.uuid}&mtm_campaign=relance-esi-contactees",  # noqa
             "TENDERSIAE_ID": tendersiae.id,
             "DAYS_SINCE_EMAIL_SEND_DATE": days_since_email_send_date,
         }
@@ -355,7 +355,7 @@ def send_tender_interested_reminder_email_to_siae(
             "TENDER_PERIMETERS": tendersiae.tender.location_display,
             "TENDER_AMOUNT": tendersiae.tender.amount_display,
             "TENDER_DEADLINE_DATE": date_to_string(tendersiae.tender.deadline_date),
-            "TENDER_URL": f"{get_object_share_url(tendersiae.tender)}?siae_uuid={tendersiae.siae.uuid}&mtm_campaign=relance-esi-interessees",  # noqa
+            "TENDER_URL": f"{get_object_share_url(tendersiae.tender)}?tender_siae_uuid={tendersiae.uuid}&mtm_campaign=relance-esi-interessees",  # noqa
             "TENDERSIAE_ID": tendersiae.id,
             "DAYS_SINCE_DETAIL_CONTACT_SEND_DATE": days_since_detail_contact_click_date,
         }
