@@ -265,8 +265,8 @@ document.addEventListener("DOMContentLoaded", function() {
     perimetersAutoComplete.init();
     {% if not form.locations.field.disabled %}
         const LOCATION_AUTOCOMPLETE_ID = 'id_locations';
-        const LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR = '#dir_form_locations';
-        const LOCATION_SELECTED_CONTAINER_SELECTOR = '#locations-selected';
+        const LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR = '#id_locations';
+        const LOCATION_SELECTED_CONTAINER_SELECTOR = '#locations-selected-id_locations';
         const LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX = 'hiddenLocation';
         const LOCATION_CURRENT_ID = 'current-locations';
         const locationsAutoComplete = new PerimetersMultiAutocomplete(LOCATION_AUTOCOMPLETE_ID, LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR, LOCATION_SELECTED_CONTAINER_SELECTOR, LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX, LOCATION_CURRENT_ID);
@@ -319,9 +319,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
     </script>
-    <script type="text/javascript"
-            src="{% static 'js/envoi_groupe_modal_video.js' %}">
-    </script>
+    <script type="text/javascript" src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
     {% if user.is_authenticated %}
         <script type="text/javascript" src="{% static 'js/favorite_item.js' %}"></script>
     {% endif %}
