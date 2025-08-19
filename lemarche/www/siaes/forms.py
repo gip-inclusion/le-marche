@@ -426,7 +426,7 @@ class SiaeFavoriteForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["favorite_list"].queryset = FavoriteList.objects.filter(user=self.user)
 
-    def clean_favorite_lists(self):
+    def clean_favorite_list(self):
         fav_list = self.cleaned_data["favorite_list"]
         # The siae is already in a favorite list of this user
         if FavoriteList.objects.filter(siaes=self.instance, user=self.user).exists():
