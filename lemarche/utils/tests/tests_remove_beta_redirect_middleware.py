@@ -53,7 +53,7 @@ class RemoveBetaRedirectMiddlewareTest(TestCase):
         request = self.factory.get("/api/users/", HTTP_HOST="example.beta.com")
         response = self.middleware(request)
 
-        # Should not redirect, middleware should return None to continue processing
+        # Should not redirect, middleware should return a response with status 200 to continue processing
         self.assertEqual(response.status_code, 200)
 
     @override_settings(ALLOWED_HOSTS=["example.com", "example.beta.com"])
@@ -62,7 +62,7 @@ class RemoveBetaRedirectMiddlewareTest(TestCase):
         request = self.factory.get("/api/beta-features/", HTTP_HOST="example.beta.com")
         response = self.middleware(request)
 
-        # Should not redirect, middleware should return None to continue processing
+        # Should not redirect, middleware should return a response with status 200 to continue processing
         self.assertEqual(response.status_code, 200)
 
     @override_settings(ALLOWED_HOSTS=["example.com", "example.beta.com"])
@@ -71,7 +71,7 @@ class RemoveBetaRedirectMiddlewareTest(TestCase):
         request = self.factory.get("/some-page/", HTTP_HOST="example.com")
         response = self.middleware(request)
 
-        # Should not redirect, middleware should return None to continue processing
+        # Should not redirect, middleware should return a response with status 200 to continue processing
         self.assertEqual(response.status_code, 200)
 
     @override_settings(ALLOWED_HOSTS=["example.com", "example.beta.com"])
@@ -80,5 +80,5 @@ class RemoveBetaRedirectMiddlewareTest(TestCase):
         request = self.factory.get("/beta-features/", HTTP_HOST="example.com")
         response = self.middleware(request)
 
-        # Should not redirect, middleware should return None to continue processing
+        # Should not redirect, middleware should return a response with status 200 to continue processing
         self.assertEqual(response.status_code, 200)
