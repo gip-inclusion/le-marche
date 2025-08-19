@@ -289,8 +289,13 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeFavoriteForm
     context_object_name = "siae"
     queryset = Siae.objects.prefetch_related("favorite_lists").all()
-    # success_message = "La structure a été ajoutée à votre liste d'achat."
     success_url = reverse_lazy("siae:search_results")
+
+    def get_form_kwargs(self):
+        """Pass the current user to the form."""
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         """

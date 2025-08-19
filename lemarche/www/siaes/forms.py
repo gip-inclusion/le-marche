@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.gis.db.models.functions import Distance
+from django.core.exceptions import ValidationError
 from django.db.models import BooleanField, Case, OuterRef, Q, Subquery, Value, When
 
 from lemarche.favorites.models import FavoriteList
@@ -409,16 +410,27 @@ class SiaeFilterForm(forms.Form):
 
 
 class SiaeFavoriteForm(forms.ModelForm):
-    favorite_lists = forms.ModelChoiceField(
+    favorite_list = forms.ModelChoiceField(
         label="Liste à associer",
-        queryset=FavoriteList.objects.all(),
+        queryset=FavoriteList.objects.none(),
         widget=forms.RadioSelect,
-        required=False,
     )
 
     class Meta:
         model = Siae
-        fields = ["favorite_lists"]
+        fields = ["favorite_list"]
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
+        super().__init__(*args, **kwargs)
+        self.fields["favorite_list"].queryset = FavoriteList.objects.filter(user=self.user)
+
+    def clean_favorite_lists(self):
+        fav_list = self.cleaned_data["favorite_list"]
+        # The siae is already in a favorite list of this user
+        if FavoriteList.objects.filter(siaes=self.instance, user=self.user).exists():
+            raise ValidationError("Cette structure est déjà liée à une liste de favoris.")
+        return fav_list
 
 
 class NetworkSiaeFilterForm(forms.Form):
