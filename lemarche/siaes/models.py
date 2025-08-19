@@ -206,11 +206,8 @@ class SiaeQuerySet(models.QuerySet):
     def prefetch_many_to_one(self):
         return self.prefetch_related("offers", "client_references", "labels_old", "images")
 
-    def search_query_set(self, company=None):
-        qs = self.is_live().exclude(kind="OPCS").with_hosmoz_network().prefetch_many_to_many()
-        if company:
-            qs = qs.with_is_company_match(company)
-        return qs
+    def search_query_set(self):
+        return self.is_live().exclude(kind="OPCS").with_hosmoz_network().prefetch_many_to_many()
 
     def tender_matching_query_set(self):
         return self.is_live().exclude(kind="OPCS").has_contact_email()
