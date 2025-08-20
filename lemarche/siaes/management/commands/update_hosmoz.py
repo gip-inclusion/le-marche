@@ -2,6 +2,8 @@ import csv
 
 from django import forms
 from django.core.management.base import BaseCommand
+from django.db.models import Case, Value, When
+from django.utils import timezone
 
 from lemarche.siaes.models import Siae
 
@@ -28,7 +30,7 @@ class Command(BaseCommand):
     """
 
     def add_arguments(self, parser):
-        parser.add_argument("csv_file", type=str, help="Chemin du fichier CSV")
+        parser.add_argument("--csv_file", dest="csv_file", required=True, type=str, help="Chemin du fichier CSV")
 
     def handle(self, *args, **options):
         csv_file = options["csv_file"]
@@ -39,13 +41,8 @@ class Command(BaseCommand):
             reader = csv.DictReader(f)
             for row in reader:
                 self.import_row(row)
-                # print(row)
-                # siae = Siae.objects.get(siret=row[0])
-                # siae.is_in_hosmoz = row[1] == "OUI"
-                # siae.save()
 
-    @staticmethod
-    def import_row(row):
+    def import_row(self, row):
 
         form_data = {
             "contact_email": row["Email"],
@@ -54,7 +51,25 @@ class Command(BaseCommand):
         }
         form = HozmozImportForm(form_data)
         if form.is_valid():
-            print("VALID")
+            self.stdout.write(self.style.SUCCESS(f"Row with SIRET {row['Siret']} ready to be updated !"))
         else:
-            print("INVALIDdddddddddddddd", form.errors)
-        # Siae.objects.filter(siret=row["Siret"]).update(contact_email=row["HOSMOZ"] == "OUI")
+            self.stdout.write(self.style.WARNING(f"Errors found with SIRET {row['Siret']} ready to be updated !"))
+        cleaned_data = form.cleaned_data
+
+        Siae.objects.filter(siret=row["Siret"]).update(
+            contact_email=Case(When(contact_email="", then=Value(cleaned_data.get("contact_email", "")))),
+            contact_phone=Case(
+                When(contact_phone="", then=Value(cleaned_data.get("contact_phone", ""))),
+            ),
+            employees_insertion_count=Case(
+                When(
+                    employees_insertion_count__isnull=True,
+                    then=Value(cleaned_data.get("employees_insertion_count", None)),
+                )
+            ),
+            # If we update employees_insertion_count, then we also
+            # need to update employees_insertion_count_last_updated date
+            employees_insertion_count_last_updated=Case(
+                When(employees_insertion_count__isnull=True, then=Value(timezone.now()))
+            ),
+        )
