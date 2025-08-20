@@ -594,7 +594,7 @@ class HosmoZCommandTest(TestCase):
         self.assertEqual(siae.contact_email, "contact_lala@email.com")
         self.assertEqual(siae.contact_phone, "01 02 03 04 05")
         self.assertEqual(siae.employees_insertion_count, 22)
-        self.assertIsNotNone(siae.employees_insertion_count_last_updated)  # fixme
+        self.assertIsNotNone(siae.employees_insertion_count_last_updated)
 
     def test_update_full_siae(self):
         siae = SiaeFactory(
@@ -602,7 +602,7 @@ class HosmoZCommandTest(TestCase):
             contact_email="dontupdatecontact@email.com",
             contact_phone="++33 1 02 06 06 06",
             employees_insertion_count=10,
-            employees_insertion_count_last_updated=datetime.now(),
+            employees_insertion_count_last_updated=None,
         )
 
         call_command("update_hosmoz", csv_file="lemarche/fixtures/tests/hosmoz_import.csv", stdout=StringIO())
@@ -612,4 +612,4 @@ class HosmoZCommandTest(TestCase):
         self.assertEqual(siae.contact_email, "dontupdatecontact@email.com")
         self.assertEqual(siae.contact_phone, "++33 1 02 06 06 06")
         self.assertEqual(siae.employees_insertion_count, 10)
-        self.assertIsNotNone(siae.employees_insertion_count_last_updated)
+        self.assertIsNone(siae.employees_insertion_count_last_updated)
