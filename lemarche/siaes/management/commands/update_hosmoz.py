@@ -9,16 +9,12 @@ from lemarche.siaes.models import Siae
 
 
 class HozmozImportForm(forms.ModelForm):
-    # contact_email = forms.EmailField(max_length=255, required=False)
-    # contact_phone = PhoneNumberField(required=False)
-    # employees_insertion_count = forms.IntegerField(required=False)
-
     class Meta:
         model = Siae
         fields = [
             "contact_email",
             "contact_phone",
-            "employees_insertion_count",  # todo employees_insertion_count_last_updated
+            "employees_insertion_count",
             "networks",
             "logo_url",
         ]
@@ -56,10 +52,12 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING(f"Errors found with SIRET {row['Siret']} ready to be updated !"))
         cleaned_data = form.cleaned_data
 
-        Siae.objects.filter(siret=row["Siret"]).update(
+        siret = row["Siret"].replace(" ", "")
+
+        Siae.objects.filter(siret=siret).update(
             contact_email=Case(When(contact_email="", then=Value(cleaned_data.get("contact_email", "")))),
             contact_phone=Case(
-                When(contact_phone="", then=Value(cleaned_data.get("contact_phone", ""))),
+                When(contact_phone="", then=Value(str(cleaned_data.get("contact_phone", "")))),
             ),
             employees_insertion_count=Case(
                 When(
