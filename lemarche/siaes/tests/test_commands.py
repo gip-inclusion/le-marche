@@ -574,3 +574,17 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
         out = StringIO()
         call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=out)
         self.assertIn("SIRET not found", out.getvalue())
+
+
+class HosmoZCommandTest(TestCase):
+
+    def test_update_empty_siae(self):
+        SiaeFactory(siret="41155513900012", contact_email="", contact_phone="", employees_insertion_count=None)
+        call_command("update_hosmoz", csv_file="lemarche/fixtures/tests/hosmoz_import.csv", stdout=StringIO())
+
+    def test_update_full_siae(self):
+        SiaeFactory(
+            siret="411 555 139 00012",
+            contact_email="contact@email.com",
+            contact_phone="++33 1 02 03 04 05",
+        )
