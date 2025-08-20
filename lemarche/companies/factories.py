@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import factory
 from factory.django import DjangoModelFactory
 
@@ -31,4 +33,4 @@ class CompanySiaeClientReferenceMatchFactory(DjangoModelFactory):
 
     company = factory.SubFactory(CompanyFactory)
     siae_client_reference = factory.SubFactory(SiaeClientReferenceFactory)
-    similarity_score = factory.Faker("pydecimal", left_digits=1, right_digits=6, positive=True)
+    similarity_score = Decimal("0.750000")
