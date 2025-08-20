@@ -579,12 +579,37 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
 class HosmoZCommandTest(TestCase):
 
     def test_update_empty_siae(self):
-        SiaeFactory(siret="41155513900012", contact_email="", contact_phone="", employees_insertion_count=None)
+        siae = SiaeFactory(
+            siret="41155513900012",
+            contact_email="",
+            contact_phone="",
+            employees_insertion_count=None,
+            employees_insertion_count_last_updated=None,
+        )
+
         call_command("update_hosmoz", csv_file="lemarche/fixtures/tests/hosmoz_import.csv", stdout=StringIO())
 
+        siae.refresh_from_db()
+
+        self.assertEqual(siae.contact_email, "contact_lala@email.com")
+        self.assertEqual(siae.contact_phone, "01 02 03 04 05")
+        self.assertEqual(siae.employees_insertion_count, 22)
+        self.assertIsNotNone(siae.employees_insertion_count_last_updated)  # fixme
+
     def test_update_full_siae(self):
-        SiaeFactory(
-            siret="411 555 139 00012",
-            contact_email="contact@email.com",
-            contact_phone="++33 1 02 03 04 05",
+        siae = SiaeFactory(
+            siret="41155513900012",
+            contact_email="dontupdatecontact@email.com",
+            contact_phone="++33 1 02 06 06 06",
+            employees_insertion_count=10,
+            employees_insertion_count_last_updated=datetime.now(),
         )
+
+        call_command("update_hosmoz", csv_file="lemarche/fixtures/tests/hosmoz_import.csv", stdout=StringIO())
+
+        siae.refresh_from_db()
+
+        self.assertEqual(siae.contact_email, "dontupdatecontact@email.com")
+        self.assertEqual(siae.contact_phone, "++33 1 02 06 06 06")
+        self.assertEqual(siae.employees_insertion_count, 10)
+        self.assertIsNotNone(siae.employees_insertion_count_last_updated)
