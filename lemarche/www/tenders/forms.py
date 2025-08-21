@@ -455,7 +455,7 @@ class TenderFilterForm(forms.Form):
 class TenderDetailGetParams(forms.Form):
     """Form used to parse correctly GET parameters"""
 
-    siae_id = forms.ModelChoiceField(queryset=Siae.objects.all(), required=False)
+    tender_siae_uuid = forms.ModelChoiceField(queryset=TenderSiae.objects.all(), required=False, to_field_name="uuid")
     user_id = forms.ModelChoiceField(queryset=User.objects.all(), required=False)
 
 

@@ -48,15 +48,15 @@
 {% endblock content %}
 
 {% block modals %}
-{% if user.is_authenticated or siae_id %}
+{% if user.is_authenticated or tender_siae_uuid %}
     {% if not siae_has_detail_contact_click_date %}
         <div hx-trigger="load"
-             hx-get="{% url 'tenders:detail-contact-click-stat' tender.slug %}?siae_id={{ siae_id }}" 
+             hx-get="{% url 'tenders:detail-contact-click-stat' tender.slug %}?tender_siae_uuid={{ tender_siae_uuid }}"
              hx-swap="innerHTML">
         </div>
     {% endif %}
     {% if not siae_has_detail_not_interested_click_date %}
-        {% include "tenders/_detail_not_interested_click_confirm_modal.html" with siae_id=siae_id %}
+        {% include "tenders/_detail_not_interested_click_confirm_modal.html" with tender_siae_uuid=tender_siae_uuid %}
     {% endif %}
 {% else %}
     {% include "auth/_login_or_signup_siae_tender_modal.html" %}

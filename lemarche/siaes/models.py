@@ -591,7 +591,6 @@ class Siae(models.Model):
 
     DEPARTMENT_CHOICES = DEPARTMENTS_PRETTY.items()
     REGION_CHOICES = REGIONS_PRETTY.items()
-
     name = models.CharField(verbose_name="Raison sociale", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
     brand = models.CharField(verbose_name="Nom commercial", max_length=255, blank=True)
