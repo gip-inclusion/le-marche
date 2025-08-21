@@ -13,6 +13,7 @@ from lemarche.users.models import User
 class PagesHeaderLinkTest(TestCase):
     fixtures = [
         "lemarche/fixtures/django/0a_networks.json",
+        "lemarche/fixtures/django/0d_labels.json",
         "lemarche/fixtures/django/0e_companies.json",
         "lemarche/fixtures/django/02_users.json",
         "lemarche/fixtures/django/20_cms.json",
