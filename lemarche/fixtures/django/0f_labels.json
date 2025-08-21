@@ -80,5 +80,37 @@
             "created_at": "2023-06-05T07:29:20.926Z",
             "updated_at": "2023-06-08T15:24:51.994Z"
         }
+    },
+    {
+        "model": "labels.label",
+        "pk": 4,
+        "fields": {
+            "name": "RFAR",
+            "slug": "rfar",
+            "description": "Le Label Relations fournisseurs et achats responsables",
+            "website": "https://www.economie.gouv.fr/mediateur-des-entreprises/le-label-relations-fournisseurs-et-achats-responsables",
+            "logo_url": "https://www.economie.gouv.fr/files/files/directions_services/mediateur-des-entreprises/IMAGES/3_ACHETER_RESPONSABLE/logo_label_rfar.jpg",
+            "data_description": "",
+            "data_last_sync_date": "2023-06-08T15:24:51.987Z",
+            "logs": [],
+            "created_at": "2023-06-05T07:29:20.926Z",
+            "updated_at": "2023-06-08T15:24:51.994Z"
+        }
+    },
+    {
+        "model": "labels.label",
+        "pk": 5,
+        "fields": {
+            "name": "B-Corp",
+            "slug": "b-corp",
+            "description": "Un mouvement pour changer les règles du jeu.",
+            "website": "https://bcorporation.fr/",
+            "logo_url": "https://bcorporation.fr/app/themes/bcorp/dist/images/logo.png",
+            "data_description": "",
+            "data_last_sync_date": "2023-06-08T15:24:51.987Z",
+            "logs": [],
+            "created_at": "2023-06-05T07:29:20.926Z",
+            "updated_at": "2023-06-08T15:24:51.994Z"
+        }
     }
 ]
