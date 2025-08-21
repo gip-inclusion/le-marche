@@ -28,4 +28,5 @@ class Migration(migrations.Migration):
             name="uuid",
             field=models.UUIDField(default=uuid.uuid4, editable=False),
         ),
+        migrations.RunPython(gen_uuid, migrations.RunPython.noop),
     ]
