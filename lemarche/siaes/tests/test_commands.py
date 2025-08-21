@@ -600,7 +600,7 @@ class HosmoZCommandTest(TestCase):
         self.assertEqual(siae.contact_phone, "01 02 03 04 05")
         self.assertEqual(siae.employees_insertion_count, 22)
         self.assertIsNotNone(siae.employees_insertion_count_last_updated)
-        self.assertEqual(siae.networks.all().count(), 0)
+        self.assertEqual(siae.networks.all().count(), 1)
 
     def test_update_full_siae(self):
         siae = SiaeFactory(
