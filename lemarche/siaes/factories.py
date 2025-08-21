@@ -97,6 +97,8 @@ class SiaeClientReferenceFactory(DjangoModelFactory):
     class Meta:
         model = SiaeClientReference
 
+    name = factory.Sequence("Some SiaeClientReference N°:{0}".format)
+
 
 class SiaeLabelOldFactory(DjangoModelFactory):
     class Meta:

@@ -16,7 +16,8 @@ from django.utils import timezone
 from sesame.utils import get_query_string as sesame_get_query_string
 from sib_api_v3_sdk.models.create_update_contact_model import CreateUpdateContactModel
 
-from lemarche.companies.factories import CompanyFactory
+from lemarche.companies.factories import CompanyFactory, CompanySiaeClientReferenceMatchFactory
+from lemarche.companies.models import CompanySiaeClientReferenceMatch
 from lemarche.conversations.factories import TemplateTransactionalFactory
 from lemarche.conversations.models import EmailGroup
 from lemarche.labels.factories import LabelFactory
@@ -1749,6 +1750,33 @@ class TenderSiaeListView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["siaes"]), 1)
         self.assertEqual(response.context["siaes"][0].id, self.siae_2.id)
+
+    def test_tag_reference_client_tag_on_tender_siae_list(self):
+        self.client.force_login(self.user_buyer_1)
+        url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["siaes"]), 3)
+        self.assertNotContains(response, "Déjà référencé")
+
+        # add a match between the company and the siae
+        company = CompanyFactory(name="ZZ ESI")
+        self.user_buyer_1.company = company
+        self.user_buyer_1.save()
+        CompanySiaeClientReferenceMatchFactory(
+            company=company,
+            siae_client_reference__siae=self.siae_1,
+            company_name=company.name,
+            client_reference_name=self.siae_1.name,
+            moderation_status=CompanySiaeClientReferenceMatch.ModerationStatus.APPROVED,
+        )
+
+        # check that the match is displayed
+        url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["siaes"]), 3)
+        self.assertContains(response, "Déjà référencé", count=1)
 
 
 class TenderDetailSurveyTransactionedViewTest(TestCase):

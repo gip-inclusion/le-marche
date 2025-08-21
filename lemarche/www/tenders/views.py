@@ -705,6 +705,12 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
+
+        # get matches references client for the current company to display a badge
+        user = self.request.user
+        if user.is_authenticated and user.company:
+            qs = qs.with_is_company_match(company=user.company)
+
         # first get the tender's siaes
         self.tender = Tender.objects.get(slug=self.kwargs.get("slug"))
         qs = qs.filter_with_tender_tendersiae_status(tender=self.tender, tendersiae_status=self.status)

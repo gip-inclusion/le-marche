@@ -98,5 +98,15 @@
             "created_at": "2021-10-28T12:28:42.408Z",
             "updated_at": "2021-10-28T12:28:42.416Z"
         }
+    },
+    {
+        "model": "siaes.siaeclientreference",
+        "pk": 11,
+        "fields": {
+            "name": "USS Enterprise",
+            "siae": 2653,
+            "created_at": "2025-08-19T08:54:37.509Z",
+            "updated_at": "2025-08-19T08:54:37.510Z"
+        }
     }
 ]

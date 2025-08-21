@@ -34,6 +34,7 @@ from django.utils.text import slugify
 from phonenumber_field.modelfields import PhoneNumberField
 from simple_history.models import HistoricalRecords
 
+from lemarche.companies.models import CompanySiaeClientReferenceMatch
 from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
 from lemarche.siaes import constants as siae_constants
@@ -467,6 +468,17 @@ class SiaeQuerySet(models.QuerySet):
     def with_hosmoz_network(self):
         return self.annotate(
             is_in_the_hosmoz_network=Exists(Network.objects.filter(slug="hosmoz", siaes__pk=OuterRef("pk")))
+        )
+
+    def with_is_company_match(self, company):
+        return self.annotate(
+            is_company_match=Exists(
+                CompanySiaeClientReferenceMatch.objects.filter(
+                    siae_client_reference__siae=OuterRef("pk"),
+                    company=company,
+                    moderation_status=CompanySiaeClientReferenceMatch.ModerationStatus.APPROVED,
+                )
+            )
         )
 
     def content_not_filled(self):

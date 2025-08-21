@@ -1,0 +1,19 @@
+[
+    {
+        "model": "companies.companysiaeclientreferencematch",
+        "pk": 1,
+        "fields": {
+            "company": 1,
+            "siae_client_reference": 11,
+            "similarity_score": "1.000000",
+            "company_name": "USS Enterprise",
+            "client_reference_name": "USS Enterprise",
+            "moderation_status": "approved",
+            "moderated_by": 1,
+            "moderated_at": "2025-08-19T08:55:40.550Z",
+            "moderation_notes": "",
+            "created_at": "2025-08-19T08:54:37.523Z",
+            "updated_at": "2025-08-19T08:55:40.551Z"
+        }
+    }
+]
