@@ -64,6 +64,7 @@ class Command(BaseCommand):
             "contact_email": row["Email"],
             "contact_phone": row["Tel public"],
             "employees_insertion_count": row["Nombre de travailleurs dans la structure (en ETP)"],
+            "is_in_network": row["Adhérent Hosmoz"],
         }
         form = HozmozImportForm(form_data)
         if form.is_valid():
