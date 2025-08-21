@@ -77,7 +77,7 @@ class CompanyAdmin(admin.ModelAdmin, DynamicArrayMixin):
         (
             None,
             {
-                "fields": ("name", "slug", "description", "siret", "website", "email_domain_list"),
+                "fields": ("name", "slug", "description", "siret", "website", "email_domain_list", "labels"),
             },
         ),
         ("Logo", {"fields": ("logo_url", "logo_url_display")}),

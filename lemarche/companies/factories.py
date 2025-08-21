@@ -17,3 +17,8 @@ class CompanyFactory(DjangoModelFactory):
     def users(self, create, extracted, **kwargs):
         if extracted:
             self.users.add(*extracted)
+
+    @factory.post_generation
+    def labels(self, create, extracted, **kwargs):
+        if extracted:
+            self.labels.add(*extracted)

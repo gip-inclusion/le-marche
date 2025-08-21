@@ -5,9 +5,18 @@
             {% if tender.contact_company_name_display %}
                 <div class="fr-col-md-4" title="Entreprise">
                     <span class="fr-icon-building-line" aria-hidden="true"></span>
-                    <strong>{{ tender.contact_company_name_display }}</strong>
+                  <strong>{{ tender.contact_company_name_display }}</strong>
+                  {% for label in tender.author.company.labels.all %}
+                    <img src="{{ label.logo_url }}"
+                         class="fr-responsive-img"
+                         style="width: 40px; height: 40px; object-fit: contain; display: inline-block; vertical-align: middle; margin-left: 8px;"
+                         alt="Logo du label {{ label.name }}"
+                         loading="lazy"/>
+                  {% endfor %}
                 </div>
             {% endif %}
+
+
             <div class="fr-col-md-4" title="Lieu d'intervention">
                 <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
                 {{ tender.location_display|safe }}
@@ -79,6 +88,31 @@
                 </ul>
             </div>
         {% endif %}
+
+
+        {% if tender.author.company.labels.all %}
+          <hr>
+          <h2>Engagement de l'entreprise</h2>
+
+          <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+            {% for label in tender.author.company.labels.all %}
+              <div class="fr-col-3 fr-col-md-2 text-center">
+                <img src="{{ label.logo_url }}"
+                     class="fr-responsive-img fr-mx-2w"
+                     width="40"
+                     height="40"
+                     alt="Logo du label {{ label.name }}"
+                     loading="lazy"
+                />
+              </div>
+            {% endfor %}
+          </div>
+
+        {% if tender.author.company.get_label_sentence_display %}
+          <p>{{ tender.author.company.get_label_sentence_display }}</p>
+        {% endif %}
+      {% endif %}
+
         <!-- tender questions -->
         {% if tender.questions_list|length %}
             <hr>

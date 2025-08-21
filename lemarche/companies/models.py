@@ -4,6 +4,7 @@ from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django_better_admin_arrayfield.models.fields import ArrayField
 
+from lemarche.labels.models import Label
 from lemarche.utils.constants import ADMIN_FIELD_HELP_TEXT, RECALCULATED_FIELD_HELP_TEXT
 
 
@@ -31,6 +32,7 @@ class Company(models.Model):
     siret = models.CharField(verbose_name="Siret", max_length=14, blank=True)
     website = models.URLField(verbose_name="Site web", blank=True)
     logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True)
+    labels = models.ManyToManyField(Label, verbose_name="Labels", blank=True)
 
     email_domain_list = ArrayField(
         verbose_name="Liste des noms de domaine d'e-mails",
@@ -77,6 +79,24 @@ class Company(models.Model):
         """Generate the slug field before saving."""
         self.set_slug()
         super().save(*args, **kwargs)
+
+    @property
+    def get_label_sentence_display(self) -> str:
+        labels = self.labels.values_list("slug", flat=True)
+        if "rfar" in labels and "b-corp" in labels:
+            return (
+                "L’organisation de cet acheteur est certifié RFAR et B-Corp,"
+                " garantissant son engagement envers des relations fournisseurs responsables et son impact social"
+            )
+        elif "rfar" in labels:
+            return (
+                "L’organisation de cet acheteur est certifié RFAR,"
+                " garantissant son engagement envers des relations fournisseurs responsables"
+            )
+        elif "b-corp" in labels:
+            return "L’organisation de cet acheteur est certifiée B-Corp, garantissant son engagement social"
+        else:
+            return ""
 
 
 class CompanySiaeClientReferenceMatch(models.Model):

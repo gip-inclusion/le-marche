@@ -13,6 +13,7 @@ class FixturesTest(TestCase):
         "lemarche/fixtures/django/0a_networks.json",
         "lemarche/fixtures/django/0b_sectorgroups.json",
         "lemarche/fixtures/django/0c_sectors.json",
+        "lemarche/fixtures/django/0d_labels.json",
         "lemarche/fixtures/django/0e_companies.json",
         "lemarche/fixtures/django/01_siaegroups.json",
         "lemarche/fixtures/django/01_siaegroup_sectors.json",
@@ -29,6 +30,9 @@ class FixturesTest(TestCase):
         "lemarche/fixtures/django/11_tender_sectors.json",
         "lemarche/fixtures/django/11_tender_siaes.json",
         "lemarche/fixtures/django/20_cms.json",
+        "lemarche/fixtures/django/21_suggested_questions.json",
+        "lemarche/fixtures/django/22_tender_instructions.json",
+        "lemarche/fixtures/django/23_purchases.json",
     ]
 
     def test_flat_fixtures_load_successfully(self):
