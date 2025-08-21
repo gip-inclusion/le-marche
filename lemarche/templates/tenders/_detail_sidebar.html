@@ -67,7 +67,7 @@
                     <div class="fr-col-12">
                         {% include "tenders/_detail_not_interested_click_confirm.html" %}
                     </div>
-                {% else %}
+                {% elif not siae_has_detail_contact_click_date %}
                     <div class="fr-col-12">
                         {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True tender_siae_uuid=tender_siae_uuid %}
                     </div>
