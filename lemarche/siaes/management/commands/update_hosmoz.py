@@ -6,10 +6,17 @@ from django.db.models import Case, EmailField, F, PositiveIntegerField, Value, W
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 
+from lemarche.networks.models import Network
 from lemarche.siaes.models import Siae
 
 
 class HozmozImportForm(forms.ModelForm):
+    YES_NO = (
+        ("Oui", "Oui"),
+        ("Non", "Non"),
+    )
+    is_in_network = forms.ChoiceField(choices=YES_NO, required=False)
+
     class Meta:
         model = Siae
         fields = [
@@ -20,11 +27,23 @@ class HozmozImportForm(forms.ModelForm):
             "logo_url",
         ]
 
+    def clean_is_in_network(self):
+        data = self.cleaned_data["is_in_network"]
+        if data == "Oui":
+            return True
+        elif data == "Non":
+            return False
+        raise forms.ValidationError("Valeur incorrecte")
+
 
 class Command(BaseCommand):
     """
     Usage: poetry run python manage.py import_esat_gesat
     """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.hosmoz_network = Network.objects.get(slug="hosmoz")
 
     def add_arguments(self, parser):
         parser.add_argument("--csv_file", dest="csv_file", required=True, type=str, help="Chemin du fichier CSV")
@@ -55,7 +74,8 @@ class Command(BaseCommand):
 
         siret = row["Siret"].replace(" ", "")
 
-        Siae.objects.filter(siret=siret).update(
+        siaes = Siae.objects.filter(siret=siret)
+        siaes.update(
             contact_email=Case(
                 When(contact_email="", then=Value(cleaned_data.get("contact_email", ""))),
                 default=F("contact_email"),
@@ -81,3 +101,6 @@ class Command(BaseCommand):
                 default=F("employees_insertion_count_last_updated"),
             ),
         )
+
+        if cleaned_data.get("is_in_network"):
+            siaes.get().networks.add(self.hosmoz_network)
