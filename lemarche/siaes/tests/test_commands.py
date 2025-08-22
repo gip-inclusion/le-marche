@@ -577,6 +577,10 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
         self.assertIn("SIRET not found", out.getvalue())
 
 
+@patch(
+    "lemarche.siaes.management.commands.update_hosmoz.Command.get_logo_url",
+    lambda self, logo_id: "http://someurl/logo.png",
+)
 class HosmoZCommandTest(TestCase):
 
     def setUp(self):
@@ -607,7 +611,7 @@ class HosmoZCommandTest(TestCase):
         self.assertEqual(siae.employees_insertion_count, 22)
         self.assertIsNotNone(siae.employees_insertion_count_last_updated)
         self.assertEqual(siae.networks.all().count(), 1)
-        self.assertEqual(siae.logo_url, "http://localhost:9000/bucket/hosmoz_logo/1.png")
+        self.assertEqual(siae.logo_url, "http://someurl/logo.png")
 
     def test_update_full_siae(self):
         siae = SiaeFactory(
