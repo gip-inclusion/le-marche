@@ -86,7 +86,7 @@ class Command(BaseCommand):
         except FileNotFoundError:
             return ""
         else:
-            return f"{API_CONNECTION_DICT["endpoint_url"]}/{self.bucket_name}/{bucket_path}"
+            return f"{API_CONNECTION_DICT['endpoint_url']}/{self.bucket_name}/{bucket_path}"
 
     def import_row(self, row):
 
