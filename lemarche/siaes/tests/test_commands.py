@@ -589,10 +589,16 @@ class HosmoZCommandTest(TestCase):
             contact_phone="",
             employees_insertion_count=None,
             employees_insertion_count_last_updated=None,
+            logo_url="",
         )
         self.assertEqual(siae.networks.all().count(), 0)
 
-        call_command("update_hosmoz", csv_file="lemarche/fixtures/tests/hosmoz_import.csv", stdout=StringIO())
+        call_command(
+            "update_hosmoz",
+            csv_file="lemarche/fixtures/tests/hosmoz_import.csv",
+            logo_folder="lemarche/fixtures/tests/logos",
+            stdout=StringIO(),
+        )
 
         siae.refresh_from_db()
 
@@ -601,6 +607,7 @@ class HosmoZCommandTest(TestCase):
         self.assertEqual(siae.employees_insertion_count, 22)
         self.assertIsNotNone(siae.employees_insertion_count_last_updated)
         self.assertEqual(siae.networks.all().count(), 1)
+        self.assertEqual(siae.logo_url, "http://localhost:9000/bucket/lemarche/fixtures/tests/logos/1.png")
 
     def test_update_full_siae(self):
         siae = SiaeFactory(
@@ -610,10 +617,16 @@ class HosmoZCommandTest(TestCase):
             employees_insertion_count=10,
             employees_insertion_count_last_updated=None,
             networks=[self.hosmoz_network],
+            logo_url="https://logo.com/logo.png",
         )
         self.assertEqual(siae.networks.all().count(), 1)
 
-        call_command("update_hosmoz", csv_file="lemarche/fixtures/tests/hosmoz_import.csv", stdout=StringIO())
+        call_command(
+            "update_hosmoz",
+            csv_file="lemarche/fixtures/tests/hosmoz_import.csv",
+            logo_folder="lemarche/fixtures/tests/logos",
+            stdout=StringIO(),
+        )
 
         siae.refresh_from_db()
 
@@ -622,3 +635,4 @@ class HosmoZCommandTest(TestCase):
         self.assertEqual(siae.employees_insertion_count, 10)
         self.assertIsNone(siae.employees_insertion_count_last_updated)
         self.assertEqual(siae.networks.all().count(), 1)
+        self.assertEqual(siae.logo_url, "https://logo.com/logo.png")

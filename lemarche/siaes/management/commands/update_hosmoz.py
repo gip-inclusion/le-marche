@@ -1,13 +1,16 @@
 import csv
 
+import boto3
 from django import forms
+from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.db.models import Case, EmailField, F, PositiveIntegerField, Value, When
+from django.db.models import Case, EmailField, F, PositiveIntegerField, URLField, Value, When
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 
 from lemarche.networks.models import Network
 from lemarche.siaes.models import Siae
+from lemarche.utils.s3 import API_CONNECTION_DICT
 
 
 class HozmozImportForm(forms.ModelForm):
@@ -38,25 +41,49 @@ class HozmozImportForm(forms.ModelForm):
 
 class Command(BaseCommand):
     """
-    Usage: poetry run python manage.py import_esat_gesat
+    csv_file: path to the csv file
+    logo_folder: path to the folder containing the logos in *.png format
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.hosmoz_network = Network.objects.get(slug="hosmoz")
+        # init S3 config
+        self.bucket_name = settings.S3_STORAGE_BUCKET_NAME
+        resource = boto3.resource("s3", **API_CONNECTION_DICT)
+        self.bucket = resource.Bucket(self.bucket_name)
 
     def add_arguments(self, parser):
         parser.add_argument("--csv_file", dest="csv_file", required=True, type=str, help="Chemin du fichier CSV")
+        parser.add_argument(
+            "--logo_folder", dest="logo_folder", required=True, type=str, help="Chemin du dossier des logos"
+        )
 
     def handle(self, *args, **options):
-        csv_file = options["csv_file"]
-        self.import_hosmoz(csv_file)
+        self.csv_file = options["csv_file"]
+        self.logo_folder = options["logo_folder"]
 
-    def import_hosmoz(self, csv_file):
-        with open(csv_file, "r") as f:
+        self.import_hosmoz()
+
+    def import_hosmoz(self):
+        with open(self.csv_file, "r") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 self.import_row(row)
+
+    def get_logo_url(self, logo_id: str) -> str:
+        """From a logo_id, returns the url of the logo on S3 after uploading it"""
+        logo_file_path = f"{self.logo_folder}/{logo_id}.png"
+        try:
+            self.bucket.upload_file(
+                logo_file_path,
+                logo_file_path,
+                ExtraArgs={"ACL": "public-read"},
+            )
+        except FileNotFoundError:
+            return ""
+        else:
+            return f"{API_CONNECTION_DICT["endpoint_url"]}/{self.bucket_name}/{logo_file_path}"
 
     def import_row(self, row):
 
@@ -74,6 +101,8 @@ class Command(BaseCommand):
         cleaned_data = form.cleaned_data
 
         siret = row["Siret"].replace(" ", "")
+
+        s3_logo_url = self.get_logo_url(row["Id"])
 
         siaes = Siae.objects.filter(siret=siret)
         siaes.update(
@@ -100,6 +129,11 @@ class Command(BaseCommand):
             employees_insertion_count_last_updated=Case(
                 When(employees_insertion_count__isnull=True, then=Value(timezone.now())),
                 default=F("employees_insertion_count_last_updated"),
+            ),
+            logo_url=Case(
+                When(logo_url="", then=Value(s3_logo_url)),
+                default=F("logo_url"),
+                output_field=URLField(),
             ),
         )
 
