@@ -8,8 +8,10 @@ from botocore.client import Config
 from django.conf import settings
 
 
+SCHEME = "https://" if settings.AWS_S3_USE_SSL else "http://"
+
 API_CONNECTION_DICT = {
-    "endpoint_url": "https://%s" % settings.S3_STORAGE_ENDPOINT_DOMAIN,
+    "endpoint_url": f"{SCHEME}{settings.S3_STORAGE_ENDPOINT_DOMAIN}",
     "aws_access_key_id": settings.S3_STORAGE_ACCESS_KEY_ID,
     "aws_secret_access_key": settings.S3_STORAGE_SECRET_ACCESS_KEY,
     "region_name": settings.S3_STORAGE_BUCKET_REGION,
