@@ -607,7 +607,7 @@ class HosmoZCommandTest(TestCase):
         self.assertEqual(siae.employees_insertion_count, 22)
         self.assertIsNotNone(siae.employees_insertion_count_last_updated)
         self.assertEqual(siae.networks.all().count(), 1)
-        self.assertEqual(siae.logo_url, "http://localhost:9000/bucket/lemarche/fixtures/tests/logos/1.png")
+        self.assertEqual(siae.logo_url, "http://localhost:9000/bucket/hosmoz_logo/1.png")
 
     def test_update_full_siae(self):
         siae = SiaeFactory(

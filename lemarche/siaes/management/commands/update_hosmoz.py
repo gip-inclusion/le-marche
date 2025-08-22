@@ -45,6 +45,8 @@ class Command(BaseCommand):
     logo_folder: path to the folder containing the logos in *.png format
     """
 
+    LOGO_BUCKET_FOLDER = "hosmoz_logo"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.hosmoz_network = Network.objects.get(slug="hosmoz")
@@ -74,16 +76,17 @@ class Command(BaseCommand):
     def get_logo_url(self, logo_id: str) -> str:
         """From a logo_id, returns the url of the logo on S3 after uploading it"""
         logo_file_path = f"{self.logo_folder}/{logo_id}.png"
+        bucket_path = f"{self.LOGO_BUCKET_FOLDER}/{logo_id}.png"
         try:
             self.bucket.upload_file(
                 logo_file_path,
-                logo_file_path,
-                ExtraArgs={"ACL": "public-read"},
+                bucket_path,
+                ExtraArgs={"ACL": "public-read", "ContentType": "image/png"},
             )
         except FileNotFoundError:
             return ""
         else:
-            return f"{API_CONNECTION_DICT["endpoint_url"]}/{self.bucket_name}/{logo_file_path}"
+            return f"{API_CONNECTION_DICT["endpoint_url"]}/{self.bucket_name}/{bucket_path}"
 
     def import_row(self, row):
 
