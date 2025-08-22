@@ -32,5 +32,33 @@ services:
     depends_on:
       - db
 
+  minio-s3:
+    image: minio/minio:latest
+    container_name: minio-s3
+    command: [ "server", "--console-address", ":9001", "/minio_data" ]
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - minio_data:/minio_data
+    env_file:
+      - env.docker.local
+
+  # Runned only once to create the minio bucket
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio-s3
+    env_file:
+      - env.docker.local
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      /usr/bin/mc alias set dockerminio http://minio-s3:9000 minio_user minio_password;
+      /usr/bin/mc mb dockerminio/bucket --ignore-existing;
+      exit 0;
+      "
+
 volumes:
   postgres_data:
+  minio_data:
