@@ -470,10 +470,10 @@ CSRF_FAILURE_VIEW = "lemarche.www.pages.views.csrf_failure"
 # S3 uploads
 # ------------------------------------------------------------------------------
 
-S3_STORAGE_ACCESS_KEY_ID = env.str("CELLAR_ADDON_KEY_ID", "123")
-S3_STORAGE_SECRET_ACCESS_KEY = env.str("CELLAR_ADDON_KEY_SECRET", "secret")
-S3_STORAGE_ENDPOINT_DOMAIN = env.str("CELLAR_ADDON_HOST", "http://set-var-env.com/")
-S3_STORAGE_BUCKET_NAME = env.str("S3_STORAGE_BUCKET_NAME", "set-bucket-name")
+S3_STORAGE_ACCESS_KEY_ID = env.str("CELLAR_ADDON_KEY_ID", "minio_user")
+S3_STORAGE_SECRET_ACCESS_KEY = env.str("CELLAR_ADDON_KEY_SECRET", "minio_password")
+S3_STORAGE_ENDPOINT_DOMAIN = env.str("CELLAR_ADDON_HOST", "localhost:9000")
+S3_STORAGE_BUCKET_NAME = env.str("S3_STORAGE_BUCKET_NAME", "bucket")
 S3_STORAGE_BUCKET_REGION = env.str("S3_STORAGE_BUCKET_REGION", "fr")
 AWS_DEFAULT_ACL = env.str("AWS_DEFAULT_ACL", "public-read")
 AWS_S3_USE_SSL = env.bool("AWS_S3_USE_SSL", False)
