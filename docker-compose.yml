@@ -51,13 +51,11 @@ services:
       - minio-s3
     env_file:
       - env.docker.local
-    entrypoint: >
-      /bin/sh -c "
-      sleep 5;
-      /usr/bin/mc alias set dockerminio http://minio-s3:9000 minio_user minio_password;
-      /usr/bin/mc mb dockerminio/bucket --ignore-existing;
-      exit 0;
-      "
+    # Use a script to be able to use env var from env.docker.local
+    # These var can be used in a container, but not directly in compose file !
+    volumes:
+      - ./docker/dev/minio/create_bucket.sh:/create-bucket.sh
+    entrypoint: [ "/bin/sh", "/create-bucket.sh" ]
 
 volumes:
   postgres_data:
