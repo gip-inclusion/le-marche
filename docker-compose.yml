@@ -32,5 +32,31 @@ services:
     depends_on:
       - db
 
+  minio-s3:
+    image: minio/minio:latest
+    container_name: minio-s3
+    command: [ "server", "--console-address", ":9001", "/minio_data" ]
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - minio_data:/minio_data
+    env_file:
+      - env.docker.local
+
+  # Runned only once to create the minio bucket
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio-s3
+    env_file:
+      - env.docker.local
+    # Use a script to be able to use env var from env.docker.local
+    # These var can be used in a container, but not directly in compose file !
+    volumes:
+      - ./docker/dev/minio/create_bucket.sh:/create-bucket.sh
+    entrypoint: [ "/bin/sh", "/create-bucket.sh" ]
+
 volumes:
   postgres_data:
+  minio_data:
