@@ -35,6 +35,7 @@ from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 from lemarche.utils import constants
 from lemarche.utils.apis.brevo_attributes import CONTACT_ATTRIBUTES
+from lemarche.utils.urls import get_tender_siae_download_url
 from lemarche.www.tenders.views import TenderCreateMultiStepView
 
 
@@ -2215,22 +2216,26 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         siae_2 = SiaeFactory(name="siae_2")
         siae_3 = SiaeFactory(name="siae_3")
 
-        self.tender = TenderFactory()
+        self.tender = TenderFactory(author=self.user)
         # INTERESTED
         TenderSiaeFactory(
             tender=self.tender,
             siae=siae_1,
+            email_send_date=timezone.now(),
             detail_display_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
         )
         TenderSiaeFactory(
             tender=self.tender,
             siae=siae_2,
+            email_send_date=timezone.now(),
             detail_display_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
         )
         # VIEWED
-        TenderSiaeFactory(tender=self.tender, siae=siae_3, detail_display_date=timezone.now())
+        TenderSiaeFactory(
+            tender=self.tender, siae=siae_3, email_send_date=timezone.now(), detail_display_date=timezone.now()
+        )
 
         q1 = TenderQuestionFactory(tender=self.tender, text="question_1_title")
         q2 = TenderQuestionFactory(tender=self.tender, text="question_2_title")
@@ -2241,6 +2246,13 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         QuestionAnswerFactory(question=q2, siae=siae_2, answer="answer_for_q2_from_siae_2")
 
         self.client.force_login(self.user)
+
+    def test_tender_siae_download_view_non_tender_author_user(self):
+        user = UserFactory(kind=User.KIND_BUYER)
+        self.client.force_login(user)
+        response = self.client.get(reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug}))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("tenders:list"))
 
     def test_filter_columns(self):
         """Checks that the filtering form appearing on the tender siae list page is also filtering
@@ -2266,7 +2278,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
             content = response.content.decode("utf-8")
             csv_reader = csv.DictReader(content.splitlines())
             rows = list(csv_reader)
-            self.assertEqual(len(rows), 0)
+            self.assertEqual(len(rows), 3)
 
         with self.subTest(status="VIEWED"):
             response = self.client.get(
@@ -2344,3 +2356,50 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         self.assertEqual(sheet["C1"].value, "question_2_title")
         self.assertEqual(sheet["C2"].value, "answer_for_q2_from_siae_1")
         self.assertEqual(sheet["C3"].value, "answer_for_q2_from_siae_2")
+
+    def test_get_tender_siae_download_url(self):
+
+        with self.subTest(status="ALL"):
+            url = get_tender_siae_download_url(self.tender)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(
+                response["Content-Type"], "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+            self.assertEqual(
+                response["Content-Disposition"],
+                f'attachment; filename="{self.tender.slug}-liste-structures-ciblees.xlsx"',
+            )
+
+            # Load file from response into a workbook
+            file_content = BytesIO(response.content)
+            workbook = openpyxl.load_workbook(file_content)
+            sheet = workbook.active
+
+            self.assertEqual(sheet["A1"].value, "Raison sociale")
+            self.assertEqual(sheet["A2"].value, "siae_1")
+            self.assertEqual(sheet["A3"].value, "siae_2")
+            self.assertEqual(sheet["A4"].value, "siae_3")
+
+        with self.subTest(status="INTERESTED"):
+            url = get_tender_siae_download_url(self.tender, status="INTERESTED")
+
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(
+                response["Content-Type"], "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+            self.assertEqual(
+                response["Content-Disposition"],
+                f'attachment; filename="{self.tender.slug}-liste-structures-interessees.xlsx"',
+            )
+
+            # Load file from response into a workbook
+            file_content = BytesIO(response.content)
+            workbook = openpyxl.load_workbook(file_content)
+            sheet = workbook.active
+
+            self.assertEqual(sheet["A1"].value, "Raison sociale")
+            self.assertEqual(sheet["A2"].value, "siae_1")
+            self.assertEqual(sheet["A3"].value, "siae_2")
+            self.assertIsNone(sheet["A4"].value)
