@@ -1214,9 +1214,11 @@ class SiaeFavoriteViewTestCase(TestCase):
         list_2 = FavoriteListFactory(name="Fav List 2", user=self.user)
 
         url = reverse("siae:favorite_lists", args=[self.siae.slug])
-        response = self.client.post(url, data={"favorite_list": list_2.id, "action": "add"})
+        response = self.client.post(url, data={"favorite_list": list_2.id, "action": "add"}, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.context["form"].errors,
-            {"favorite_list": ["Cette structure est déjà liée à une liste de favoris."]},
+        self.assertContains(
+            response,
+            "Erreur, cette structure est déjà liée à une liste de favoris.",
+            html=True,
+            count=1,
         )

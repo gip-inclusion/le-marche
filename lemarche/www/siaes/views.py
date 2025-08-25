@@ -328,6 +328,12 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         )
         return HttpResponseRedirect(self.get_success_url())
 
+    def form_invalid(self, form):
+        messages.add_message(
+            self.request, messages.ERROR, "Erreur, cette structure est déjà liée à une liste de favoris."
+        )
+        return HttpResponseRedirect(self.get_success_url())
+
     def get_success_url(self):
         """Redirect to the previous page."""
         request_referer = self.request.META.get("HTTP_REFERER", "")
