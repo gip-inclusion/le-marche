@@ -2397,3 +2397,24 @@ class TenderSiaeDownloadViewTestCase(TestCase):
             self.assertEqual(sheet["A2"].value, "siae_1")
             self.assertEqual(sheet["A3"].value, "siae_2")
             self.assertIsNone(sheet["A4"].value)
+
+
+class TenderSiaeListLocalSiaeTestCase(TestCase):
+
+    def setUp(self):
+        buyer = UserFactory(kind=User.KIND_BUYER)
+        self.client.force_login(buyer)
+
+        self.siae_1 = SiaeFactory(name="siae_1")
+        self.tender_1 = TenderFactory(author=buyer)
+        TenderSiaeFactory(siae=self.siae_1, tender=self.tender_1, email_send_date=timezone.now())
+
+    def test_display_all_tenders_from_user(self):
+        siae_2 = SiaeFactory(name="siae_2")
+        TenderSiaeFactory(siae=siae_2, tender=self.tender_1, email_send_date=timezone.now())
+
+        url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerySetEqual([self.siae_1, siae_2], response.context["siaes"], ordered=False)
