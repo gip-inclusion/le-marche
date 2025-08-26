@@ -507,6 +507,9 @@ class SiaeQuerySet(models.QuerySet):
             "-super_badge", "-tender_detail_contact_click_count", "-tender_detail_display_count", "-completion_rate"
         )
 
+    def with_is_local(self, perimeters):
+        return self.annotate(is_local=F("name"))
+
 
 class Siae(models.Model):
     FIELDS_FROM_C1 = [

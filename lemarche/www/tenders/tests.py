@@ -2418,3 +2418,35 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertQuerySetEqual([self.siae_1, siae_2], response.context["siaes"], ordered=False)
+
+    def test_local_badge_from_city(self):
+
+        # Buyer chose a city in when creating the tender
+        brest_perimeter = PerimeterFactory(name="Brest", kind=Perimeter.KIND_CITY, department_code=35)
+        self.tender_1.perimeters.set([brest_perimeter])
+
+        # Add a siae that should flagged as 'local'
+        siae_2 = SiaeFactory(
+            name="siae_2",
+            city="Brest",
+            post_code="35000",
+            department="35",
+            region="Bretagne",
+        )
+        TenderSiaeFactory(siae=siae_2, tender=self.tender_1, email_send_date=timezone.now())
+
+        siae_3 = SiaeFactory(
+            name="siae_3",
+            city="Marseille",
+            post_code="13000",
+            department="13",
+            region="Marseille",
+        )
+        TenderSiaeFactory(siae=siae_3, tender=self.tender_1, email_send_date=timezone.now())
+
+        url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        val_list = list(response.context["siaes"].order_by("name").values_list("is_local", flat=True))
+        self.assertEqual(val_list, ["siae_1", "siae_2", "siae_3"])
