@@ -720,7 +720,7 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
                 to_attr="questions_for_tender",
             )
         )
-        qs = qs.with_is_local(perimeters=self.tender.perimeters.all())
+        qs = qs.with_is_local(tender=self.tender)
         return qs
 
     def get(self, request, status=None, *args, **kwargs):
