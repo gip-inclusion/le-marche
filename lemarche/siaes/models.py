@@ -22,6 +22,7 @@ from django.db.models import (
     Q,
     Subquery,
     Sum,
+    Value,
     When,
 )
 from django.db.models.functions import Greatest, Round
@@ -507,8 +508,14 @@ class SiaeQuerySet(models.QuerySet):
             "-super_badge", "-tender_detail_contact_click_count", "-tender_detail_display_count", "-completion_rate"
         )
 
-    def with_is_local(self, perimeters):
-        return self.annotate(is_local=F("name"))
+    def with_is_local(self, tender):
+        if tender.location:
+            if tender.location.kind == Perimeter.KIND_CITY:
+                return self.annotate(is_local=Value(True))
+        elif tender.is_country_area:
+            return self.annotate(is_local=Value(False))
+        else:
+            return self.annotate(is_local=Value(False))
 
 
 class Siae(models.Model):

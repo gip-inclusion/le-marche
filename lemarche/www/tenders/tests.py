@@ -2422,8 +2422,8 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
     def test_local_badge_from_city(self):
 
         # Buyer chose a city in when creating the tender
-        brest_perimeter = PerimeterFactory(name="Brest", kind=Perimeter.KIND_CITY, department_code=35)
-        self.tender_1.perimeters.set([brest_perimeter])
+        self.tender_1.location = PerimeterFactory(name="Brest", kind=Perimeter.KIND_CITY, department_code=35)
+        self.tender_1.save()
 
         # Add a siae that should flagged as 'local'
         siae_2 = SiaeFactory(
@@ -2449,4 +2449,4 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         val_list = list(response.context["siaes"].order_by("name").values_list("is_local", flat=True))
-        self.assertEqual(val_list, ["siae_1", "siae_2", "siae_3"])
+        self.assertEqual(val_list, [False, True, False])
