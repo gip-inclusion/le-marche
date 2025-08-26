@@ -289,8 +289,13 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeFavoriteForm
     context_object_name = "siae"
     queryset = Siae.objects.prefetch_related("favorite_lists").all()
-    # success_message = "La structure a été ajoutée à votre liste d'achat."
     success_url = reverse_lazy("siae:search_results")
+
+    def get_form_kwargs(self):
+        """Pass the current user to the form."""
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         """
@@ -320,6 +325,12 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             self.request,
             messages.SUCCESS,
             self.get_success_message(form.cleaned_data, siae, favorite_list),
+        )
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form):
+        messages.add_message(
+            self.request, messages.ERROR, "Erreur, cette structure est déjà liée à une liste de favoris."
         )
         return HttpResponseRedirect(self.get_success_url())
 

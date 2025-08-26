@@ -3,6 +3,7 @@ from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.urls import reverse
 
+from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.labels.factories import LabelFactory
 from lemarche.networks.factories import NetworkFactory
 from lemarche.perimeters.factories import PerimeterFactory
@@ -1199,3 +1200,25 @@ class SiaeDetailTest(TestCase):
         NetworkFactory(slug="hosmoz", siaes=[self.siae])
         response = self.client.get(url)
         self.assertContains(response, "Hosmoz")
+
+
+class SiaeFavoriteViewTestCase(TestCase):
+    def setUp(self):
+        self.user = UserFactory()
+        self.client.force_login(self.user)
+        self.siae = SiaeFactory(name="SIAE")
+        FavoriteListFactory(name="Fav List 1", user=self.user, siaes=[self.siae])
+
+    def test_add_item_already_in_favorites(self):
+        """Check that it's not possible for a user to add an siae twice in different favorites list."""
+        list_2 = FavoriteListFactory(name="Fav List 2", user=self.user)
+
+        url = reverse("siae:favorite_lists", args=[self.siae.slug])
+        response = self.client.post(url, data={"favorite_list": list_2.id, "action": "add"}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            "Erreur, cette structure est déjà liée à une liste de favoris.",
+            html=True,
+            count=1,
+        )
