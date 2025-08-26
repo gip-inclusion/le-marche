@@ -67,8 +67,7 @@ def get_encoded_url_from_params(params: dict, encoding: str = "rot_13"):
 
 
 def get_tender_siae_download_url(tender: Model, status: str = ""):
-
-    params = {
+    params = {  # use the params of form SiaeSelectFieldsForm
         "download_form-format": "xlsx",
         "tendersiae_status": status,
         "download_form-selected_fields": [

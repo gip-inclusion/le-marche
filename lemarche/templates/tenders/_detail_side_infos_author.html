@@ -23,7 +23,7 @@
             <a href="{% url 'tenders:detail-siae-list' tender.slug %}"
                id="show-tender-siae-list-from-detail-btn"
                class="fr-btn fr-btn--icon-left fr-icon-signal-tower-line">
-                {{ tender.siae_email_send_date_count }} prestataire{{ tender.siae_email_send_date_count|pluralize }} ciblé{{ tender.siae_email_send_date_count|pluralize }}
+                {{ tender.siaes_count }} prestataire{{ tender.siaes_count|pluralize }} ciblé{{ tender.siaes_count|pluralize }}
             </a>
         </li>
         <li>

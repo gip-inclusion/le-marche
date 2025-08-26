@@ -1632,11 +1632,6 @@ class TenderSiaeListView(TestCase):
             detail_display_date=timezone.now(),
             detail_contact_click_date=timezone.now() - timedelta(hours=1),
         )
-        cls.tendersiae_1_4 = TenderSiae.objects.create(
-            tender=cls.tender_1,
-            siae=cls.siae_3,
-            detail_display_date=timezone.now(),
-        )
         cls.tendersiae_1_5 = TenderSiae.objects.create(
             tender=cls.tender_1,
             siae=cls.siae_5,
@@ -1695,12 +1690,12 @@ class TenderSiaeListView(TestCase):
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["siaes"]), 3)  # email_send_date
+        self.assertEqual(len(response.context["siaes"]), 4)
         # VIEWED
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug, "status": "VIEWED"})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["siaes"]), 4)  # email_link_click_date or detail_display_date
+        self.assertEqual(len(response.context["siaes"]), 3)  # email_link_click_date or detail_display_date
         # INTERESTED
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug, "status": "INTERESTED"})
         response = self.client.get(url)
@@ -1727,7 +1722,7 @@ class TenderSiaeListView(TestCase):
         )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["siaes"]), 2)  # email_send_date & located in Grenoble
+        self.assertEqual(len(response.context["siaes"]), 2)  # located in Grenoble
         url = (
             reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug, "status": "INTERESTED"})
             + f"?locations={self.perimeter_city.slug}"
@@ -1742,7 +1737,7 @@ class TenderSiaeListView(TestCase):
         )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["siaes"]), 1)  # email_send_date & ETTI
+        self.assertEqual(len(response.context["siaes"]), 2)  # ETTI
         url = (
             reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug, "status": "INTERESTED"})
             + f"?kind={siae_constants.KIND_ETTI}"
@@ -1754,7 +1749,7 @@ class TenderSiaeListView(TestCase):
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug}) + "?territory=QPV"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["siaes"]), 1)  # email_send_date & QPV
+        self.assertEqual(len(response.context["siaes"]), 1)  # QPV
         # filter by count of employees
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug}) + "?employees=50-99"
         response = self.client.get(url)
@@ -1773,7 +1768,7 @@ class TenderSiaeListView(TestCase):
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["siaes"]), 3)
+        self.assertEqual(len(response.context["siaes"]), 4)
         self.assertNotContains(response, "Déjà référencé")
 
         # add a match between the company and the siae
@@ -1792,7 +1787,7 @@ class TenderSiaeListView(TestCase):
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["siaes"]), 3)
+        self.assertEqual(len(response.context["siaes"]), 4)
         self.assertContains(response, "Déjà référencé", count=1)
 
 
@@ -2221,21 +2216,17 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         TenderSiaeFactory(
             tender=self.tender,
             siae=siae_1,
-            email_send_date=timezone.now(),
             detail_display_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
         )
         TenderSiaeFactory(
             tender=self.tender,
             siae=siae_2,
-            email_send_date=timezone.now(),
             detail_display_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
         )
         # VIEWED
-        TenderSiaeFactory(
-            tender=self.tender, siae=siae_3, email_send_date=timezone.now(), detail_display_date=timezone.now()
-        )
+        TenderSiaeFactory(tender=self.tender, siae=siae_3, email_send_date=timezone.now())
 
         q1 = TenderQuestionFactory(tender=self.tender, text="question_1_title")
         q2 = TenderQuestionFactory(tender=self.tender, text="question_2_title")
@@ -2288,7 +2279,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
             content = response.content.decode("utf-8")
             csv_reader = csv.DictReader(content.splitlines())
             rows = list(csv_reader)
-            self.assertEqual(len(rows), 3)
+            self.assertEqual(len(rows), 2)
 
         with self.subTest(status="INTERESTED"):
             response = self.client.get(
