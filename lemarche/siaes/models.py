@@ -544,6 +544,16 @@ class SiaeQuerySet(models.QuerySet):
         else:
             return self.annotate(is_local=Value(False))
 
+    def with_is_local_display(self, tender):
+        """Transform the bool of is_local to a display a yes / no charfield"""
+        return self.with_is_local(tender).annotate(
+            is_local_display=Case(
+                When(is_local=True, then=Value("Oui")),
+                default=Value("Non"),
+                output_field=models.CharField(),
+            ),
+        )
+
 
 class Siae(models.Model):
     FIELDS_FROM_C1 = [

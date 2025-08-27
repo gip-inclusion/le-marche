@@ -775,6 +775,7 @@ class TenderSiaeInterestedDownloadView(TenderAuthorOrAdminRequiredMixin, DetailV
             SiaeFilterForm(data=self.request.GET)
             .filter_queryset(Siae.objects.filter(tendersiae__tender=self.object))
             .filter_with_tender_tendersiae_status(tender=self.object, tendersiae_status=self.status)
+            .with_is_local_display(tender=self.object)
             .prefetch_related(
                 Prefetch(
                     "questionanswer_set",
