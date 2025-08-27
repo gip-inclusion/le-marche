@@ -509,6 +509,9 @@ class SiaeQuerySet(models.QuerySet):
         )
 
     def with_is_local(self, tender):
+        """Annotate queryset with is_local
+        is_local is True if a match is between the location perimeter of the tender and the different geographic fields
+        from each Siae"""
         if tender.location:
             if tender.location.kind == Perimeter.KIND_CITY:
                 return self.annotate(
@@ -521,7 +524,7 @@ class SiaeQuerySet(models.QuerySet):
             elif tender.location.kind == Perimeter.KIND_DEPARTMENT:
                 return self.annotate(
                     is_local=Case(
-                        When(departement=tender.location.name, then=Value(True)),
+                        When(department=tender.location.insee_code, then=Value(True)),
                         default=Value(False),
                         output_field=models.BooleanField(),
                     )

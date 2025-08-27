@@ -2422,31 +2422,101 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
     def test_local_badge_from_city(self):
 
         # Buyer chose a city in when creating the tender
-        self.tender_1.location = PerimeterFactory(name="Brest", kind=Perimeter.KIND_CITY, department_code=35)
+        # Data here represents how a city is stored in the database with actual data
+        # (some fields are not populated if it's a REGION or DEPARTMENT)
+        self.tender_1.location = PerimeterFactory(
+            name="Brest",
+            kind=Perimeter.KIND_CITY,
+            insee_code="29019",
+            department_code="29",
+            post_codes=["29000", "29200", "29240"],
+            region_code="53",
+        )
         self.tender_1.save()
 
-        # Add a siae that should flagged as 'local'
-        siae_2 = SiaeFactory(
+        # Add a siae that should be flagged as 'local'
+        siae_local = SiaeFactory(
             name="siae_2",
             city="Brest",
-            post_code="35000",
-            department="35",
+            post_code="29000",
+            department="29",
             region="Bretagne",
         )
-        TenderSiaeFactory(siae=siae_2, tender=self.tender_1, email_send_date=timezone.now())
+        TenderSiaeFactory(siae=siae_local, tender=self.tender_1, email_send_date=timezone.now())
 
-        siae_3 = SiaeFactory(
+        # Same department, but different city
+        siae_near = SiaeFactory(
             name="siae_3",
+            city="Ploudaniel",
+            post_code="29000",
+            department="29",
+            region="Bretagne",
+        )
+        TenderSiaeFactory(siae=siae_near, tender=self.tender_1, email_send_date=timezone.now())
+
+        siae_outside = SiaeFactory(
+            name="siae_4",
             city="Marseille",
             post_code="13000",
             department="13",
-            region="Marseille",
+            region="Provence-Alpes-Côte d'Azur",
         )
-        TenderSiaeFactory(siae=siae_3, tender=self.tender_1, email_send_date=timezone.now())
+        TenderSiaeFactory(siae=siae_outside, tender=self.tender_1, email_send_date=timezone.now())
 
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
         val_list = list(response.context["siaes"].order_by("name").values_list("is_local", flat=True))
-        self.assertEqual(val_list, [False, True, False])
+        self.assertEqual(val_list, [False, True, False, False])
+
+    def test_local_badge_from_department(self):
+        # Buyer chose a department in when creating the tender
+        # Data here represents how a department is stored in the database with actual data
+        # Some fields are purposely missing, like in our database.
+        self.tender_1.location = PerimeterFactory(
+            name="Finistère",
+            kind=Perimeter.KIND_DEPARTMENT,
+            insee_code="29",
+            region_code="53",
+            department_code="",
+            post_codes=[],
+        )
+        self.tender_1.save()
+
+        # Add a siae that should be flagged as 'local'
+        siae_local = SiaeFactory(
+            name="siae_2",
+            city="Brest",
+            post_code="29000",
+            department="29",
+            region="Bretagne",
+        )
+        TenderSiaeFactory(siae=siae_local, tender=self.tender_1, email_send_date=timezone.now())
+
+        # Add a siae that would be selected in a broader selection context,
+        # Here same region but different department
+        siae_near = SiaeFactory(
+            name="siae_3",
+            city="Rennes",
+            post_code="35000",
+            department="35",
+            region="Bretagne",
+        )
+        TenderSiaeFactory(siae=siae_near, tender=self.tender_1, email_send_date=timezone.now())
+
+        siae_outside = SiaeFactory(
+            name="siae_4",
+            city="Marseille",
+            post_code="13000",
+            department="13",
+            region="Provence-Alpes-Côte d'Azur",
+        )
+        TenderSiaeFactory(siae=siae_outside, tender=self.tender_1, email_send_date=timezone.now())
+
+        url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        val_list = list(response.context["siaes"].order_by("name").values_list("is_local", flat=True))
+        self.assertEqual(val_list, [False, True, False, False])
