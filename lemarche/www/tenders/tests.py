@@ -2405,11 +2405,12 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
         buyer = UserFactory(kind=User.KIND_BUYER)
         self.client.force_login(buyer)
 
-        self.siae_1 = SiaeFactory(name="siae_1")
         self.tender_1 = TenderFactory(author=buyer)
-        TenderSiaeFactory(siae=self.siae_1, tender=self.tender_1, email_send_date=timezone.now())
 
     def test_display_all_tenders_from_user(self):
+        siae_1 = SiaeFactory(name="siae_1")
+        TenderSiaeFactory(siae=siae_1, tender=self.tender_1, email_send_date=timezone.now())
+
         siae_2 = SiaeFactory(name="siae_2")
         TenderSiaeFactory(siae=siae_2, tender=self.tender_1, email_send_date=timezone.now())
 
@@ -2417,7 +2418,7 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertQuerySetEqual([self.siae_1, siae_2], response.context["siaes"], ordered=False)
+        self.assertQuerySetEqual([siae_1, siae_2], response.context["siaes"], ordered=False)
 
     def test_local_badge_from_city(self):
 
@@ -2468,7 +2469,7 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         val_list = list(response.context["siaes"].order_by("name").values_list("is_local", flat=True))
-        self.assertEqual(val_list, [False, True, False, False])
+        self.assertEqual(val_list, [True, False, False])
 
     def test_local_badge_from_department(self):
         # Buyer chose a department in when creating the tender
@@ -2519,4 +2520,44 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         val_list = list(response.context["siaes"].order_by("name").values_list("is_local", flat=True))
-        self.assertEqual(val_list, [False, True, False, False])
+        self.assertEqual(val_list, [True, False, False])
+
+    def test_local_badge_from_region(self):
+        # Buyer chose a region in when creating the tender
+        # Data here represents how a region is stored in the database with actual data
+        # Some fields are purposely missing, like in our database.
+        self.tender_1.location = PerimeterFactory(
+            name="Bretagne",
+            kind=Perimeter.KIND_REGION,
+            insee_code="R53",
+            region_code="",
+            department_code="",
+            post_codes=[],
+        )
+        self.tender_1.save()
+
+        # Add a siae that should be flagged as 'local'
+        siae_local = SiaeFactory(
+            name="siae_2",
+            city="Brest",
+            post_code="29000",
+            department="29",
+            region="Bretagne",
+        )
+        TenderSiaeFactory(siae=siae_local, tender=self.tender_1, email_send_date=timezone.now())
+
+        siae_outside = SiaeFactory(
+            name="siae_3",
+            city="Marseille",
+            post_code="13000",
+            department="13",
+            region="Provence-Alpes-Côte d'Azur",
+        )
+        TenderSiaeFactory(siae=siae_outside, tender=self.tender_1, email_send_date=timezone.now())
+
+        url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        val_list = list(response.context["siaes"].order_by("name").values_list("is_local", flat=True))
+        self.assertEqual(val_list, [True, False])

@@ -532,7 +532,7 @@ class SiaeQuerySet(models.QuerySet):
             elif tender.location.kind == Perimeter.KIND_REGION:
                 return self.annotate(
                     is_local=Case(
-                        When(city=tender.location.name, then=Value(True)),
+                        When(region=tender.location.name, then=Value(True)),
                         default=Value(False),
                         output_field=models.BooleanField(),
                     )
