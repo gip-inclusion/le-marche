@@ -511,7 +511,31 @@ class SiaeQuerySet(models.QuerySet):
     def with_is_local(self, tender):
         if tender.location:
             if tender.location.kind == Perimeter.KIND_CITY:
-                return self.annotate(is_local=Value(True))
+                return self.annotate(
+                    is_local=Case(
+                        When(city=tender.location.name, then=Value(True)),
+                        default=Value(False),
+                        output_field=models.BooleanField(),
+                    )
+                )
+            elif tender.location.kind == Perimeter.KIND_DEPARTMENT:
+                return self.annotate(
+                    is_local=Case(
+                        When(departement=tender.location.name, then=Value(True)),
+                        default=Value(False),
+                        output_field=models.BooleanField(),
+                    )
+                )
+            elif tender.location.kind == Perimeter.KIND_REGION:
+                return self.annotate(
+                    is_local=Case(
+                        When(city=tender.location.name, then=Value(True)),
+                        default=Value(False),
+                        output_field=models.BooleanField(),
+                    )
+                )
+            else:
+                return self.annotate(is_local=Value(False))
         elif tender.is_country_area:
             return self.annotate(is_local=Value(False))
         else:
