@@ -2561,3 +2561,24 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         val_list = list(response.context["siaes"].order_by("name").values_list("is_local", flat=True))
         self.assertEqual(val_list, [True, False])
+
+    def test_local_badge_from_country(self):
+        """No Siae should be flagged as 'local' if the tender has country area selection"""
+        self.tender_1.is_country_area = True
+        self.tender_1.save()
+
+        siae_outside = SiaeFactory(
+            name="siae_1",
+            city="Marseille",
+            post_code="13000",
+            department="13",
+            region="Provence-Alpes-Côte d'Azur",
+        )
+        TenderSiaeFactory(siae=siae_outside, tender=self.tender_1, email_send_date=timezone.now())
+
+        url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        val_list = list(response.context["siaes"].order_by("name").values_list("is_local", flat=True))
+        self.assertEqual(val_list, [False])

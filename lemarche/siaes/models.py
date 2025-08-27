@@ -537,12 +537,7 @@ class SiaeQuerySet(models.QuerySet):
                         output_field=models.BooleanField(),
                     )
                 )
-            else:
-                return self.annotate(is_local=Value(False))
-        elif tender.is_country_area:
-            return self.annotate(is_local=Value(False))
-        else:
-            return self.annotate(is_local=Value(False))
+        return self.annotate(is_local=Value(False))
 
     def with_is_local_display(self, tender):
         """Transform the bool of is_local to a display a yes / no charfield"""
