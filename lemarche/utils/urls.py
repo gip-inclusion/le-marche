@@ -66,7 +66,7 @@ def get_encoded_url_from_params(params: dict, encoding: str = "rot_13"):
     return codecs_encode(urlencode(params, quote_via=quote), encoding=encoding)
 
 
-def get_tender_siae_download_url(tender: Model, status: str = ""):
+def get_tender_siae_download_url(tender: Model, status: str = "") -> str:
     params = {  # use the params of form SiaeSelectFieldsForm
         "download_form-format": "xlsx",
         "tendersiae_status": status,
