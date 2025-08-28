@@ -43,5 +43,4 @@ class PurchaseFilterSet(django_filters.FilterSet):
         fields = ["siae_type", "purchase_category", "buying_entity"]
 
     def filter_siae_type(self, queryset, name, value):
-        """Return departement by provided code or name"""
         return queryset.filter(siae__kind__in=value)
