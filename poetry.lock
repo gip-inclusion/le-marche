@@ -998,18 +998,18 @@ phonenumberslite = ["phonenumberslite (>=7.0.2)"]
 
 [[package]]
 name = "django-select2"
-version = "7.11.1"
-description = "Select2 option fields for Django"
+version = "8.4.1"
+description = "This is a Django_ integration of Select2_."
 optional = false
-python-versions = "*"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "django-select2-7.11.1.tar.gz", hash = "sha256:6c56749ca5dd11be9a78a0861086973170c605ace27126c109f3d722cea3c32e"},
-    {file = "django_select2-7.11.1-py2.py3-none-any.whl", hash = "sha256:e558f79fd932fc9013a9dca5e680412403ad8b8a9b5b09754e97c8ce1849c4e1"},
+    {file = "django_select2-8.4.1-py3-none-any.whl", hash = "sha256:1df5e6788cc032795c1be0f2e2a2ea7a5a1dd89878575217a2c23f25d7301fbf"},
+    {file = "django_select2-8.4.1.tar.gz", hash = "sha256:e6cdc0ae647b91b1bed610628893d10dea50a96fffba8e83af27f35dd6003572"},
 ]
 
 [package.dependencies]
-django = ">=3.2"
+django = ">=4.2"
 django-appconf = ">=0.6.0"
 
 [package.extras]
@@ -3345,4 +3345,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10.4"
-content-hash = "ae33c9c475ea5ce910f890f7f6ca9b5ebc56208f8c248fc88d242d6fe40dc0fb"
+content-hash = "188ce10ea19cfb31f02be3819ea15d976af11fe05a32c9af6f600283facf3774"
