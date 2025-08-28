@@ -2210,6 +2210,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         siae_1 = SiaeFactory(name="siae_1", kind=siae_constants.KIND_ETTI)
         siae_2 = SiaeFactory(name="siae_2")
         siae_3 = SiaeFactory(name="siae_3")
+        siae_4 = SiaeFactory(name="siae_4")
 
         self.tender = TenderFactory(author=self.user)
         # INTERESTED
@@ -2226,7 +2227,9 @@ class TenderSiaeDownloadViewTestCase(TestCase):
             detail_contact_click_date=timezone.now(),
         )
         # VIEWED
-        TenderSiaeFactory(tender=self.tender, siae=siae_3)
+        TenderSiaeFactory(tender=self.tender, siae=siae_3, detail_display_date=timezone.now())
+        # just TARGETED
+        TenderSiaeFactory(tender=self.tender, siae=siae_4)
 
         q1 = TenderQuestionFactory(tender=self.tender, text="question_1_title")
         q2 = TenderQuestionFactory(tender=self.tender, text="question_2_title")
@@ -2269,7 +2272,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
             content = response.content.decode("utf-8")
             csv_reader = csv.DictReader(content.splitlines())
             rows = list(csv_reader)
-            self.assertEqual(len(rows), 3)
+            self.assertEqual(len(rows), 4)
 
         with self.subTest(status="VIEWED"):
             response = self.client.get(
@@ -2279,7 +2282,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
             content = response.content.decode("utf-8")
             csv_reader = csv.DictReader(content.splitlines())
             rows = list(csv_reader)
-            self.assertEqual(len(rows), 2)
+            self.assertEqual(len(rows), 3)
 
         with self.subTest(status="INTERESTED"):
             response = self.client.get(
