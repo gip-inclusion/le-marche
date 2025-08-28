@@ -2226,7 +2226,7 @@ class TenderSiaeDownloadViewTestCase(TestCase):
             detail_contact_click_date=timezone.now(),
         )
         # VIEWED
-        TenderSiaeFactory(tender=self.tender, siae=siae_3, email_send_date=timezone.now())
+        TenderSiaeFactory(tender=self.tender, siae=siae_3)
 
         q1 = TenderQuestionFactory(tender=self.tender, text="question_1_title")
         q2 = TenderQuestionFactory(tender=self.tender, text="question_2_title")
