@@ -956,7 +956,7 @@ class Tender(models.Model):
             return True
         return False
 
-    @property
+    @cached_property
     def siaes_count(self):
         return self.tendersiae_set.count()
 
