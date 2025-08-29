@@ -58,12 +58,21 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--csv_file", dest="csv_file", required=True, type=str, help="Chemin du fichier CSV")
         parser.add_argument(
-            "--logo_folder", dest="logo_folder", required=True, type=str, help="Chemin du dossier des logos"
+            "--logo-folder", dest="logo_folder", required=True, type=str, help="Chemin du dossier des logos"
+        )
+        parser.add_argument(
+            "--dry-run",
+            dest="dry_run",
+            required=False,
+            type=bool,
+            default=True,
+            help="Dry run (pas de changement en base. Default: True)",
         )
 
     def handle(self, *args, **options):
         self.csv_file = options["csv_file"]
         self.logo_folder = options["logo_folder"]
+        self.dry_run = options["dry_run"]
 
         self.import_hosmoz()
 
@@ -105,9 +114,13 @@ class Command(BaseCommand):
 
         siret = row["Siret"].replace(" ", "")
 
+        siaes = Siae.objects.filter(siret=siret)
+
+        if self.dry_run:
+            return
+
         s3_logo_url = self.get_logo_url(row["Id"])
 
-        siaes = Siae.objects.filter(siret=siret)
         siaes.update(
             contact_email=Case(
                 When(contact_email="", then=Value(cleaned_data.get("contact_email", ""))),
