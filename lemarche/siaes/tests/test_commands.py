@@ -600,7 +600,7 @@ class HosmoZCommandTest(TestCase):
         call_command(
             "update_hosmoz",
             csv_file="lemarche/fixtures/tests/hosmoz_import.csv",
-            logo_folder="lemarche/fixtures/tests/logos",
+            logo_folder="fake_path/logos",
             dry_run=False,
             stdout=StringIO(),
         )
@@ -629,7 +629,7 @@ class HosmoZCommandTest(TestCase):
         call_command(
             "update_hosmoz",
             csv_file="lemarche/fixtures/tests/hosmoz_import.csv",
-            logo_folder="lemarche/fixtures/tests/logos",
+            logo_folder="fake_path/logos",
             dry_run=False,
             stdout=StringIO(),
         )
@@ -657,7 +657,7 @@ class HosmoZCommandTest(TestCase):
         call_command(
             "update_hosmoz",
             csv_file="lemarche/fixtures/tests/hosmoz_import.csv",
-            logo_folder="lemarche/fixtures/tests/logos",
+            logo_folder="fake_path/logos",
             dry_run=True,
             stdout=StringIO(),
         )

@@ -8,6 +8,7 @@ from django.db.models import Case, EmailField, F, PositiveIntegerField, URLField
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 
+from config.settings.base import SIAE_CLIENT_REFERENCE_LOGO_FOLDER_NAME
 from lemarche.networks.models import Network
 from lemarche.siaes.models import Siae
 from lemarche.utils.s3 import API_CONNECTION_DICT
@@ -44,8 +45,6 @@ class Command(BaseCommand):
     csv_file: path to the csv file
     logo_folder: path to the folder containing the logos in *.png format
     """
-
-    LOGO_BUCKET_FOLDER = "hosmoz_logo"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -85,7 +84,7 @@ class Command(BaseCommand):
     def get_logo_url(self, logo_id: str) -> str:
         """From a logo_id, returns the url of the logo on S3 after uploading it"""
         logo_file_path = f"{self.logo_folder}/{logo_id}.png"
-        bucket_path = f"{self.LOGO_BUCKET_FOLDER}/{logo_id}.png"
+        bucket_path = f"{SIAE_CLIENT_REFERENCE_LOGO_FOLDER_NAME}/hosmoz/{logo_id}.png"
         try:
             self.bucket.upload_file(
                 logo_file_path,
@@ -93,6 +92,7 @@ class Command(BaseCommand):
                 ExtraArgs={"ACL": "public-read", "ContentType": "image/png"},
             )
         except FileNotFoundError:
+            self.stdout.write(self.style.WARNING(f"Logo {logo_id} not found !"))
             return ""
         else:
             return f"{API_CONNECTION_DICT['endpoint_url']}/{self.bucket_name}/{bucket_path}"
