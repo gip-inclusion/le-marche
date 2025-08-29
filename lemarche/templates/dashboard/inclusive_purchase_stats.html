@@ -63,7 +63,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="fr-grid-row fr-grid-row--gutters fr-mb-6w">
+                <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
                     <div class="fr-col-12 fr-col-lg-4">
                         <div class="fr-card">
                             <div class="fr-card__body">
@@ -126,6 +126,7 @@
                     </div>
                 </div>
                 <div class="fr-grid-row fr-grid-row--gutters fr-mb-6w">
+                    {% if chart_data_purchases_by_category.dataset %}
                     <div class="fr-col-12 fr-col-lg-4">
                         <div class="fr-card">
                             <div class="fr-card__body">
@@ -138,6 +139,8 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
+                    {% if chart_data_purchases_by_buying_entity.dataset %}
                     <div class="fr-col-12 fr-col-lg-4">
                         <div class="fr-card">
                             <div class="fr-card__body">
@@ -150,6 +153,7 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
             {% else %}
                 <div class="fr-alert fr-alert--warning">
