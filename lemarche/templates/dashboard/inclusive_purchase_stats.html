@@ -355,29 +355,27 @@
             });
 
             new Chart(document.getElementById('purchaseCategoryChart'), {
-                type: 'doughnut',
+                type: 'bar',
                 data: purchaseCategoryData,
                 options: {
-                    ...commonOptions,
-                    cutout: '50%',
                     plugins: {
-                        ...commonOptions.plugins,
-                    }
-                },
-                plugins: [ChartDataLabels]
+                        legend: {
+                            display: false
+                       }
+                   }
+               }
             });
 
             new Chart(document.getElementById('buyingEntityChart'), {
-                type: 'doughnut',
+                type: 'bar',
                 data: buyingEntityData,
                 options: {
-                    ...commonOptions,
-                    cutout: '50%',
                     plugins: {
-                        ...commonOptions.plugins,
-                    }
-                },
-                plugins: [ChartDataLabels]
+                        legend: {
+                            display: false
+                       }
+                   }
+               }
             });
 
         });
