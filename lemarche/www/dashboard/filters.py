@@ -1,5 +1,6 @@
 import django_filters
 from django import forms
+from django.db.models import TextChoices
 
 from lemarche.purchases.models import Purchase
 from lemarche.siaes.constants import KIND_CHOICES_WITH_EXTRA, KIND_HANDICAP_LIST, KIND_INSERTION_LIST
@@ -16,15 +17,17 @@ def get_buying_entities_choices():
 
 
 class PurchaseFilterSet(django_filters.FilterSet):
-    INCLUSIVE_SECTOR_TYPE_CHOCIES = ((KIND_INSERTION_LIST, "Insertion"), (KIND_HANDICAP_LIST, "Handicap"))
-    #
-    # inclusive_sector_type = django_filters.MultipleChoiceFilter(
-    #     label="Type de secteur inclusif",
-    #     widget=forms.CheckboxSelectMultiple,
-    #     field_name="siae__kind",
-    #     lookup_expr="in",
-    #     choices=INCLUSIVE_SECTOR_TYPE_CHOCIES,
-    # )
+
+    class InclusiveSectorTypeChoices(TextChoices):
+        INSERTION = "INSERTION", "Insertion"
+        HANDICAP = "HANDICAP", "Handicap"
+
+    inclusive_sector_type = django_filters.MultipleChoiceFilter(
+        label="Type de secteur inclusif",
+        widget=forms.CheckboxSelectMultiple,
+        method="filter_inclusive_sector_type",
+        choices=InclusiveSectorTypeChoices.choices,
+    )
     siae_type = django_filters.MultipleChoiceFilter(
         label="Type de structure",
         widget=forms.CheckboxSelectMultiple,
@@ -40,7 +43,19 @@ class PurchaseFilterSet(django_filters.FilterSet):
 
     class Meta:
         model = Purchase
-        fields = ["siae_type", "purchase_category", "buying_entity"]
+        fields = ["inclusive_sector_type", "siae_type", "purchase_category", "buying_entity"]
+
+    def filter_inclusive_sector_type(self, queryset, name, value):
+        kind_list = []
+        if self.InclusiveSectorTypeChoices.INSERTION in value:
+            kind_list.extend(KIND_INSERTION_LIST)
+        if self.InclusiveSectorTypeChoices.HANDICAP in value:
+            kind_list.extend(KIND_HANDICAP_LIST)
+
+        if kind_list:
+            queryset = queryset.filter(siae__kind__in=kind_list)
+
+        return queryset
 
     def filter_siae_type(self, queryset, name, value):
         return queryset.filter(siae__kind__in=value)
