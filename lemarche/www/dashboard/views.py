@@ -133,7 +133,7 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
             }
             purchase_categories = list(self.filterset.qs.values_list("purchase_category", flat=True).distinct())
             chart_data_purchases_by_category = {
-                "labels": [purchase_categories],
+                "labels": purchase_categories,
                 "dataset": [
                     purchases_stats[f"total_purchases_by_category_{purchase_category}"]
                     for purchase_category in purchase_categories
