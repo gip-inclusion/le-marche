@@ -1,9 +1,9 @@
 import django_filters
-from django import forms
 from django.db.models import TextChoices
 
 from lemarche.purchases.models import Purchase
 from lemarche.siaes.constants import KIND_CHOICES_WITH_EXTRA, KIND_HANDICAP_LIST, KIND_INSERTION_LIST
+from lemarche.utils.widgets import CustomSelectMultiple
 
 
 def get_purchase_category_choices():
@@ -24,21 +24,21 @@ class PurchaseFilterSet(django_filters.FilterSet):
 
     inclusive_sector_type = django_filters.MultipleChoiceFilter(
         label="Type de secteur inclusif",
-        widget=forms.CheckboxSelectMultiple,
+        widget=CustomSelectMultiple(),
         method="filter_inclusive_sector_type",
         choices=InclusiveSectorTypeChoices.choices,
     )
     siae_type = django_filters.MultipleChoiceFilter(
         label="Type de structure",
-        widget=forms.CheckboxSelectMultiple,
+        widget=CustomSelectMultiple(),
         method="filter_siae_type",
         choices=KIND_CHOICES_WITH_EXTRA,
     )
     purchase_category = django_filters.MultipleChoiceFilter(
-        choices=get_purchase_category_choices, widget=forms.CheckboxSelectMultiple
+        choices=get_purchase_category_choices, widget=CustomSelectMultiple()
     )
     buying_entity = django_filters.MultipleChoiceFilter(
-        choices=get_buying_entities_choices, widget=forms.CheckboxSelectMultiple
+        choices=get_buying_entities_choices, widget=CustomSelectMultiple()
     )
 
     class Meta:
