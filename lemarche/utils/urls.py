@@ -64,3 +64,32 @@ def get_object_admin_url(obj: Model):
 
 def get_encoded_url_from_params(params: dict, encoding: str = "rot_13"):
     return codecs_encode(urlencode(params, quote_via=quote), encoding=encoding)
+
+
+def get_tender_siae_download_url(tender: Model, status: str = "") -> str:
+    params = {  # use the params of form SiaeSelectFieldsForm
+        "download_form-format": "xlsx",
+        "tendersiae_status": status,
+        "download_form-selected_fields": [
+            "name",
+            "siret",
+            "kind",
+            "address",
+            "city",
+            "post_code",
+            "region",
+            "department",
+            "ca",
+            "employees_insertion_count",
+            "contact_first_name",
+            "contact_last_name",
+            "contact_email",
+            "contact_phone",
+            "siae_answers",
+        ],
+    }
+    return (
+        f"https://{get_domain_url()}"
+        f"{reverse_lazy('tenders:download-siae-list', args=[tender.slug])}"
+        f"?{urlencode(params, doseq=True)}"
+    )

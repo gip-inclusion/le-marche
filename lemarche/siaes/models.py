@@ -402,8 +402,7 @@ class SiaeQuerySet(models.QuerySet):
             )
             qs = qs.order_by("-tendersiae__email_link_click_date")
         else:  # "ALL"
-            qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
-            qs = qs.order_by("-tendersiae__email_send_date")
+            qs = qs.filter(tendersiae__tender=tender).order_by_super_siaes()  # same order as in send_validated_tender
 
         return qs.distinct()
 

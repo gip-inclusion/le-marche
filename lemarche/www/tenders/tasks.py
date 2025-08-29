@@ -16,7 +16,12 @@ from lemarche.utils import constants
 from lemarche.utils.apis import api_slack
 from lemarche.utils.data import date_to_string
 from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
-from lemarche.utils.urls import get_domain_url, get_object_admin_url, get_object_share_url
+from lemarche.utils.urls import (
+    get_domain_url,
+    get_object_admin_url,
+    get_object_share_url,
+    get_tender_siae_download_url,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -398,6 +403,7 @@ def send_confirmation_published_email_to_author(tender: Tender):
             "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
             "TENDER_NB_MATCH": tender.siaes.count(),
             "TENDER_URL": get_object_share_url(tender),
+            "TENDER_SIAES_LIST_DOWNLOAD_URL": get_tender_siae_download_url(tender),
         }
 
         if not tender.contact_notifications_disabled:
@@ -465,6 +471,7 @@ def send_siae_interested_email_to_author(tender: Tender):
                 "TENDER_AUTHOR_ID": tender.author.id,
                 "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
                 "TENDER_SIAE_INTERESTED_LIST_URL": f"{get_object_share_url(tender)}/prestataires",  # noqa
+                "TENDER_SIAES_LIST_DOWNLOAD_URL": get_tender_siae_download_url(tender, status="INTERESTED"),
             }
 
             if not tender.contact_notifications_disabled:

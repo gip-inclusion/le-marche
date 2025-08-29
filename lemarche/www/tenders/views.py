@@ -757,7 +757,7 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
         return context
 
 
-class TenderSiaeInterestedDownloadView(LoginRequiredMixin, DetailView):
+class TenderSiaeInterestedDownloadView(TenderAuthorOrAdminRequiredMixin, DetailView):
     http_method_names = ["get"]
     model = Tender
 
