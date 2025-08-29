@@ -9,7 +9,6 @@ from lemarche.www.pages.views import (
     SitemapView,
     SocialImpactBuyersCalculatorView,
     StatsView,
-    TrackView,
     trigger_error,
 )
 
@@ -58,8 +57,6 @@ urlpatterns = [
     ),
     # Sentry endpoint for frontend errors
     path("sentry-debug/", trigger_error, name="sentry_debug"),
-    # Tracking endpoint for the frontend
-    path("track/", TrackView.as_view(), name="track_frontend"),
     path("plan-du-site/", SitemapView.as_view(), name="plan-du-site"),
     # Error pages
     path("403/", TemplateView.as_view(template_name="403.html"), name="403"),
