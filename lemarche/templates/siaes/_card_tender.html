@@ -25,6 +25,17 @@
                                   role="tooltip"
                                   aria-hidden="true">Ce fournisseur a déjà travaillé pour votre organisation.</span>
                         {% endif %}
+                        {% if siae.is_local %}
+                            <span class="fr-tag lemarche--float-right"
+                                  aria-describedby="tooltip-local-match-{{ siae.pk }}">
+                                Fournisseur local
+                            </span>
+                            <span class="fr-tooltip fr-placement"
+                                  id="tooltip-local-match-{{ siae.pk }}"
+                                  role="tooltip"
+                                  aria-hidden="true">Ce fournisseur est basé dans le territoire de votre demande.
+                            </span>
+                        {% endif %}
                         <h2>{{ siae.name_display }}</h2>
                         {% include "includes/_super_badge.html" with siae=siae %}
                     </div>
