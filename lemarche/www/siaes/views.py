@@ -346,3 +346,8 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             f"<strong>{siae.name_display}</strong> a été ajoutée à "
             f"votre liste d'achat <strong>{favorite_list.name}</strong>."
         )
+
+
+class SiaeSiretSearchView(ListView):
+    template_name = "siaes/siret_search_results.html"
+    model = Siae
