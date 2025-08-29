@@ -35,10 +35,10 @@ class PurchaseFilterSet(django_filters.FilterSet):
         choices=KIND_CHOICES_WITH_EXTRA,
     )
     purchase_category = django_filters.MultipleChoiceFilter(
-        choices=get_purchase_category_choices(), widget=forms.CheckboxSelectMultiple
+        choices=get_purchase_category_choices, widget=forms.CheckboxSelectMultiple
     )
     buying_entity = django_filters.MultipleChoiceFilter(
-        choices=get_buying_entities_choices(), widget=forms.CheckboxSelectMultiple
+        choices=get_buying_entities_choices, widget=forms.CheckboxSelectMultiple
     )
 
     class Meta:
