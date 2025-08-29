@@ -9,6 +9,7 @@ from django.core.management import call_command
 from django.db.models import signals
 from django.test import TestCase, TransactionTestCase
 
+from lemarche.networks.factories import NetworkFactory
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
 from lemarche.siaes.models import Siae
@@ -574,3 +575,93 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
         out = StringIO()
         call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=out)
         self.assertIn("SIRET not found", out.getvalue())
+
+
+@patch(
+    "lemarche.siaes.management.commands.update_hosmoz.Command.get_logo_url",
+    lambda self, logo_id: "http://someurl/logo.png",
+)
+class HosmoZCommandTest(TestCase):
+
+    def setUp(self):
+        self.hosmoz_network = NetworkFactory(slug="hosmoz")
+
+    def test_update_empty_siae(self):
+        siae = SiaeFactory(
+            siret="41155513900012",
+            contact_email="",
+            contact_phone="",
+            employees_insertion_count=None,
+            employees_insertion_count_last_updated=None,
+            logo_url="",
+        )
+        self.assertEqual(siae.networks.all().count(), 0)
+
+        call_command(
+            "update_hosmoz",
+            csv_file="lemarche/fixtures/tests/hosmoz_import.csv",
+            logo_folder="fake_path/logos",
+            dry_run=False,
+            stdout=StringIO(),
+        )
+
+        siae.refresh_from_db()
+
+        self.assertEqual(siae.contact_email, "contact_lala@email.com")
+        self.assertEqual(siae.contact_phone, "01 02 03 04 05")
+        self.assertEqual(siae.employees_insertion_count, 22)
+        self.assertIsNotNone(siae.employees_insertion_count_last_updated)
+        self.assertEqual(siae.networks.all().count(), 1)
+        self.assertEqual(siae.logo_url, "http://someurl/logo.png")
+
+    def test_update_full_siae(self):
+        siae = SiaeFactory(
+            siret="41155513900012",
+            contact_email="dontupdatecontact@email.com",
+            contact_phone="++33 1 02 06 06 06",
+            employees_insertion_count=10,
+            employees_insertion_count_last_updated=None,
+            networks=[self.hosmoz_network],
+            logo_url="https://logo.com/logo.png",
+        )
+        self.assertEqual(siae.networks.all().count(), 1)
+
+        call_command(
+            "update_hosmoz",
+            csv_file="lemarche/fixtures/tests/hosmoz_import.csv",
+            logo_folder="fake_path/logos",
+            dry_run=False,
+            stdout=StringIO(),
+        )
+
+        siae.refresh_from_db()
+
+        self.assertEqual(siae.contact_email, "dontupdatecontact@email.com")
+        self.assertEqual(siae.contact_phone, "++33 1 02 06 06 06")
+        self.assertEqual(siae.employees_insertion_count, 10)
+        self.assertIsNone(siae.employees_insertion_count_last_updated)
+        self.assertEqual(siae.networks.all().count(), 1)
+        self.assertEqual(siae.logo_url, "https://logo.com/logo.png")
+
+    def test_dry_run(self):
+        siae = SiaeFactory(
+            siret="41155513900012",
+            contact_email="",
+            contact_phone="",
+            employees_insertion_count=None,
+            employees_insertion_count_last_updated=None,
+            logo_url="",
+        )
+        self.assertEqual(siae.networks.all().count(), 0)
+
+        call_command(
+            "update_hosmoz",
+            csv_file="lemarche/fixtures/tests/hosmoz_import.csv",
+            logo_folder="fake_path/logos",
+            dry_run=True,
+            stdout=StringIO(),
+        )
+
+        siae.refresh_from_db()
+
+        self.assertEqual(siae.contact_email, "")
