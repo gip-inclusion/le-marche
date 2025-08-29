@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import Count, ExpressionWrapper, IntegerField, Q, Sum
 from django.db.models.functions import Coalesce, Round
 from django.utils import timezone
+from django.utils.text import slugify
 
 from lemarche.siaes.constants import KIND_HANDICAP_LIST, KIND_INSERTION_LIST
 from lemarche.users.models import User
@@ -39,6 +40,20 @@ class PurchaseQuerySet(models.QuerySet):
         for kind in KIND_INSERTION_LIST + KIND_HANDICAP_LIST:
             aggregates[f"total_purchases_by_kind_{kind}"] = ExpressionWrapper(
                 Coalesce(Round(Sum("purchase_amount", filter=Q(siae__kind=kind)), 0), 0),
+                output_field=IntegerField(),
+            )
+
+        # get sum of purchases by purchases category
+        for category in self.values_list("purchase_category", flat=True).distinct():
+            aggregates[f"total_purchases_by_category_{category}"] = ExpressionWrapper(
+                Coalesce(Round(Sum("purchase_amount", filter=Q(purchase_category=category)), 0), 0),
+                output_field=IntegerField(),
+            )
+
+        for buying_entity in self.values_list("buying_entity", flat=True).distinct():
+            buying_entity_key = slugify(buying_entity)
+            aggregates[f"total_purchases_by_buying_entity_{buying_entity_key}"] = ExpressionWrapper(
+                Coalesce(Round(Sum("purchase_amount", filter=Q(buying_entity=buying_entity)), 0), 0),
                 output_field=IntegerField(),
             )
 

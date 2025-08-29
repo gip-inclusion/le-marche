@@ -2,6 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.utils.text import slugify
 from django.views.generic import DetailView, FormView, UpdateView
 from django_filters.views import FilterView
 
@@ -130,6 +131,25 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
                     if purchases_stats[f"total_purchases_by_kind_{kind}"] > 0
                 ],
             }
+            purchase_categories = list(self.filterset.qs.values_list("purchase_category", flat=True).distinct())
+            chart_data_purchases_by_category = {
+                "labels": [purchase_categories],
+                "dataset": [
+                    purchases_stats[f"total_purchases_by_category_{purchase_category}"]
+                    for purchase_category in purchase_categories
+                    if purchases_stats[f"total_purchases_by_category_{purchase_category}"] > 0
+                ],
+            }
+
+            buying_entities = list(self.filterset.qs.values_list("buying_entity", flat=True).distinct())
+            chart_data_purchases_by_buying_entity = {
+                "labels": buying_entities,
+                "dataset": [
+                    purchases_stats[f"total_purchases_by_buying_entity_{slugify(buying_entity)}"]
+                    for buying_entity in buying_entities
+                    if purchases_stats[f"total_purchases_by_buying_entity_{slugify(buying_entity)}"] > 0
+                ],
+            }
 
             context.update(
                 {
@@ -154,6 +174,8 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
                     "chart_data_inclusive": chart_data_inclusive,
                     "chart_data_insertion_handicap": chart_data_insertion_handicap,
                     "chart_data_siae_type": chart_data_siae_type,
+                    "chart_data_purchases_by_category": chart_data_purchases_by_category,
+                    "chart_data_purchases_by_buying_entity": chart_data_purchases_by_buying_entity,
                 }
             )
         return context

@@ -125,6 +125,32 @@
                         </div>
                     </div>
                 </div>
+                <div class="fr-grid-row fr-grid-row--gutters fr-mb-6w">
+                    <div class="fr-col-12 fr-col-lg-4">
+                        <div class="fr-card">
+                            <div class="fr-card__body">
+                                <div class="fr-card__content">
+                                    <h3 class="fr-card__title">Répartition par catégorie d'achat</h3>
+                                    <div class="fr-card__desc">
+                                        <canvas id="purchaseCategoryChart" width="400" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-12 fr-col-lg-4">
+                        <div class="fr-card">
+                            <div class="fr-card__body">
+                                <div class="fr-card__content">
+                                    <h3 class="fr-card__title">Répartition par entité acheteuse</h3>
+                                    <div class="fr-card__desc">
+                                        <canvas id="buyingEntityChart" width="400" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             {% else %}
                 <div class="fr-alert fr-alert--warning">
                     <p>Vous n'avez pas encore communiqué vos achats. Prenez contact avec notre équipe pour en savoir plus.</p>
@@ -194,6 +220,42 @@
                     borderWidth: 2
                 }]
             };
+
+            // For purchase category chart
+            const purchaseCategoryData = {
+                labels: {{ chart_data_purchases_by_category.labels | safe }},
+                datasets: [{
+                    data: {{ chart_data_purchases_by_category.dataset | safe }},
+                    backgroundColor: [
+                        '#1a92ec',
+                        '#ff3479',
+                        '#00c5c2',
+                        '#ff9f31',
+                        '#b200fe',
+                        '#ffd651',
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            }
+
+            // For purchase category chart
+            const buyingEntityData = {
+                labels: {{ chart_data_purchases_by_buying_entity.labels | safe }},
+                datasets: [{
+                    data: {{ chart_data_purchases_by_buying_entity.dataset | safe }},
+                    backgroundColor: [
+                        '#1a92ec',
+                        '#ff3479',
+                        '#00c5c2',
+                        '#ff9f31',
+                        '#b200fe',
+                        '#ffd651',
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            }
 
             // Common configuration for charts
             const commonOptions = {
@@ -291,6 +353,33 @@
                 },
                 plugins: [ChartDataLabels]
             });
+
+            new Chart(document.getElementById('purchaseCategoryChart'), {
+                type: 'doughnut',
+                data: purchaseCategoryData,
+                options: {
+                    ...commonOptions,
+                    cutout: '50%',
+                    plugins: {
+                        ...commonOptions.plugins,
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            new Chart(document.getElementById('buyingEntityChart'), {
+                type: 'doughnut',
+                data: buyingEntityData,
+                options: {
+                    ...commonOptions,
+                    cutout: '50%',
+                    plugins: {
+                        ...commonOptions.plugins,
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
         });
         </script>
     {% endif %}
