@@ -601,6 +601,7 @@ class HosmoZCommandTest(TestCase):
             "update_hosmoz",
             csv_file="lemarche/fixtures/tests/hosmoz_import.csv",
             logo_folder="lemarche/fixtures/tests/logos",
+            dry_run=False,
             stdout=StringIO(),
         )
 
@@ -629,6 +630,7 @@ class HosmoZCommandTest(TestCase):
             "update_hosmoz",
             csv_file="lemarche/fixtures/tests/hosmoz_import.csv",
             logo_folder="lemarche/fixtures/tests/logos",
+            dry_run=False,
             stdout=StringIO(),
         )
 
@@ -640,3 +642,26 @@ class HosmoZCommandTest(TestCase):
         self.assertIsNone(siae.employees_insertion_count_last_updated)
         self.assertEqual(siae.networks.all().count(), 1)
         self.assertEqual(siae.logo_url, "https://logo.com/logo.png")
+
+    def test_dry_run(self):
+        siae = SiaeFactory(
+            siret="41155513900012",
+            contact_email="",
+            contact_phone="",
+            employees_insertion_count=None,
+            employees_insertion_count_last_updated=None,
+            logo_url="",
+        )
+        self.assertEqual(siae.networks.all().count(), 0)
+
+        call_command(
+            "update_hosmoz",
+            csv_file="lemarche/fixtures/tests/hosmoz_import.csv",
+            logo_folder="lemarche/fixtures/tests/logos",
+            dry_run=True,
+            stdout=StringIO(),
+        )
+
+        siae.refresh_from_db()
+
+        self.assertEqual(siae.contact_email, "")
