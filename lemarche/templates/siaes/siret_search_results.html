@@ -1,1 +1,38 @@
-something
+{% extends "layouts/base.html" %}
+{% load dsfr_tags process_dict  %}
+
+{% block page_title %}
+     Vérifiez instantanément le statut inclusif d’un fournisseur
+{% endblock page_title %}
+
+{% block breadcrumb %}
+    {% process_dict root_dir=HOME_PAGE_PATH current="Vérifier le statut d'un fournisseur" as breadcrumb_data %}
+    {% dsfr_breadcrumb breadcrumb_data %}
+{% endblock breadcrumb %}
+
+
+{% block content %}
+
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-lg-10">
+                <h1>Vérifiez instantanément le statut inclusif d’un fournisseur</h1>
+                <h2>
+                    En un clic, vérifiez si votre fournisseur relève de l’Economie Sociale et Solidaire (ESS),
+                    de l’Insertion par l’Activité Economique (IAE) ou du Handicap.
+                </h2>
+            </div>
+        </div>
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-lg-10">
+                <form method="get">
+                    {% dsfr_form filter.form %}
+                    <button type="submit" id="siret-submit-button" class="fr-btn fr-icon-search-line">
+                        Lancez la vérification
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
