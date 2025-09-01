@@ -1222,3 +1222,66 @@ class SiaeFavoriteViewTestCase(TestCase):
             html=True,
             count=1,
         )
+
+
+class SiaeSiretSearchTestCase(TestCase):
+
+    def setUp(self):
+        self.url = reverse("siae:siret_search")
+
+    def test_siret_form_validation(self):
+        pass
+        # TODO: add test for siret form validation, minimal and maximal length
+
+    def test_siret_not_found(self):
+        response = self.client.get(self.url, data={"siret": "44229377500031"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["status_message"],
+            "Ce fournisseur n’est pas un fournisseur inclusif"
+            " et n’appartient pas à l’Économie Sociale et Solidaire (ESS).",
+        )
+
+    def test_iae_siae_found(self):
+        SiaeFactory(name="Fake IAE", siret="44229377500031")
+        response = self.client.get(self.url, data={"siret": "44229377500031"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["status_message"],
+            "Votre fournisseur est un fournisseur inclusif relevant de l’Insertion par l’Activité Économique (IAE)"
+            " et appartient de facto à l’Economie Sociale et Solidaire (ESS).",
+        )
+        # todo (Logo IAE + Logo ESS)
+
+    def test_ea_esat_siae(self):
+        SiaeFactory(name="Fake AE or ESAT", siret="44229377500031")
+        response = self.client.get(self.url, data={"siret": "44229377500031"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["status_message"],
+            "Votre fournisseur est un fournisseur inclusif relevant du secteur du Handicap"
+            " et appartient de facto à l’Economie Sociale et Solidaire (ESS).",
+        )
+        # todo (Logo Handicap + Logo ESS)
+
+    def test_esus_siae(self):
+        SiaeFactory(name="Fake ESUS", siret="44229377500031")
+        response = self.client.get(self.url, data={"siret": "44229377500031"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["status_message"],
+            "Votre fournisseur est labellisé ESUS (Entreprise Solidaire d’Utilité Sociale)"
+            " et appartient de facto à l’Economie Sociale et Solidaire (ESS).",
+        )
+        # todo (Logo ESUS + Logo ESS)
+
+    def test_ess_siae(self):
+        SiaeFactory(name="Fake ESS", siret="44229377500031")
+        response = self.client.get(self.url, data={"siret": "44229377500031"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["status_message"],
+            " Votre fournisseur relève de l’Économie Sociale et Solidaire (ESS)"
+            " mais n’est pas un fournisseur inclusif.",
+        )
+        # todo (Logo ESS)
