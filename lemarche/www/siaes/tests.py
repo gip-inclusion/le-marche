@@ -13,6 +13,7 @@ from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeActivityFactory, SiaeClientReferenceFactory, SiaeFactory, SiaeOfferFactory
 from lemarche.siaes.models import Siae
 from lemarche.users.factories import UserFactory
+from lemarche.www.siaes.filters import SiaeSiretFilterForm
 from lemarche.www.siaes.forms import SiaeFilterForm
 
 
@@ -1230,8 +1231,17 @@ class SiaeSiretSearchTestCase(TestCase):
         self.url = reverse("siae:siret_search")
 
     def test_siret_form_validation(self):
-        pass
-        # TODO: add test for siret form validation, minimal and maximal length
+        with self.subTest("too small"):
+            form = SiaeSiretFilterForm(data={"siret": "123"})
+            self.assertTrue(form.errors["siret"])
+
+        with self.subTest("too long"):
+            form = SiaeSiretFilterForm(data={"siret": "123456789101112131415161718"})
+            self.assertTrue(form.errors["siret"])
+
+        with self.subTest("valid"):
+            form = SiaeSiretFilterForm(data={"siret": "44229377500031"})
+            self.assertIsNone(form.errors.get("siret"))
 
     def test_siret_not_found(self):
         response = self.client.get(self.url, data={"siret": "44229377500031"})
