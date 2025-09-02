@@ -19,7 +19,7 @@ from django.views.generic.edit import FormMixin
 from lemarche.conversations.models import Conversation
 from lemarche.favorites.models import FavoriteList
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.models import Siae
+from lemarche.siaes.models import Siae, SiaeESUS
 from lemarche.utils import settings_context_processors
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
@@ -381,7 +381,7 @@ class SiaeSiretSearchView(TemplateView):
                 ), ["img/logo_PDI.png", "img/logo_ESS.png"]
 
         # ESUS
-        elif False:
+        elif SiaeESUS.objects.filter(siren=siret[0:9]).exists():
             return (
                 "Votre fournisseur est labellisé ESUS (Entreprise Solidaire d’Utilité Sociale)"
                 " et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
