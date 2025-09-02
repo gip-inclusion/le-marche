@@ -12,19 +12,20 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
-from django.views.generic import DetailView, ListView, UpdateView
+from django.views.generic import DetailView, ListView, TemplateView, UpdateView
 from django.views.generic.base import View
 from django.views.generic.edit import FormMixin
 
 from lemarche.conversations.models import Conversation
 from lemarche.favorites.models import FavoriteList
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 from lemarche.utils import settings_context_processors
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
 from lemarche.www.conversations.forms import ContactForm
-from lemarche.www.siaes.forms import SiaeFavoriteForm, SiaeFilterForm
+from lemarche.www.siaes.forms import SiaeFavoriteForm, SiaeFilterForm, SiaeSiretFilterForm
 
 
 CURRENT_SEARCH_QUERY_COOKIE_NAME = "current_search"
@@ -348,6 +349,49 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         )
 
 
-class SiaeSiretSearchView(ListView):
+class SiaeSiretSearchView(TemplateView):
     template_name = "siaes/siret_search_results.html"
-    model = Siae
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.filter_form = SiaeSiretFilterForm(data=request.GET)
+
+    def find_supplier_by_siret(self, siret: str) -> str:
+        if Siae.objects.filter(siret=siret).exists():
+            siae = Siae.objects.get(siret=siret)
+            if siae.kind in siae_constants.KIND_INSERTION_LIST:
+                return (
+                    "Votre fournisseur est un fournisseur inclusif relevant de l’Insertion par"
+                    " l’Activité Économique (IAE) et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
+                )
+        # ESUS
+        elif False:
+            return (
+                "Votre fournisseur est labellisé ESUS (Entreprise Solidaire d’Utilité Sociale)"
+                " et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
+            )
+        # ESS
+        elif False:
+            return (
+                (
+                    " Votre fournisseur relève de l’Économie Sociale et Solidaire (ESS)"
+                    " mais n’est pas un fournisseur inclusif."
+                ),
+            )
+        else:
+            return (
+                "Ce fournisseur n’est pas un fournisseur inclusif"
+                " et n’appartient pas à l’Économie Sociale et Solidaire (ESS)."
+            )
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["form"] = self.filter_form
+
+        if self.filter_form.is_valid():
+            message = self.find_supplier_by_siret(self.filter_form.cleaned_data.get("siret"))
+        else:
+            message = ""
+
+        ctx["status_message"] = message
+        return ctx
