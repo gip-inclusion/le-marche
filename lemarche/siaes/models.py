@@ -1715,3 +1715,6 @@ class SiaeESUS(models.Model):
     """Model to store SIREN from ESUS db"""
 
     siren = models.CharField(max_length=9, verbose_name="SIREN", validators=[MinLengthValidator(9)], unique=True)
+
+    def __str__(self):
+        return f"ESUS: {self.siren}"
