@@ -1262,7 +1262,7 @@ class SiaeSiretSearchTestCase(TestCase):
             "Votre fournisseur est un fournisseur inclusif relevant de l’Insertion par l’Activité Économique (IAE)"
             " et appartient de facto à l’Economie Sociale et Solidaire (ESS).",
         )
-        # todo (Logo IAE + Logo ESS)
+        self.assertEqual(response.context["logo_list"], ["img/logo_PDI.png", "img/logo_ESS.png"])
 
     def test_handicap_siae(self):
         siae = SiaeFactory(name="Fake EA", kind=siae_constants.KIND_EA, siret="44229377500031")
@@ -1276,7 +1276,7 @@ class SiaeSiretSearchTestCase(TestCase):
                 " et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
             ),
         )
-        # todo (Logo Handicap + Logo ESS)
+        self.assertEqual(response.context["logo_list"], ["img/logo_PDI.png", "img/logo_ESS.png"])
 
     def test_esus_siae(self):
         SiaeFactory(name="Fake ESUS", siret="44229377500031")
@@ -1287,7 +1287,7 @@ class SiaeSiretSearchTestCase(TestCase):
             "Votre fournisseur est labellisé ESUS (Entreprise Solidaire d’Utilité Sociale)"
             " et appartient de facto à l’Economie Sociale et Solidaire (ESS).",
         )
-        # todo (Logo ESUS + Logo ESS)
+        self.assertEqual(response.context["logo_list"], ["img/logo_ESUS.png", "img/logo_ESS.png"])
 
     def test_ess_siae(self):
         SiaeFactory(name="Fake ESS", siret="44229377500031")
@@ -1298,4 +1298,4 @@ class SiaeSiretSearchTestCase(TestCase):
             " Votre fournisseur relève de l’Économie Sociale et Solidaire (ESS)"
             " mais n’est pas un fournisseur inclusif.",
         )
-        # todo (Logo ESS)
+        self.assertEqual(response.context["logo_list"], ["img/logo_ESS.png"])
