@@ -2,6 +2,7 @@ from django.contrib.gis.geos import Point
 from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.urls import reverse
+from www.siaes.views import SiaeSiretSearchView
 
 from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.labels.factories import LabelFactory
@@ -1253,7 +1254,7 @@ class SiaeSiretSearchTestCase(TestCase):
 
     def test_iae_siae_found(self):
         siae = SiaeFactory(name="Fake IAE", kind=siae_constants.KIND_EI, siret="44229377500031")
-        self.assertIn(siae.kind, siae_constants.KIND_INSERTION_LIST)
+        self.assertIn(siae.kind, SiaeSiretSearchView.IAE_LIST)
         response = self.client.get(self.url, data={"siret": "44229377500031"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
@@ -1263,31 +1264,19 @@ class SiaeSiretSearchTestCase(TestCase):
         )
         # todo (Logo IAE + Logo ESS)
 
-    def test_ea_esat_siae(self):
-        status_message = (
-            "Votre fournisseur est un fournisseur inclusif relevant du secteur du Handicap"
-            " et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
+    def test_handicap_siae(self):
+        siae = SiaeFactory(name="Fake EA", kind=siae_constants.KIND_EA, siret="44229377500031")
+        self.assertIn(siae.kind, SiaeSiretSearchView.HANDICAP_LIST)
+        response = self.client.get(self.url, data={"siret": "44229377500031"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["status_message"],
+            (
+                "Votre fournisseur est un fournisseur inclusif relevant du secteur du Handicap"
+                " et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
+            ),
         )
-
-        with self.subTest("EA"):
-            SiaeFactory(name="Fake EA", kind=siae_constants.KIND_EA, siret="44229377500031")
-            response = self.client.get(self.url, data={"siret": "44229377500031"})
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(
-                response.context["status_message"],
-                status_message,
-            )
-            # todo (Logo Handicap + Logo ESS)
-
-        with self.subTest("ESAT"):
-            SiaeFactory(name="Fake ESAT", kind=siae_constants.KIND_ESAT, siret="44229377500032")
-            response = self.client.get(self.url, data={"siret": "44229377500032"})
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(
-                response.context["status_message"],
-                status_message,
-            )
-            # todo (Logo Handicap + Logo ESS)
+        # todo (Logo Handicap + Logo ESS)
 
     def test_esus_siae(self):
         SiaeFactory(name="Fake ESUS", siret="44229377500031")
