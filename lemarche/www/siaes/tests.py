@@ -12,7 +12,7 @@ from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeActivityFactory, SiaeClientReferenceFactory, SiaeFactory, SiaeOfferFactory
-from lemarche.siaes.models import Siae
+from lemarche.siaes.models import Siae, SiaeESUS
 from lemarche.users.factories import UserFactory
 from lemarche.www.siaes.forms import SiaeFilterForm, SiaeSiretFilterForm
 
@@ -1279,7 +1279,7 @@ class SiaeSiretSearchTestCase(TestCase):
         self.assertEqual(response.context["logo_list"], ["img/logo_PDI.png", "img/logo_ESS.png"])
 
     def test_esus_siae(self):
-        SiaeFactory(name="Fake ESUS", siret="44229377500031")
+        SiaeESUS.objects.create(siren="442293775")
         response = self.client.get(self.url, data={"siret": "44229377500031"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
