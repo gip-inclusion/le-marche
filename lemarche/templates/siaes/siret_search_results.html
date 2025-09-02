@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load dsfr_tags process_dict  %}
+{% load static dsfr_tags process_dict  %}
 
 {% block page_title %}
      Vérifiez instantanément le statut inclusif d’un fournisseur
@@ -35,6 +35,11 @@
         </div>
         <div class="fr-grid-row">
             {{ status_message }}
+        </div>
+        <div class="fr-grid-row">
+            {% for logo in logo_list %}
+                <img class="fr-responsive-img" style="width:400px" src="{% static logo %}" loading="lazy" />
+            {% endfor %}
         </div>
     </div>
 
