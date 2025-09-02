@@ -351,19 +351,35 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
 class SiaeSiretSearchView(TemplateView):
     template_name = "siaes/siret_search_results.html"
+    # Custom from KIND_INSERTION_CHOICES, no SEP
+    IAE_LIST = [
+        siae_constants.KIND_EI,
+        siae_constants.KIND_AI,
+        siae_constants.KIND_ACI,
+        siae_constants.KIND_ETTI,
+        siae_constants.KIND_EITI,
+        siae_constants.KIND_GEIQ,
+    ]
+    HANDICAP_LIST = siae_constants.KIND_HANDICAP_LIST
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
         self.filter_form = SiaeSiretFilterForm(data=request.GET)
 
-    def find_supplier_by_siret(self, siret: str) -> str:
+    def find_supplier_by_siret(self, siret: str):
         if Siae.objects.filter(siret=siret).exists():
             siae = Siae.objects.get(siret=siret)
-            if siae.kind in siae_constants.KIND_INSERTION_LIST:
+            if siae.kind in self.IAE_LIST:
                 return (
                     "Votre fournisseur est un fournisseur inclusif relevant de l’Insertion par"
                     " l’Activité Économique (IAE) et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
                 )
+            if siae.kind in self.HANDICAP_LIST:
+                return (
+                    "Votre fournisseur est un fournisseur inclusif relevant du secteur du Handicap"
+                    " et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
+                )
+
         # ESUS
         elif False:
             return (
@@ -378,11 +394,10 @@ class SiaeSiretSearchView(TemplateView):
                     " mais n’est pas un fournisseur inclusif."
                 ),
             )
-        else:
-            return (
-                "Ce fournisseur n’est pas un fournisseur inclusif"
-                " et n’appartient pas à l’Économie Sociale et Solidaire (ESS)."
-            )
+        return (
+            "Ce fournisseur n’est pas un fournisseur inclusif"
+            " et n’appartient pas à l’Économie Sociale et Solidaire (ESS)."
+        )
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
