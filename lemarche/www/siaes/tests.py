@@ -13,8 +13,7 @@ from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeActivityFactory, SiaeClientReferenceFactory, SiaeFactory, SiaeOfferFactory
 from lemarche.siaes.models import Siae
 from lemarche.users.factories import UserFactory
-from lemarche.www.siaes.filters import SiaeSiretFilterForm
-from lemarche.www.siaes.forms import SiaeFilterForm
+from lemarche.www.siaes.forms import SiaeFilterForm, SiaeSiretFilterForm
 
 
 class SiaeSearchDisplayResultsTest(TestCase):
@@ -1281,8 +1280,8 @@ class SiaeSiretSearchTestCase(TestCase):
             # todo (Logo Handicap + Logo ESS)
 
         with self.subTest("ESAT"):
-            SiaeFactory(name="Fake ESAT", kind=siae_constants.KIND_ESAT, siret="44229377500031")
-            response = self.client.get(self.url, data={"siret": "44229377500031"})
+            SiaeFactory(name="Fake ESAT", kind=siae_constants.KIND_ESAT, siret="44229377500032")
+            response = self.client.get(self.url, data={"siret": "44229377500032"})
             self.assertEqual(response.status_code, 200)
             self.assertEqual(
                 response.context["status_message"],

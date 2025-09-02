@@ -26,12 +26,15 @@
         <div class="fr-grid-row">
             <div class="fr-col-12 fr-col-lg-10">
                 <form method="get">
-                    {% dsfr_form filter.form %}
+                    {% dsfr_form form %}
                     <button type="submit" class="fr-btn">
                         Lancez la vérification
                     </button>
                 </form>
             </div>
+        </div>
+        <div class="fr-grid-row">
+            {{ status_message }}
         </div>
     </div>
 

@@ -463,3 +463,9 @@ class NetworkSiaeFilterForm(forms.Form):
         qs = qs.distinct()
 
         return qs
+
+
+class SiaeSiretFilterForm(forms.Form):
+    # TODO handle witespaces, with js ?
+    # TODO validate digits
+    siret = forms.CharField(label="Indiquez votre SIRET", max_length=14, min_length=14)
