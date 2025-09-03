@@ -2437,7 +2437,7 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
 
         # Add a siae that should be flagged as 'local'
         siae_local = SiaeFactory(
-            name="siae_2",
+            name="siae_1",
             city="Brest",
             post_code="29000",
             department="29",
@@ -2447,7 +2447,7 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
 
         # Same department, but different city
         siae_near = SiaeFactory(
-            name="siae_3",
+            name="siae_2",
             city="Ploudaniel",
             post_code="29000",
             department="29",
@@ -2456,7 +2456,7 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
         TenderSiaeFactory(siae=siae_near, tender=self.tender_1)
 
         siae_outside = SiaeFactory(
-            name="siae_4",
+            name="siae_3",
             city="Marseille",
             post_code="13000",
             department="13",
@@ -2470,6 +2470,27 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         val_list = list(response.context["siaes"].order_by("name").values_list("is_local", flat=True))
         self.assertEqual(val_list, [True, False, False])
+
+        # Test that data is also present in downloadable CSV file
+        response = self.client.get(
+            reverse("tenders:download-siae-list", kwargs={"slug": self.tender_1.slug}) + "?download_form-format=csv"
+            "&download_form-selected_fields=name&download_form-selected_fields=is_local_display"
+        )
+
+        # Parse CSV content into dict
+        content = response.content.decode("utf-8")
+        csv_reader = csv.DictReader(content.splitlines())
+        rows = list(csv_reader)
+        self.assertEqual(len(rows), 3)  # 2 siaes in the tender
+
+        self.assertEqual(rows[0]["Raison sociale"], "siae_1")
+        self.assertEqual(rows[0]["Fournisseur local"], "Oui")
+
+        self.assertEqual(rows[1]["Raison sociale"], "siae_2")
+        self.assertEqual(rows[1]["Fournisseur local"], "Non")
+
+        self.assertEqual(rows[2]["Raison sociale"], "siae_3")
+        self.assertEqual(rows[2]["Fournisseur local"], "Non")
 
     def test_local_badge_from_department(self):
         # Buyer chose a department in when creating the tender
