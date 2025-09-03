@@ -19,7 +19,22 @@
             {% if total_purchases > 0 %}
 
                 <form method="GET">
-                    {% dsfr_form filter.form %}
+                    <div class="fr-grid-row fr-grid-row--gutters">
+                        <div class="fr-col-12 fr-col-md-6">
+                            {% dsfr_form_field filter.form.inclusive_sector_type %}
+                        </div>
+                        <div class="fr-col-12 fr-col-md-6">
+                            {% dsfr_form_field filter.form.siae_type %}
+                        </div>
+                    </div>
+                    <div class="fr-grid-row fr-grid-row--gutters">
+                        <div class="fr-col-12 fr-col-md-6">
+                            {% dsfr_form_field filter.form.purchase_category %}
+                        </div>
+                        <div class="fr-col-12 fr-col-md-6">
+                            {% dsfr_form_field filter.form.buying_entity %}
+                        </div>
+                    </div>
                     <button class="fr-mt-2v fr-mb-2v fr-btn" type="submit">
                         Filtrer les résultats
                     </button>
