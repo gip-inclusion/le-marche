@@ -1,8 +1,9 @@
+from unittest.mock import patch
+
 from django.contrib.gis.geos import Point
 from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.urls import reverse
-from www.siaes.views import SiaeSiretSearchView
 
 from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.labels.factories import LabelFactory
@@ -15,6 +16,7 @@ from lemarche.siaes.factories import SiaeActivityFactory, SiaeClientReferenceFac
 from lemarche.siaes.models import Siae, SiaeESUS
 from lemarche.users.factories import UserFactory
 from lemarche.www.siaes.forms import SiaeFilterForm, SiaeSiretFilterForm
+from lemarche.www.siaes.views import SiaeSiretSearchView
 
 
 class SiaeSearchDisplayResultsTest(TestCase):
@@ -1289,8 +1291,8 @@ class SiaeSiretSearchTestCase(TestCase):
         )
         self.assertEqual(response.context["logo_list"], ["img/logo_ESUS.png", "img/logo_ESS.png"])
 
+    @patch("lemarche.www.siaes.views.SiaeSiretSearchView.is_ess_from_api_entreprise", lambda self, siret: True)
     def test_ess_siae(self):
-        SiaeFactory(name="Fake ESS", siret="44229377500031")
         response = self.client.get(self.url, data={"siret": "44229377500031"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
