@@ -101,6 +101,9 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
         if user.kind != User.KIND_BUYER and user.company is None:
             return context
 
+        # Used to determine if the user has purchases, even if the filters leads to results
+        context["unfiltered_qs_count"] = self.get_queryset().count()
+
         # get purchase stats for the user
         purchases_stats = self.filterset.qs.with_stats()
         total_purchases = purchases_stats["total_amount_annotated"]
