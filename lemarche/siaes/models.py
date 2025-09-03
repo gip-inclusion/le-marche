@@ -22,6 +22,7 @@ from django.db.models import (
     Q,
     Subquery,
     Sum,
+    Value,
     When,
 )
 from django.db.models.functions import Greatest, Round
@@ -505,6 +506,47 @@ class SiaeQuerySet(models.QuerySet):
     def order_by_super_siaes(self):
         return self.order_by(
             "-super_badge", "-tender_detail_contact_click_count", "-tender_detail_display_count", "-completion_rate"
+        )
+
+    def with_is_local(self, tender):
+        """Annotate queryset with is_local
+        is_local is True if a match is between the location perimeter of the tender and the different geographic fields
+        from each Siae"""
+        if tender.location:
+            if tender.location.kind == Perimeter.KIND_CITY:
+                return self.annotate(
+                    is_local=Case(
+                        When(city=tender.location.name, then=Value(True)),
+                        default=Value(False),
+                        output_field=models.BooleanField(),
+                    )
+                )
+            elif tender.location.kind == Perimeter.KIND_DEPARTMENT:
+                return self.annotate(
+                    is_local=Case(
+                        When(department=tender.location.insee_code, then=Value(True)),
+                        default=Value(False),
+                        output_field=models.BooleanField(),
+                    )
+                )
+            elif tender.location.kind == Perimeter.KIND_REGION:
+                return self.annotate(
+                    is_local=Case(
+                        When(region=tender.location.name, then=Value(True)),
+                        default=Value(False),
+                        output_field=models.BooleanField(),
+                    )
+                )
+        return self.annotate(is_local=Value(False))
+
+    def with_is_local_display(self, tender):
+        """Transform the bool of is_local to a display a yes / no charfield"""
+        return self.with_is_local(tender).annotate(
+            is_local_display=Case(
+                When(is_local=True, then=Value("Oui")),
+                default=Value("Non"),
+                output_field=models.CharField(),
+            ),
         )
 
 
