@@ -3,9 +3,7 @@
     <div class="fr-grid-row">
         <div class="fr-col-12">
             <ul>
-                <li class="fr-mt-2v">
-                    Publié le {{ tender.published_at|date }}
-                </li>
+                <li class="fr-mt-2v">Publié le {{ tender.published_at|date }}</li>
                 <li class="fr-mt-2v">
                     {% if tender.is_sent %}
                         Validé le {{ tender.first_sent_at|date }}
@@ -15,7 +13,7 @@
                 </li>
                 <li class="fr-mt-2v">
                     <i class="ri-focus-2-line"></i>
-                    {{ tender.siae_email_send_date_count }} prestataire{{ tender.siae_email_send_date_count|pluralize }} ciblé{{ tender.siae_email_send_date_count|pluralize }}
+                    {{ tender.siaes_count }} prestataire{{ tender.siaes_count|pluralize }} ciblé{{ tender.siaes_count|pluralize }}
                 </li>
                 <li class="fr-mt-2v">
                     <i class="ri-eye-line"></i>
@@ -40,7 +38,10 @@
                     </li>
                 {% endif %}
                 <li>
-                    <a href="{{ siae.get_admin_url }}" target="_blank" id="tender-detail-admin-btn" class="btn btn-sm btn-outline-primary btn-ico">
+                    <a href="{{ siae.get_admin_url }}"
+                       target="_blank"
+                       id="tender-detail-admin-btn"
+                       class="btn btn-sm btn-outline-primary btn-ico">
                         <span>
                             Lien vers l'admin&nbsp;
                             <i class="ri-external-link-line" aria-hidden="true"></i>

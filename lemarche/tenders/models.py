@@ -956,6 +956,10 @@ class Tender(models.Model):
             return True
         return False
 
+    @cached_property
+    def siaes_count(self):
+        return self.tendersiae_set.count()
+
     @property
     def siae_detail_display_date_count(self):
         return self.tendersiae_set.filter(detail_display_date__isnull=False).count()

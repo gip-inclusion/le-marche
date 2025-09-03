@@ -23,12 +23,12 @@
             <a href="{% url 'tenders:detail-siae-list' tender.slug %}"
                id="show-tender-siae-list-from-detail-btn"
                class="fr-btn fr-btn--icon-left fr-icon-signal-tower-line">
-                {{ tender.siae_email_send_date_count }} prestataire{{ tender.siae_email_send_date_count|pluralize }} ciblé{{ tender.siae_email_send_date_count|pluralize }}
+                {{ tender.siaes_count }} prestataire{{ tender.siaes_count|pluralize }} ciblé{{ tender.siaes_count|pluralize }}
             </a>
         </li>
         <li>
             <a href="{% url 'tenders:detail-siae-list' tender.slug "VIEWED" %}"
-               id="show-tender-siae-list-from-detail-btn"
+               id="show-tender-siae-viewed-list-from-detail-btn"
                class="fr-btn fr-btn--icon-left fr-icon-eye-line">
                 {{ tender.siae_email_link_click_date_or_detail_display_date_count }} prestataire{{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize }} qui {{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize:'a,ont' }} vu
             </a>
