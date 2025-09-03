@@ -2,6 +2,7 @@ import csv
 from datetime import date
 from urllib.parse import quote
 
+import requests
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -366,6 +367,23 @@ class SiaeSiretSearchView(TemplateView):
         super().setup(request, *args, **kwargs)
         self.filter_form = SiaeSiretFilterForm(data=request.GET)
 
+    def is_ess_from_api_entreprise(self, siret):
+        # In fact, est_ess=true have no effect
+        url = f"{settings.API_RECHERCHE_ENTREPRISES_BASE_URL}/search?q={siret}&est_ess=true"
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            response_data = response.json()
+        except requests.exceptions.RequestException:
+            return False
+        else:
+            if response_data["total_results"] == 1:
+                retrieved_siae = response_data["results"][0]
+                # as filtering via url is broken, when have to ensure here that est_ess=true is really true
+                if retrieved_siae["complements"]["est_ess"] is True:
+                    return True
+        return False
+
     def find_supplier_by_siret(self, siret: str) -> tuple[str, list[str]]:
         if Siae.objects.filter(siret=siret).exists():
             siae = Siae.objects.get(siret=siret)
@@ -387,7 +405,7 @@ class SiaeSiretSearchView(TemplateView):
                 " et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
             ), ["img/logo_ESUS.png", "img/logo_ESS.png"]
         # ESS
-        elif False:
+        elif self.is_ess_from_api_entreprise(siret):
             return (
                 (
                     " Votre fournisseur relève de l’Économie Sociale et Solidaire (ESS)"
