@@ -117,6 +117,7 @@ class Command(BaseCommand):
         siaes = Siae.objects.filter(siret=siret)
 
         if self.dry_run:
+            self.stdout.write(self.style.WARNING(f"Not saving {row['Siret']} because it is a dry run !"))
             return
 
         s3_logo_url = self.get_logo_url(row["Id"])
