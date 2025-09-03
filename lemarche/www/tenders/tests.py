@@ -2409,10 +2409,10 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
 
     def test_display_all_tenders_from_user(self):
         siae_1 = SiaeFactory(name="siae_1")
-        TenderSiaeFactory(siae=siae_1, tender=self.tender_1, email_send_date=timezone.now())
+        TenderSiaeFactory(siae=siae_1, tender=self.tender_1)
 
         siae_2 = SiaeFactory(name="siae_2")
-        TenderSiaeFactory(siae=siae_2, tender=self.tender_1, email_send_date=timezone.now())
+        TenderSiaeFactory(siae=siae_2, tender=self.tender_1)
 
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
@@ -2443,7 +2443,7 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
             department="29",
             region="Bretagne",
         )
-        TenderSiaeFactory(siae=siae_local, tender=self.tender_1, email_send_date=timezone.now())
+        TenderSiaeFactory(siae=siae_local, tender=self.tender_1)
 
         # Same department, but different city
         siae_near = SiaeFactory(
@@ -2453,7 +2453,7 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
             department="29",
             region="Bretagne",
         )
-        TenderSiaeFactory(siae=siae_near, tender=self.tender_1, email_send_date=timezone.now())
+        TenderSiaeFactory(siae=siae_near, tender=self.tender_1)
 
         siae_outside = SiaeFactory(
             name="siae_4",
@@ -2462,7 +2462,7 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
             department="13",
             region="Provence-Alpes-Côte d'Azur",
         )
-        TenderSiaeFactory(siae=siae_outside, tender=self.tender_1, email_send_date=timezone.now())
+        TenderSiaeFactory(siae=siae_outside, tender=self.tender_1)
 
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
@@ -2493,7 +2493,7 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
             department="29",
             region="Bretagne",
         )
-        TenderSiaeFactory(siae=siae_local, tender=self.tender_1, email_send_date=timezone.now())
+        TenderSiaeFactory(siae=siae_local, tender=self.tender_1)
 
         # Add a siae that would be selected in a broader selection context,
         # Here same region but different department
@@ -2504,7 +2504,7 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
             department="35",
             region="Bretagne",
         )
-        TenderSiaeFactory(siae=siae_near, tender=self.tender_1, email_send_date=timezone.now())
+        TenderSiaeFactory(siae=siae_near, tender=self.tender_1)
 
         siae_outside = SiaeFactory(
             name="siae_4",
@@ -2513,7 +2513,7 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
             department="13",
             region="Provence-Alpes-Côte d'Azur",
         )
-        TenderSiaeFactory(siae=siae_outside, tender=self.tender_1, email_send_date=timezone.now())
+        TenderSiaeFactory(siae=siae_outside, tender=self.tender_1)
 
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
@@ -2544,7 +2544,7 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
             department="29",
             region="Bretagne",
         )
-        TenderSiaeFactory(siae=siae_local, tender=self.tender_1, email_send_date=timezone.now())
+        TenderSiaeFactory(siae=siae_local, tender=self.tender_1)
 
         siae_outside = SiaeFactory(
             name="siae_3",
@@ -2553,7 +2553,7 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
             department="13",
             region="Provence-Alpes-Côte d'Azur",
         )
-        TenderSiaeFactory(siae=siae_outside, tender=self.tender_1, email_send_date=timezone.now())
+        TenderSiaeFactory(siae=siae_outside, tender=self.tender_1)
 
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
@@ -2574,7 +2574,7 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
             department="13",
             region="Provence-Alpes-Côte d'Azur",
         )
-        TenderSiaeFactory(siae=siae_outside, tender=self.tender_1, email_send_date=timezone.now())
+        TenderSiaeFactory(siae=siae_outside, tender=self.tender_1)
 
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
