@@ -367,21 +367,20 @@ class SiaeSiretSearchView(TemplateView):
         super().setup(request, *args, **kwargs)
         self.filter_form = SiaeSiretFilterForm(data=request.GET)
 
-    def is_ess_from_api_entreprise(self, siret):
+    def is_ess_from_api_entreprise(self, siret: str) -> bool:
+        """Check in API entreprise if the siret is found and that it has the 'est_ess' key set to true."""
         # In fact, est_ess=true have no effect
         url = f"{settings.API_RECHERCHE_ENTREPRISES_BASE_URL}/search?q={siret}&est_ess=true"
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-            response_data = response.json()
-        except requests.exceptions.RequestException:
-            return False
-        else:
-            if response_data["total_results"] == 1:
-                retrieved_siae = response_data["results"][0]
-                # as filtering via url is broken, when have to ensure here that est_ess=true is really true
-                if retrieved_siae["complements"]["est_ess"] is True:
-                    return True
+        response = requests.get(url)
+        response.raise_for_status()
+        response_data = response.json()
+
+        if response_data["total_results"] == 1:
+            retrieved_siae = response_data["results"][0]
+            # as filtering via url is broken, when have to ensure here that est_ess=true is really true
+            if retrieved_siae["complements"]["est_ess"] is True:
+                return True
+
         return False
 
     def find_supplier_by_siret(self, siret: str) -> tuple[str, list[str]]:
@@ -399,16 +398,23 @@ class SiaeSiretSearchView(TemplateView):
                 ), ["img/logo_PDI.png", "img/logo_ESS.png"]
 
         # ESUS
-        elif SiaeESUS.objects.filter(siren=siret[0:9]).exists():
+        if SiaeESUS.objects.filter(siren=siret[0:9]).exists():
             return (
                 "Votre fournisseur est labellisé ESUS (Entreprise Solidaire d’Utilité Sociale)"
                 " et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
             ), ["img/logo_ESUS.png", "img/logo_ESS.png"]
         # ESS
-        elif self.is_ess_from_api_entreprise(siret):
+        try:
+            is_ess = self.is_ess_from_api_entreprise(siret)
+        except requests.exceptions.RequestException:
+            return (
+                "Ce fournisseur n'est pas dans nos bases de données"
+                " mais une erreur est apparue en interrogeant des bases de données externes."
+            ), []
+        if is_ess:
             return (
                 (
-                    " Votre fournisseur relève de l’Économie Sociale et Solidaire (ESS)"
+                    "Votre fournisseur relève de l’Économie Sociale et Solidaire (ESS)"
                     " mais n’est pas un fournisseur inclusif."
                 ),
                 ["img/logo_ESS.png"],
