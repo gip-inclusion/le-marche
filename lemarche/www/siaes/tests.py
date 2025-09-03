@@ -4,6 +4,7 @@ from django.contrib.gis.geos import Point
 from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.urls import reverse
+from requests.exceptions import RequestException
 
 from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.labels.factories import LabelFactory
@@ -1297,7 +1298,23 @@ class SiaeSiretSearchTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.context["status_message"],
-            " Votre fournisseur relève de l’Économie Sociale et Solidaire (ESS)"
+            "Votre fournisseur relève de l’Économie Sociale et Solidaire (ESS)"
             " mais n’est pas un fournisseur inclusif.",
         )
         self.assertEqual(response.context["logo_list"], ["img/logo_ESS.png"])
+
+    def test_ess_siae_error(self):
+        # Simulate error during API call
+        with patch(
+            "lemarche.www.siaes.views.SiaeSiretSearchView.is_ess_from_api_entreprise",
+            side_effect=RequestException("Simulated exception"),
+        ):
+            response = self.client.get(self.url, data={"siret": "44229377500031"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["status_message"],
+            "Ce fournisseur n'est pas dans nos bases de données"
+            " mais une erreur est apparue en interrogeant des bases de données externes.",
+        )
+        self.assertEqual(response.context["logo_list"], [])
