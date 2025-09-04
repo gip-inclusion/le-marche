@@ -14,7 +14,7 @@ class RemoveBetaRedirectMiddleware:
         # Check if the host contains '.beta'
         if ".beta." in request.get_host():
             # Don't redirect API requests to give users time to make the switch
-            if not request.path.startswith("/api/"):
+            if not (request.path.startswith("/api/") and len(request.path) > 5):
                 # Get the main domain by removing '.beta' from the host
                 main_host = request.get_host().replace(".beta", "")
 
