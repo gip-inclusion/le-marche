@@ -1175,6 +1175,16 @@ class Siae(models.Model):
     def label_list_display(self) -> str:
         return ", ".join(self.siaelabel_set.values_list("label__name", flat=True))
 
+    @property
+    def is_kind_a_company(self) -> bool:
+        """Return True if the structure is a company, rather than an association"""
+        return self.kind in [
+            siae_constants.KIND_EI,
+            siae_constants.KIND_EA,
+            siae_constants.KIND_ETTI,
+            siae_constants.KIND_EATT,
+        ]
+
     def is_in_the_hosmoz_network(self):
         return self.networks.filter(slug="hosmoz").exists()
 

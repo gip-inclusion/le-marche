@@ -23,6 +23,21 @@
                 <strong>Chiffre d'affaires :</strong>
                 <span>{{ siae.ca_display }}</span>
             </li>
+            {% if siae.is_kind_a_company %}
+                <li>
+                    <a href="https://annuaire-entreprises.data.gouv.fr/donnees-financieres/{{ siae.siren }}"
+                       target="_blank"
+                       class="fr-btn fr-btn--secondary fr-btn--icon-right fr-icon-newspaper-fill fr-mb-2v"
+                       style="position: relative;"
+                    >
+                        Voir plus de données financières
+                        <span class="fr-badge fr-badge--sm fr-badge--new"
+                              style="position: absolute; top: -8px; right: -8px;">
+                            Nouveauté
+                        </span>
+                    </a>
+                </li>
+            {% endif %}
             {% if siae.etablissement_count > 1 %}
                 <li>
                     <i class="fr-icon--sm fr-icon-building-4-line"></i>
@@ -71,7 +86,7 @@
                     </li>
                 {% endif %}
             {% endif %}
-            <li class="fr-mt-4v">{% include "siaes/_annuaire_entreprises_button.html" with siret=siae.siret %}</li>
+            <li class="fr-mt-2v">{% include "siaes/_annuaire_entreprises_button.html" with siret=siae.siret %}</li>
         </ul>
     </div>
     <!-- Second column -->
