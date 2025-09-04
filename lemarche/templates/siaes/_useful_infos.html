@@ -23,6 +23,13 @@
                 <strong>Chiffre d'affaires :</strong>
                 <span>{{ siae.ca_display }}</span>
             </li>
+            <li>
+                <a href="https://annuaire-entreprises.data.gouv.fr/donnees-financieres/{{ siae.siren }}"
+                   target="_blank"
+                   class="fr-btn fr-btn--icon-right fr-icon-newspaper-fill">
+                    Voir plus de données financières
+                </a>
+            </li>
             {% if siae.etablissement_count > 1 %}
                 <li>
                     <i class="fr-icon--sm fr-icon-building-4-line"></i>
