@@ -26,8 +26,14 @@
             <li>
                 <a href="https://annuaire-entreprises.data.gouv.fr/donnees-financieres/{{ siae.siren }}"
                    target="_blank"
-                   class="fr-btn fr-btn--secondary fr-btn--icon-right fr-icon-newspaper-fill fr-mb-2v">
+                   class="fr-btn fr-btn--secondary fr-btn--icon-right fr-icon-newspaper-fill fr-mb-2v"
+                   style="position: relative;"
+                >
                     Voir plus de données financières
+                    <span class="fr-badge fr-badge--sm fr-badge--new"
+                          style="position: absolute; top: -8px; right: -8px;">
+                        Nouveauté
+                    </span>
                 </a>
             </li>
             {% if siae.etablissement_count > 1 %}
