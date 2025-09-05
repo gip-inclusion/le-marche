@@ -1079,3 +1079,13 @@ class TenderReminderView(FormView):
         ctx = super().get_context_data(**kwargs)
         ctx["post_url"] = reverse_lazy("tenders:send-reminder", args=[self.tender.slug, self.status])
         return ctx
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial["reminder_message"] = (
+            f"Bonjour, plus que quelques jours pour répondre à mon besoin"
+            f" “{self.tender.title}” pour {self.tender.contact_company_name}."
+            f"\nDes questions ? Contactez moi :"
+            f" {self.tender.contact_full_name} - {self.tender.contact_email} - {self.tender.contact_phone}"
+        )
+        return initial
