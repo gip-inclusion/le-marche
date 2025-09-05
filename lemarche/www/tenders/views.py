@@ -720,7 +720,7 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
                 to_attr="questions_for_tender",
             )
         )
-        qs = qs.with_is_local(tender=self.tender)
+        qs = qs.with_is_local(perimeter=self.tender.location)
         return qs
 
     def get(self, request, status=None, *args, **kwargs):
@@ -775,7 +775,7 @@ class TenderSiaeInterestedDownloadView(TenderAuthorOrAdminRequiredMixin, DetailV
             SiaeFilterForm(data=self.request.GET)
             .filter_queryset(Siae.objects.filter(tendersiae__tender=self.object))
             .filter_with_tender_tendersiae_status(tender=self.object, tendersiae_status=self.status)
-            .with_is_local_display(tender=self.object)
+            .with_is_local_display(perimeter=self.object.location)
             .prefetch_related(
                 Prefetch(
                     "questionanswer_set",

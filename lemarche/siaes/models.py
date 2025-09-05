@@ -508,40 +508,40 @@ class SiaeQuerySet(models.QuerySet):
             "-super_badge", "-tender_detail_contact_click_count", "-tender_detail_display_count", "-completion_rate"
         )
 
-    def with_is_local(self, tender):
+    def with_is_local(self, perimeter):
         """Annotate queryset with is_local
         is_local is True if a match is between the location perimeter of the tender and the different geographic fields
         from each Siae"""
-        if tender.location:
-            if tender.location.kind == Perimeter.KIND_CITY:
+        if perimeter:
+            if perimeter.kind == Perimeter.KIND_CITY:
                 return self.annotate(
                     is_local=Case(
-                        When(city=tender.location.name, then=Value(True)),
+                        When(city=perimeter.name, then=Value(True)),
                         default=Value(False),
                         output_field=models.BooleanField(),
                     )
                 )
-            elif tender.location.kind == Perimeter.KIND_DEPARTMENT:
+            elif perimeter.kind == Perimeter.KIND_DEPARTMENT:
                 return self.annotate(
                     is_local=Case(
-                        When(department=tender.location.insee_code, then=Value(True)),
+                        When(department=perimeter.insee_code, then=Value(True)),
                         default=Value(False),
                         output_field=models.BooleanField(),
                     )
                 )
-            elif tender.location.kind == Perimeter.KIND_REGION:
+            elif perimeter.kind == Perimeter.KIND_REGION:
                 return self.annotate(
                     is_local=Case(
-                        When(region=tender.location.name, then=Value(True)),
+                        When(region=perimeter.name, then=Value(True)),
                         default=Value(False),
                         output_field=models.BooleanField(),
                     )
                 )
         return self.annotate(is_local=Value(False))
 
-    def with_is_local_display(self, tender):
+    def with_is_local_display(self, perimeter):
         """Transform the bool of is_local to a display a yes / no charfield"""
-        return self.with_is_local(tender).annotate(
+        return self.with_is_local(perimeter).annotate(
             is_local_display=Case(
                 When(is_local=True, then=Value("Oui")),
                 default=Value("Non"),
