@@ -498,3 +498,9 @@ class SiaeSelectFieldsForm(forms.Form):
         ]
 
         self.fields["selected_fields"].choices = selectable_fields
+
+
+class TenderReminderForm(forms.Form):
+    """Form used to send reminders to users"""
+
+    reminder_message = forms.CharField(widget=forms.Textarea, label="Message")
