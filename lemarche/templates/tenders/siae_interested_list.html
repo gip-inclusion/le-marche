@@ -108,6 +108,8 @@
                                                 <li>
                                                     <button type="button"
                                                           class="fr-btn fr-btn--tertiary fr-btn--icon-left"
+                                                          data-fr-opened="false"
+                                                          aria-controls="fr-modal-reminder"
                                                           style="position: relative;"
                                                     >
                                                         <span class="fr-badge fr-badge--sm fr-badge--new"
@@ -126,6 +128,29 @@
                                                   </button>
                                                 </li>
                                             </ul>
+                                            <dialog aria-labelledby="fr-modal-reminder-title" role="dialog" id="fr-modal-reminder"
+                                                  class="fr-modal">
+                                                <div class="fr-container fr-container--fluid fr-container-md">
+                                                    <div class="fr-grid-row fr-grid-row--center">
+                                                        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                                                            <div class="fr-modal__body">
+                                                                <div class="fr-modal__header">
+                                                                    <button class="fr-btn--close fr-btn" title="Fermer la fenêtre"
+                                                                          aria-controls="fr-modal-reminder">Fermer
+                                                                    </button>
+                                                                </div>
+                                                                <div class="fr-modal__content">
+                                                                    Content
+                                                                    {# TODO #}
+                                                                </div>
+                                                                <div class="fr-modal__footer"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </dialog>
+
+
                                           <dialog aria-labelledby="fr-modal-download-title" role="dialog" id="fr-modal-download"
                                                   class="fr-modal">
                                             <div class="fr-container fr-container--fluid fr-container-md">
