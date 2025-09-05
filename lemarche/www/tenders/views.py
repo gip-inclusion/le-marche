@@ -1071,6 +1071,12 @@ class TenderReminderView(FormView):
         super().setup(request, *args, **kwargs)
         self.tender = get_object_or_404(Tender, slug=kwargs["slug"])
         self.status = kwargs["status"]
+        self.siae_qs = Siae.objects.filter_with_tender_tendersiae_status(
+            tender=self.tender, tendersiae_status=self.status
+        )
+        # then filter with the form
+        self.filter_form = SiaeFilterForm(data=self.request.GET)
+        self.siae_qs = self.filter_form.filter_queryset(self.siae_qs)
 
     def get_success_url(self):
         return reverse_lazy("tenders:detail-siae-list", args=[self.tender.slug, self.status])
@@ -1078,6 +1084,11 @@ class TenderReminderView(FormView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["post_url"] = reverse_lazy("tenders:send-reminder", args=[self.tender.slug, self.status])
+
+        status_label = {"VIEWED": "qui ont vu"}
+        ctx["submit_button_label"] = (
+            f"Envoyer aux {self.siae_qs.count()} fournisseurs {status_label.get(self.status, 'ciblés')}"
+        )
         return ctx
 
     def get_initial(self):
