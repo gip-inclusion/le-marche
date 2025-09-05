@@ -16,6 +16,7 @@ class PotentialData:
     potential_siaes: int
     insertion_siaes: int
     handicap_siaes: int
+    local_siaes: int
     siaes_with_super_badge: int
     employees_insertion_average: int
     employees_permanent_average: int
@@ -28,13 +29,14 @@ def get_inclusive_potential_data(sector: str, perimeter: str, budget: int) -> tu
     """
 
     # Get all siaes with potential through activities
-    siaes = Siae.objects.filter_with_potential_through_activities(sector, perimeter)
+    siaes = Siae.objects.filter_with_potential_through_activities(sector, perimeter).with_is_local(perimeter)
 
     # Calculate the number of siaes by kind and the number of employees
     # Prefer to loop over siaes rather than using querysets to avoid lots of big queries
     siaes_count = 0
     insertion_siaes = 0
     handicap_siaes = 0
+    local_siaes = 0
     siaes_with_super_badge = 0
     employees_insertion_count = 0
     employees_permanent_count = 0
@@ -46,6 +48,9 @@ def get_inclusive_potential_data(sector: str, perimeter: str, budget: int) -> tu
         elif siae.kind in KIND_HANDICAP_LIST:
             handicap_siaes += 1
             employees_insertion_count += siae.employees_insertion_count or 0
+
+        if siae.is_local:
+            local_siaes += 1
 
         siaes_with_super_badge += 1 if siae.super_badge else 0
 
@@ -88,6 +93,7 @@ def get_inclusive_potential_data(sector: str, perimeter: str, budget: int) -> tu
             potential_siaes=siaes_count,
             insertion_siaes=insertion_siaes,
             handicap_siaes=handicap_siaes,
+            local_siaes=local_siaes,
             siaes_with_super_badge=siaes_with_super_badge,
             employees_insertion_average=round(employees_insertion_count / siaes_count, 2) if siaes_count else 0,
             employees_permanent_average=round(employees_permanent_count / siaes_count, 2) if siaes_count else 0,
