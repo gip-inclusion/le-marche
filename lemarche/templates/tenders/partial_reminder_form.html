@@ -1,0 +1,7 @@
+{% load dsfr_tags %}
+
+<form action="{{ post_url }}" method="post">
+    {% csrf_token %}
+    {% dsfr_form form %}
+    <button type="submit" class="fr-btn">Envoyer</button>
+</form>

@@ -139,9 +139,11 @@
                                                                           aria-controls="fr-modal-reminder">Fermer
                                                                     </button>
                                                                 </div>
-                                                                <div class="fr-modal__content">
-                                                                    Content
-                                                                    {# TODO #}
+                                                                <div class="fr-modal__content"
+                                                                     hx-get="{% url 'tenders:send-reminder' tender.slug status %}"
+                                                                     hx-trigger="load"
+                                                                     hx-swap="innerHTML"
+                                                                >
                                                                 </div>
                                                                 <div class="fr-modal__footer"></div>
                                                             </div>
