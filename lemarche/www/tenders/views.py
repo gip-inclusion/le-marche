@@ -1100,3 +1100,10 @@ class TenderReminderView(FormView):
             f" {self.tender.contact_full_name} - {self.tender.contact_email} - {self.tender.contact_phone}"
         )
         return initial
+
+    def form_valid(self, form):
+        for siae in self.siae_qs:
+            # TODO send email to siae
+            TenderSiae.objects.get(tender=self.tender, siae=siae)
+
+        return super().form_valid(form)
