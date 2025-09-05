@@ -16,7 +16,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, ListView, UpdateView, View
-from django.views.generic.edit import FormMixin
+from django.views.generic.edit import FormMixin, FormView
 from formtools.wizard.views import SessionWizardView
 
 from lemarche.siaes.models import Siae
@@ -55,6 +55,7 @@ from lemarche.www.tenders.forms import (
     TenderCreateStepSurveyForm,
     TenderDetailGetParams,
     TenderFilterForm,
+    TenderReminderForm,
     TenderSiaeSurveyTransactionedForm,
     TenderSurveyTransactionedForm,
 )
@@ -1060,3 +1061,21 @@ class TenderSiaeHideView(LoginRequiredMixin, View):
         else:
             # if the user is not SIAE kind, the post is not allowed
             return HttpResponse(status=401)
+
+
+class TenderReminderView(FormView):
+    template_name = "tenders/partial_reminder_form.html"
+    form_class = TenderReminderForm
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.tender = get_object_or_404(Tender, slug=kwargs["slug"])
+        self.status = kwargs["status"]
+
+    def get_success_url(self):
+        return reverse_lazy("tenders:detail-siae-list", args=[self.tender.slug, self.status])
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["post_url"] = reverse_lazy("tenders:send-reminder", args=[self.tender.slug, self.status])
+        return ctx

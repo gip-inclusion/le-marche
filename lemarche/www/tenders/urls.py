@@ -9,6 +9,7 @@ from lemarche.www.tenders.views import (
     TenderDetailSurveyTransactionedView,
     TenderDetailView,
     TenderListView,
+    TenderReminderView,
     TenderSiaeHideView,
     TenderSiaeInterestedDownloadView,
     TenderSiaeListView,
@@ -31,6 +32,7 @@ urlpatterns = [
     path(
         "<str:slug>/prestataires/telechargement", TenderSiaeInterestedDownloadView.as_view(), name="download-siae-list"
     ),
+    path("<str:slug>/prestataires/statut/<status>/reminder", TenderReminderView.as_view(), name="send-reminder"),
     path(
         "<slug:slug>/contact-click-stat", TenderDetailContactClickStatView.as_view(), name="detail-contact-click-stat"
     ),
