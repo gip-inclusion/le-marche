@@ -45,7 +45,8 @@ class PurchaseQuerySet(models.QuerySet):
 
         # get sum of purchases by purchases category
         for category in self.values_list("purchase_category", flat=True).distinct():
-            aggregates[f"total_purchases_by_category_{category}"] = ExpressionWrapper(
+            category_key = slugify(category)
+            aggregates[f"total_purchases_by_category_{category_key}"] = ExpressionWrapper(
                 Coalesce(Round(Sum("purchase_amount", filter=Q(purchase_category=category)), 0), 0),
                 output_field=IntegerField(),
             )

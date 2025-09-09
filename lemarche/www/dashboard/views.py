@@ -138,9 +138,9 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
             chart_data_purchases_by_category = {
                 "labels": purchase_categories,
                 "dataset": [
-                    purchases_stats[f"total_purchases_by_category_{purchase_category}"]
+                    purchases_stats[f"total_purchases_by_category_{slugify(purchase_category)}"]
                     for purchase_category in purchase_categories
-                    if purchases_stats[f"total_purchases_by_category_{purchase_category}"] > 0
+                    if purchases_stats[f"total_purchases_by_category_{slugify(purchase_category)}"] > 0
                 ],
             }
 
