@@ -17,31 +17,29 @@
         </div>
         {% if user.kind == "BUYER" and user.company %}
             {% if unfiltered_qs_count > 0 %}
-                <form method="GET">
-                    <div class="fr-grid-row fr-grid-row--gutters">
-                        <div class="fr-col-12 fr-col-md-6">
-                            {% dsfr_form_field filter.form.inclusive_sector_type %}
-                        </div>
-                        <div class="fr-col-12 fr-col-md-6">
-                            {% dsfr_form_field filter.form.siae_type %}
-                        </div>
+                <section class="fr-accordion fr-mb-2w">
+                    <h3 class="fr-accordion__title">
+                        <button type="button"
+                                class="fr-accordion__btn"
+                                aria-expanded="false"
+                                aria-controls="accordion-filters">Filtrer les résultats</button>
+                    </h3>
+                    <div class="fr-collapse" id="accordion-filters">
+                        <form method="GET">
+                            <div class="fr-grid-row fr-grid-row--gutters">
+                                <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.inclusive_sector_type %}</div>
+                                <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.siae_type %}</div>
+                            </div>
+                            <div class="fr-grid-row fr-grid-row--gutters">
+                                <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.purchase_category %}</div>
+                                <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.buying_entity %}</div>
+                            </div>
+                            <button class="fr-mt-2v fr-mb-2v fr-btn" type="submit">Appliquer les filtres</button>
+                        </form>
                     </div>
-                    <div class="fr-grid-row fr-grid-row--gutters">
-                        <div class="fr-col-12 fr-col-md-6">
-                            {% dsfr_form_field filter.form.purchase_category %}
-                        </div>
-                        <div class="fr-col-12 fr-col-md-6">
-                            {% dsfr_form_field filter.form.buying_entity %}
-                        </div>
-                    </div>
-                    <button class="fr-mt-2v fr-mb-2v fr-btn" type="submit">
-                        Filtrer les résultats
-                    </button>
-                </form>
-
+                </section>
                 {% if total_purchases > 0 %}
-
-                    <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+                    <div class="fr-grid-row fr-grid-row--gutters fr-my-2w">
                         <div class="fr-col-12 fr-col-lg-5">
                             <div class="fr-card">
                                 <div class="fr-card__body">
@@ -143,37 +141,37 @@
                     </div>
                     <div class="fr-grid-row fr-grid-row--gutters fr-mb-6w">
                         {% if chart_data_purchases_by_category.dataset %}
-                        <div class="fr-col-12 fr-col-lg-4">
-                            <div class="fr-card">
-                                <div class="fr-card__body">
-                                    <div class="fr-card__content">
-                                        <h3 class="fr-card__title">Répartition par catégorie d'achat</h3>
-                                        <div class="fr-card__desc">
-                                            <canvas id="purchaseCategoryChart" width="400" height="300"></canvas>
+                            <div class="fr-col-12 fr-col-lg-6">
+                                <div class="fr-card">
+                                    <div class="fr-card__body">
+                                        <div class="fr-card__content">
+                                            <h3 class="fr-card__title">Répartition par catégorie d'achat</h3>
+                                            <div class="fr-card__desc">
+                                                <canvas id="purchaseCategoryChart" width="400" height="300"></canvas>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         {% endif %}
                         {% if chart_data_purchases_by_buying_entity.dataset %}
-                        <div class="fr-col-12 fr-col-lg-4">
-                            <div class="fr-card">
-                                <div class="fr-card__body">
-                                    <div class="fr-card__content">
-                                        <h3 class="fr-card__title">Répartition par entité acheteuse</h3>
-                                        <div class="fr-card__desc">
-                                            <canvas id="buyingEntityChart" width="400" height="300"></canvas>
+                            <div class="fr-col-12 fr-col-lg-6">
+                                <div class="fr-card">
+                                    <div class="fr-card__body">
+                                        <div class="fr-card__content">
+                                            <h3 class="fr-card__title">Répartition par entité acheteuse</h3>
+                                            <div class="fr-card__desc">
+                                                <canvas id="buyingEntityChart" width="400" height="300"></canvas>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         {% endif %}
                     </div>
                 {% else %}
                     <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w fr-mt-2w">
-                    Il n'y a aucun résultat pour votre recherche avec ces filtres.
+                        Il n'y a aucun résultat pour votre recherche avec ces filtres.
                     </div>
                 {% endif %}
             {% else %}
@@ -406,6 +404,5 @@
         });
         </script>
     {% endif %}
-
     <script type="text/javascript" src="{% static 'js/multiselect.js' %}"></script>
 {% endblock extra_js %}
