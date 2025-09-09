@@ -2,7 +2,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import DetailView, FormView, TemplateView, UpdateView
+from django.utils.text import slugify
+from django.views.generic import DetailView, FormView, UpdateView
+from django_filters.views import FilterView
 
 from content_manager.models import ContentPage, Tag
 from lemarche.cms.models import ArticleList
@@ -11,6 +13,7 @@ from lemarche.siaes.constants import KIND_HANDICAP_LIST, KIND_INSERTION_LIST
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
+from lemarche.www.dashboard.filters import PurchaseFilterSet
 from lemarche.www.dashboard.forms import DisabledEmailEditForm, ProfileEditForm
 
 
@@ -84,9 +87,12 @@ class DashboardHomeView(LoginRequiredMixin, DetailView):
         return context
 
 
-class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, TemplateView):
-
+class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
+    filterset_class = PurchaseFilterSet
     template_name = "dashboard/inclusive_purchase_stats.html"
+
+    def get_queryset(self):
+        return Purchase.objects.get_purchase_for_user(self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -95,8 +101,11 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, TemplateView):
         if user.kind != User.KIND_BUYER and user.company is None:
             return context
 
+        # Used to determine if the user has purchases, even if the filters leads to results
+        context["unfiltered_qs_count"] = self.get_queryset().count()
+
         # get purchase stats for the user
-        purchases_stats = Purchase.objects.get_purchase_for_user(user).with_stats()
+        purchases_stats = self.filterset.qs.with_stats()
         total_purchases = purchases_stats["total_amount_annotated"]
         if total_purchases > 0:
             chart_data_inclusive = {
@@ -125,6 +134,25 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, TemplateView):
                     if purchases_stats[f"total_purchases_by_kind_{kind}"] > 0
                 ],
             }
+            purchase_categories = list(self.filterset.qs.values_list("purchase_category", flat=True).distinct())
+            chart_data_purchases_by_category = {
+                "labels": purchase_categories,
+                "dataset": [
+                    purchases_stats[f"total_purchases_by_category_{purchase_category}"]
+                    for purchase_category in purchase_categories
+                    if purchases_stats[f"total_purchases_by_category_{purchase_category}"] > 0
+                ],
+            }
+
+            buying_entities = list(self.filterset.qs.values_list("buying_entity", flat=True).distinct())
+            chart_data_purchases_by_buying_entity = {
+                "labels": buying_entities,
+                "dataset": [
+                    purchases_stats[f"total_purchases_by_buying_entity_{slugify(buying_entity)}"]
+                    for buying_entity in buying_entities
+                    if purchases_stats[f"total_purchases_by_buying_entity_{slugify(buying_entity)}"] > 0
+                ],
+            }
 
             context.update(
                 {
@@ -149,6 +177,8 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, TemplateView):
                     "chart_data_inclusive": chart_data_inclusive,
                     "chart_data_insertion_handicap": chart_data_insertion_handicap,
                     "chart_data_siae_type": chart_data_siae_type,
+                    "chart_data_purchases_by_category": chart_data_purchases_by_category,
+                    "chart_data_purchases_by_buying_entity": chart_data_purchases_by_buying_entity,
                 }
             )
         return context

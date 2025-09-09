@@ -16,107 +16,164 @@
             </div>
         </div>
         {% if user.kind == "BUYER" and user.company %}
-            {% if total_purchases > 0 %}
-                <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
-                    <div class="fr-col-12 fr-col-lg-5">
-                        <div class="fr-card">
-                            <div class="fr-card__body">
-                                <div class="fr-card__content">
-                                    <h3 class="fr-card__title">Vos statistiques d'achat</h3>
-                                    <div class="fr-card__desc">
-                                        <p class="fr-text--lead">
-                                            <strong>{{ total_purchases|floatformat:0 }} €</strong> d'achats réalisés
-                                        </p>
-                                        <p class="fr-text--lead">
-                                            <strong>{{ total_inclusive_purchases|floatformat:0 }} €</strong> d'achats inclusifs
-                                        </p>
-                                        <p class="fr-text--lead">
-                                            <strong>{{ total_inclusive_purchases_percentage|floatformat:1 }}%</strong> de vos achats sont inclusifs 👏
-                                        </p>
-                                        <hr class="fr-my-4v">
-                                        <p class="fr-text--lead">
-                                            <strong>{{ total_inclusive_suppliers }}</strong> fournisseur{{ total_inclusive_suppliers|pluralize }} sur les <strong>{{ total_suppliers }}</strong> fournisseur{{ total_suppliers|pluralize }} référencé{{ total_suppliers|pluralize }} sont inclusifs !
-                                        </p>
+            {% if unfiltered_qs_count > 0 %}
+                <section class="fr-accordion fr-mb-2w">
+                    <h3 class="fr-accordion__title">
+                        <button type="button"
+                                class="fr-accordion__btn"
+                                aria-expanded="false"
+                                aria-controls="accordion-filters">Filtrer les résultats</button>
+                    </h3>
+                    <div class="fr-collapse" id="accordion-filters">
+                        <form method="GET">
+                            <div class="fr-grid-row fr-grid-row--gutters">
+                                <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.inclusive_sector_type %}</div>
+                                <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.siae_type %}</div>
+                            </div>
+                            <div class="fr-grid-row fr-grid-row--gutters">
+                                <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.purchase_category %}</div>
+                                <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.buying_entity %}</div>
+                            </div>
+                            <button class="fr-mt-2v fr-mb-2v fr-btn" type="submit">Appliquer les filtres</button>
+                        </form>
+                    </div>
+                </section>
+                {% if total_purchases > 0 %}
+                    <div class="fr-grid-row fr-grid-row--gutters fr-my-2w">
+                        <div class="fr-col-12 fr-col-lg-5">
+                            <div class="fr-card">
+                                <div class="fr-card__body">
+                                    <div class="fr-card__content">
+                                        <h3 class="fr-card__title">Vos statistiques d'achat</h3>
+                                        <div class="fr-card__desc">
+                                            <p class="fr-text--lead">
+                                                <strong>{{ total_purchases|floatformat:0 }} €</strong> d'achats réalisés
+                                            </p>
+                                            <p class="fr-text--lead">
+                                                <strong>{{ total_inclusive_purchases|floatformat:0 }} €</strong> d'achats inclusifs
+                                            </p>
+                                            <p class="fr-text--lead">
+                                                <strong>{{ total_inclusive_purchases_percentage|floatformat:1 }}%</strong> de vos achats sont inclusifs 👏
+                                            </p>
+                                            <hr class="fr-my-4v">
+                                            <p class="fr-text--lead">
+                                                <strong>{{ total_inclusive_suppliers }}</strong> fournisseur{{ total_inclusive_suppliers|pluralize }} sur les <strong>{{ total_suppliers }}</strong> fournisseur{{ total_suppliers|pluralize }} référencé{{ total_suppliers|pluralize }} sont inclusifs !
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="fr-col-12 fr-col-lg-7">
-                        <div class="fr-card">
-                            <div class="fr-card__body">
-                                <div class="fr-card__content">
-                                    <h3 class="fr-card__title">Répartition de vos achats inclusifs</h3>
-                                    <div class="fr-card__desc">
-                                        <canvas id="inclusiveChart" width="400" height="300"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="fr-grid-row fr-grid-row--gutters fr-mb-6w">
-                    <div class="fr-col-12 fr-col-lg-4">
-                        <div class="fr-card">
-                            <div class="fr-card__body">
-                                <div class="fr-card__content">
-                                    <h3 class="fr-card__title">Répartition Insertion/Handicap</h3>
-                                    <div class="fr-card__desc">
-                                        <canvas id="insertionHandicapChart" width="400" height="300"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="fr-col-12 fr-col-lg-4">
-                        <div class="fr-card">
-                            <div class="fr-card__body">
-                                <div class="fr-card__content">
-                                    <h3 class="fr-card__title">Détails par type de structure</h3>
-                                    <div class="fr-card__desc">
-                                        <div class="fr-grid-row fr-grid-row--gutters">
-                                            <div class="fr-col-6">
-                                                <p class="fr-text--lead">
-                                                    <strong>{{ total_insertion_purchases|floatformat:0 }} €</strong> pour les structures d'insertion
-                                                </p>
-                                                <p class="fr-text--lead">
-                                                    soit <strong>{{ total_insertion_purchases_percentage|floatformat:1 }}%</strong>
-                                                </p>
-                                            </div>
-                                            <div class="fr-col-6">
-                                                <p class="fr-text--lead">
-                                                    <strong>{{ total_handicap_purchases|floatformat:0 }} €</strong> pour les structures du Handicap
-                                                </p>
-                                                <p class="fr-text--lead">
-                                                    soit <strong>{{ total_handicap_purchases_percentage|floatformat:1 }}%</strong>
-                                                </p>
-                                            </div>
+                        <div class="fr-col-12 fr-col-lg-7">
+                            <div class="fr-card">
+                                <div class="fr-card__body">
+                                    <div class="fr-card__content">
+                                        <h3 class="fr-card__title">Répartition de vos achats inclusifs</h3>
+                                        <div class="fr-card__desc">
+                                            <canvas id="inclusiveChart" width="400" height="300"></canvas>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="fr-col-12 fr-col-lg-4">
-                        <div class="fr-card">
-                            <div class="fr-card__body">
-                                <div class="fr-card__content">
-                                    <h3 class="fr-card__title">Répartition par type de structure</h3>
-                                    <div class="fr-card__desc">
-                                        <canvas id="structureKindChart" width="400" height="300"></canvas>
+                    <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+                        <div class="fr-col-12 fr-col-lg-4">
+                            <div class="fr-card">
+                                <div class="fr-card__body">
+                                    <div class="fr-card__content">
+                                        <h3 class="fr-card__title">Répartition Insertion/Handicap</h3>
+                                        <div class="fr-card__desc">
+                                            <canvas id="insertionHandicapChart" width="400" height="300"></canvas>
+                                        </div>
                                     </div>
-                                    <div class="fr-card__footer">
-                                        <p>
-                                            <a href="/ressources/cest-quoi-linclusion/#:~:text=Les%20typologies%20de%20structures"
-                                               target="_blank"
-                                               class="fr-link">Découvrez la définition des acronymes EI, EA, ACI, ESAT...</a>
-                                        </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-col-12 fr-col-lg-4">
+                            <div class="fr-card">
+                                <div class="fr-card__body">
+                                    <div class="fr-card__content">
+                                        <h3 class="fr-card__title">Détails par type de structure</h3>
+                                        <div class="fr-card__desc">
+                                            <div class="fr-grid-row fr-grid-row--gutters">
+                                                <div class="fr-col-6">
+                                                    <p class="fr-text--lead">
+                                                        <strong>{{ total_insertion_purchases|floatformat:0 }} €</strong> pour les structures d'insertion
+                                                    </p>
+                                                    <p class="fr-text--lead">
+                                                        soit <strong>{{ total_insertion_purchases_percentage|floatformat:1 }}%</strong>
+                                                    </p>
+                                                </div>
+                                                <div class="fr-col-6">
+                                                    <p class="fr-text--lead">
+                                                        <strong>{{ total_handicap_purchases|floatformat:0 }} €</strong> pour les structures du Handicap
+                                                    </p>
+                                                    <p class="fr-text--lead">
+                                                        soit <strong>{{ total_handicap_purchases_percentage|floatformat:1 }}%</strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-col-12 fr-col-lg-4">
+                            <div class="fr-card">
+                                <div class="fr-card__body">
+                                    <div class="fr-card__content">
+                                        <h3 class="fr-card__title">Répartition par type de structure</h3>
+                                        <div class="fr-card__desc">
+                                            <canvas id="structureKindChart" width="400" height="300"></canvas>
+                                        </div>
+                                        <div class="fr-card__footer">
+                                            <p>
+                                                <a href="/ressources/cest-quoi-linclusion/#:~:text=Les%20typologies%20de%20structures"
+                                                   target="_blank"
+                                                   class="fr-link">Découvrez la définition des acronymes EI, EA, ACI, ESAT...</a>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                    <div class="fr-grid-row fr-grid-row--gutters fr-mb-6w">
+                        {% if chart_data_purchases_by_category.dataset %}
+                            <div class="fr-col-12 fr-col-lg-6">
+                                <div class="fr-card">
+                                    <div class="fr-card__body">
+                                        <div class="fr-card__content">
+                                            <h3 class="fr-card__title">Répartition par catégorie d'achat</h3>
+                                            <div class="fr-card__desc">
+                                                <canvas id="purchaseCategoryChart" width="400" height="300"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if chart_data_purchases_by_buying_entity.dataset %}
+                            <div class="fr-col-12 fr-col-lg-6">
+                                <div class="fr-card">
+                                    <div class="fr-card__body">
+                                        <div class="fr-card__content">
+                                            <h3 class="fr-card__title">Répartition par entité acheteuse</h3>
+                                            <div class="fr-card__desc">
+                                                <canvas id="buyingEntityChart" width="400" height="300"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w fr-mt-2w">
+                        Il n'y a aucun résultat pour votre recherche avec ces filtres.
+                    </div>
+                {% endif %}
             {% else %}
                 <div class="fr-alert fr-alert--warning">
                     <p>Vous n'avez pas encore communiqué vos achats. Prenez contact avec notre équipe pour en savoir plus.</p>
@@ -186,6 +243,42 @@
                     borderWidth: 2
                 }]
             };
+
+            // For purchase category chart
+            const purchaseCategoryData = {
+                labels: {{ chart_data_purchases_by_category.labels | safe }},
+                datasets: [{
+                    data: {{ chart_data_purchases_by_category.dataset | safe }},
+                    backgroundColor: [
+                        '#1a92ec',
+                        '#ff3479',
+                        '#00c5c2',
+                        '#ff9f31',
+                        '#b200fe',
+                        '#ffd651',
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            }
+
+            // For purchase category chart
+            const buyingEntityData = {
+                labels: {{ chart_data_purchases_by_buying_entity.labels | safe }},
+                datasets: [{
+                    data: {{ chart_data_purchases_by_buying_entity.dataset | safe }},
+                    backgroundColor: [
+                        '#1a92ec',
+                        '#ff3479',
+                        '#00c5c2',
+                        '#ff9f31',
+                        '#b200fe',
+                        '#ffd651',
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            }
 
             // Common configuration for charts
             const commonOptions = {
@@ -283,7 +376,33 @@
                 },
                 plugins: [ChartDataLabels]
             });
+
+            new Chart(document.getElementById('purchaseCategoryChart'), {
+                type: 'bar',
+                data: purchaseCategoryData,
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                       }
+                   }
+               }
+            });
+
+            new Chart(document.getElementById('buyingEntityChart'), {
+                type: 'bar',
+                data: buyingEntityData,
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                       }
+                   }
+               }
+            });
+
         });
         </script>
     {% endif %}
+    <script type="text/javascript" src="{% static 'js/multiselect.js' %}"></script>
 {% endblock extra_js %}
