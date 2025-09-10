@@ -1,5 +1,8 @@
 {% load dsfr_tags %}
-
+<h3 class="fr-modal__title">Relancer les fournisseurs</h3>
+<p>
+    Envoyer un rappel aux fournisseurs pour augmenter vos chances de recevoir des réponses.
+</p>
 <form action="{{ post_url }}" method="post">
     {% csrf_token %}
     {% dsfr_form form %}
