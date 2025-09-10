@@ -1,5 +1,6 @@
 import csv
 import os
+from datetime import timedelta
 
 import openpyxl
 from django.conf import settings
@@ -744,6 +745,20 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
         context["form"] = siae_search_form
         context["current_search_query"] = self.request.GET.urlencode()
         context["download_form"] = SiaeSelectFieldsForm(prefix="download_form")
+        context["reminder_disabled"] = not self.tender.can_send_reminder
+        if self.tender.deadline_date_outdated:
+            context["reminder_tooltip"] = f"{self.tender.get_kind_display} clôturé"
+        elif self.tender.reminder_count > 1:
+            context["reminder_tooltip"] = "Limite atteinte - Les fournisseurs ont déjà été relancés 2 fois."
+        elif self.tender.reminder_last_update and (timezone.now() - self.tender.reminder_last_update) < timedelta(
+            hours=24
+        ):
+            context["reminder_tooltip"] = (
+                "Limite atteinte - Les fournisseurs les fournisseurs ne peuvent être relancés qu'une fois en 24h"
+            )
+        else:
+            context["reminder_tooltip"] = "Relancer les fournisseurs"
+
         if len(self.request.GET.keys()):
             if siae_search_form.is_valid():
                 current_locations = siae_search_form.cleaned_data.get("locations")

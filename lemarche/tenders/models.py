@@ -796,6 +796,15 @@ class Tender(models.Model):
             if attachment
         ]
 
+    @property
+    def can_send_reminder(self):
+        """A reminder can be sent to siaes if it does not exeed 2 reminders in total and have a cooldown of 24h"""
+        return (
+            self.reminder_count < 2
+            and (not self.reminder_last_update or (timezone.now() - self.reminder_last_update) > timedelta(hours=24))
+            and not self.deadline_date_outdated
+        )
+
     def save(self, *args, **kwargs):
         """
         - update the "last_updated" fields
