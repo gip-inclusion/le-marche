@@ -59,3 +59,22 @@ def send_completion_reminder_email_to_siae(siae):
                 recipient_content_object=siae_user,
                 parent_content_object=siae,
             )
+
+
+@task()
+def send_reminder_email_to_siae(siae, message, tender_url):
+    email_template = TemplateTransactional.objects.get(code="SIAE_REMINDER")
+
+    variables = {
+        "MESSAGE": message,
+        "TENDER_URL": tender_url,
+    }
+
+    email_template.send_transactional_email(
+        subject="Êtes-vous intéressé par mon projet d'achat ?",
+        from_email="commercial@lemarche.inclusion.beta.gouv.fr",
+        from_name="L'équipe du Marché de l'inclusion",
+        recipient_email=siae.contact_email,
+        recipient_name=siae.contact_full_name,
+        variables=variables,
+    )
