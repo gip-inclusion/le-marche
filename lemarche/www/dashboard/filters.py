@@ -7,12 +7,14 @@ from lemarche.utils.widgets import CustomSelectMultiple
 
 
 def get_purchase_category_choices():
-    purchase_categories = Purchase.objects.values_list("purchase_category", flat=True).distinct()
+    purchase_categories = (
+        Purchase.objects.values_list("purchase_category", flat=True).order_by("purchase_category").distinct()
+    )
     return [(purchase_category, purchase_category) for purchase_category in purchase_categories]
 
 
 def get_buying_entities_choices():
-    buying_entities = Purchase.objects.values_list("buying_entity", flat=True).distinct()
+    buying_entities = Purchase.objects.values_list("buying_entity", flat=True).order_by("buying_entity").distinct()
     return [(buying_entity, buying_entity) for buying_entity in buying_entities]
 
 
