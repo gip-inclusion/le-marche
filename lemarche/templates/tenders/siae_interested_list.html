@@ -111,14 +111,14 @@
                                                           id="tooltip-reminder"
                                                           role="tooltip"
                                                           aria-hidden="true">
-                                                         {% if tender.deadline_date_outdated  %} {{ tender.get_kind_display }} clôturé {% endif %}
+                                                         {{ reminder_tooltip }}
                                                      </span>
                                                     <button type="button"
                                                           class="fr-btn fr-btn--icon-left"
                                                           data-fr-opened="false"
                                                           aria-controls="fr-modal-reminder"
                                                           style="position: relative;"
-                                                          {% if tender.deadline_date_outdated %}disabled{% endif %}
+                                                          {% if reminder_disabled %}disabled{% endif %}
                                                           aria-describedby="tooltip-reminder"
                                                     >
                                                         <span class="fr-badge fr-badge--sm fr-badge--new"
