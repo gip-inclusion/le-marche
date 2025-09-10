@@ -536,7 +536,8 @@ class Tender(models.Model):
         related_name="tenders",
         blank=True,
     )
-
+    reminder_count = models.PositiveIntegerField(default=0)
+    reminder_last_update = models.DateTimeField(null=True)
     # survey
     scale_marche_useless = models.CharField(
         verbose_name="Utilité du marché de l'inclusion",
