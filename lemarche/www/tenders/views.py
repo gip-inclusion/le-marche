@@ -1103,10 +1103,18 @@ class TenderReminderView(SuccessMessageMixin, FormView):
         ctx = super().get_context_data(**kwargs)
         ctx["post_url"] = reverse_lazy("tenders:send-reminder", args=[self.tender.slug, self.status])
 
-        status_label = {"VIEWED": "qui ont vu"}
-        ctx["submit_button_label"] = (
-            f"Envoyer aux {self.siae_qs.count()} fournisseurs {status_label.get(self.status, 'ciblés')}"
-        )
+        status_label_singular = {"VIEWED": "qui a vu"}
+        status_label_plural = {"VIEWED": "qui ont vu"}
+        if self.siae_qs.count() == 1:
+            submit_label = (
+                f"Envoyer au {self.siae_qs.count()} fournisseur {status_label_singular.get(self.status, 'ciblé')}"
+            )
+        else:
+            submit_label = (
+                f"Envoyer aux {self.siae_qs.count()} fournisseurs {status_label_plural.get(self.status, 'ciblés')}"
+            )
+
+        ctx["submit_button_label"] = submit_label
         return ctx
 
     def get_initial(self):
