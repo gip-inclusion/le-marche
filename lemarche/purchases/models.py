@@ -44,14 +44,14 @@ class PurchaseQuerySet(models.QuerySet):
             )
 
         # get sum of purchases by purchases category
-        for category in self.values_list("purchase_category", flat=True).distinct():
+        for category in self.values_list("purchase_category", flat=True).order_by("purchase_category").distinct():
             category_key = slugify(category)
             aggregates[f"total_purchases_by_category_{category_key}"] = ExpressionWrapper(
                 Coalesce(Round(Sum("purchase_amount", filter=Q(purchase_category=category)), 0), 0),
                 output_field=IntegerField(),
             )
 
-        for buying_entity in self.values_list("buying_entity", flat=True).distinct():
+        for buying_entity in self.values_list("buying_entity", flat=True).order_by("buying_entity").distinct():
             buying_entity_key = slugify(buying_entity)
             aggregates[f"total_purchases_by_buying_entity_{buying_entity_key}"] = ExpressionWrapper(
                 Coalesce(Round(Sum("purchase_amount", filter=Q(buying_entity=buying_entity)), 0), 0),
@@ -127,6 +127,8 @@ class Purchase(models.Model):
         indexes = [
             models.Index(fields=["supplier_siret"]),
             models.Index(fields=["purchase_year"]),
+            models.Index(fields=["purchase_category"]),
+            models.Index(fields=["buying_entity"]),
         ]
         ordering = ["created_at"]
 

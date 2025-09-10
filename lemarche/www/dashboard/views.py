@@ -134,17 +134,24 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
                     if purchases_stats[f"total_purchases_by_kind_{kind}"] > 0
                 ],
             }
-            purchase_categories = list(self.filterset.qs.values_list("purchase_category", flat=True).distinct())
+            purchase_categories = list(
+                self.filterset.qs.values_list("purchase_category", flat=True).order_by("purchase_category").distinct()
+            )
+            # Build list of (category, value) for non-zero values, sort desc and take top 40
+            categories_with_values = []
+            for purchase_category in purchase_categories:
+                categories_with_values.append(
+                    (purchase_category, purchases_stats[f"total_purchases_by_category_{slugify(purchase_category)}"])
+                )
+            top_categories = sorted(categories_with_values, key=lambda item: item[1], reverse=True)[:40]
             chart_data_purchases_by_category = {
-                "labels": purchase_categories,
-                "dataset": [
-                    purchases_stats[f"total_purchases_by_category_{slugify(purchase_category)}"]
-                    for purchase_category in purchase_categories
-                    if purchases_stats[f"total_purchases_by_category_{slugify(purchase_category)}"] > 0
-                ],
+                "labels": [label for label, _ in top_categories],
+                "dataset": [value for _, value in top_categories],
             }
 
-            buying_entities = list(self.filterset.qs.values_list("buying_entity", flat=True).distinct())
+            buying_entities = list(
+                self.filterset.qs.values_list("buying_entity", flat=True).order_by("buying_entity").distinct()
+            )
             chart_data_purchases_by_buying_entity = {
                 "labels": buying_entities,
                 "dataset": [
