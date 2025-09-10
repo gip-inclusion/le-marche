@@ -1114,7 +1114,9 @@ class TenderReminderView(SuccessMessageMixin, FormView):
                 message=form.cleaned_data["reminder_message"],
                 tender_url=tender_url,
             )
-            TenderSiae.objects.get(tender=self.tender, siae=siae)
+            self.tender.reminder_count += 1
+            self.tender.reminder_last_update = timezone.now()
+            self.tender.save()
 
         messages.add_message(
             self.request,
