@@ -21,6 +21,7 @@ class InclusivePotentialViewTests(TestCase):
 
         siae_1 = SiaeFactory(kind=KIND_INSERTION_LIST[0], api_entreprise_ca=200000, c2_etp_count=10)
         siae_2 = SiaeFactory(
+            department="75",
             kind=KIND_INSERTION_LIST[1],
             super_badge=True,
             ca=1000000,
@@ -85,6 +86,7 @@ class InclusivePotentialViewTests(TestCase):
         self.assertEqual(response.data["potential_siaes"], 3)
         self.assertEqual(response.data["insertion_siaes"], 2)
         self.assertEqual(response.data["handicap_siaes"], 1)
+        self.assertEqual(response.data["local_siaes"], 1)
         self.assertEqual(response.data["siaes_with_super_badge"], 1)
         self.assertEqual(response.data["employees_insertion_average"], 13.33)
         self.assertEqual(response.data["employees_permanent_average"], 5.33)
