@@ -21,6 +21,7 @@ from django.views.generic.edit import FormMixin, FormView
 from formtools.wizard.views import SessionWizardView
 
 from lemarche.siaes.models import Siae
+from lemarche.siaes.tasks import send_reminder_email_to_siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.enums import TenderSourcesChoices
 from lemarche.tenders.forms import QuestionAnswerForm, SiaeSelectionForm
@@ -46,6 +47,7 @@ from lemarche.utils.mixins import (
     TenderAuthorOrAdminRequiredIfNotSentMixin,
     TenderAuthorOrAdminRequiredMixin,
 )
+from lemarche.utils.urls import get_domain_url
 from lemarche.www.siaes.forms import SiaeFilterForm
 from lemarche.www.tenders.forms import (
     SiaeSelectFieldsForm,
@@ -1104,7 +1106,14 @@ class TenderReminderView(SuccessMessageMixin, FormView):
 
     def form_valid(self, form):
         for siae in self.siae_qs:
-            # TODO send email to siae
+            tender_url = (
+                f"https://{get_domain_url()}{reverse_lazy("tenders:detail", kwargs={"slug": self.tender.slug})}"
+            )
+            send_reminder_email_to_siae(
+                siae,
+                message=form.cleaned_data["reminder_message"],
+                tender_url=tender_url,
+            )
             TenderSiae.objects.get(tender=self.tender, siae=siae)
 
         messages.add_message(
