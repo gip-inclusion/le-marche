@@ -5,6 +5,7 @@ import openpyxl
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
@@ -1063,7 +1064,7 @@ class TenderSiaeHideView(LoginRequiredMixin, View):
             return HttpResponse(status=401)
 
 
-class TenderReminderView(FormView):
+class TenderReminderView(SuccessMessageMixin, FormView):
     template_name = "tenders/partial_reminder_form.html"
     form_class = TenderReminderForm
 
@@ -1105,5 +1106,11 @@ class TenderReminderView(FormView):
         for siae in self.siae_qs:
             # TODO send email to siae
             TenderSiae.objects.get(tender=self.tender, siae=siae)
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            "La relance a été envoyée avec succès à l’ensemble des fournisseurs concernés !",
+        )
 
         return super().form_valid(form)
