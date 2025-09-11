@@ -48,6 +48,15 @@ class RemoveBetaRedirectMiddlewareTest(TestCase):
         self.assertEqual(response.url, "https://example.com/search/?q=test&page=2")
 
     @override_settings(ALLOWED_HOSTS=["example.com", "example.beta.com"])
+    def test_api_home_request_is_redirected(self):
+        """Test that API home request is redirected"""
+        request = self.factory.get("/api/", HTTP_HOST="example.beta.com")
+        response = self.middleware(request)
+
+        self.assertIsInstance(response, HttpResponsePermanentRedirect)
+        self.assertEqual(response.url, "https://example.com/api/")
+
+    @override_settings(ALLOWED_HOSTS=["example.com", "example.beta.com"])
     def test_api_requests_not_redirected(self):
         """Test that API requests are not redirected"""
         request = self.factory.get("/api/users/", HTTP_HOST="example.beta.com")
