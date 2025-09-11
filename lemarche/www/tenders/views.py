@@ -1129,9 +1129,9 @@ class TenderReminderView(SuccessMessageMixin, FormView):
 
     def form_valid(self, form):
         for siae in self.siae_qs:
-            tender_url = (
-                f"https://{get_domain_url()}{reverse_lazy("tenders:detail", kwargs={"slug": self.tender.slug})}"
-            )
+            reversed_url = reverse_lazy("tenders:detail", kwargs={"slug": self.tender.slug})
+            tender_url = f"https://{get_domain_url()}{reversed_url}"
+
             send_reminder_email_to_siae(
                 siae,
                 message=form.cleaned_data["reminder_message"],
