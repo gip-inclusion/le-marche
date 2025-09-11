@@ -388,19 +388,19 @@ class SiaeSiretSearchView(TemplateView):
             siae = Siae.objects.get(siret=siret)
             if siae.kind in self.IAE_LIST:
                 return (
-                    "Votre fournisseur est un fournisseur inclusif relevant de l’Insertion par"
+                    "✅ Votre fournisseur est un fournisseur inclusif relevant de l’Insertion par"
                     " l’Activité Économique (IAE) et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
                 ), ["img/logo_PDI.png", "img/logo_ESS.png"]
             if siae.kind in self.HANDICAP_LIST:
                 return (
-                    "Votre fournisseur est un fournisseur inclusif relevant du secteur du Handicap"
+                    "✅ Votre fournisseur est un fournisseur inclusif relevant du secteur du Handicap"
                     " et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
                 ), ["img/logo_PDI.png", "img/logo_ESS.png"]
 
         # ESUS
         if SiaeESUS.objects.filter(siren=siret[0:9]).exists():
             return (
-                "Votre fournisseur est labellisé ESUS (Entreprise Solidaire d’Utilité Sociale)"
+                "✅ Votre fournisseur est labellisé ESUS (Entreprise Solidaire d’Utilité Sociale)"
                 " et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
             ), ["img/logo_ESUS.png", "img/logo_ESS.png"]
         # ESS
@@ -408,19 +408,19 @@ class SiaeSiretSearchView(TemplateView):
             is_ess = self.is_ess_from_api_entreprise(siret)
         except requests.exceptions.RequestException:
             return (
-                "Ce fournisseur n'est pas dans nos bases de données"
+                "❌ Ce fournisseur n'est pas dans nos bases de données"
                 " mais une erreur est apparue en interrogeant des bases de données externes."
             ), []
         if is_ess:
             return (
                 (
-                    "Votre fournisseur relève de l’Économie Sociale et Solidaire (ESS)"
+                    "✅ Votre fournisseur relève de l’Économie Sociale et Solidaire (ESS)"
                     " mais n’est pas un fournisseur inclusif."
                 ),
                 ["img/logo_ESS.png"],
             )
         return (
-            "Ce fournisseur n’est pas un fournisseur inclusif"
+            "❌ Ce fournisseur n’est pas un fournisseur inclusif"
             " et n’appartient pas à l’Économie Sociale et Solidaire (ESS)."
         ), []
 

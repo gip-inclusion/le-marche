@@ -1255,7 +1255,7 @@ class SiaeSiretSearchTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.context["status_message"],
-            "Ce fournisseur n’est pas un fournisseur inclusif"
+            "❌ Ce fournisseur n’est pas un fournisseur inclusif"
             " et n’appartient pas à l’Économie Sociale et Solidaire (ESS).",
         )
 
@@ -1266,7 +1266,7 @@ class SiaeSiretSearchTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.context["status_message"],
-            "Votre fournisseur est un fournisseur inclusif relevant de l’Insertion par l’Activité Économique (IAE)"
+            "✅ Votre fournisseur est un fournisseur inclusif relevant de l’Insertion par l’Activité Économique (IAE)"
             " et appartient de facto à l’Economie Sociale et Solidaire (ESS).",
         )
         self.assertEqual(response.context["logo_list"], ["img/logo_PDI.png", "img/logo_ESS.png"])
@@ -1279,7 +1279,7 @@ class SiaeSiretSearchTestCase(TestCase):
         self.assertEqual(
             response.context["status_message"],
             (
-                "Votre fournisseur est un fournisseur inclusif relevant du secteur du Handicap"
+                "✅ Votre fournisseur est un fournisseur inclusif relevant du secteur du Handicap"
                 " et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
             ),
         )
@@ -1291,7 +1291,7 @@ class SiaeSiretSearchTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.context["status_message"],
-            "Votre fournisseur est labellisé ESUS (Entreprise Solidaire d’Utilité Sociale)"
+            "✅ Votre fournisseur est labellisé ESUS (Entreprise Solidaire d’Utilité Sociale)"
             " et appartient de facto à l’Economie Sociale et Solidaire (ESS).",
         )
         self.assertEqual(response.context["logo_list"], ["img/logo_ESUS.png", "img/logo_ESS.png"])
@@ -1302,7 +1302,7 @@ class SiaeSiretSearchTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.context["status_message"],
-            "Votre fournisseur relève de l’Économie Sociale et Solidaire (ESS)"
+            "✅ Votre fournisseur relève de l’Économie Sociale et Solidaire (ESS)"
             " mais n’est pas un fournisseur inclusif.",
         )
         self.assertEqual(response.context["logo_list"], ["img/logo_ESS.png"])
@@ -1318,7 +1318,7 @@ class SiaeSiretSearchTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.context["status_message"],
-            "Ce fournisseur n'est pas dans nos bases de données"
+            "❌ Ce fournisseur n'est pas dans nos bases de données"
             " mais une erreur est apparue en interrogeant des bases de données externes.",
         )
         self.assertEqual(response.context["logo_list"], [])
