@@ -34,11 +34,13 @@
             </div>
         </div>
         <div class="fr-grid-row fr-mt-6v">
+          <div class="fr-col-12 fr-col-lg-10">
             {{ status_message }}
+          </div>
         </div>
         <div class="fr-grid-row fr-mt-6v">
             {% for logo in logo_list %}
-                <img class="fr-responsive-img" style="width:400px" src="{% static logo %}" loading="lazy" />
+                <img class="fr-responsive-img" style="width:400px; object-fit: contain" src="{% static logo %}" loading="lazy" />
             {% endfor %}
         </div>
     </div>
