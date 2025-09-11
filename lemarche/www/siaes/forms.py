@@ -466,6 +466,10 @@ class NetworkSiaeFilterForm(forms.Form):
 
 
 class SiaeSiretFilterForm(forms.Form):
-    # TODO handle witespaces, with js ?
-    # TODO validate digits
-    siret = forms.CharField(label="Indiquez votre SIRET", max_length=14, min_length=14)
+    siret = forms.CharField(label="Indiquez votre SIRET", max_length=17, min_length=14, required=False)
+
+    def clean_siret(self):
+        """Clean spaces from siret"""
+        siret = self.cleaned_data["siret"]
+        siret = siret.replace(" ", "")
+        return siret
