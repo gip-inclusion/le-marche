@@ -1314,8 +1314,8 @@ class TenderDetailLabelTestCase(TestCase):
 
         self.assertContains(
             response,
-            "L’organisation de cet acheteur est certifié RFAR et B-Corp, "
-            "garantissant son engagement envers des relations fournisseurs responsables et son impact social",
+            "L’entreprise de cet acheteur est certifiée RFAR et B-Corp, garantissant son engagement envers des"
+            " relations fournisseurs responsables et son impact social.",
             html=True,
         )
 
