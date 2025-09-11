@@ -1246,6 +1246,10 @@ class SiaeSiretSearchTestCase(TestCase):
             form = SiaeSiretFilterForm(data={"siret": "44229377500031"})
             self.assertIsNone(form.errors.get("siret"))
 
+        with self.subTest("valid with spaces"):
+            form = SiaeSiretFilterForm(data={"siret": "442 293 775 00031"})
+            self.assertIsNone(form.errors.get("siret"))
+
     def test_siret_not_found(self):
         response = self.client.get(self.url, data={"siret": "44229377500031"})
         self.assertEqual(response.status_code, 200)
