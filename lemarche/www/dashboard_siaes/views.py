@@ -22,7 +22,6 @@ from lemarche.www.dashboard_siaes.forms import (
     SiaeClientReferenceFormSet,
     SiaeEditContactForm,
     SiaeEditInfoForm,
-    SiaeEditLinksForm,
     SiaeEditOfferForm,
     SiaeImageFormSet,
     SiaeLabelOldFormSet,
@@ -470,23 +469,6 @@ class SiaeEditOfferView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView
 
     def get_success_url(self):
         return reverse_lazy("dashboard_siaes:siae_edit_offer", args=[self.kwargs.get("slug")])
-
-
-class SiaeEditLinksView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
-    form_class = SiaeEditLinksForm
-    template_name = "dashboard/siae_edit_links.html"
-    context_object_name = "siae"
-    queryset = Siae.objects.all()
-    success_message = "Vos modifications ont bien été prises en compte."
-
-    def get_success_url(self):
-        return reverse_lazy("dashboard_siaes:siae_edit_links", args=[self.kwargs.get("slug")])
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
-        context["breadcrumb_current"] = f"{self.object.name_display} : modifier"
-        return context
 
 
 class SiaeEditContactView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
