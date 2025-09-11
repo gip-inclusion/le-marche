@@ -12,7 +12,6 @@ from lemarche.www.dashboard_siaes.views import (
     SiaeEditActivitiesView,
     SiaeEditContactView,
     SiaeEditInfoView,
-    SiaeEditLinksView,
     SiaeEditOfferView,
     SiaeSearchAdoptConfirmView,
     SiaeSearchBySiretView,
@@ -68,7 +67,6 @@ urlpatterns = [
                 ),
                 path("info/", SiaeEditInfoView.as_view(), name="siae_edit_info"),
                 path("offre/", SiaeEditOfferView.as_view(), name="siae_edit_offer"),
-                path("liens/", SiaeEditLinksView.as_view(), name="siae_edit_links"),
             ]
         ),
     ),

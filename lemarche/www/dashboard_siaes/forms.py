@@ -1,9 +1,7 @@
 from django import forms
 from django.forms.models import inlineformset_factory
-from django_select2.forms import ModelSelect2MultipleWidget
 from dsfr.forms import DsfrBaseForm
 
-from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
@@ -11,7 +9,6 @@ from lemarche.siaes.models import (
     Siae,
     SiaeActivity,
     SiaeClientReference,
-    SiaeGroup,
     SiaeImage,
     SiaeLabelOld,
     SiaeOffer,
@@ -144,40 +141,6 @@ class SiaeImageForm(forms.ModelForm):
 
 
 SiaeImageFormSet = inlineformset_factory(Siae, SiaeImage, form=SiaeImageForm, extra=1, can_delete=True)
-
-
-class SiaeEditLinksForm(forms.ModelForm):
-    networks = forms.ModelMultipleChoiceField(
-        queryset=Network.objects.all().order_by("name"),
-        required=False,
-        widget=ModelSelect2MultipleWidget(
-            model=Network,
-            search_fields=["name__icontains"],
-            attrs={"data-placeholder": "Choisissez le réseau", "data-minimum-input-length": 0},
-        ),
-    )
-    groups = forms.ModelMultipleChoiceField(
-        queryset=SiaeGroup.objects.all().order_by("name"),
-        required=False,
-        widget=ModelSelect2MultipleWidget(
-            model=SiaeGroup,
-            search_fields=["name__icontains"],
-            attrs={"data-placeholder": "Choisissez le groupement", "data-minimum-input-length": 0},
-        ),
-    )
-
-    class Meta:
-        model = Siae
-        fields = [
-            "networks",
-            "groups",
-        ]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields["networks"].label = "Votre structure est-elle adhérente à un réseau ou une fédération ?"
-        self.fields["groups"].label = "Appartenez-vous à un groupement ou ensemblier ?"
 
 
 class SiaeEditContactForm(forms.ModelForm):

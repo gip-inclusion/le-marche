@@ -139,7 +139,6 @@ class DashboardSiaeEditViewTest(TestCase):
             "dashboard_siaes:siae_edit_activities",
             "dashboard_siaes:siae_edit_info",
             "dashboard_siaes:siae_edit_offer",
-            "dashboard_siaes:siae_edit_links",
             "dashboard_siaes:siae_edit_contact",
         ]
         self.client.force_login(self.user_siae)

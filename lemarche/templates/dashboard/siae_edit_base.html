@@ -108,15 +108,6 @@
                                     Vos offres commerciales
                                 </a>
                             </li>
-                            <li role="presentation">
-                                <a href="{% url 'dashboard_siaes:siae_edit_links' siae.slug %}"
-                                   id="siae-edit-links-tab"
-                                   class="fr-tabs__tab"
-                                   aria-controls="siae_edit_links_panel"
-                                   aria-selected="{% if 'siae_edit_links' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
-                                    Groupements
-                                </a>
-                            </li>
                         </ul>
                         <div id="{{ request.resolver_match.url_name }}_panel"
                              class="fr-tabs__panel fr-tabs__panel--selected"
