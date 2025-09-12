@@ -462,9 +462,9 @@ class TenderDetailGetParams(forms.Form):
 class SiaeSelectFieldsForm(forms.Form):
     """Form used to select fields to appear in the downloaded file"""
 
-    format = forms.ChoiceField(choices=(("xlsx", ".xlsx"), ("csv", ".csv")), label="Format")
+    format = forms.ChoiceField(choices=(("xlsx", ".xlsx"), ("csv", ".csv")), label="Format du fichier")
     selected_fields = forms.MultipleChoiceField(
-        label="Colonnes à sélectionner", widget=forms.CheckboxSelectMultiple, required=False
+        label="Informations à inclure", widget=forms.CheckboxSelectMultiple, required=False
     )
 
     def __init__(self, *args, **kwargs):
