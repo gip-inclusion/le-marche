@@ -85,16 +85,16 @@ class Company(models.Model):
         labels = self.labels.values_list("slug", flat=True)
         if "rfar" in labels and "b-corp" in labels:
             return (
-                "L’organisation de cet acheteur est certifié RFAR et B-Corp,"
-                " garantissant son engagement envers des relations fournisseurs responsables et son impact social"
+                "L’entreprise de cet acheteur est certifiée RFAR et B-Corp, garantissant son engagement envers des"
+                " relations fournisseurs responsables et son impact social."
             )
         elif "rfar" in labels:
             return (
-                "L’organisation de cet acheteur est certifié RFAR,"
+                "L’entreprise de cet acheteur est certifiée RFAR,"
                 " garantissant son engagement envers des relations fournisseurs responsables"
             )
         elif "b-corp" in labels:
-            return "L’organisation de cet acheteur est certifiée B-Corp, garantissant son engagement social"
+            return "L’entreprise de cet acheteur est certifiée B-Corp, garantissant son engagement social"
         else:
             return ""
 
