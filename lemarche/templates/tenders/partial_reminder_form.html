@@ -1,0 +1,26 @@
+{% load dsfr_tags %}
+
+<div class="fr-modal__header">
+
+    <button class="fr-btn--close fr-btn" title="Fermer la fenêtre"
+          aria-controls="fr-modal-reminder">Fermer
+    </button>
+</div>
+<div class="fr-modal__content">
+  <h3 class="fr-modal__title">Relancer les fournisseurs</h3>
+  <p>
+      Envoyer un rappel aux fournisseurs pour augmenter vos chances de recevoir des réponses.
+  </p>
+
+  <form id="reminder-form" action="{{ post_url }}" method="post">
+      {% csrf_token %}
+      {% dsfr_form form %}
+  </form>
+
+</div>
+
+<div class="fr-modal__footer">
+  <div class="fr-btns-group fr-btns-group--right">
+      <button type="submit" form="reminder-form" class="fr-btn">{{ submit_button_label }}</button>
+  </div>
+</div>
