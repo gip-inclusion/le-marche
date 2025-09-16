@@ -1081,7 +1081,7 @@ class TenderSiaeHideView(LoginRequiredMixin, View):
             return HttpResponse(status=401)
 
 
-class TenderReminderView(SuccessMessageMixin, FormView):
+class TenderReminderView(TenderAuthorOrAdminRequiredMixin, SuccessMessageMixin, FormView):
     template_name = "tenders/partial_reminder_form.html"
     form_class = TenderReminderForm
 
