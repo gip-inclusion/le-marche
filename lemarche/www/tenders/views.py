@@ -1106,9 +1106,7 @@ class TenderReminderView(TenderAuthorOrAdminRequiredMixin, SuccessMessageMixin, 
         status_label_singular = {"VIEWED": "qui a vu"}
         status_label_plural = {"VIEWED": "qui ont vu"}
         if self.siae_qs.count() == 1:
-            submit_label = (
-                f"Envoyer au {self.siae_qs.count()} fournisseur {status_label_singular.get(self.status, 'ciblé')}"
-            )
+            submit_label = f"Envoyer au fournisseur {status_label_singular.get(self.status, 'ciblé')}"
         else:
             submit_label = (
                 f"Envoyer aux {self.siae_qs.count()} fournisseurs {status_label_plural.get(self.status, 'ciblés')}"
