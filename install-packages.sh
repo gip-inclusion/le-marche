@@ -23,8 +23,6 @@ apt-get -y upgrade
 apt-get -y install --no-install-recommends \
     binutils \
     build-essential \
-    default-libmysqlclient-dev \
-    default-mysql-client \
     gcc \
     gdal-bin \
     gettext \

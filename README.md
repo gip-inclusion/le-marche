@@ -48,7 +48,7 @@ $ source ./env.local.sh
 
 Prérequis :
 
-- packets python à installer : poetry, python3.9, python3.9-dev, default-libmysqlclient-dev
+- packets python à installer : poetry, python3.12, python3.12-dev
 - initialiser une db Postgres (ne pas oublier l'extension PostGIS)
 
 Installation et exécution :
@@ -262,15 +262,19 @@ CC_WORKER_COMMAND=django-admin run_huey
 ```
 
 ## Serveur S3
+
 En développement, normalement la configuration par défaut est suffisante.
 
 Les variables du conteneur docker sont :
+
 ```
 MINIO_ROOT_USER=minio_user
 MINIO_ROOT_PASSWORD=minio_password
 MINIO_BUCKET_NAME=bucket
 ```
+
 et doivent correspondre aux variables des settings Django:
+
 ```
 S3_STORAGE_ACCESS_KEY_ID = env.str("CELLAR_ADDON_KEY_ID", "minio_user")
 S3_STORAGE_SECRET_ACCESS_KEY = env.str("CELLAR_ADDON_KEY_SECRET", "minio_password")
@@ -278,5 +282,4 @@ S3_STORAGE_ENDPOINT_DOMAIN = env.str("CELLAR_ADDON_HOST", "localhost:9000")
 S3_STORAGE_BUCKET_NAME = env.str("S3_STORAGE_BUCKET_NAME", "bucket")
 ```
 
-Pour accéder au portail du bucket: http://localhost:9000/
-
+Pour accéder au portail du bucket: <http://localhost:9000/>
