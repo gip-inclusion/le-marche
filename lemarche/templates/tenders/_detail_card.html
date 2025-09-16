@@ -6,22 +6,22 @@
                 <div class="fr-col-md-4" title="Entreprise">
                     <span class="fr-icon-building-line" aria-hidden="true"></span>
                   <strong>{{ tender.contact_company_name_display }}</strong>
-                  {% for label in tender.author.company.labels.all %}
+                </div>
+                <div class="fr-col-md-2">
+                    {% for label in tender.author.company.labels.all %}
                     <img src="{{ label.logo_url }}"
                          class="fr-responsive-img"
                          style="width: 40px; height: 40px; object-fit: contain; display: inline-block; vertical-align: middle; margin-left: 8px;"
                          alt="Logo du label {{ label.name }}"
                          loading="lazy"/>
-                  {% endfor %}
+                    {% endfor %}
                 </div>
             {% endif %}
-
-
-            <div class="fr-col-md-4" title="Lieu d'intervention">
+            <div class="fr-col-md-3" title="Lieu d'intervention">
                 <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
                 {{ tender.location_display|safe }}
             </div>
-            <div class="fr-col-md-4"
+            <div class="fr-col-md-3"
                  title="Secteurs d'activité : {{ tender.sectors_full_list_string|safe }}">
                 <span class="fr-icon-award-line" aria-hidden="true"></span>
                 {{ tender.sectors_list_string|safe }}
@@ -96,7 +96,7 @@
 
           <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
             {% for label in tender.author.company.labels.all %}
-              <div class="fr-col-3 fr-col-md-2 text-center">
+              <a href="{{ label.website }}" target="_blank" class="fr-col-3 fr-col-md-2 text-center">
                 <img src="{{ label.logo_url }}"
                      class="fr-responsive-img fr-mx-2w"
                      width="40"
@@ -104,7 +104,7 @@
                      alt="Logo du label {{ label.name }}"
                      loading="lazy"
                 />
-              </div>
+              </a>
             {% endfor %}
           </div>
 
