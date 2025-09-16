@@ -257,9 +257,13 @@ class SiaeActivitySectorFormView(SiaeMemberRequiredMixin, TemplateView):
         # This subquery is used to find the link between a displayed sector and
         # an already existing activity
         activity_sector_subquery = SiaeActivity.objects.filter(siae=self.siae, sector=OuterRef("id")).values("id")
-        context["sectors"] = Sector.objects.filter(group_id=self.sector_group_id).annotate(
-            linked_activity_id=Subquery(activity_sector_subquery[:1])
-        )
+
+        if self.sector_group_id:
+            context["sectors"] = Sector.objects.filter(group_id=self.sector_group_id).annotate(
+                linked_activity_id=Subquery(activity_sector_subquery[:1])
+            )
+        else:  # when no sector group is selected from the dropdown
+            context["sectors"] = None
 
         # Get existing sector ids and convert to string in order to be compared with html input value
         if hasattr(self, "siae_activities") and self.siae_activities:
