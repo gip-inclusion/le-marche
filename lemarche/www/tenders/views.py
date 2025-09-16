@@ -1,10 +1,12 @@
 import csv
 import os
+from datetime import timedelta
 
 import openpyxl
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
@@ -16,10 +18,11 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, ListView, UpdateView, View
-from django.views.generic.edit import FormMixin
+from django.views.generic.edit import FormMixin, FormView
 from formtools.wizard.views import SessionWizardView
 
 from lemarche.siaes.models import Siae
+from lemarche.siaes.tasks import send_reminder_email_to_siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.enums import TenderSourcesChoices
 from lemarche.tenders.forms import QuestionAnswerForm, SiaeSelectionForm
@@ -45,6 +48,7 @@ from lemarche.utils.mixins import (
     TenderAuthorOrAdminRequiredIfNotSentMixin,
     TenderAuthorOrAdminRequiredMixin,
 )
+from lemarche.utils.urls import get_domain_url
 from lemarche.www.siaes.forms import SiaeFilterForm
 from lemarche.www.tenders.forms import (
     SiaeSelectFieldsForm,
@@ -55,6 +59,7 @@ from lemarche.www.tenders.forms import (
     TenderCreateStepSurveyForm,
     TenderDetailGetParams,
     TenderFilterForm,
+    TenderReminderForm,
     TenderSiaeSurveyTransactionedForm,
     TenderSurveyTransactionedForm,
 )
@@ -740,6 +745,20 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
         context["form"] = siae_search_form
         context["current_search_query"] = self.request.GET.urlencode()
         context["download_form"] = SiaeSelectFieldsForm(prefix="download_form")
+        context["reminder_disabled"] = not self.tender.can_send_reminder
+        if self.tender.deadline_date_outdated:
+            context["reminder_tooltip"] = f"{self.tender.get_kind_display} clôturé"
+        elif self.tender.reminder_count > 1:
+            context["reminder_tooltip"] = "Limite atteinte - Les fournisseurs ont déjà été relancés 2 fois."
+        elif self.tender.reminder_last_update and (timezone.now() - self.tender.reminder_last_update) < timedelta(
+            hours=24
+        ):
+            context["reminder_tooltip"] = (
+                "Limite atteinte - Les fournisseurs ne peuvent être relancés qu'une fois en 24h"
+            )
+        else:
+            context["reminder_tooltip"] = None
+
         if len(self.request.GET.keys()):
             if siae_search_form.is_valid():
                 current_locations = siae_search_form.cleaned_data.get("locations")
@@ -1060,3 +1079,70 @@ class TenderSiaeHideView(LoginRequiredMixin, View):
         else:
             # if the user is not SIAE kind, the post is not allowed
             return HttpResponse(status=401)
+
+
+class TenderReminderView(TenderAuthorOrAdminRequiredMixin, SuccessMessageMixin, FormView):
+    template_name = "tenders/partial_reminder_form.html"
+    form_class = TenderReminderForm
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.tender = get_object_or_404(Tender, slug=kwargs["slug"])
+        self.status = kwargs["status"]
+        self.siae_qs = Siae.objects.filter_with_tender_tendersiae_status(
+            tender=self.tender, tendersiae_status=self.status
+        )
+        # then filter with the form
+        self.filter_form = SiaeFilterForm(data=self.request.GET)
+        self.siae_qs = self.filter_form.filter_queryset(self.siae_qs)
+
+    def get_success_url(self):
+        return reverse_lazy("tenders:detail-siae-list", args=[self.tender.slug, self.status])
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["post_url"] = reverse_lazy("tenders:send-reminder", args=[self.tender.slug, self.status])
+
+        status_label_singular = {"VIEWED": "qui a vu"}
+        status_label_plural = {"VIEWED": "qui ont vu"}
+        if self.siae_qs.count() == 1:
+            submit_label = f"Envoyer au fournisseur {status_label_singular.get(self.status, 'ciblé')}"
+        else:
+            submit_label = (
+                f"Envoyer aux {self.siae_qs.count()} fournisseurs {status_label_plural.get(self.status, 'ciblés')}"
+            )
+
+        ctx["submit_button_label"] = submit_label
+        return ctx
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial["reminder_message"] = (
+            f"Bonjour,\nplus que quelques jours pour répondre à mon besoin"
+            f" “{self.tender.title}” pour {self.tender.contact_company_name}."
+            f"\n\nDes questions ? Contactez moi :"
+            f" {self.tender.contact_full_name} - {self.tender.contact_email} - {self.tender.contact_phone}"
+        )
+        return initial
+
+    def form_valid(self, form):
+        for siae in self.siae_qs:
+            reversed_url = reverse_lazy("tenders:detail", kwargs={"slug": self.tender.slug})
+            tender_url = f"https://{get_domain_url()}{reversed_url}"
+
+            send_reminder_email_to_siae(
+                siae,
+                message=form.cleaned_data["reminder_message"],
+                tender_url=tender_url,
+            )
+            self.tender.reminder_count += 1
+            self.tender.reminder_last_update = timezone.now()
+            self.tender.save()
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            "La relance a été envoyée avec succès à l’ensemble des fournisseurs concernés !",
+        )
+
+        return super().form_valid(form)

@@ -2,6 +2,7 @@ import csv
 import json
 from datetime import timedelta
 from io import BytesIO, StringIO
+from unittest import mock
 from unittest.mock import patch
 
 import openpyxl
@@ -2603,3 +2604,65 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         val_list = list(response.context["siaes"].order_by("name").values_list("is_local", flat=True))
         self.assertEqual(val_list, [False])
+
+
+class TenderReminderViewTestCase(TestCase):
+    def setUp(self):
+        buyer = UserFactory(kind=User.KIND_BUYER)
+        self.client.force_login(buyer)
+
+        self.tender = TenderFactory(author=buyer)
+
+    def test_send_reminder_message_TARGETTED(self):
+        TenderSiaeFactory(tender=self.tender)
+
+        url = reverse("tenders:send-reminder", kwargs={"slug": self.tender.slug, "status": "None"})
+        response_get = self.client.get(url)
+        self.assertEqual(response_get.status_code, 200)
+        self.assertEqual(response_get.context["submit_button_label"], "Envoyer au fournisseur ciblé")
+
+        with mock.patch("lemarche.www.tenders.views.send_reminder_email_to_siae") as send_reminder_email_to_siae_mock:
+            response_post = self.client.post(url, data={"reminder_message": "Blabla"})
+            send_reminder_email_to_siae_mock.assert_called_once()
+        self.assertEqual(response_post.status_code, 302)
+
+    def test_send_reminder_message_TARGETTED_plural(self):
+        TenderSiaeFactory(tender=self.tender)
+        TenderSiaeFactory(tender=self.tender)
+
+        url = reverse("tenders:send-reminder", kwargs={"slug": self.tender.slug, "status": "None"})
+        response_get = self.client.get(url)
+        self.assertEqual(response_get.status_code, 200)
+        self.assertEqual(response_get.context["submit_button_label"], "Envoyer aux 2 fournisseurs ciblés")
+
+        with mock.patch("lemarche.www.tenders.views.send_reminder_email_to_siae") as send_reminder_email_to_siae_mock:
+            response_post = self.client.post(url, data={"reminder_message": "Blabla"})
+            self.assertEqual(send_reminder_email_to_siae_mock.call_count, 2)
+        self.assertEqual(response_post.status_code, 302)
+
+    def test_send_reminder_message_VIEWED(self):
+        TenderSiaeFactory(tender=self.tender, email_link_click_date=timezone.now())
+
+        url = reverse("tenders:send-reminder", kwargs={"slug": self.tender.slug, "status": "VIEWED"})
+        response_get = self.client.get(url)
+        self.assertEqual(response_get.status_code, 200)
+        self.assertEqual(response_get.context["submit_button_label"], "Envoyer au fournisseur qui a vu")
+
+        with mock.patch("lemarche.www.tenders.views.send_reminder_email_to_siae") as send_reminder_email_to_siae_mock:
+            response_post = self.client.post(url, data={"reminder_message": "Blabla"})
+            send_reminder_email_to_siae_mock.assert_called_once()
+        self.assertEqual(response_post.status_code, 302)
+
+    def test_send_reminder_message_VIEWED_plural(self):
+        TenderSiaeFactory(tender=self.tender, email_link_click_date=timezone.now())
+        TenderSiaeFactory(tender=self.tender, email_link_click_date=timezone.now())
+
+        url = reverse("tenders:send-reminder", kwargs={"slug": self.tender.slug, "status": "VIEWED"})
+        response_get = self.client.get(url)
+        self.assertEqual(response_get.status_code, 200)
+        self.assertEqual(response_get.context["submit_button_label"], "Envoyer aux 2 fournisseurs qui ont vu")
+
+        with mock.patch("lemarche.www.tenders.views.send_reminder_email_to_siae") as send_reminder_email_to_siae_mock:
+            response_post = self.client.post(url, data={"reminder_message": "Blabla"})
+            self.assertEqual(send_reminder_email_to_siae_mock.call_count, 2)
+        self.assertEqual(response_post.status_code, 302)

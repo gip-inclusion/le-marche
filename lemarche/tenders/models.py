@@ -536,7 +536,8 @@ class Tender(models.Model):
         related_name="tenders",
         blank=True,
     )
-
+    reminder_count = models.PositiveIntegerField(default=0)
+    reminder_last_update = models.DateTimeField(null=True)
     # survey
     scale_marche_useless = models.CharField(
         verbose_name="Utilité du marché de l'inclusion",
@@ -794,6 +795,15 @@ class Tender(models.Model):
             for attachment in [self.attachment_one, self.attachment_two, self.attachment_three]
             if attachment
         ]
+
+    @property
+    def can_send_reminder(self):
+        """A reminder can be sent to siaes if it does not exceed 2 reminders in total and has a cooldown of 24h"""
+        return (
+            self.reminder_count < 2
+            and (not self.reminder_last_update or (timezone.now() - self.reminder_last_update) > timedelta(hours=24))
+            and not self.deadline_date_outdated
+        )
 
     def save(self, *args, **kwargs):
         """
