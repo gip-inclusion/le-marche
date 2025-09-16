@@ -757,7 +757,7 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
                 "Limite atteinte - Les fournisseurs ne peuvent être relancés qu'une fois en 24h"
             )
         else:
-            context["reminder_tooltip"] = "Relancer les fournisseurs"
+            context["reminder_tooltip"] = None
 
         if len(self.request.GET.keys()):
             if siae_search_form.is_valid():

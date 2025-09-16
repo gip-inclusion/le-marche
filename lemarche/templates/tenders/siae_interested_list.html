@@ -119,7 +119,7 @@
                                                           aria-controls="fr-modal-reminder"
                                                           style="position: relative;"
                                                           {% if reminder_disabled %}disabled{% endif %}
-                                                          aria-describedby="tooltip-reminder"
+                                                          {% if reminder_tooltip %}aria-describedby="tooltip-reminder"{% endif %}
                                                     >
                                                         <span class="fr-badge fr-badge--sm fr-badge--new"
                                                               style="position: absolute; top: -8px; right: -8px;">
