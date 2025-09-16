@@ -428,7 +428,7 @@ class SiaeSiretSearchView(TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx["form"] = self.filter_form
 
-        if self.filter_form.is_valid():
+        if self.filter_form.is_valid() and self.filter_form.cleaned_data["siret"]:
             message, logo_list = self.find_supplier_by_siret(self.filter_form.cleaned_data.get("siret"))
         else:
             message = ""
