@@ -463,3 +463,13 @@ class NetworkSiaeFilterForm(forms.Form):
         qs = qs.distinct()
 
         return qs
+
+
+class SiaeSiretFilterForm(forms.Form):
+    siret = forms.CharField(label="Indiquez votre SIRET", max_length=17, min_length=14, required=False)
+
+    def clean_siret(self):
+        """Clean spaces from siret"""
+        siret = self.cleaned_data["siret"]
+        siret = siret.replace(" ", "")
+        return siret

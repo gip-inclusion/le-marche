@@ -1,7 +1,10 @@
+from unittest.mock import patch
+
 from django.contrib.gis.geos import Point
 from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.urls import reverse
+from requests.exceptions import RequestException
 
 from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.labels.factories import LabelFactory
@@ -11,9 +14,10 @@ from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeActivityFactory, SiaeClientReferenceFactory, SiaeFactory, SiaeOfferFactory
-from lemarche.siaes.models import Siae
+from lemarche.siaes.models import Siae, SiaeESUS
 from lemarche.users.factories import UserFactory
-from lemarche.www.siaes.forms import SiaeFilterForm
+from lemarche.www.siaes.forms import SiaeFilterForm, SiaeSiretFilterForm
+from lemarche.www.siaes.views import SiaeSiretSearchView
 
 
 class SiaeSearchDisplayResultsTest(TestCase):
@@ -1222,3 +1226,99 @@ class SiaeFavoriteViewTestCase(TestCase):
             html=True,
             count=1,
         )
+
+
+class SiaeSiretSearchTestCase(TestCase):
+
+    def setUp(self):
+        self.url = reverse("siae:siret_search")
+
+    def test_siret_form_validation(self):
+        with self.subTest("too small"):
+            form = SiaeSiretFilterForm(data={"siret": "123"})
+            self.assertTrue(form.errors["siret"])
+
+        with self.subTest("too long"):
+            form = SiaeSiretFilterForm(data={"siret": "123456789101112131415161718"})
+            self.assertTrue(form.errors["siret"])
+
+        with self.subTest("valid"):
+            form = SiaeSiretFilterForm(data={"siret": "44229377500031"})
+            self.assertIsNone(form.errors.get("siret"))
+
+        with self.subTest("valid with spaces"):
+            form = SiaeSiretFilterForm(data={"siret": "442 293 775 00031"})
+            self.assertIsNone(form.errors.get("siret"))
+
+    def test_siret_not_found(self):
+        response = self.client.get(self.url, data={"siret": "44229377500031"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["status_message"],
+            "❌ Ce fournisseur n’est pas un fournisseur inclusif"
+            " et n’appartient pas à l’Économie Sociale et Solidaire (ESS).",
+        )
+
+    def test_iae_siae_found(self):
+        siae = SiaeFactory(name="Fake IAE", kind=siae_constants.KIND_EI, siret="44229377500031")
+        self.assertIn(siae.kind, SiaeSiretSearchView.IAE_LIST)
+        response = self.client.get(self.url, data={"siret": "44229377500031"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["status_message"],
+            "✅ Votre fournisseur est un fournisseur inclusif relevant de l’Insertion par l’Activité Économique (IAE)"
+            " et appartient de facto à l’Economie Sociale et Solidaire (ESS).",
+        )
+        self.assertEqual(response.context["logo_list"], ["img/logo_PDI.png", "img/logo_ESS.png"])
+
+    def test_handicap_siae(self):
+        siae = SiaeFactory(name="Fake EA", kind=siae_constants.KIND_EA, siret="44229377500031")
+        self.assertIn(siae.kind, SiaeSiretSearchView.HANDICAP_LIST)
+        response = self.client.get(self.url, data={"siret": "44229377500031"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["status_message"],
+            (
+                "✅ Votre fournisseur est un fournisseur inclusif relevant du secteur du Handicap"
+                " et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
+            ),
+        )
+        self.assertEqual(response.context["logo_list"], ["img/logo_PDI.png", "img/logo_ESS.png"])
+
+    def test_esus_siae(self):
+        SiaeESUS.objects.create(siren="442293775")
+        response = self.client.get(self.url, data={"siret": "44229377500031"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["status_message"],
+            "✅ Votre fournisseur est labellisé ESUS (Entreprise Solidaire d’Utilité Sociale)"
+            " et appartient de facto à l’Economie Sociale et Solidaire (ESS).",
+        )
+        self.assertEqual(response.context["logo_list"], ["img/logo_ESUS.png", "img/logo_ESS.png"])
+
+    @patch("lemarche.www.siaes.views.SiaeSiretSearchView.is_ess_from_api_entreprise", lambda self, siret: True)
+    def test_ess_siae(self):
+        response = self.client.get(self.url, data={"siret": "44229377500031"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["status_message"],
+            "✅ Votre fournisseur relève de l’Économie Sociale et Solidaire (ESS)"
+            " mais n’est pas un fournisseur inclusif.",
+        )
+        self.assertEqual(response.context["logo_list"], ["img/logo_ESS.png"])
+
+    def test_ess_siae_error(self):
+        # Simulate error during API call
+        with patch(
+            "lemarche.www.siaes.views.SiaeSiretSearchView.is_ess_from_api_entreprise",
+            side_effect=RequestException("Simulated exception"),
+        ):
+            response = self.client.get(self.url, data={"siret": "44229377500031"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["status_message"],
+            "❌ Ce fournisseur n'est pas dans nos bases de données"
+            " mais une erreur est apparue en interrogeant des bases de données externes.",
+        )
+        self.assertEqual(response.context["logo_list"], [])

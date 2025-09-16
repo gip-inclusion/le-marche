@@ -2,6 +2,7 @@ import csv
 from datetime import date
 from urllib.parse import quote
 
+import requests
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -12,19 +13,20 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
-from django.views.generic import DetailView, ListView, UpdateView
+from django.views.generic import DetailView, ListView, TemplateView, UpdateView
 from django.views.generic.base import View
 from django.views.generic.edit import FormMixin
 
 from lemarche.conversations.models import Conversation
 from lemarche.favorites.models import FavoriteList
-from lemarche.siaes.models import Siae
+from lemarche.siaes import constants as siae_constants
+from lemarche.siaes.models import Siae, SiaeESUS
 from lemarche.utils import settings_context_processors
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
 from lemarche.www.conversations.forms import ContactForm
-from lemarche.www.siaes.forms import SiaeFavoriteForm, SiaeFilterForm
+from lemarche.www.siaes.forms import SiaeFavoriteForm, SiaeFilterForm, SiaeSiretFilterForm
 
 
 CURRENT_SEARCH_QUERY_COOKIE_NAME = "current_search"
@@ -346,3 +348,92 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             f"<strong>{siae.name_display}</strong> a été ajoutée à "
             f"votre liste d'achat <strong>{favorite_list.name}</strong>."
         )
+
+
+class SiaeSiretSearchView(TemplateView):
+    template_name = "siaes/siret_search_results.html"
+    # Custom from KIND_INSERTION_CHOICES, no SEP
+    IAE_LIST = [
+        siae_constants.KIND_EI,
+        siae_constants.KIND_AI,
+        siae_constants.KIND_ACI,
+        siae_constants.KIND_ETTI,
+        siae_constants.KIND_EITI,
+        siae_constants.KIND_GEIQ,
+    ]
+    HANDICAP_LIST = siae_constants.KIND_HANDICAP_LIST
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.filter_form = SiaeSiretFilterForm(data=request.GET)
+
+    def is_ess_from_api_entreprise(self, siret: str) -> bool:
+        """Check in API entreprise if the siret is found and that it has the 'est_ess' key set to true."""
+        # In fact, est_ess=true have no effect
+        url = f"{settings.API_RECHERCHE_ENTREPRISES_BASE_URL}/search?q={siret}&est_ess=true"
+        response = requests.get(url)
+        response.raise_for_status()
+        response_data = response.json()
+
+        if response_data["total_results"] == 1:
+            retrieved_siae = response_data["results"][0]
+            # as filtering via url is broken, when have to ensure here that est_ess=true is really true
+            if retrieved_siae["complements"]["est_ess"] is True:
+                return True
+
+        return False
+
+    def find_supplier_by_siret(self, siret: str) -> tuple[str, list[str]]:
+        if Siae.objects.filter(siret=siret).exists():
+            siae = Siae.objects.get(siret=siret)
+            if siae.kind in self.IAE_LIST:
+                return (
+                    "✅ Votre fournisseur est un fournisseur inclusif relevant de l’Insertion par"
+                    " l’Activité Économique (IAE) et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
+                ), ["img/logo_PDI.png", "img/logo_ESS.png"]
+            if siae.kind in self.HANDICAP_LIST:
+                return (
+                    "✅ Votre fournisseur est un fournisseur inclusif relevant du secteur du Handicap"
+                    " et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
+                ), ["img/logo_PDI.png", "img/logo_ESS.png"]
+
+        # ESUS
+        if SiaeESUS.objects.filter(siren=siret[0:9]).exists():
+            return (
+                "✅ Votre fournisseur est labellisé ESUS (Entreprise Solidaire d’Utilité Sociale)"
+                " et appartient de facto à l’Economie Sociale et Solidaire (ESS)."
+            ), ["img/logo_ESUS.png", "img/logo_ESS.png"]
+        # ESS
+        try:
+            is_ess = self.is_ess_from_api_entreprise(siret)
+        except requests.exceptions.RequestException:
+            return (
+                "❌ Ce fournisseur n'est pas dans nos bases de données"
+                " mais une erreur est apparue en interrogeant des bases de données externes."
+            ), []
+        if is_ess:
+            return (
+                (
+                    "✅ Votre fournisseur relève de l’Économie Sociale et Solidaire (ESS)"
+                    " mais n’est pas un fournisseur inclusif."
+                ),
+                ["img/logo_ESS.png"],
+            )
+        return (
+            "❌ Ce fournisseur n’est pas un fournisseur inclusif"
+            " et n’appartient pas à l’Économie Sociale et Solidaire (ESS)."
+        ), []
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["form"] = self.filter_form
+
+        if self.filter_form.is_valid() and self.filter_form.cleaned_data["siret"]:
+            message, logo_list = self.find_supplier_by_siret(self.filter_form.cleaned_data.get("siret"))
+        else:
+            message = ""
+            logo_list = []
+
+        ctx["status_message"] = message
+        ctx["logo_list"] = logo_list
+        return ctx

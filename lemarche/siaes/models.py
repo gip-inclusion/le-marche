@@ -8,6 +8,7 @@ from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django.contrib.postgres.search import TrigramSimilarity  # SearchVector
 from django.core.exceptions import ValidationError
+from django.core.validators import MinLengthValidator
 from django.db import IntegrityError, models, transaction
 from django.db.models import (
     BooleanField,
@@ -1718,3 +1719,12 @@ class SiaeImage(models.Model):
     # def __str__(self):
     #     if self.name:
     #         return self.name
+
+
+class SiaeESUS(models.Model):
+    """Model to store SIREN from ESUS db"""
+
+    siren = models.CharField(max_length=9, verbose_name="SIREN", validators=[MinLengthValidator(9)], unique=True)
+
+    def __str__(self):
+        return f"ESUS: {self.siren}"
