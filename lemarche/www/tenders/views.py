@@ -754,7 +754,7 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
             hours=24
         ):
             context["reminder_tooltip"] = (
-                "Limite atteinte - Les fournisseurs les fournisseurs ne peuvent être relancés qu'une fois en 24h"
+                "Limite atteinte - Les fournisseurs ne peuvent être relancés qu'une fois en 24h"
             )
         else:
             context["reminder_tooltip"] = "Relancer les fournisseurs"
