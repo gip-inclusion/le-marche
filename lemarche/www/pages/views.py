@@ -1,9 +1,7 @@
-import json
 import logging
 
 from django.conf import settings
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import FormView, ListView, TemplateView, View
@@ -11,7 +9,6 @@ from django.views.generic.edit import FormMixin
 from wagtail.models import Site as WagtailSite
 
 from lemarche.siaes.models import Siae, SiaeGroup
-from lemarche.utils.tracker import track
 from lemarche.www.pages.forms import (
     CompanyReferenceCalculatorForm,
     ContactForm,
@@ -72,17 +69,6 @@ class StatsView(TemplateView):
         context = super().get_context_data(**kwargs)
         context["METABASE_PUBLIC_DASHBOARD_URL"] = settings.METABASE_PUBLIC_DASHBOARD_URL
         return context
-
-
-class TrackView(View):
-    def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        track(
-            page=data.get("page", ""),
-            action=data.get("action", ""),
-            meta=data.get("meta", None),
-        )
-        return JsonResponse({"message": "success"})
 
 
 class ImpactCalculatorView(FormMixin, ListView):
