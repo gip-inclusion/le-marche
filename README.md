@@ -48,7 +48,7 @@ $ source ./env.local.sh
 
 Prérequis :
 
-- packets python à installer : poetry, python3.12, python3.12-dev
+- packets python à installer : poetry, python3.13, python3.13-dev
 - initialiser une db Postgres (ne pas oublier l'extension PostGIS)
 
 Installation et exécution :
