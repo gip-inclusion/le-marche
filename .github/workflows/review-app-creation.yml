@@ -65,7 +65,6 @@ jobs:
         # have precedence over configuration addons
         $CLEVER_CLI env set CC_PYTHON_VERSION ${{ env.PYTHON_VERSION }} --alias $REVIEW_APP_NAME
         $CLEVER_CLI domain add $DEPLOY_URL --alias $REVIEW_APP_NAME
-        $CLEVER_CLI link $REVIEW_APP_NAME --org $REVIEW_APPS_ORGANIZATION_NAME
 
     - name: 🗃 Create database addon
       run: |
@@ -74,12 +73,10 @@ jobs:
 
     - name: 🤝 Link S3 addon
       run: |
-        $CLEVER_CLI link $REVIEW_APP_NAME --org $REVIEW_APPS_ORGANIZATION_NAME
         $CLEVER_CLI service link-addon $S3_ADDON
 
     - name: 🗺 Add environment variables to the review app
       run: |
-        $CLEVER_CLI link $REVIEW_APP_NAME --org $REVIEW_APPS_ORGANIZATION_NAME
         $CLEVER_CLI service link-addon $CONFIGURATION_ADDON
         $CLEVER_CLI env import-vars REVIEW_APP_DB_NAME
         $CLEVER_CLI env import-vars DEPLOY_URL
@@ -116,7 +113,6 @@ jobs:
         curl $CLEVER_TOOLS_DOWNLOAD_URL > $CLEVER_TAR_FILE
         tar -xvf $CLEVER_TAR_FILE
         $CLEVER_CLI login --token $CLEVER_TOKEN --secret $CLEVER_SECRET
-        $CLEVER_CLI link $REVIEW_APP_NAME --org $REVIEW_APPS_ORGANIZATION_NAME
 
     - name: ⏭ Skip fixtures
       run:
