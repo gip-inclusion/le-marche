@@ -46,8 +46,9 @@ jobs:
         echo "REVIEW_APP_DB_NAME=`echo $REVIEW_APP_NAME | sed -r 's/-/_/g'`" >> $GITHUB_ENV
 
     - name: 🏷 Set deploy url
-      run:
+      run: |
         echo "DEPLOY_URL=`echo \"$REVIEW_APP_NAME.cleverapps.io\"`" >> $GITHUB_ENV
+        echo "ALLOWED_HOSTS=`echo \"$REVIEW_APP_NAME.cleverapps.io\"`" >> $GITHUB_ENV
     # End of environment variables
 
     - name: 🧫 Create a review app on Clever Cloud
@@ -88,7 +89,6 @@ jobs:
       uses: thollander/actions-comment-pull-request@main
       with:
         message: "🥁 La recette jetable est prête ! [👉 Je veux tester cette PR !](https://${{ env.DEPLOY_URL }})"
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   redeploy:
     runs-on: ubuntu-latest
