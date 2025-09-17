@@ -8,6 +8,15 @@ from .base import *  # noqa
 # https://docs.python.org/3/library/logging.html#logging.disable
 logging.disable(logging.CRITICAL)
 
+# Ensure Huey loggers are silenced in tests even if global logging is altered by unittest
+# (use NullHandler and no propagation).
+LOGGING["loggers"].update(
+    {
+        "huey": {"handlers": ["null"], "level": "CRITICAL", "propagate": False},
+        "huey.consumer": {"handlers": ["null"], "level": "CRITICAL", "propagate": False},
+    }
+)
+
 # Static files are not compressed in test environment
 COMPRESS_OFFLINE = False
 
@@ -25,6 +34,15 @@ if is_windows:
 HUEY |= {
     "results": True,
     "store_none": True,
+}
+
+# Lower consumer noise if ever instantiated (should not in immediate mode during tests)
+HUEY |= {
+    "consumer": {
+        "workers": 0,
+        "worker_type": "thread",
+        "loglevel": "critical",
+    }
 }
 
 CACHES = {

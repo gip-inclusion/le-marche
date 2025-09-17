@@ -35,7 +35,13 @@ class ImportPurchasesCommandTest(TestCase):
     def test_import_purchases_with_sample_file(self):
         """Test import using the existing sample_purchases.csv file"""
 
-        call_command("import_purchases", self.sample_file, company_slug=self.company.slug, year=self.current_year)
+        call_command(
+            "import_purchases",
+            self.sample_file,
+            company_slug=self.company.slug,
+            year=self.current_year,
+            stdout=StringIO(),
+        )
 
         # Check that purchases were created
         purchases = Purchase.objects.all()
@@ -61,7 +67,7 @@ class ImportPurchasesCommandTest(TestCase):
     def test_import_purchases_with_default_year(self):
         """Test import without specifying year (should use current year)"""
 
-        call_command("import_purchases", self.sample_file, company_slug=self.company.slug)
+        call_command("import_purchases", self.sample_file, company_slug=self.company.slug, stdout=StringIO())
 
         purchases = Purchase.objects.all()
         self.assertEqual(purchases.count(), 5)
@@ -74,7 +80,12 @@ class ImportPurchasesCommandTest(TestCase):
         """Test dry run mode - no data should be saved"""
 
         call_command(
-            "import_purchases", self.sample_file, company_slug=self.company.slug, year=self.current_year, dry_run=True
+            "import_purchases",
+            self.sample_file,
+            company_slug=self.company.slug,
+            year=self.current_year,
+            dry_run=True,
+            stdout=StringIO(),
         )
 
         # No purchases should be created in dry run mode
@@ -93,7 +104,12 @@ Entreprise Test 3,11111111111111,75000.00,Matériel informatique,Service Achats"
 
         try:
             call_command(
-                "import_purchases", csv_file, company_slug=self.company.slug, year=self.current_year, skip_errors=True
+                "import_purchases",
+                csv_file,
+                company_slug=self.company.slug,
+                year=self.current_year,
+                skip_errors=True,
+                stdout=StringIO(),
             )
 
             # Only valid purchases should be created
@@ -114,7 +130,13 @@ Entreprise Test 2,invalid_siret,2500.00,Fournitures de bureau,Service RH"""  # n
 
         try:
             with self.assertRaises(CommandError) as context:
-                call_command("import_purchases", csv_file, company_slug=self.company.slug, year=self.current_year)
+                call_command(
+                    "import_purchases",
+                    csv_file,
+                    company_slug=self.company.slug,
+                    year=self.current_year,
+                    stdout=StringIO(),
+                )
 
             self.assertIn("Invalid SIRET format", str(context.exception))
 
@@ -130,7 +152,7 @@ Entreprise Test 2,invalid_siret,2500.00,Fournitures de bureau,Service RH"""  # n
 
         with self.assertRaises(CommandError) as context:
             call_command(
-                "import_purchases", self.sample_file, company_slug=self.company.slug, year=1800
+                "import_purchases", self.sample_file, company_slug=self.company.slug, year=1800, stdout=StringIO()
             )  # Invalid year
 
         self.assertIn("Invalid year", str(context.exception))
@@ -140,7 +162,11 @@ Entreprise Test 2,invalid_siret,2500.00,Fournitures de bureau,Service RH"""  # n
 
         with self.assertRaises(CommandError) as context:
             call_command(
-                "import_purchases", self.sample_file, company_slug="non-existent-company", year=self.current_year
+                "import_purchases",
+                self.sample_file,
+                company_slug="non-existent-company",
+                year=self.current_year,
+                stdout=StringIO(),
             )
 
         self.assertIn("Company with slug non-existent-company not found", str(context.exception))
@@ -154,7 +180,13 @@ Entreprise Test 1,12345678901234"""
 
         try:
             with self.assertRaises(CommandError) as context:
-                call_command("import_purchases", csv_file, company_slug=self.company.slug, year=self.current_year)
+                call_command(
+                    "import_purchases",
+                    csv_file,
+                    company_slug=self.company.slug,
+                    year=self.current_year,
+                    stdout=StringIO(),
+                )
 
             self.assertIn("Missing required columns", str(context.exception))
 
@@ -167,7 +199,13 @@ Entreprise Test 1,12345678901234"""
 
         try:
             with self.assertRaises(CommandError) as context:
-                call_command("import_purchases", csv_file, company_slug=self.company.slug, year=self.current_year)
+                call_command(
+                    "import_purchases",
+                    csv_file,
+                    company_slug=self.company.slug,
+                    year=self.current_year,
+                    stdout=StringIO(),
+                )
 
             self.assertIn("Could not read CSV headers", str(context.exception))
 
@@ -183,7 +221,13 @@ Entreprise Test 1,12345678901234,invalid_amount,Services informatiques,Service I
 
         try:
             with self.assertRaises(CommandError) as context:
-                call_command("import_purchases", csv_file, company_slug=self.company.slug, year=self.current_year)
+                call_command(
+                    "import_purchases",
+                    csv_file,
+                    company_slug=self.company.slug,
+                    year=self.current_year,
+                    stdout=StringIO(),
+                )
 
             self.assertIn("Invalid purchase amount", str(context.exception))
 
@@ -199,7 +243,13 @@ Entreprise Test 1,12345678901234,-15000.50,Services informatiques,Service IT""" 
 
         try:
             with self.assertRaises(CommandError) as context:
-                call_command("import_purchases", csv_file, company_slug=self.company.slug, year=self.current_year)
+                call_command(
+                    "import_purchases",
+                    csv_file,
+                    company_slug=self.company.slug,
+                    year=self.current_year,
+                    stdout=StringIO(),
+                )
 
             self.assertIn("Invalid purchase amount: -15000.50", str(context.exception))
 
@@ -215,7 +265,13 @@ Entreprise Test 1,12345678901234,-15000.50,Services informatiques,Service IT""" 
 
         try:
             with self.assertRaises(CommandError) as context:
-                call_command("import_purchases", csv_file, company_slug=self.company.slug, year=self.current_year)
+                call_command(
+                    "import_purchases",
+                    csv_file,
+                    company_slug=self.company.slug,
+                    year=self.current_year,
+                    stdout=StringIO(),
+                )
 
             self.assertIn("Supplier name is required", str(context.exception))
 
@@ -231,7 +287,13 @@ Entreprise Test 1,,15000.50,Services informatiques,Service IT"""  # noqa: E501
 
         try:
             with self.assertRaises(CommandError) as context:
-                call_command("import_purchases", csv_file, company_slug=self.company.slug, year=self.current_year)
+                call_command(
+                    "import_purchases",
+                    csv_file,
+                    company_slug=self.company.slug,
+                    year=self.current_year,
+                    stdout=StringIO(),
+                )
 
             self.assertIn("SIRET is required", str(context.exception))
 
@@ -247,7 +309,12 @@ Entreprise Test 1;12345678901234;15000.50;Services informatiques;Service IT"""  
 
         try:
             call_command(
-                "import_purchases", csv_file, company_slug=self.company.slug, year=self.current_year, delimiter=";"
+                "import_purchases",
+                csv_file,
+                company_slug=self.company.slug,
+                year=self.current_year,
+                delimiter=";",
+                stdout=StringIO(),
             )
 
             purchases = Purchase.objects.all()
@@ -268,7 +335,9 @@ Entreprise Test 1,12345678901234,"15000,50",Services informatiques,Service IT"""
         csv_file = self.create_temp_csv_file(comma_csv)
 
         try:
-            call_command("import_purchases", csv_file, company_slug=self.company.slug, year=self.current_year)
+            call_command(
+                "import_purchases", csv_file, company_slug=self.company.slug, year=self.current_year, stdout=StringIO()
+            )
 
             purchases = Purchase.objects.all()
             self.assertEqual(purchases.count(), 1)
@@ -287,7 +356,9 @@ Entreprise Test 1,123 456 789 01234,15000.50,Services informatiques,Service IT""
         csv_file = self.create_temp_csv_file(space_siret_csv)
 
         try:
-            call_command("import_purchases", csv_file, company_slug=self.company.slug, year=self.current_year)
+            call_command(
+                "import_purchases", csv_file, company_slug=self.company.slug, year=self.current_year, stdout=StringIO()
+            )
 
             purchases = Purchase.objects.all()
             self.assertEqual(purchases.count(), 1)
@@ -306,7 +377,9 @@ Entreprise Test 1,12345678901234,15000.50,,"""  # noqa: E501
         csv_file = self.create_temp_csv_file(empty_optional_csv)
 
         try:
-            call_command("import_purchases", csv_file, company_slug=self.company.slug, year=self.current_year)
+            call_command(
+                "import_purchases", csv_file, company_slug=self.company.slug, year=self.current_year, stdout=StringIO()
+            )
 
             purchases = Purchase.objects.all()
             self.assertEqual(purchases.count(), 1)
