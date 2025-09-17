@@ -28,10 +28,7 @@ apt-get -y install --no-install-recommends \
     gettext \
     git \
     iputils-ping \
-    libpcre3 \
-    libpcre3-dev \
     libproj-dev \
-    libsass1 \
     postgresql-client \
     vim-tiny \
     firefox-esr
