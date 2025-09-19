@@ -238,7 +238,7 @@ class TenderCreateViewTest(TestCase):
     def test_tender_anonymous_existing_user(self):
         """Check that an anonymous user cannot impersonnate an existing user by providing the same email address"""
         existing_user = UserFactory(email="existing@user.com")
-        tender_step_data = self._generate_fake_data_form(_step_3={"contact-contact_email": "existing@user.com"})
+        tender_step_data = self._generate_fake_data_form(_step_3={"contact-contact_email": existing_user.email})
         final_response = self._check_every_step(tender_step_data, final_redirect_page=reverse("siae:search_results"))
         self.assertEqual(final_response.status_code, 200)
         self.assertFalse(final_response.context["user"].is_authenticated)  # user is anonymous
