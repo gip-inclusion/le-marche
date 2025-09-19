@@ -304,6 +304,8 @@ class TenderCreateStepContactForm(forms.ModelForm):
                 )
             )
 
+        return self.cleaned_data["contact_email"]
+
     def clean(self):
         super().clean()
         if not self.cleaned_data.get("response_kind") and not self.cleaned_data.get("response_is_anonymous"):
