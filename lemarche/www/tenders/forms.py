@@ -3,6 +3,8 @@ from datetime import date
 
 from ckeditor.widgets import CKEditorWidget
 from django import forms
+from django.urls import reverse
+from django.utils.html import format_html
 
 from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae
@@ -290,6 +292,17 @@ class TenderCreateStepContactForm(forms.ModelForm):
             self.fields["contact_company_name"].required = True
         else:
             self.initial["contact_company_name"] = user.company_name
+
+    def clean_contact_email(self):
+        login_url = f"{reverse('auth:account_login')}?next={reverse('tenders:create')}"
+        if User.objects.filter(email=self.cleaned_data["contact_email"]).exists():
+            raise forms.ValidationError(
+                format_html(
+                    format_string="<span> Cet utilisateur existe déjà,"
+                    " veuillez vous authentifier avec ce <a href={login_url}>lien</a>.</span>",
+                    login_url=login_url,
+                )
+            )
 
     def clean(self):
         super().clean()
