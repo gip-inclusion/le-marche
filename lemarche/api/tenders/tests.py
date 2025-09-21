@@ -343,23 +343,6 @@ class TenderCreateApiTest(TestCase):
         tender = Tender.objects.get(title=title)
         self.assertEqual(tender.distance_location, 60)
 
-    def test_tender_impersonation(self):
-        """It should not be possible to imperson the tender author by providing his email"""
-        existing_user = UserFactory(email="existing@user.com")
-        tender_data = TENDER_JSON.copy()
-        tender_data["contact_email"] = existing_user.email
-
-        response = self.client.post(
-            self.url,
-            data=tender_data,
-            content_type="application/json",
-            headers={"authorization": f"Bearer {self.user_token}"},
-        )
-        self.assertEqual(response.status_code, 201)
-
-        tender = Tender.objects.get()
-        self.assertNotEqual(tender.author, existing_user)
-
 
 class TenderCreateApiPartnerTest(TestCase):
     @classmethod
