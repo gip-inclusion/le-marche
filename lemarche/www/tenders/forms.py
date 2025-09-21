@@ -3,8 +3,6 @@ from datetime import date
 
 from ckeditor.widgets import CKEditorWidget
 from django import forms
-from django.urls import reverse
-from django.utils.html import format_html
 
 from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae
@@ -293,19 +291,6 @@ class TenderCreateStepContactForm(forms.ModelForm):
         else:
             self.initial["contact_company_name"] = user.company_name
 
-    def clean_contact_email(self):
-        login_url = f"{reverse('auth:account_login')}?next={reverse('tenders:create')}"
-        if User.objects.filter(email=self.cleaned_data["contact_email"]).exists():
-            raise forms.ValidationError(
-                format_html(
-                    format_string="<span> Cet utilisateur existe déjà,"
-                    " veuillez vous authentifier avec ce <a href={login_url}>lien</a>.</span>",
-                    login_url=login_url,
-                )
-            )
-
-        return self.cleaned_data["contact_email"]
-
     def clean(self):
         super().clean()
         if not self.cleaned_data.get("response_kind") and not self.cleaned_data.get("response_is_anonymous"):
@@ -347,6 +332,27 @@ class TenderCreateStepContactForm(forms.ModelForm):
             and tender_constants.RESPONSE_KIND_EXTERNAL not in self.cleaned_data.get("response_kind")
         ):
             self.add_error("response_kind", "Appel d'offre avec lien renseigné.")
+
+
+class TenderCreateStepSignInForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput(), label="Mot de passe")
+
+    class Meta:
+        model = User
+        fields = [
+            "password",
+        ]
+
+    def __init__(self, email, *args, **kwargs):
+        self.user = User.objects.get(email=email)
+        super().__init__(*args, **kwargs)
+
+    def clean_password(self):
+        """Check that the provided password is correct for the user."""
+        password = self.cleaned_data["password"]
+        if not self.user.check_password(password):
+            raise forms.ValidationError("Mot de passe incorrect")
+        return password
 
 
 class TenderCreateStepSurveyForm(forms.ModelForm):

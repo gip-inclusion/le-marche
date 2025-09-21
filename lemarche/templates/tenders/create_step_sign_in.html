@@ -1,0 +1,18 @@
+{% extends "tenders/create_base.html" %}
+{% load dsfr_tags static %}
+
+{% block step_title %}Authentification{% endblock step_title %}
+
+{% block content_form %}
+{% csrf_token %}
+  <div class="fr-grid-row">
+    <div class="fr-col-12 fr-col-lg-7">
+      <div class="fr-grid-row fr-mb-4w">
+                <div class="fr-col-12 fr-col-md-6 fr-pr-md-2w">
+                    {% dsfr_form_field form.password %}
+                </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
