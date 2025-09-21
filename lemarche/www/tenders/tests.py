@@ -32,7 +32,7 @@ from lemarche.tenders.constants import KIND_QUOTE
 from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices, TenderSourcesChoices
 from lemarche.tenders.factories import QuestionAnswerFactory, TenderFactory, TenderQuestionFactory, TenderSiaeFactory
 from lemarche.tenders.models import QuestionAnswer, Tender, TenderInstruction, TenderSiae, TenderStepsData
-from lemarche.users.factories import UserFactory
+from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
 from lemarche.utils import constants
 from lemarche.utils.apis.brevo_attributes import CONTACT_ATTRIBUTES
@@ -58,7 +58,14 @@ class TenderCreateViewTest(TestCase):
 
     @classmethod
     def _generate_fake_data_form(
-        cls, _step_1={}, _step_2={}, _step_3={}, _step_4={}, _step_5={}, tender_not_saved: Tender = None
+        cls,
+        _step_1={},
+        _step_2={},
+        _step_3={},
+        _step_4={},
+        _step_5={},
+        step_sign_in: dict = None,
+        tender_not_saved: Tender = None,
     ):
         if not tender_not_saved:
             tender_not_saved = TenderFactory.build(author=cls.user_buyer)
@@ -97,8 +104,11 @@ class TenderCreateViewTest(TestCase):
         step_5 = {
             "tender_create_multi_step_view-current_step": "confirmation",
         } | _step_5
-
-        return [step_1, step_2, step_3, step_4, step_5]
+        if step_sign_in:
+            step_sign_in = {"tender_create_multi_step_view-current_step": "sign_in"} | step_sign_in
+            return [step_1, step_2, step_3, step_sign_in, step_4, step_5]
+        else:
+            return [step_1, step_2, step_3, step_4, step_5]
 
     def _check_every_step(self, tenders_step_data, final_redirect_page: str = reverse("wagtail_serve", args=("",))):
         for step, data_step in enumerate(tenders_step_data, 1):
@@ -238,16 +248,16 @@ class TenderCreateViewTest(TestCase):
     def test_tender_anonymous_existing_user(self):
         """Check that an anonymous user cannot impersonnate an existing user by providing the same email address"""
         existing_user = UserFactory(email="existing@user.com")
-        tender_step_data = self._generate_fake_data_form(_step_3={"contact-contact_email": existing_user.email})
-        with self.assertRaises(AssertionError):
-            final_response = self._check_every_step(
-                tender_step_data, final_redirect_page=reverse("siae:search_results")
-            )
-            self.assertEqual(final_response.status_code, 200)
-            self.assertFalse(final_response.context["user"].is_authenticated)  # user is anonymous
+        tender_step_data = self._generate_fake_data_form(
+            _step_3={"contact-contact_email": existing_user.email}, step_sign_in={"sign_in-password": DEFAULT_PASSWORD}
+        )
+        final_response = self._check_every_step(tender_step_data, final_redirect_page=reverse("siae:search_results"))
+        self.assertEqual(final_response.status_code, 200)
+        self.assertFalse(final_response.context["user"].is_authenticated)  # user is anonymous
 
         # tender creation aborted
-        self.assertEqual(Tender.objects.count(), 0)
+        self.assertEqual(Tender.objects.count(), 1)
+        self.assertEqual(Tender.objects.get().author, existing_user)
 
     @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, contact_type, tender: None)
     def test_tender_wizard_form_all_good_perimeters(self):
