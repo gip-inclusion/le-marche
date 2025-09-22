@@ -195,6 +195,8 @@ INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + DJANGO_DSFR_APPS + THIRD_PARTY_AP
 MIDDLEWARE = [
     # Generate request Id
     "django_datadog_logger.middleware.request_id.RequestIdMiddleware",
+    # Gzip
+    "django.middleware.gzip.GZipMiddleware",
     # Django stack
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
