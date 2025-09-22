@@ -55,17 +55,6 @@ def static_theme(url_path):
 
 
 @register.simple_tag
-def static_theme_images(url_path):
-    """
-    Usage:
-        {% load theme_inclusion %}
-        {% static_theme_images url_path %}
-    """
-    static_path = "{base_url}images/{url_path}".format(base_url=URL_THEME, url_path=url_path)
-    return static(static_path)
-
-
-@register.simple_tag
 def import_static_JS_theme_inclusion():
     scripts_import = ""
     for js_dep in JS_DEPENDENCIES_THEME:

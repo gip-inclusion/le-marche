@@ -1,5 +1,4 @@
 {% load static %}
-{% load theme_inclusion %}
 <div class="fr-card fr-card--horizontal fr-card--horizontal-tier {% if siae.super_badge %}super-badge-card{% endif %}">
     <div class="fr-card__body">
         <div class="fr-card__content">
@@ -110,7 +109,7 @@
                 <div class="fr-grid-row fr-mb-4v">
                     <div class="fr-col-sm-12">
                         <div>
-                            <img src="{% static_theme_images 'ico-bicro-marche-descript-act.svg' %}"
+                            <img src="{% static 'vendor/theme-inclusion/images/ico-bicro-marche-descript-act.svg' %}"
                                  alt=""
                                  height="32" />
                         </div>
@@ -131,7 +130,7 @@
                 <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
                     <div class="fr-col-sm-6">
                         <div>
-                            <img src="{% static_theme_images 'ico-bicro-marche-secteur.svg' %}"
+                            <img src="{% static 'vendor/theme-inclusion/images/ico-bicro-marche-secteur.svg' %}"
                                  alt=""
                                  height="32" />
                         </div>
@@ -147,7 +146,7 @@
                     {% if siae.client_reference_count %}
                         <div class="fr-col-sm-6">
                             <div>
-                                <img src="{% static_theme_images 'ico-bicro-marche-ref-clients.svg' %}"
+                                <img src="{% static 'vendor/theme-inclusion/images/ico-bicro-marche-ref-clients.svg' %}"
                                      alt=""
                                      height="32" />
                             </div>
@@ -202,7 +201,7 @@
                     <div class="fr-grid-row">
                         <div class="fr-col-sm-12">
                             <div>
-                                <img src="{% static_theme_images 'ico-bicro-marche-detail.svg' %}"
+                                <img src="{% static 'vendor/theme-inclusion/images/ico-bicro-marche-detail.svg' %}"
                                      alt=""
                                      height="32" />
                             </div>
@@ -232,7 +231,7 @@
                         {% if siae.network_count %}
                             <div class="fr-col-12 fr-col-md-6">
                                 <div>
-                                    <img src="{% static_theme_images 'ico-bicro-marche-reseaux.svg' %}"
+                                    <img src="{% static 'vendor/theme-inclusion/images/ico-bicro-marche-reseaux.svg' %}"
                                          alt=""
                                          height="32" />
                                 </div>
@@ -257,7 +256,7 @@
                         {% if siae.label_count %}
                             <div class="fr-col-12 fr-col-md-6">
                                 <div>
-                                    <img src="{% static_theme_images 'ico-bicro-marche-labels.svg' %}"
+                                    <img src="{% static 'vendor/theme-inclusion/images/ico-bicro-marche-labels.svg' %}"
                                          alt=""
                                          height="32" />
                                 </div>
@@ -277,7 +276,7 @@
                     <div class="fr-grid-row">
                         <div class="fr-col-12">
                             <div>
-                                <img src="{% static_theme_images 'ico-bicro-marche-realisation.svg' %}"
+                                <img src="{% static 'vendor/theme-inclusion/images/ico-bicro-marche-realisation.svg' %}"
                                      alt=""
                                      height="32" />
                             </div>

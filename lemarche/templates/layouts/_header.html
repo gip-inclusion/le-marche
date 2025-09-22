@@ -1,4 +1,4 @@
-{% load i18n static theme_inclusion %}
+{% load i18n static %}
 {% if BITOUBI_ENV not in "prod" %}
     {% include "includes/_header_env_notice.html" %}
 {% endif %}
@@ -31,7 +31,7 @@
               <a href="{{ HOME_PAGE_PATH }}">
                 <img class="fr-responsive-img"
                      style="max-width:15rem"
-                     src="{% static_theme_images 'logo-marche-inclusion.svg' %}"
+                     src="{% static 'vendor/theme-inclusion/images/logo-marche-inclusion.svg' %}"
                      alt="Le marché de l'inclusion">
               </a>
             </div>
