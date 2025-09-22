@@ -411,7 +411,6 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
             {
                 "fields": (
                     "description",
-                    "sector",
                     "networks",
                 )
             },
