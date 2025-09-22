@@ -747,7 +747,7 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
         context["download_form"] = SiaeSelectFieldsForm(prefix="download_form")
         context["reminder_disabled"] = not self.tender.can_send_reminder
         if self.tender.deadline_date_outdated:
-            context["reminder_tooltip"] = f"{self.tender.get_kind_display} clôturé"
+            context["reminder_tooltip"] = f"{self.tender.get_kind_display()} clôturé"
         elif self.tender.reminder_count > 1:
             context["reminder_tooltip"] = "Limite atteinte - Les fournisseurs ont déjà été relancés 2 fois."
         elif self.tender.reminder_last_update and (timezone.now() - self.tender.reminder_last_update) < timedelta(
