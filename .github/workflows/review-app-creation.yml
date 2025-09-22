@@ -19,7 +19,7 @@ env:
   CONFIGURATION_ADDON: ${{ secrets.CLEVER_REVIEW_APPS_CONFIGURATION_ADDON }}
   S3_ADDON: ${{ secrets.CLEVER_REVIEW_APPS_S3_ADDON }}
   BRANCH: ${{ github.head_ref }}
-  PYTHON_VERSION: "3.11"
+  PYTHON_VERSION: "3.13"
 
 
 jobs:
@@ -46,8 +46,9 @@ jobs:
         echo "REVIEW_APP_DB_NAME=`echo $REVIEW_APP_NAME | sed -r 's/-/_/g'`" >> $GITHUB_ENV
 
     - name: 🏷 Set deploy url
-      run:
+      run: |
         echo "DEPLOY_URL=`echo \"$REVIEW_APP_NAME.cleverapps.io\"`" >> $GITHUB_ENV
+        echo "ALLOWED_HOSTS=`echo \"$REVIEW_APP_NAME.cleverapps.io\"`" >> $GITHUB_ENV
     # End of environment variables
 
     - name: 🧫 Create a review app on Clever Cloud
@@ -65,7 +66,6 @@ jobs:
         # have precedence over configuration addons
         $CLEVER_CLI env set CC_PYTHON_VERSION ${{ env.PYTHON_VERSION }} --alias $REVIEW_APP_NAME
         $CLEVER_CLI domain add $DEPLOY_URL --alias $REVIEW_APP_NAME
-        $CLEVER_CLI link $REVIEW_APP_NAME --org $REVIEW_APPS_ORGANIZATION_NAME
 
     - name: 🗃 Create database addon
       run: |
@@ -74,12 +74,10 @@ jobs:
 
     - name: 🤝 Link S3 addon
       run: |
-        $CLEVER_CLI link $REVIEW_APP_NAME --org $REVIEW_APPS_ORGANIZATION_NAME
         $CLEVER_CLI service link-addon $S3_ADDON
 
     - name: 🗺 Add environment variables to the review app
       run: |
-        $CLEVER_CLI link $REVIEW_APP_NAME --org $REVIEW_APPS_ORGANIZATION_NAME
         $CLEVER_CLI service link-addon $CONFIGURATION_ADDON
         $CLEVER_CLI env import-vars REVIEW_APP_DB_NAME
         $CLEVER_CLI env import-vars DEPLOY_URL
@@ -91,7 +89,6 @@ jobs:
       uses: thollander/actions-comment-pull-request@main
       with:
         message: "🥁 La recette jetable est prête ! [👉 Je veux tester cette PR !](https://${{ env.DEPLOY_URL }})"
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   redeploy:
     runs-on: ubuntu-latest

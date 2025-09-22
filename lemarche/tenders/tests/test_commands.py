@@ -212,7 +212,7 @@ class UpdateTenderStatusToRejectedCommandTest(TestCase):
 
         tender_with_no_modification_request = TenderFactory(status=Tender.StatusChoices.STATUS_DRAFT)
 
-        call_command("tenders_update_status_to_rejected")
+        call_command("tenders_update_status_to_rejected", stdout=StringIO())
 
         tender_recent.refresh_from_db()
         tender_expired.refresh_from_db()

@@ -23,17 +23,12 @@ apt-get -y upgrade
 apt-get -y install --no-install-recommends \
     binutils \
     build-essential \
-    default-libmysqlclient-dev \
-    default-mysql-client \
     gcc \
     gdal-bin \
     gettext \
     git \
     iputils-ping \
-    libpcre3 \
-    libpcre3-dev \
     libproj-dev \
-    libsass1 \
     postgresql-client \
     vim-tiny \
     firefox-esr
