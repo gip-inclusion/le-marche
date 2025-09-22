@@ -20,14 +20,6 @@ register = template.Library()
 
 URL_THEME = "vendor/theme-inclusion/"
 
-CSS_DEPENDENCIES_THEME = [
-    {
-        "is_external": False,
-        "src": "stylesheets/app.css",
-    },
-]
-
-
 JS_DEPENDENCIES_THEME = [
     {
         "is_external": True,
@@ -71,21 +63,6 @@ def static_theme_images(url_path):
     """
     static_path = "{base_url}images/{url_path}".format(base_url=URL_THEME, url_path=url_path)
     return static(static_path)
-
-
-@register.simple_tag
-def import_static_CSS_theme_inclusion():
-    scripts_import = ""
-    for css_dep in CSS_DEPENDENCIES_THEME:
-        if css_dep["is_external"]:
-            scripts_import += (
-                '<link rel="stylesheet" href="{}" integrity="{}" crossorigin="anonymous" type="text/css">'.format(
-                    css_dep["src"], css_dep["integrity"]
-                )
-            )
-        else:
-            scripts_import += '<link rel="stylesheet" href="{}" type="text/css">'.format(static_theme(css_dep["src"]))
-    return mark_safe(scripts_import)
 
 
 @register.simple_tag
