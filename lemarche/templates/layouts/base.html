@@ -68,9 +68,7 @@
     {% endblock opengraph %}
   </head>
   <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-    {% block skiplinks %}
-      {% dsfr_skiplinks skiplinks %}
-    {% endblock skiplinks %}
+    {% dsfr_skiplinks skiplinks %}
     {% block header %}
       {% include "layouts/_header.html" %}
     {% endblock header %}
@@ -78,14 +76,10 @@
       {% comment %} empty because managed for each type of page {% endcomment %}
     {% endblock breadcrumb %}
     <main id="content" class="fr-mb-6w" role="main">
-      {% block messages %}
-        {% dsfr_django_messages wrapper_classes="fr-container fr-my-4v" %}
-      {% endblock messages %}
+      {% dsfr_django_messages wrapper_classes="fr-container fr-my-4v" %}
       {% block content %}
       {% endblock content %}
     </main>
-    {% block follow_newsletter_social_media %}
-    {% endblock follow_newsletter_social_media %}
     {% block footer %}
       {% include "layouts/_footer.html" %}
     {% endblock footer %}
