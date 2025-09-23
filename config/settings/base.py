@@ -123,7 +123,6 @@ THIRD_PARTY_APPS = [
     "django_better_admin_arrayfield",  # django-better-admin-arrayfield
     "django_filters",  # django-filter
     "django_htmx",  # django-htmx
-    "django_select2",  # django-select2
     "drf_spectacular",  # drf-spectacular
     "formtools",  # django-formtools (Multistep and preview forms)
     "huey.contrib.djhuey",  # huey (Async tasks)
