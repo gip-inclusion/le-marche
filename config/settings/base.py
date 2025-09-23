@@ -14,7 +14,6 @@ import locale
 import os
 
 import environ
-from django.contrib.messages import constants as messages
 
 
 locale.setlocale(locale.LC_TIME, "")
@@ -117,7 +116,6 @@ DJANGO_DSFR_APPS = [
 
 THIRD_PARTY_APPS = [
     "anymail",  # django-anymail
-    "bootstrap4",  # django-bootstrap4
     "ckeditor",  # django-ckeditor
     "compressor",  # django-compressor
     "corsheaders",  # django-cors-headers
@@ -641,33 +639,6 @@ CRISP_ID = env.str("CRISP_ID", "")
 METABASE_SITE_URL = "https://stats.inclusion.beta.gouv.fr"
 METABASE_PUBLIC_DASHBOARD_UUID = "44326ea9-e67c-45fc-9603-831a7dad1c8c"
 METABASE_PUBLIC_DASHBOARD_URL = f"{METABASE_SITE_URL}/embed/dashboard/{METABASE_PUBLIC_DASHBOARD_UUID}#titled=false"
-
-
-# django-bootstrap4
-# https://django-bootstrap4.readthedocs.io/en/latest/settings.html
-# ------------------------------------------------------------------------------
-
-BOOTSTRAP4 = {
-    "required_css_class": "form-group-required",
-    "set_placeholder": False,
-    # Remove the default `.is-valid` class that Bootstrap will style in green
-    # otherwise empty required fields will be marked as valid. This might be
-    # a bug in django-bootstrap4, it should be investigated.
-    "success_css_class": "",
-}
-
-
-# Connect Bootstrap alerts to Django message tags
-# https://ordinarycoders.com/blog/article/django-messages-framework
-# ------------------------------------------------------------------------------
-
-MESSAGE_TAGS = {
-    messages.DEBUG: "alert-secondary",
-    messages.INFO: "alert-info",
-    messages.SUCCESS: "alert-success",
-    messages.WARNING: "alert-warning",
-    messages.ERROR: "alert-danger",
-}
 
 
 # Async Configuration Options: Huey
