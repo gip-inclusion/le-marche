@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from lemarche.utils.validators import validate_naf, validate_post_code, validate_siret
+from lemarche.utils.validators import validate_naf, validate_post_code, validate_siren, validate_siret
 
 
 class ValidatorsTest(TestCase):
@@ -13,6 +13,15 @@ class ValidatorsTest(TestCase):
             validator(item)
         POST_CODE_NOT_OK = ["0", "1234"]
         for item in POST_CODE_NOT_OK:
+            self.assertRaises(ValidationError, validator, item)
+
+    def test_siren_validator(self):
+        validator = validate_siren
+        SIREN_OK = ["123123123"]
+        for item in SIREN_OK:
+            validator(item)
+        SIREN_NOT_OK = ["123"]
+        for item in SIREN_NOT_OK:
             self.assertRaises(ValidationError, validator, item)
 
     def test_siret_validator(self):
