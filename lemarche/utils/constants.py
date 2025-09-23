@@ -9,7 +9,6 @@ YES_NO_CHOICE_LIST = [YES, NO]
 YES_NO_MAPPING = {YES: True, NO: False}
 DONT_KNOW = "?"
 
-TRUE_VALUES = ["true", "True", "TRUE", NO, 1, True, "Oui", "oui", "OUI"]
 FALSE_VALUES = ["false", "False", "FALSE", YES, 0, False, "Non", "non", "NON"]
 FALSE_OR_DONT_KNOW_VALUES = FALSE_VALUES + [DONT_KNOW]
 
@@ -89,8 +88,6 @@ REGIONS_WITH_DEPARTMENTS = {
 
 # difference: ordered by name
 REGIONS_PRETTY = dict((name, name) for (name, list) in REGIONS_WITH_DEPARTMENTS.items())
-
-REGIONS_WITH_IDENTICAL_DEPARTMENT_NAME = ["Guadeloupe", "Martinique", "Guyane", "La Réunion", "Mayotte"]
 
 
 def get_region_code_from_name(region_name):
@@ -254,12 +251,6 @@ def department_from_postcode(post_code):
             department = post_code[:2]
 
     return department
-
-
-def format_district(post_code, department):
-    # Could use ordinal from humanize but it would be overkill
-    number = int(post_code) - (int(department) * 1000)
-    return "1er" if number == 1 else f"{number}e"
 
 
 EMAIL_SUBJECT_PREFIX = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_ENV != "prod" else ""
