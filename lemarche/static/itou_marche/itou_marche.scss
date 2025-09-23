@@ -299,3 +299,12 @@ p.fr-tag--green-bourgeon {
     line-height: 1vh;
     text-align: center;
 }
+
+/*Enleve le style de liens automatique du dsfr*/
+.logo-link-no-icon::after {
+    display: none !important;
+}
+
+.logo-link-no-icon {
+    background-image: none !important;
+}
