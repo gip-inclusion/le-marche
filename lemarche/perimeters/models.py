@@ -112,7 +112,7 @@ class Perimeter(models.Model):
             if self.kind == self.KIND_CITY:
                 self.slug = slugify(f"{self.name}-{self.department_code}")
             elif self.kind == self.KIND_REGION:
-                # because of REGIONS_WITH_IDENTICAL_DEPARTMENT_NAME
+                # some region have the same name as their department
                 self.slug = slugify(f"{self.name}-region")
             else:
                 self.slug = slugify(self.name)
