@@ -9,8 +9,9 @@ YES_NO_CHOICE_LIST = [YES, NO]
 YES_NO_MAPPING = {YES: True, NO: False}
 DONT_KNOW = "?"
 
+# FIXME Seems only "1", "0" and "?" are relevant. Plus "FALSE_VALUES" actually contain true values.
+# The associated code is completely unintelligible
 FALSE_VALUES = ["false", "False", "FALSE", YES, 0, False, "Non", "non", "NON"]
-FALSE_OR_DONT_KNOW_VALUES = FALSE_VALUES + [DONT_KNOW]
 
 
 ADMIN_FIELD_HELP_TEXT = "Champ renseigné par un ADMIN"
