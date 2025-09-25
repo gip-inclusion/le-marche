@@ -1188,6 +1188,21 @@ class Siae(models.Model):
             siae_constants.KIND_EATT,
         ]
 
+    @property
+    def grouped_activities(self) -> dict[str, dict[str, object]]:
+        """Sort activities by group and sectors in a dict"""
+        grouped_activities = {}
+
+        for activity in self.activities.with_sector_and_sector_group(self).order_by("sector"):
+            group = activity.sector.group
+            sector = activity.sector
+
+            if group not in grouped_activities:
+                grouped_activities[group] = {}
+
+            grouped_activities[group][sector] = activity
+        return grouped_activities
+
     def is_in_the_hosmoz_network(self):
         return self.networks.filter(slug="hosmoz").exists()
 
