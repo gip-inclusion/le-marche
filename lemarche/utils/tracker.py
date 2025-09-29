@@ -142,10 +142,6 @@ class TrackerMiddleware:
             elif page == reverse("dashboard_siaes:siae_search_by_siret"):  # adopted search action
                 action = "adopt_search"
 
-            elif page in (reverse("pages:impact_calculator"),):
-                extra_data["results_count"] = (
-                    context_data.get("results").count() if context_data.get("results") else None
-                )
             elif page in (reverse("pages:buyer_social_impact_calculator"),):
                 extra_data["results"] = context_data.get("results")
 

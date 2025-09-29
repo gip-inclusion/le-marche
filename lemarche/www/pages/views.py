@@ -12,12 +12,7 @@ from wagtail.models import Site as WagtailSite
 
 from lemarche.siaes.models import Siae, SiaeGroup
 from lemarche.utils.tracker import track
-from lemarche.www.pages.forms import (
-    CompanyReferenceCalculatorForm,
-    ContactForm,
-    ImpactCalculatorForm,
-    SocialImpactBuyersCalculatorForm,
-)
+from lemarche.www.pages.forms import CompanyReferenceCalculatorForm, ContactForm, SocialImpactBuyersCalculatorForm
 from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
 
 
@@ -83,55 +78,6 @@ class TrackView(View):
             meta=data.get("meta", None),
         )
         return JsonResponse({"message": "success"})
-
-
-class ImpactCalculatorView(FormMixin, ListView):
-    template_name = "pages/impact-calculator.html"
-    form_class = ImpactCalculatorForm
-
-    def get_queryset(self):
-        """
-        Filter results.
-        - filter using the SiaeFilterForm
-        - aggregate on impact values
-        """
-        self.filter_form = ImpactCalculatorForm(data=self.request.GET)
-        results = self.filter_form.filter_queryset()
-        return results
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if len(self.request.GET.keys()):
-            siae_search_form = self.filter_form if self.filter_form else ImpactCalculatorForm(data=self.request.GET)
-            context["form"] = self.filter_form
-            if siae_search_form.is_valid():
-                # results
-                context["show_results"] = True
-                context["results"] = self.get_queryset()
-                context["results_aggregated"] = self.filter_form.impact_aggregation(context["results"])
-                context["current_search_query"] = self.request.GET.urlencode()
-                # perimeters
-                current_perimeters = siae_search_form.cleaned_data.get("perimeters")
-                if current_perimeters:
-                    context["current_perimeters"] = list(current_perimeters.values("id", "slug", "name"))
-                    current_perimeters_list = list(current_perimeters.order_by("name").values_list("name", flat=True))
-                    context["current_perimeters_pretty"] = self.limit_list(current_perimeters_list)
-                # sectors
-                current_sectors = siae_search_form.cleaned_data.get("sectors")
-                if current_sectors:
-                    context["current_sectors"] = list(current_sectors.values("id", "slug", "name"))
-                    current_sectors_list = list(current_sectors.order_by("name").values_list("name", flat=True))
-                    context["current_sectors_pretty"] = self.limit_list(current_sectors_list)
-        return context
-
-    def limit_list(self, listing: list, limit: int = 3, with_end_elmt=True, end_position="...", sorted=True):
-        if sorted:
-            listing.sort()
-        if len(listing) > limit:
-            listing = listing[:limit]
-            if with_end_elmt:
-                listing.append(end_position)
-        return listing
 
 
 def calculate_social_impact_buyers(amount: int):

@@ -4,7 +4,6 @@ from django.views.generic import TemplateView
 from lemarche.www.pages.views import (
     CompanyReferenceCalculatorView,
     ContactView,
-    ImpactCalculatorView,
     SiaeGroupListView,
     SitemapView,
     SocialImpactBuyersCalculatorView,
@@ -20,7 +19,6 @@ app_name = "pages"
 urlpatterns = [
     path("contact/", ContactView.as_view(), name="contact"),
     # Calculator endpoints
-    path("calibrer-achat-socialement-responsable/", ImpactCalculatorView.as_view(), name="impact_calculator"),
     path(
         "calculer-impact-social-achat-inclusif/",
         SocialImpactBuyersCalculatorView.as_view(),
