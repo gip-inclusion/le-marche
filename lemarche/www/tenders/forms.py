@@ -498,6 +498,15 @@ class SiaeSelectFieldsForm(forms.Form):
         ]
 
         self.fields["selected_fields"].choices = selectable_fields
+        self.fields["selected_fields"].initial = [
+            "name",
+            "siret",
+            "siae_answers",
+            "contact_first_name",
+            "contact_last_name",
+            "contact_email",
+            "contact_phone",
+        ]
 
 
 class TenderReminderForm(forms.Form):

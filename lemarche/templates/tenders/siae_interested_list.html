@@ -183,22 +183,23 @@
                                                         <label class="fr-label">{{ download_form.selected_fields.label }}</label>
 
                                                           <ul class="fr-tags-group">
-                                                            {% for value, label in download_form.selected_fields.field.choices %}
-                                                            <li x-data="{ {{ value }}: false }">
-                                                                {# real checkbox are hidden here, they are used for form submission #}
-                                                              <input type="checkbox"
-                                                                     name="{{ download_form.selected_fields.html_name }}"
-                                                                     value="{{ value }}"
-                                                                     x-model="{{ value }}"
-                                                                     style="display: none;"
-                                                              >
+                                                            {% for checkbox in download_form.selected_fields %}
 
-                                                              <button type="button" class="fr-tag"
-                                                                      x-on:click="{{ value }} = !{{ value }}"
-                                                                      aria-pressed="false"
-                                                              >
-                                                                  {{ label }}
-                                                              </button>
+                                                                <li x-data="{ {{ checkbox.data.value }}: {{ checkbox.data.attrs.checked|yesno:'true,false' }} }">
+                                                                    {# real checkbox are hidden here, they are used for form submission #}
+                                                                    <input type="checkbox"
+                                                                           name="{{ download_form.selected_fields.html_name }}"
+                                                                           value="{{ checkbox.data.value }}"
+                                                                           x-model="{{ checkbox.data.value }}"
+                                                                           style="display: none;"
+                                                                    >
+
+                                                                    <button type="button" class="fr-tag"
+                                                                            x-on:click="{{ checkbox.data.value }} = !{{ checkbox.data.value }}"
+                                                                            aria-pressed="{{ checkbox.data.attrs.checked|yesno:'true,false' }}"
+                                                                    >
+                                                                        {{ checkbox.choice_label }}
+                                                                    </button>
                                                             </li>
                                                             {% endfor %}
                                                           </ul>
