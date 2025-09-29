@@ -136,8 +136,12 @@
                         </div>
                         <div>
                             <h2>Secteurs d'activité</h2>
-                            {% for activity in siae.activities.all %}
-                                <div class="fr-accordions-group">{% include "siaes/_siae_activity_content.html" with activity=activity %}</div>
+
+                            {% for group, sector_dict in siae.grouped_activities.items %}
+                              {{ group }} {{ sector_dict }}
+                                {% for sector, activity in  sector_dict.items %}
+                                  <div class="fr-accordions-group">{% include "siaes/_siae_activity_content.html" with activity=activity group=group%}</div>
+                                {% endfor %}
                             {% empty %}
                                 <p>Non renseigné</p>
                             {% endfor %}
