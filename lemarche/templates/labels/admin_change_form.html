@@ -1,10 +1,8 @@
 {% extends 'admin/change_form.html' %}
-{% load static bootstrap4 theme_inclusion %}
+{% load static %}
 
 {% block after_related_objects %}
     {{ block.super }}
-
-    {% import_static_JS_theme_inclusion %}
 
     <div class="submit-row">
         <div class="form-group">

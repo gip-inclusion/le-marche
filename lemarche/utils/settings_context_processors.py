@@ -51,8 +51,6 @@ def expose_settings(request):
         # forms & docs
         "FACILITATOR_SLIDE": settings.FACILITATOR_SLIDE,
         "FACILITATOR_LIST": settings.FACILITATOR_LIST,
-        "TYPEFORM_BESOIN_ACHAT": settings.TYPEFORM_BESOIN_ACHAT,
-        "TYPEFORM_BESOIN_ACHAT_RECHERCHE": settings.TYPEFORM_BESOIN_ACHAT_RECHERCHE,
         "FORM_PARTENAIRES": settings.FORM_PARTENAIRES,
         "MTCAPTCHA_PUBLIC_KEY": settings.MTCAPTCHA_PUBLIC_KEY,
         "SIAE_HOME_PAGE": settings.SIAE_HOME_PAGE,

@@ -1,4 +1,4 @@
-{% load static theme_inclusion %}
+{% load static %}
 <footer class="fr-footer" role="contentinfo" id="footer">
     <div class="fr-footer__top">
         <div class="fr-container">
@@ -45,7 +45,7 @@
         <div class="fr-footer__body">
             <div class="fr-footer__brand fr-enlarge-link">
                 <a href="https://inclusion.beta.gouv.fr/" target="_blank" aria-label="Découvrez les services de la plateforme de l'inclusion (lien externe)">
-                    <img src="{% static_theme_images 'logo-plateforme-inclusion.svg' %}" alt="Logo de la Plateforme de l'inclusion" height="80">
+                    <img src="{% static 'vendor/theme-inclusion/images/logo-plateforme-inclusion.svg' %}" alt="Logo de la Plateforme de l'inclusion" height="80">
                 </a>
             </div>
             <div class="fr-footer__content">

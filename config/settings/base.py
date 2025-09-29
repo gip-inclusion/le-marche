@@ -14,7 +14,6 @@ import locale
 import os
 
 import environ
-from django.contrib.messages import constants as messages
 
 
 locale.setlocale(locale.LC_TIME, "")
@@ -117,7 +116,6 @@ DJANGO_DSFR_APPS = [
 
 THIRD_PARTY_APPS = [
     "anymail",  # django-anymail
-    "bootstrap4",  # django-bootstrap4
     "ckeditor",  # django-ckeditor
     "compressor",  # django-compressor
     "corsheaders",  # django-cors-headers
@@ -125,7 +123,6 @@ THIRD_PARTY_APPS = [
     "django_better_admin_arrayfield",  # django-better-admin-arrayfield
     "django_filters",  # django-filter
     "django_htmx",  # django-htmx
-    "django_select2",  # django-select2
     "drf_spectacular",  # drf-spectacular
     "formtools",  # django-formtools (Multistep and preview forms)
     "huey.contrib.djhuey",  # huey (Async tasks)
@@ -550,8 +547,6 @@ SLACK_WEBHOOK_C4_SUPPORT_CHANNEL = env.str("SLACK_WEBHOOK_C4_SUPPORT_CHANNEL", "
 SLACK_WEBHOOK_C4_TENDER_CHANNEL = env.str("SLACK_WEBHOOK_C4_TENDER_CHANNEL", "set-it")
 SLACK_WEBHOOK_C4_TECH_NOTIFICATIONS_CHANNEL = env.str("SLACK_WEBHOOK_C4_TECH_NOTIFICATIONS_CHANNEL", "set-it")
 
-# API Marché APProch
-MARCHE_APPROCH_TOKEN_RECETTE = env.str("MARCHE_APPROCH_TOKEN_RECETTE", "set-it")
 
 # API Emplois de l'inclusion
 API_EMPLOIS_INCLUSION_URL = "https://emplois.inclusion.beta.gouv.fr/api/v1"
@@ -641,33 +636,6 @@ CRISP_ID = env.str("CRISP_ID", "")
 METABASE_SITE_URL = "https://stats.inclusion.beta.gouv.fr"
 METABASE_PUBLIC_DASHBOARD_UUID = "44326ea9-e67c-45fc-9603-831a7dad1c8c"
 METABASE_PUBLIC_DASHBOARD_URL = f"{METABASE_SITE_URL}/embed/dashboard/{METABASE_PUBLIC_DASHBOARD_UUID}#titled=false"
-
-
-# django-bootstrap4
-# https://django-bootstrap4.readthedocs.io/en/latest/settings.html
-# ------------------------------------------------------------------------------
-
-BOOTSTRAP4 = {
-    "required_css_class": "form-group-required",
-    "set_placeholder": False,
-    # Remove the default `.is-valid` class that Bootstrap will style in green
-    # otherwise empty required fields will be marked as valid. This might be
-    # a bug in django-bootstrap4, it should be investigated.
-    "success_css_class": "",
-}
-
-
-# Connect Bootstrap alerts to Django message tags
-# https://ordinarycoders.com/blog/article/django-messages-framework
-# ------------------------------------------------------------------------------
-
-MESSAGE_TAGS = {
-    messages.DEBUG: "alert-secondary",
-    messages.INFO: "alert-info",
-    messages.SUCCESS: "alert-success",
-    messages.WARNING: "alert-warning",
-    messages.ERROR: "alert-danger",
-}
 
 
 # Async Configuration Options: Huey
@@ -815,8 +783,6 @@ FAVORITE_LIST_TITLE = "Liste d'achat favoris"
 
 FACILITATOR_SLIDE = "https://docs.google.com/presentation/d/e/2PACX-1vRd5lfQWHNEiUNw8yQqBfBnkGyaud5g440IsBvZm9XLEuawQNOfG91MwBlP24Z66A/pub?start=false&loop=false&delayms=3000&slide=id.p1"  # noqa
 FACILITATOR_LIST = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRtavj-NHym5wjgDu9KRTIDPVZtujFlaSL9Z_BYQ7nWrmkcbGRuL12-VxiNctaOTsgdjQURuPLr57R/pubhtml"  # noqa
-TYPEFORM_BESOIN_ACHAT = "https://itou.typeform.com/to/KWViHaph"
-TYPEFORM_BESOIN_ACHAT_RECHERCHE = "https://itou.typeform.com/to/nxG0HlYx"
 FORM_PARTENAIRES = (
     "https://docs.google.com/forms/d/e/1FAIpQLScx1k-UJ-962_rSgPJGabc327gGjFUho6ypgcZHCubuwTl7Lg/viewform"
 )

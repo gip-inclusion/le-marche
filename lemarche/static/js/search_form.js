@@ -51,19 +51,3 @@ function resetForm() {
     clearFormFields(form);
     document.dispatchEvent(new CustomEvent('reset-all-filter'));
 }
-
-function showSearchFilterForm(searchFilterTab, searchFilterContent) {
-    searchFilterTab.classList.add("active");
-    searchFilterTab.setAttribute("aria-selected", "true");
-    searchFilterContent.classList.add("show", "active");
-}
-function hideSearchFilterForm(searchFilterTab, searchFilterContent) {
-    searchFilterTab.classList.remove("active");
-    searchFilterTab.setAttribute("aria-selected", "false");
-    searchFilterContent.classList.remove("show", "active");
-}
-function showSearchTextForm(searchTextTab, searchTextContent) {
-    searchTextTab.classList.add("active");
-    searchTextTab.setAttribute("aria-selected", "true");
-    searchTextContent.classList.add("show", "active");
-}

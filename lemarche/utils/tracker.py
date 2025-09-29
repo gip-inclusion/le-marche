@@ -37,7 +37,6 @@ TRACKER_IGNORE_LIST = [
     "/static",
     "/favicon.ico",
     "/admin",
-    "/select2",
     "/api/perimeters/autocomplete",
     "/media",
     "/track",  # avoid duplicate tracking
