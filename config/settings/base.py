@@ -89,11 +89,6 @@ MEDIA_URL = "/media/"
 AUTH_USER_MODEL = "users.User"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-PRIORITY_APPS = [
-    # Force whitenoise to serve assets in debug mode
-    "whitenoise.runserver_nostatic"
-]
-
 DJANGO_APPS = [
     "django.contrib.auth",
     "django.contrib.admin",
@@ -190,13 +185,11 @@ WAGTAIL_APPS = [
     "content_manager",
 ]
 
-INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + DJANGO_DSFR_APPS + THIRD_PARTY_APPS + LOCAL_APPS + WAGTAIL_APPS
+INSTALLED_APPS = DJANGO_APPS + DJANGO_DSFR_APPS + THIRD_PARTY_APPS + LOCAL_APPS + WAGTAIL_APPS
 
 MIDDLEWARE = [
     # Generate request Id
     "django_datadog_logger.middleware.request_id.RequestIdMiddleware",
-    # Gzip
-    "django.middleware.gzip.GZipMiddleware",
     # Django stack
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -208,7 +201,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     # Third-party Middlewares
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django_htmx.middleware.HtmxMiddleware",  # django-htmx
     "simple_history.middleware.HistoryRequestMiddleware",  # django-simple-history
     "allauth.account.middleware.AccountMiddleware",
