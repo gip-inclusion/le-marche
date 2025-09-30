@@ -1715,7 +1715,7 @@ class TenderSiaeListView(TestCase):
 
     def test_order_tender_siae_by_last_detail_contact_click_date(self):
         # TenderSiae are ordered by -created_at by default
-        self.assertEqual(self.tender_1.tendersiae_set.first().id, self.tendersiae_1_5.id)
+        self.assertEqual(self.tender_1.tendersiae_set.first().id, self.tendersiae_1_not_interested.id)
         # but TenderSiaeListView are ordered by -detail_contact_click_date
         self.client.force_login(self.user_buyer_1)
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug, "status": "INTERESTED"})
