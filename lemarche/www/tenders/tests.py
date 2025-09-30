@@ -1639,6 +1639,11 @@ class TenderSiaeListView(TestCase):
             detail_display_date=timezone.now(),
             detail_contact_click_date=timezone.now() - timedelta(hours=2),
         )
+        cls.tendersiae_1_not_interested = TenderSiae.objects.create(
+            tender=cls.tender_1,
+            siae=cls.siae_5,
+            detail_not_interested_click_date=timezone.now(),
+        )
         cls.tendersiae_2_1 = TenderSiae.objects.create(
             tender=cls.tender_2,
             siae=cls.siae_2,
@@ -1702,6 +1707,11 @@ class TenderSiaeListView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["siaes"]), 3)  # detail_contact_click_date
+        # NOT_INTERESTED
+        url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug, "status": "NOT_INTERESTED"})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["siaes"]), 1)  # detail_contact_click_date
 
     def test_order_tender_siae_by_last_detail_contact_click_date(self):
         # TenderSiae are ordered by -created_at by default
