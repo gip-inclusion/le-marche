@@ -105,10 +105,11 @@
                         </div>
                     </div>
                 {% endif %}
-                {% if siae.prefetched_tendersiae.0.detail_not_interested_feedback %}
+
+                {% if siae.not_interested_feedback %}
                     <div x-show="showNotInterested" class="fr-mt-4w">
                             <h4 class="fr-mb-1w">Ce fournisseur n'est pas intéressé car: </h4>
-                            <p>{{ siae.prefetched_tendersiae.0.detail_not_interested_feedback }}</p>
+                            <p>{{ siae.not_interested_feedback }}</p>
                     </div>
                     <div class="fr-grid-row fr-grid-row--center fr-mt-4w">
                         <div class="fr-col-12 fr-col-md-4">

@@ -723,12 +723,7 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
                 "questionanswer_set",
                 queryset=QuestionAnswer.objects.filter(question__tender=self.tender),
                 to_attr="questions_for_tender",
-            ),
-            Prefetch(
-                "tendersiae_set",
-                queryset=TenderSiae.objects.filter(tender=self.tender),
-                to_attr="prefetched_tendersiae",
-            ),
+            )
         )
         tender_siae = TenderSiae.objects.filter(tender=self.tender, siae=OuterRef("pk"))
         qs = qs.annotate(not_interested_feedback=Subquery(tender_siae.values("detail_not_interested_feedback")[:1]))
