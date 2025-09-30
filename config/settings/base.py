@@ -891,6 +891,7 @@ WAGTAILTRANSFER_SECRET_KEY = os.getenv("WAGTAILTRANSFER_SOURCES_PROD_SECRET", "7
 # Specific home and purchasing impact page is setted here to avoid queries on every page
 SIAE_HOME_PAGE = env.str("SIAE_HOME_PAGE", "/accueil-structure/")
 PURCHASING_IMPACT_PAGE = env.str("PURCHASING_IMPACT_PAGE", "/ressources/auditer-vos-achats/")
+POTENTIAL_ANALYSIS_PAGE = env.str("POTENTIAL_ANALYSIS_PAGE", "/ressources/analyse-programmation-achats/")
 # Static pages
 ABOUT = env.str("ABOUT", "/qui-sommes-nous/")
 ACCESSIBILITY = env.str("ACCESSIBILITY", "/accessibilite/")
