@@ -723,8 +723,14 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
                 "questionanswer_set",
                 queryset=QuestionAnswer.objects.filter(question__tender=self.tender),
                 to_attr="questions_for_tender",
-            )
+            ),
+            Prefetch(
+                "tendersiae_set",
+                queryset=TenderSiae.objects.filter(tender=self.tender),
+                to_attr="prefetched_tendersiae",
+            ),
         )
+
         qs = qs.with_is_local(perimeter=self.tender.location)
         return qs
 

@@ -2,7 +2,7 @@
 <div class="fr-card fr-card--horizontal{% if siae.super_badge %} super-badge-card{% endif %}">
     <div class="fr-card__body">
         <div class="fr-card__content">
-            <div class="fr-card__desc" x-data="{ showQuestions: false }">
+            <div class="fr-card__desc" x-data="{ showQuestions: false, showNotInterested: false }">
                 <div class="fr-grid-row">
                     <div class="fr-col-auto">
                         {% if siae.logo_url %}
@@ -101,6 +101,23 @@
                                 <span x-show="!showQuestions" class="fr-icon-arrow-down-s-line"></span>
                                 <span x-show="showQuestions">Masquer les réponses aux questions</span>
                                 <span x-show="showQuestions" class="fr-icon-arrow-up-s-line"></span>
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if siae.prefetched_tendersiae.0.detail_not_interested_feedback %}
+                    <div x-show="showNotInterested" class="fr-mt-4w">
+                            <h4 class="fr-mb-1w">Ce fournisseur n'est pas intéressé car: </h4>
+                            <p>{{ siae.prefetched_tendersiae.0.detail_not_interested_feedback }}</p>
+                    </div>
+                    <div class="fr-grid-row fr-grid-row--center fr-mt-4w">
+                        <div class="fr-col-12 fr-col-md-4">
+                            <button @click="showNotInterested = !showNotInterested"
+                                    class="fr-btn fr-btn--secondary fr-btn--icon-left">
+                                <span x-show="!showNotInterested">Afficher pourquoi le fournisseur n'est pas intéressé</span>
+                                <span x-show="!showNotInterested" class="fr-icon-arrow-down-s-line"></span>
+                                <span x-show="showNotInterested">Masquer pourquoi le fournisseur n'est pas intéressé</span>
+                                <span x-show="showNotInterested" class="fr-icon-arrow-up-s-line"></span>
                             </button>
                         </div>
                     </div>
