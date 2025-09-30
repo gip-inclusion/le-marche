@@ -116,3 +116,16 @@
         <script type="text/javascript" src="{% static 'js/favorite_item.js' %}"></script>
     {% endif %}
 {% endblock extra_js %}
+{% block extra_css %}
+    <style>
+    .map-holder {
+        height: 19rem;
+        width: 100%;
+        border-radius: 5px;
+        border: $gray-500 solid 1px;
+    }
+    #map-siae {
+        height: 19rem;
+    }
+    </style>
+{% endblock extra_css %}
