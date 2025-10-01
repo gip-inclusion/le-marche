@@ -138,10 +138,18 @@
                             <h2>Secteurs d'activité</h2>
 
                             {% for group, sector_dict in siae.grouped_activities.items %}
-                              {{ group }} {{ sector_dict }}
-                                {% for sector, activity in  sector_dict.items %}
-                                  <div class="fr-accordions-group">{% include "siaes/_siae_activity_content.html" with activity=activity group=group%}</div>
-                                {% endfor %}
+                                <section class="fr-accordion">
+                                    <h3 class="fr-accordion__title">
+                                        <button class="fr-accordion__btn"
+                                                aria-expanded="false"
+                                                aria-controls="accordion-group-{{ group.id }}">{{ group }}</button>
+                                    </h3>
+                                    <div class="fr-collapse" id="accordion-group-{{ group.id }}">
+                                        {% for sector, activity in  sector_dict.items %}
+                                            {% include "siaes/_siae_activity_content.html" with activity=activity group=group%}
+                                        {% endfor %}
+                                    </div>
+                                </section>
                             {% empty %}
                                 <p>Non renseigné</p>
                             {% endfor %}
