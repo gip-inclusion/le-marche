@@ -11,18 +11,19 @@
 		<button class="fr-nav__btn" aria-expanded="false" aria-controls="menu-solutions">Solutions</button>
 		<div class="fr-collapse fr-menu" id="menu-solutions">
 			<ul class="fr-menu__list">
-				<li>
-					<a id="header-dropdown-siae-search-btn" class="fr-nav__link" href="{% url 'siae:search_results' %}" target="_self">Moteur de recherche multicritères</a>
+                <li>
+					<a id="header-valoriser" class="fr-nav__link" href="{{ PURCHASING_IMPACT_PAGE }}" target="_self">Auditer vos achats</a>
 				</li>
-				<li>
+                <li>
+					<a id="header-potentiel" class="fr-nav__link" href="{{ POTENTIAL_ANALYSIS_PAGE }}" target="_self">Analyser votre potentiel</a>
+				</li>
+                <li>
 					<a id="header-dropdown-tender-create-btn" class="fr-nav__link" href="{% url 'tenders:create' %}" target="_self">Sourcing inversé</a>
 				</li>
 				<li>
-					<a id="header-valoriser" class="fr-nav__link" href="{{ PURCHASING_IMPACT_PAGE }}" target="_self">Auditer vos achats</a>
+					<a id="header-dropdown-siae-search-btn" class="fr-nav__link" href="{% url 'siae:search_results' %}" target="_self">Moteur de recherche multicritères</a>
 				</li>
-				<li>
-					<a id="header-calibrer" class="fr-nav__link" href="{% url 'pages:impact_calculator' %}" target="_self">Calibrer vos achats</a>
-				</li>
+
 				<li>
 					<a id="header-calculer-impact-social-achat" class="fr-nav__link" href="{% url 'pages:buyer_social_impact_calculator' %}" target="_self">Calculer l'impact social d'un achat inclusif</a>
 				</li>
