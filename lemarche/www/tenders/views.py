@@ -10,7 +10,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
-from django.db.models import Prefetch
+from django.db.models import OuterRef, Prefetch, Subquery
 from django.forms import formset_factory
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
@@ -725,6 +725,9 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
                 to_attr="questions_for_tender",
             )
         )
+        tender_siae = TenderSiae.objects.filter(tender=self.tender, siae=OuterRef("pk"))
+        qs = qs.annotate(not_interested_feedback=Subquery(tender_siae.values("detail_not_interested_feedback")[:1]))
+
         qs = qs.with_is_local(perimeter=self.tender.location)
         return qs
 
