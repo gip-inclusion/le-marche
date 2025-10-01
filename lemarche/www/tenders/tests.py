@@ -1711,7 +1711,8 @@ class TenderSiaeListView(TestCase):
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug, "status": "NOT_INTERESTED"})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["siaes"]), 1)  # detail_contact_click_date
+        self.assertEqual(len(response.context["siaes"]), 1)  # detail_not_interested_click_date
+        self.assertEqual(response.context["siaes"][0], self.siae_5)
 
     def test_order_tender_siae_by_last_detail_contact_click_date(self):
         # TenderSiae are ordered by -created_at by default
