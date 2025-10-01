@@ -308,3 +308,15 @@ p.fr-tag--green-bourgeon {
 .logo-link-no-icon {
     background-image: none !important;
 }
+
+/*Minimap*/
+.map-holder {
+    height: 19rem;
+    width: 100%;
+    border-radius: 5px;
+}
+
+.map-canvas {
+    height: 19rem;
+}
+
