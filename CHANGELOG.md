@@ -6,6 +6,61 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2025.5.0](https://github.com/gip-inclusion/le-marche/compare/v2025.4.0...v2025.5.0) (2025-10-01)
+
+
+### Features
+
+* Afficher le nombre de structures locales dans l'analyse de la programmation achat ([#1780](https://github.com/gip-inclusion/le-marche/issues/1780)) ([cb22fea](https://github.com/gip-inclusion/le-marche/commit/cb22fea3787a736b4204144cc41f4f33a1fe2fd2))
+* Ajout de données factices pour les démos de la page "Ma part d'achat inclusif" ([#1750](https://github.com/gip-inclusion/le-marche/issues/1750)) ([9519936](https://github.com/gip-inclusion/le-marche/commit/9519936e07cd5c77cd0c15c345f77375d93e40aa))
+* Bouton de relance des fournisseurs ([#1781](https://github.com/gip-inclusion/le-marche/issues/1781)) ([bb9b180](https://github.com/gip-inclusion/le-marche/commit/bb9b1809634f148a694ac81d063ca6a736c0073c))
+* Bouton santé financière des structures ([#1779](https://github.com/gip-inclusion/le-marche/issues/1779)) ([0cfbc0e](https://github.com/gip-inclusion/le-marche/commit/0cfbc0eb72855745522a1381545fdb692450b7ab))
+* **brevo:** Ajout d'emails transactionnels via compte Brevo spécifique à Tally ([#1733](https://github.com/gip-inclusion/le-marche/issues/1733)) ([8dc8acb](https://github.com/gip-inclusion/le-marche/commit/8dc8acbbe42123ca87443ca4ec8ddd50a3fe2db1))
+* **brevo:** Ajout de la synchronisation des entreprises 2/2 ([#1720](https://github.com/gip-inclusion/le-marche/issues/1720)) ([e0989a1](https://github.com/gip-inclusion/le-marche/commit/e0989a161fecd8c71efac451038de8f956c420ed))
+* Compteur vue sur un besoins plus incitatif ([#1757](https://github.com/gip-inclusion/le-marche/issues/1757)) ([c8f6af2](https://github.com/gip-inclusion/le-marche/commit/c8f6af2e6af0b1af9b2aa9629225762e7645dac0))
+* **Dépôt de besoin:** Envoi d'un lien direct vers l'export xls des structures ([#1774](https://github.com/gip-inclusion/le-marche/issues/1774)) ([1c0998b](https://github.com/gip-inclusion/le-marche/commit/1c0998b028c9f591aff755bdf0ffe3cf4ef5a121))
+* **Entreprise:** Établir des correspondances entre les références clients et les entreprises ([#1754](https://github.com/gip-inclusion/le-marche/issues/1754)) ([63a1641](https://github.com/gip-inclusion/le-marche/commit/63a1641bdc0d6a2999306982106306a1ebdb83d0))
+* Filtres sur les achats inclusifs ([#1776](https://github.com/gip-inclusion/le-marche/issues/1776)) ([81b5636](https://github.com/gip-inclusion/le-marche/commit/81b56360f00161d874180d58f5dfa03bdaeb4103))
+* Import par lot d'utilisateurs de type partenaire pour les facilitateurs ([#1737](https://github.com/gip-inclusion/le-marche/issues/1737)) ([e0df268](https://github.com/gip-inclusion/le-marche/commit/e0df268d0dc89c625c55cb33cad7e6d5bed4096d))
+* Instructions automatiques pour les DDB ([#1726](https://github.com/gip-inclusion/le-marche/issues/1726)) ([831b8a0](https://github.com/gip-inclusion/le-marche/commit/831b8a08e7e4de808ce337e6d893aaba27d97b00))
+* Ne pas afficher les questions suggérées pour les Appels d'Offres ([#1748](https://github.com/gip-inclusion/le-marche/issues/1748)) ([46c46a8](https://github.com/gip-inclusion/le-marche/commit/46c46a899695c3f4e25d546860e6c32da539a13b))
+* Onglet "Pas intéressé" pour les projets d'achats acheteurs ([#1797](https://github.com/gip-inclusion/le-marche/issues/1797)) ([2820d55](https://github.com/gip-inclusion/le-marche/commit/2820d55c033df5310c3538369795bba91394c862))
+* **Part d'achats inclusifs:** Création du modèle de données ([#1736](https://github.com/gip-inclusion/le-marche/issues/1736)) ([99f1662](https://github.com/gip-inclusion/le-marche/commit/99f1662ae420649bc5db17225ffe19821a9bb6d9))
+* **Part d'achats inclusifs:** page de visualisation des statistiques ([#1742](https://github.com/gip-inclusion/le-marche/issues/1742)) ([6b51a46](https://github.com/gip-inclusion/le-marche/commit/6b51a46c3f3e35d30532ca17d6c8826c997eb03b))
+* Préselection de champs pour l'export de fournisseurs ([#1795](https://github.com/gip-inclusion/le-marche/issues/1795)) ([93fc76e](https://github.com/gip-inclusion/le-marche/commit/93fc76e43f235b76fb904784edeeb3522042a399))
+* Recherche par SIRET des fournisseurs inclusifs ([#1777](https://github.com/gip-inclusion/le-marche/issues/1777)) ([a597b6e](https://github.com/gip-inclusion/le-marche/commit/a597b6ec7747032c2ef48829695a5bb57b5ae1c8))
+* Sélection des colonnes exportables ([#1755](https://github.com/gip-inclusion/le-marche/issues/1755)) ([06c2dfe](https://github.com/gip-inclusion/le-marche/commit/06c2dfeac4824e530fd250dd6dd4f96cd2fed5e1))
+* **SiaeActivity:** Ajout de plusieurs activités en une validation ([#1687](https://github.com/gip-inclusion/le-marche/issues/1687)) ([fec6aa1](https://github.com/gip-inclusion/le-marche/commit/fec6aa171f618cab4536e6232341b2a787172357))
+* **Structure:** Ajout d'un badge "Déjà référencé" sur la liste des structures ciblées par un dépôt de besoin ([#1766](https://github.com/gip-inclusion/le-marche/issues/1766)) ([447a405](https://github.com/gip-inclusion/le-marche/commit/447a405c5d7247f495e89d54e72a6a083f4fefc0))
+* **Structure:** Ajout du badge Hosmoz ([#1760](https://github.com/gip-inclusion/le-marche/issues/1760)) ([c9f7125](https://github.com/gip-inclusion/le-marche/commit/c9f71255fc07f1ccfadc53b8afed3a1e0ea49ee0))
+* Synchronisation des contacts  et entreprise (3/3) ([#1739](https://github.com/gip-inclusion/le-marche/issues/1739)) ([37564a8](https://github.com/gip-inclusion/le-marche/commit/37564a89e25f5c1221d6a1dd3a1d787a8c72a1f0))
+* **Tenders:** Afficher les fournisseurs locaux ([#1775](https://github.com/gip-inclusion/le-marche/issues/1775)) ([bd9840b](https://github.com/gip-inclusion/le-marche/commit/bd9840ba9211b44f070cba6f15189048b695f6ef))
+* **tenders:** Ajout de labels pour les entreprises d'acheteurs ([#1763](https://github.com/gip-inclusion/le-marche/issues/1763)) ([11159d2](https://github.com/gip-inclusion/le-marche/commit/11159d287952c4fc4917b839b366898b02b9fb29))
+
+
+### Bug Fixes
+
+* **Admin:** Correction sur l'ajout d'une structure ([#1792](https://github.com/gip-inclusion/le-marche/issues/1792)) ([9a248d9](https://github.com/gip-inclusion/le-marche/commit/9a248d9f3bb9fe667427fcb3c6034a363efb658a))
+* **Admin:** Corrections rapides dans l'admin ([#1753](https://github.com/gip-inclusion/le-marche/issues/1753)) ([0e664d9](https://github.com/gip-inclusion/le-marche/commit/0e664d9170b52758cdbd57bd6238edbfbbd3d8c8))
+* **admin:** Suppression de la possibilité d'ajouter dans l'admin des correspondances entre les références clients et les entreprises ([#1782](https://github.com/gip-inclusion/le-marche/issues/1782)) ([fcc565b](https://github.com/gip-inclusion/le-marche/commit/fcc565b2ef8a7197e07ce188c1ae04a6bf5b62bd))
+* Affichage de la carte sur la fiche fournisseur ([#1798](https://github.com/gip-inclusion/le-marche/issues/1798)) ([0e33816](https://github.com/gip-inclusion/le-marche/commit/0e338163852dfb78402f0b3661e0b1944511774f))
+* Ajout du template pour les erreurs 429 ([#1769](https://github.com/gip-inclusion/le-marche/issues/1769)) ([9878827](https://github.com/gip-inclusion/le-marche/commit/9878827d0e53961f72402881028aa4a7573ed4fb))
+* **API:** correction de la mise en forme de l'accueil API ([#1778](https://github.com/gip-inclusion/le-marche/issues/1778)) ([ac4afb8](https://github.com/gip-inclusion/le-marche/commit/ac4afb81abdd569d6f2995a8660b4f07ef7c44fd))
+* Bug d'instruction de DDB manquant pour l'API ([#1740](https://github.com/gip-inclusion/le-marche/issues/1740)) ([eb7e879](https://github.com/gip-inclusion/le-marche/commit/eb7e8796f40444e9a8c91d55721cb41cb7fdab25))
+* Bug non bloquant sur la sélection des activités d'un structure ([#1786](https://github.com/gip-inclusion/le-marche/issues/1786)) ([af2e875](https://github.com/gip-inclusion/le-marche/commit/af2e875434434c56d90a29512d4fd93ebe084787))
+* Bug sur l'affichage de la liste des favoris ([#1746](https://github.com/gip-inclusion/le-marche/issues/1746)) ([a6b7b27](https://github.com/gip-inclusion/le-marche/commit/a6b7b27f61cf45007735b14ec3dcee178c7fcc19))
+* Chargement des comptes structures très lents ([#1738](https://github.com/gip-inclusion/le-marche/issues/1738)) ([43fc91e](https://github.com/gip-inclusion/le-marche/commit/43fc91e6b1adaff0abe769bb2687651e84c025e5))
+* Correction de l'affichage des coordonnées sur un dépôt de besoin ([#1744](https://github.com/gip-inclusion/le-marche/issues/1744)) ([4ab1499](https://github.com/gip-inclusion/le-marche/commit/4ab1499995ab60024f6ad1e97daf46b7f83b25ca))
+* Correction des tests sur le formatage des nombres sur la page de visualisation de la part d'achats inclusifs ([#1747](https://github.com/gip-inclusion/le-marche/issues/1747)) ([f536588](https://github.com/gip-inclusion/le-marche/commit/f536588de49e435db0d729f9e9eca042fc26ed5a))
+* **Favoris:** Bug lorsque l'on veut supprimer un favoris qui est dans plusieurs liste ([#1768](https://github.com/gip-inclusion/le-marche/issues/1768)) ([aff3aeb](https://github.com/gip-inclusion/le-marche/commit/aff3aeb97df5501eb191fe985097f4e76ebc2d85))
+* L'envoi de mail transactionnel passe par une tache Huey ([#1743](https://github.com/gip-inclusion/le-marche/issues/1743)) ([e9c40be](https://github.com/gip-inclusion/le-marche/commit/e9c40be81092e711b9b154c86427aea6f40a68d0))
+* L'inscription avec une adresse déjà enregistrée causait un bug ([#1741](https://github.com/gip-inclusion/le-marche/issues/1741)) ([c31a0b0](https://github.com/gip-inclusion/le-marche/commit/c31a0b0c183c07eeb5d205a6cc7a41ac16158c2f))
+* Lorsque l'acheteur n'avait aucune question, la texte de la modale n'était pas adapté ([#1745](https://github.com/gip-inclusion/le-marche/issues/1745)) ([f4d7e8a](https://github.com/gip-inclusion/le-marche/commit/f4d7e8a4a752ad331ff2b5a5a2d3e96adc08cdbb))
+* Mauvais lookup pour l'ajout de groupements sur l'admin ([#1756](https://github.com/gip-inclusion/le-marche/issues/1756)) ([c5a9db3](https://github.com/gip-inclusion/le-marche/commit/c5a9db3e975b3a69d638785f3cc087381eb92eb2))
+* **Part d'achat inclusif:** correction du problème de performance ([#1783](https://github.com/gip-inclusion/le-marche/issues/1783)) ([31c775f](https://github.com/gip-inclusion/le-marche/commit/31c775f96c8ffacf42ec75124c2fdf17b7e5d3ee))
+* **Recherche:** Correction du champs localisation ([#1767](https://github.com/gip-inclusion/le-marche/issues/1767)) ([a0202f1](https://github.com/gip-inclusion/le-marche/commit/a0202f104eb18f32c1c3ae8bfbb2302955101671))
+* Suppression de la validation des urls via des appels http ([#1749](https://github.com/gip-inclusion/le-marche/issues/1749)) ([8e09168](https://github.com/gip-inclusion/le-marche/commit/8e0916867446423e4931425b11c8cef340aec032))
+
 ## [2025.4.0](https://github.com/gip-inclusion/le-marche/compare/v2025.3.0...v2025.4.0) (2025-06-23)
 
 
