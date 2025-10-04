@@ -334,6 +334,27 @@ class TenderCreateStepContactForm(forms.ModelForm):
             self.add_error("response_kind", "Appel d'offre avec lien renseigné.")
 
 
+class TenderCreateStepSignInForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput(), label="Mot de passe")
+
+    class Meta:
+        model = User
+        fields = [
+            "password",
+        ]
+
+    def __init__(self, email, *args, **kwargs):
+        self.user = User.objects.get(email=email)
+        super().__init__(*args, **kwargs)
+
+    def clean_password(self):
+        """Check that the provided password is correct for the user."""
+        password = self.cleaned_data["password"]
+        if not self.user.check_password(password):
+            raise forms.ValidationError("Mot de passe incorrect")
+        return password
+
+
 class TenderCreateStepSurveyForm(forms.ModelForm):
     scale_marche_useless = forms.ChoiceField(
         label=Tender._meta.get_field("scale_marche_useless").help_text,

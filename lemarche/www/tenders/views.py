@@ -56,6 +56,7 @@ from lemarche.www.tenders.forms import (
     TenderCreateStepContactForm,
     TenderCreateStepDetailForm,
     TenderCreateStepGeneralForm,
+    TenderCreateStepSignInForm,
     TenderCreateStepSurveyForm,
     TenderDetailGetParams,
     TenderFilterForm,
@@ -68,6 +69,20 @@ from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
     send_siae_interested_email_to_author,
 )
 from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user, update_or_create_questions_list
+
+
+def show_sign_in_step(wizard) -> bool:
+    """If the provided email matches an existing user, show sign in page"""
+    # calling directly get_cleaned_data_for_step also call get_form_kwargs and leads to issues
+    # because previous step data are needed in some steps
+    cleaned_data = wizard.storage.get_step_data("contact")
+
+    if cleaned_data:
+        # step name 'contact' prefixes contact_email
+        contact_email = cleaned_data.get("contact-contact_email")
+        if contact_email and User.objects.filter(email=contact_email).exists():
+            return True
+    return False
 
 
 class TenderCreateMultiStepView(SessionWizardView):
@@ -92,6 +107,7 @@ class TenderCreateMultiStepView(SessionWizardView):
     STEP_GENERAL = "general"
     STEP_DETAIL = "detail"
     STEP_CONTACT = "contact"
+    STEP_SIGN_IN = "sign_in"
     STEP_SURVEY = "survey"
     STEP_CONFIRMATION = "confirmation"
 
@@ -99,6 +115,7 @@ class TenderCreateMultiStepView(SessionWizardView):
         STEP_GENERAL: "tenders/create_step_general.html",
         STEP_DETAIL: "tenders/create_step_detail.html",
         STEP_CONTACT: "tenders/create_step_contact.html",
+        STEP_SIGN_IN: "tenders/create_step_sign_in.html",
         STEP_SURVEY: "tenders/create_step_survey.html",
         STEP_CONFIRMATION: "tenders/create_step_confirmation.html",
     }
@@ -107,9 +124,15 @@ class TenderCreateMultiStepView(SessionWizardView):
         (STEP_GENERAL, TenderCreateStepGeneralForm),
         (STEP_DETAIL, TenderCreateStepDetailForm),
         (STEP_CONTACT, TenderCreateStepContactForm),
+        (STEP_SIGN_IN, TenderCreateStepSignInForm),
         (STEP_SURVEY, TenderCreateStepSurveyForm),
         (STEP_CONFIRMATION, TenderCreateStepConfirmationForm),
     ]
+
+    # Display sign in form if the condition is True
+    condition_dict = {
+        "sign_in": show_sign_in_step,
+    }
 
     # Add file storage configuration
     # https://django-formtools.readthedocs.io/en/latest/wizard.html#formtools.wizard.views.WizardView.file_storage
@@ -150,6 +173,8 @@ class TenderCreateMultiStepView(SessionWizardView):
             detail_data = self.get_cleaned_data_for_step(self.STEP_DETAIL)
             kwargs["external_link"] = detail_data.get("external_link") if detail_data else None
             kwargs["user"] = self.request.user
+        if step == self.STEP_SIGN_IN:
+            kwargs["email"] = self.get_cleaned_data_for_step(self.STEP_CONTACT)["contact_email"]
         return kwargs
 
     def get_form_instance(self, step):
@@ -289,9 +314,13 @@ class TenderCreateMultiStepView(SessionWizardView):
     def done(self, _, form_dict, **kwargs):
         cleaned_data = self.get_all_cleaned_data()
         # anonymous user? create user (or get an existing user by email)
-        user = get_or_create_user(
-            self.request.user, tender_dict=cleaned_data, source=user_constants.SOURCE_TENDER_FORM
-        )
+        if cleaned_data.get("password"):
+            user = User.objects.get(email=cleaned_data["contact_email"])
+            cleaned_data.pop("password")
+        else:
+            user = get_or_create_user(
+                self.request.user, tender_dict=cleaned_data, source=user_constants.SOURCE_TENDER_FORM
+            )
         # when it's done we save the tender
         tender_instruction = TenderInstruction.objects.get(
             tender_type=cleaned_data.get("kind"), tender_source=TenderSourcesChoices.SOURCE_FORM
