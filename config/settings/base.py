@@ -234,6 +234,7 @@ TEMPLATES = [
                 # custom
                 "lemarche.utils.settings_context_processors.expose_settings",
                 "lemarche.django_shepherd.context_processor.expose_guide_context",
+                "lemarche.utils.context_processors.matomo",
             ],
         },
     },
