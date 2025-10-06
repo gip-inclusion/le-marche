@@ -53,14 +53,16 @@ tarteaucitron.user.matomoHost = "{{ MATOMO_HOST }}";
 </script>
 
 <!-- Matomo UserID -->
-<script>
-    var _paq = window._paq || [];
-    {% if user.is_authenticated %}
+{% if user.is_authenticated and send_to_matomo %}
+    <script>
+        var _paq = window._paq || [];
         _paq.push(['setUserId', '{{ user.id }}']);  // User ID
         _paq.push(['setCustomDimension', 1, '{{ user.kind }}']);  // User Type
         _paq.push(['setCustomDimension', 2, '{{ user.kind_detail_display }}']);  // User Type Display
-    {% endif %}
-</script>
+        _paq.push(['setCustomUrl', new URL('{{ matomo_custom_url }}', window.location.origin).href]);
+    </script>
+{% endif %}
+
 <!-- Matomo Tag Manager -->
 <script>
 var _mtm = window._mtm = window._mtm || [];
