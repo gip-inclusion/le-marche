@@ -136,7 +136,6 @@
                         </div>
                         <div>
                             <h2>Secteurs d'activité</h2>
-
                             {% for group, sector_dict in siae.grouped_activities.items %}
                                 <section class="fr-accordion">
                                     <h3 class="fr-accordion__title">
@@ -146,7 +145,7 @@
                                     </h3>
                                     <div class="fr-collapse" id="accordion-group-{{ group.id }}">
                                         {% for sector, activity in  sector_dict.items %}
-                                            {% include "siaes/_siae_activity_content.html" with activity=activity group=group%}
+                                            {% include "siaes/_siae_activity_content.html" with activity=activity group=group %}
                                         {% endfor %}
                                     </div>
                                 </section>
@@ -175,7 +174,7 @@
                                         {% endfor %}
                                     </div>
                                 {% else %}
-                                    <div class="fr-grid-row">
+                                    <div class="fr-grid-row" x-data="{ showMoreRefClients: false }">
                                         {% for image in siae.client_references.all|slice:":6" %}
                                             <div class="fr-col-12 fr-col-sm-4">
                                                 <img class="fr-responsive-img"
@@ -183,25 +182,23 @@
                                                      alt="{{ image.name }}" />
                                             </div>
                                         {% endfor %}
-                                    </div>
-                                    <div id="collapseMoreRefClients" class="collapse">
-                                        <div class="fr-grid-row">
-                                            {% for image in siae.client_references.all|slice:"6:" %}
-                                                <div class="fr-col-12 fr-col-sm-4">
-                                                    <img class="fr-responsive-img"
-                                                         src="{{ image.logo_url }}"
-                                                         alt="{{ image.name }}" />
-                                                </div>
-                                            {% endfor %}
+                                        {% for image in siae.client_references.all|slice:"6:" %}
+                                            <div class="fr-col-12 fr-col-sm-4" x-show="showMoreRefClients">
+                                                <img class="fr-responsive-img"
+                                                     src="{{ image.logo_url }}"
+                                                     alt="{{ image.name }}" />
+                                            </div>
+                                        {% endfor %}
+                                        <div class="fr-col-12 fr-mt-2w">
+                                            <button @click="showMoreRefClients = !showMoreRefClients"
+                                                    class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left">
+                                                <span x-show="!showMoreRefClients">Afficher plus de références clients</span>
+                                                <span x-show="!showMoreRefClients" class="fr-icon-arrow-down-s-line"></span>
+                                                <span x-show="showMoreRefClients">Masquer les références clients</span>
+                                                <span x-show="showMoreRefClients" class="fr-icon-arrow-up-s-line"></span>
+                                            </button>
                                         </div>
                                     </div>
-                                    <a class="is-collapse-caret-clients has-collapse-caret collapsed"
-                                       data-toggle="collapse"
-                                       href="#collapseMoreRefClients"
-                                       role="button"
-                                       aria-expanded="false"
-                                       aria-controls="collapseMoreRefClients"
-                                       title="Plus de références clients">de références clients</a>
                                 {% endif %}
                             </div>
                         </div>
