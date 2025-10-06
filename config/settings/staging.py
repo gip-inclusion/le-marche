@@ -1,6 +1,6 @@
 import environ
 
-from .base import *  # noqa
+from config.settings.base import *  # noqa
 from config.sentry import sentry_init
 
 

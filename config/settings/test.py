@@ -1,7 +1,7 @@
 import logging
 import platform
 
-from .base import *  # noqa
+from config.settings.base import *  # noqa
 
 
 # Disable logging and traceback in unit tests for readability.
