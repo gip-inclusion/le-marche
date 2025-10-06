@@ -1,7 +1,7 @@
 import environ
 
 from .base import *  # noqa
-from .sentry import sentry_init
+from config.sentry import sentry_init
 
 
 env = environ.Env()
