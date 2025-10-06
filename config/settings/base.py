@@ -274,7 +274,7 @@ DATABASES = {
         "PASSWORD": env.str("STATS_POSTGRESQL_ADDON_PASSWORD", "password"),
     },
 }
-DATABASE_ROUTERS = ["config.settings.StatsRouter.StatsRouter"]
+DATABASE_ROUTERS = ["config.stats_router.StatsRouter"]
 
 
 # controls how many objects are updated in a single query
