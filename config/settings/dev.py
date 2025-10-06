@@ -1,7 +1,7 @@
 import os
 import platform
 
-from .base import *  # noqa
+from config.settings.base import *  # noqa
 
 
 DEBUG = True
