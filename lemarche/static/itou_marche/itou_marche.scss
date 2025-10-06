@@ -320,3 +320,7 @@ p.fr-tag--green-bourgeon {
     height: 19rem;
 }
 
+/* remove dsfr underline on leaflet bar (zoom in/out) */
+.leaflet-touch .leaflet-bar a {
+    background-image: none;
+}
