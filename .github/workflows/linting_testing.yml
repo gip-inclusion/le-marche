@@ -111,11 +111,11 @@ jobs:
         run: |
           source .venv/bin/activate
           echo "flake8"
-          pflake8 "./lemarche"
+          poetry run poe flake8
           echo "black"
-          black . --check
+          poetry run poe black --check
           echo "isort"
-          isort ./lemarche/*.py --check-only
+          poetry run poe isort --check-only
 
       #----------------------------------------------
       # run tests
