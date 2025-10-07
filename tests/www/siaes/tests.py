@@ -1205,6 +1205,32 @@ class SiaeDetailTest(TestCase):
         response = self.client.get(url)
         self.assertContains(response, "Hosmoz")
 
+    def test_sectors_are_displayed_and_grouped(self):
+        # Create two sector groups and one sector for first group and two sectors for second group
+        group_a = SectorFactory().group
+        group_b = SectorFactory().group
+        sector_a1 = SectorFactory(group=group_a)
+        sector_b1 = SectorFactory(group=group_b)
+        sector_b2 = SectorFactory(group=group_b)
+
+        # Link activities to current Siae
+        SiaeActivityFactory(siae=self.siae, sector=sector_a1)
+        SiaeActivityFactory(siae=self.siae, sector=sector_b1)
+        SiaeActivityFactory(siae=self.siae, sector=sector_b2)
+
+        url = reverse("siae:detail", args=[self.siae.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # Group titles should appear once per group
+        self.assertContains(response, group_a.name, count=1)
+        self.assertContains(response, group_b.name, count=1)
+
+        # Sector names should appear under their groups once per sector
+        self.assertContains(response, sector_a1.name, count=1)
+        self.assertContains(response, sector_b1.name, count=1)
+        self.assertContains(response, sector_b2.name, count=1)
+
 
 class SiaeFavoriteViewTestCase(TestCase):
     def setUp(self):
