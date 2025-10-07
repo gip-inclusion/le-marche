@@ -1,9 +1,22 @@
 [
+    "*/10 * * * * $ROOT/clevercloud/utils_antivirus_scan.sh",
+
     "0 0 * * * $ROOT/clevercloud/siaes_export_all_siae_to_file.sh",
     "15 0 * * * $ROOT/clevercloud/stats_export_user_download_list_to_file.sh",
     "30 0 * * * $ROOT/clevercloud/stats_export_user_search_list_to_file.sh",
     "0 1 * * * $ROOT/clevercloud/tenders_update_count_fields.sh",
     "0 6 * * * $ROOT/clevercloud/conversations_anonymize_outdated.sh",
+    "30 7 * * * $ROOT/clevercloud/tenders_send_author_list_of_super_siaes_emails.sh",
+    "0 8 * * * $ROOT/clevercloud/siaes_send_user_request_reminder_emails.sh",
+    "30 8 * * * $ROOT/clevercloud/tenders_send_author_transactioned_question_emails.sh",
+    "35 8 * * * $ROOT/clevercloud/tenders_send_siae_transactioned_question_emails.sh",
+    "0 9 * * * $ROOT/clevercloud/tenders_send_siae_contacted_reminder_emails.sh",
+    "10 9 * * * $ROOT/clevercloud/tenders_send_siae_interested_reminder_emails.sh",
+    "0 23 * * * $ROOT/clevercloud/tenders_update_status_to_rejected.sh",
+
+    "*/5 8-15 * * 1-5 $ROOT/clevercloud/tenders_send_validated.sh",
+    
+    "0 5 * * 1 $ROOT/clevercloud/utils_antivirus_scan_all.sh",
     "0 7 * * 1 $ROOT/clevercloud/siaes_sync_with_emplois_inclusion.sh",
     "10 7 * * 1 $ROOT/clevercloud/siaes_update_api_entreprise_fields.sh",
     "15 7 * * 1 $ROOT/clevercloud/siaes_update_api_qpv_fields.sh",
@@ -13,15 +26,5 @@
     "50 7 * * 1 $ROOT/clevercloud/companies_update_users_and_count_fields.sh",
     "55 7 * * 1 $ROOT/clevercloud/crm_brevo_sync_companies.sh",
     "0 8 * * 1 $ROOT/clevercloud/crm_brevo_sync_contacts.sh",
-    "0 7 * * 2 $ROOT/clevercloud/siaes_send_completion_reminder_emails.sh",
-    "30 7 * * * $ROOT/clevercloud/tenders_send_author_list_of_super_siaes_emails.sh",
-    "0 8 * * * $ROOT/clevercloud/siaes_send_user_request_reminder_emails.sh",
-    "30 8 * * * $ROOT/clevercloud/tenders_send_author_transactioned_question_emails.sh",
-    "35 8 * * * $ROOT/clevercloud/tenders_send_siae_transactioned_question_emails.sh",
-    "0 9 * * * $ROOT/clevercloud/tenders_send_siae_contacted_reminder_emails.sh",
-    "10 9 * * * $ROOT/clevercloud/tenders_send_siae_interested_reminder_emails.sh",
-    "*/5 8-15 * * 1-5 $ROOT/clevercloud/tenders_send_validated.sh",
-    "0 23 * * * $ROOT/clevercloud/tenders_update_status_to_rejected.sh",
-    "*/10 * * * * $ROOT/clevercloud/utils_antivirus_scan.sh",
-    "0 5 * * 1 $ROOT/clevercloud/utils_antivirus_scan_all.sh"
+    "0 7 * * 2 $ROOT/clevercloud/siaes_send_completion_reminder_emails.sh"
 ]
