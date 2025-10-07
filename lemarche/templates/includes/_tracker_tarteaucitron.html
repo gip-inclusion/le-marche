@@ -53,7 +53,7 @@ tarteaucitron.user.matomoHost = "{{ MATOMO_HOST }}";
 </script>
 
 <!-- Matomo UserID -->
-{% if user.is_authenticated and send_to_matomo %}
+{% if MATOMO_HOST and user.is_authenticated %}
     <script>
         var _paq = window._paq || [];
         _paq.push(['setUserId', '{{ user.id }}']);  // User ID
