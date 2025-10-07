@@ -227,20 +227,19 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
             ext_id=str(user.id),
             update_enabled=True,
         )
-        if self.config.is_production_env:
-            try:
-                api_response = self.api_instance.create_contact(new_contact).to_dict()
-                self.logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response.get('id')}")
-                return api_response
-            except ApiException as e:
-                # Analyze error type
-                error_body = self._get_error_body(e)
-                # Contact already exists - try to retrieve existing ID
-                if e.status == 400 and error_body and error_body.get("code") == "duplicate_parameter":
-                    self.logger.info(f"Contact {user.id} already exists in Brevo, attempting to retrieve ID...")
-                    self.retrieve_and_update_user_brevo_contact_id(user)
-                    return {"id": user.brevo_contact_id}
-                raise e  # Re-raise for retry logic
+        try:
+            api_response = self.api_instance.create_contact(new_contact).to_dict()
+            self.logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response.get('id')}")
+            return api_response
+        except ApiException as e:
+            # Analyze error type
+            error_body = self._get_error_body(e)
+            # Contact already exists - try to retrieve existing ID
+            if e.status == 400 and error_body and error_body.get("code") == "duplicate_parameter":
+                self.logger.info(f"Contact {user.id} already exists in Brevo, attempting to retrieve ID...")
+                self.retrieve_and_update_user_brevo_contact_id(user)
+                return {"id": user.brevo_contact_id}
+            raise e  # Re-raise for retry logic
 
     @BrevoBaseApiClient.execute_with_retry_method(operation_name="getting contact by email")
     def get_contact_by_identifier(self, id: str) -> str | None:
@@ -784,7 +783,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
             # Link contacts after creation
             try:
                 self.link_company_with_contact_list(
-                    company.brevo_company_id, list(company.users.values_list("brevo_contact_id", flat=True))
+                    company.brevo_company_id, sorted(company.users.values_list("brevo_contact_id", flat=True))
                 )
             except Exception as link_error:
                 company_type = "SIAE" if hasattr(company, "kind") and company.kind else "buyer"
