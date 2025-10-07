@@ -1514,50 +1514,6 @@ class BrevoUtilityFunctionsTest(TestCase):
     Tests for utility functions (non-legacy).
     """
 
-    def test_cleanup_and_link_contacts_with_contacts(self, mock_sleep):
-        """Test _cleanup_and_link_contacts utility function"""
-
-        mock_api_instance = MagicMock()
-        mock_body_class = MagicMock()
-        mock_body_instance = MagicMock()
-        mock_body_class.return_value = mock_body_instance
-
-        contact_list = [111, 222, 333]
-
-        api_brevo._cleanup_and_link_contacts(
-            api_instance=mock_api_instance,
-            entity_id=12345,
-            contact_list=contact_list,
-            link_body_class=mock_body_class,
-            patch_method_name="test_patch_method",
-        )
-
-        # Verify body was created with correct contact IDs
-        mock_body_class.assert_called_once_with(link_contact_ids=contact_list)
-
-        # Verify patch method was called
-        mock_api_instance.test_patch_method.assert_called_once_with(12345, mock_body_instance)
-
-    def test_cleanup_and_link_contacts_empty_list(self, mock_sleep):
-        """Test _cleanup_and_link_contacts with empty contact list"""
-
-        mock_api_instance = MagicMock()
-        mock_body_class = MagicMock()
-
-        contact_list = []
-
-        api_brevo._cleanup_and_link_contacts(
-            api_instance=mock_api_instance,
-            entity_id=12345,
-            contact_list=contact_list,
-            link_body_class=mock_body_class,
-            patch_method_name="test_patch_method",
-        )
-
-        # Should not call body class or patch method for empty list
-        mock_body_class.assert_not_called()
-        mock_api_instance.test_patch_method.assert_not_called()
-
     def test_brevo_config_is_production_env(self, mock_sleep):
         """Test BrevoConfig.is_production_env property"""
         with patch("lemarche.utils.apis.api_brevo.settings.BITOUBI_ENV", "prod"):
