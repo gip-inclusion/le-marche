@@ -5,7 +5,7 @@
     "15 0 * * * $ROOT/clevercloud/stats_export_user_download_list_to_file.sh",
     "30 0 * * * $ROOT/clevercloud/stats_export_user_search_list_to_file.sh",
     "0 1 * * * $ROOT/clevercloud/tenders_update_count_fields.sh",
-    "15 1 * * * $ROOT/clevercloud/clean_old_history.sh",
+    "15 1 * * * $ROOT/clevercloud/run_management_command.sh clean_old_history --days 180 --auto",
     "0 3 * * * $ROOT/clevercloud/run_management_command.sh clearsessions",
     "0 6 * * * $ROOT/clevercloud/conversations_anonymize_outdated.sh",
     "30 7 * * * $ROOT/clevercloud/tenders_send_author_list_of_super_siaes_emails.sh",
