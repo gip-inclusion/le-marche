@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import timedelta
 from uuid import uuid4
 
@@ -1187,6 +1188,14 @@ class Siae(models.Model):
             siae_constants.KIND_ETTI,
             siae_constants.KIND_EATT,
         ]
+
+    @property
+    def grouped_activities(self) -> dict[str, dict[str, object]]:
+        """Sort activities by group and sectors in a dict"""
+        grouped_activities = defaultdict(dict)
+        for activity in self.activities.with_sector_and_sector_group(self).order_by("sector"):
+            grouped_activities[activity.sector.group][activity.sector] = activity
+        return dict(grouped_activities)
 
     def is_in_the_hosmoz_network(self):
         return self.networks.filter(slug="hosmoz").exists()

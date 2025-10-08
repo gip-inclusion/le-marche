@@ -125,10 +125,10 @@
                         </div>
                     </div>
                 </div>
-                <!-- Second & third row : Secteurs, Références -->
+                <!-- Second & third row : Secteurs -->
                 <hr />
                 <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-                    <div class="fr-col-sm-6">
+                    <div class="fr-col-sm-12">
                         <div>
                             <img src="{% static 'vendor/theme-inclusion/images/ico-bicro-marche-secteur.svg' %}"
                                  alt=""
@@ -136,64 +136,41 @@
                         </div>
                         <div>
                             <h2>Secteurs d'activité</h2>
-                            {% for activity in siae.activities.all %}
-                                <div class="fr-accordions-group">{% include "siaes/_siae_activity_content.html" with activity=activity %}</div>
+                            {% for group, sector_dict in siae.grouped_activities.items %}
+                                <section class="fr-accordion">
+                                    <h3 class="fr-accordion__title">
+                                        <button class="fr-accordion__btn"
+                                                aria-expanded="false"
+                                                aria-controls="accordion-group-{{ group.id }}">{{ group }}</button>
+                                    </h3>
+                                    <div class="fr-collapse fr-text--sm" id="accordion-group-{{ group.id }}">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Secteur</th>
+                                                    <th>
+                                                        <span class="fr-icon-briefcase-line" aria-hidden="true"></span>
+                                                        <span>Type(s) de prestation</span>
+                                                    </th>
+                                                    <th>
+                                                        <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
+                                                        <span>Lieux d'intervention</span>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for sector, activity in sector_dict.items %}
+                                                    {% include "siaes/_siae_activity_content.html" with activity=activity group=group %}
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </section>
                             {% empty %}
                                 <p>Non renseigné</p>
                             {% endfor %}
                         </div>
                     </div>
-                    {% if siae.client_reference_count %}
-                        <div class="fr-col-sm-6">
-                            <div>
-                                <img src="{% static 'vendor/theme-inclusion/images/ico-bicro-marche-ref-clients.svg' %}"
-                                     alt=""
-                                     height="32" />
-                            </div>
-                            <div>
-                                <h2>Références clients</h2>
-                                {% if siae.client_reference_count <= 6 %}
-                                    <div class="fr-grid-row">
-                                        {% for image in siae.client_references.all %}
-                                            <div class="fr-col-12 fr-col-sm-4">
-                                                <img class="fr-responsive-img"
-                                                     src="{{ image.logo_url }}"
-                                                     alt="{{ image.name }}" />
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <div class="fr-grid-row">
-                                        {% for image in siae.client_references.all|slice:":6" %}
-                                            <div class="fr-col-12 fr-col-sm-4">
-                                                <img class="fr-responsive-img"
-                                                     src="{{ image.logo_url }}"
-                                                     alt="{{ image.name }}" />
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                    <div id="collapseMoreRefClients" class="collapse">
-                                        <div class="fr-grid-row">
-                                            {% for image in siae.client_references.all|slice:"6:" %}
-                                                <div class="fr-col-12 fr-col-sm-4">
-                                                    <img class="fr-responsive-img"
-                                                         src="{{ image.logo_url }}"
-                                                         alt="{{ image.name }}" />
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                    <a class="is-collapse-caret-clients has-collapse-caret collapsed"
-                                       data-toggle="collapse"
-                                       href="#collapseMoreRefClients"
-                                       role="button"
-                                       aria-expanded="false"
-                                       aria-controls="collapseMoreRefClients"
-                                       title="Plus de références clients">de références clients</a>
-                                {% endif %}
-                            </div>
-                        </div>
-                    {% endif %}
                 </div>
                 <!-- Fourth row : Prestations -->
                 {% if siae.offer_count %}
@@ -224,7 +201,7 @@
                         </div>
                     </div>
                 {% endif %}
-                <!-- Fifth row : Réseaux, Labels -->
+                <!-- Fifth row : Réseaux, Références clients, Labels -->
                 {% if siae.network_count or siae.label_count %}
                     <hr />
                     <div class="fr-grid-row">
@@ -250,6 +227,55 @@
                                             </li>
                                         {% endfor %}
                                     </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if siae.client_reference_count %}
+                            <div class="fr-col-sm-6">
+                                <div>
+                                    <img src="{% static 'vendor/theme-inclusion/images/ico-bicro-marche-ref-clients.svg' %}"
+                                         alt=""
+                                         height="32" />
+                                </div>
+                                <div>
+                                    <h2>Références clients</h2>
+                                    {% if siae.client_reference_count <= 6 %}
+                                        <div class="fr-grid-row">
+                                            {% for image in siae.client_references.all %}
+                                                <div class="fr-col-12 fr-col-sm-4">
+                                                    <img class="fr-responsive-img"
+                                                         src="{{ image.logo_url }}"
+                                                         alt="{{ image.name }}" />
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <div class="fr-grid-row" x-data="{ showMoreRefClients: false }">
+                                            {% for image in siae.client_references.all|slice:":6" %}
+                                                <div class="fr-col-12 fr-col-sm-4">
+                                                    <img class="fr-responsive-img"
+                                                         src="{{ image.logo_url }}"
+                                                         alt="{{ image.name }}" />
+                                                </div>
+                                            {% endfor %}
+                                            {% for image in siae.client_references.all|slice:"6:" %}
+                                                <div class="fr-col-12 fr-col-sm-4" x-show="showMoreRefClients">
+                                                    <img class="fr-responsive-img"
+                                                         src="{{ image.logo_url }}"
+                                                         alt="{{ image.name }}" />
+                                                </div>
+                                            {% endfor %}
+                                            <div class="fr-col-12 fr-mt-2w">
+                                                <button @click="showMoreRefClients = !showMoreRefClients"
+                                                        class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left">
+                                                    <span x-show="!showMoreRefClients">Afficher plus de références clients</span>
+                                                    <span x-show="!showMoreRefClients" class="fr-icon-arrow-down-s-line"></span>
+                                                    <span x-show="showMoreRefClients">Masquer les références clients</span>
+                                                    <span x-show="showMoreRefClients" class="fr-icon-arrow-up-s-line"></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         {% endif %}
