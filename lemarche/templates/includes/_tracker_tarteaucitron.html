@@ -1,4 +1,5 @@
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/tarteaucitronjs@1.11.0/tarteaucitron.min.js"></script>
+<script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/tarteaucitronjs@1.11.0/tarteaucitron.min.js"></script>
 <script type="text/javascript">
 // Tarteaucitron's language is set according to the browser configuration
 // but a lot of users don't know how to change it.
@@ -46,32 +47,31 @@ tarteaucitron.user.cripsMore = function () {
 };
 (tarteaucitron.job = tarteaucitron.job || []).push('crips');
 
-// Matomo
-tarteaucitron.user.matomoId = {{ MATOMO_SITE_ID }};
-tarteaucitron.user.matomoHost = "{{ MATOMO_HOST }}";
-(tarteaucitron.job = tarteaucitron.job || []).push('matomo');
-</script>
+{% if MATOMO_HOST %}
+    // Matomo
+    tarteaucitron.user.matomoId = {{ MATOMO_SITE_ID }};
+    tarteaucitron.user.matomoHost = "{{ MATOMO_HOST }}";
+    (tarteaucitron.job = tarteaucitron.job || []).push('matomo');
 
-<!-- Matomo UserID -->
-{% if MATOMO_HOST and user.is_authenticated %}
-    <script>
+    // Matomo UserID
+    {% if user.is_authenticated %}
         var _paq = window._paq || [];
         _paq.push(['setUserId', '{{ user.id }}']);  // User ID
         _paq.push(['setCustomDimension', 1, '{{ user.kind }}']);  // User Type
         _paq.push(['setCustomDimension', 2, '{{ user.kind_detail_display }}']);  // User Type Display
         _paq.push(['setCustomUrl', new URL('{{ matomo_custom_url }}', window.location.origin).href]);
-    </script>
+    {% endif %}
+
+    // Matomo Tag Manager
+    {% if MATOMO_TAG_MANAGER_CONTAINER_ID %}
+        var _mtm = window._mtm = window._mtm || [];
+        _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.async=true; g.src='{{ MATOMO_HOST }}js/container_{{ MATOMO_TAG_MANAGER_CONTAINER_ID }}.js'; s.parentNode.insertBefore(g,s);
+    {% endif %}
 {% endif %}
 
-<!-- Matomo Tag Manager -->
-<script>
-var _mtm = window._mtm = window._mtm || [];
-_mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-g.async=true; g.src='{{ MATOMO_HOST }}js/container_{{ MATOMO_TAG_MANAGER_CONTAINER_ID }}.js'; s.parentNode.insertBefore(g,s);
 </script>
-<!-- End Matomo Tag Manager -->
-
 <!-- Ajouter manuellement Crisp à tarteaucitron : https://github.com/AmauriC/tarteaucitron.js/pull/281 -->
 <script type="text/javascript">
 tarteaucitron.services.crips = {
