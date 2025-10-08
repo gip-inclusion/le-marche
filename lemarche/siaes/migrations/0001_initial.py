@@ -9,9 +9,7 @@ import lemarche.utils.validators
 class Migration(migrations.Migration):
     initial = True
 
-    dependencies = [
-        ("api", "0007_migrate_siae_model_to_siae_app"),
-    ]
+    dependencies = []
 
     operations = [
         migrations.SeparateDatabaseAndState(
