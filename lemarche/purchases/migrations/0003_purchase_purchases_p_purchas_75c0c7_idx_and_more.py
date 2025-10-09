@@ -6,7 +6,6 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("companies", "0008_company_labels"),
         ("purchases", "0002_alter_purchase_options"),
         ("siaes", "0090_alter_historicalsiae_contact_social_website_and_more"),
     ]
