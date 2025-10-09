@@ -110,7 +110,7 @@ export_dev = { shell = "poetry export --without-hashes --with dev --output requi
 flake8 = "pflake8 lemarche tests"
 isort = "isort lemarche tests"
 black = "black lemarche tests"
-clean_code = ["isort", "black"]
+clean_code = ["isort", "black", "flake8"]
 clean = { shell = "rm -r __pycache__/" }
 
 [tool.poetry.requires-plugins]
