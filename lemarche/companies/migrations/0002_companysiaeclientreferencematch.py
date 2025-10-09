@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("companies", "0001_initial"),
-        ("siaes", "0090_alter_historicalsiae_contact_social_website_and_more"),
+        ("siaes", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

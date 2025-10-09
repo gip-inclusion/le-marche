@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("companies", "0001_initial"),
-        ("siaes", "0091_siaeesus"),
+        ("siaes", "0001_initial"),
     ]
 
     operations = [
