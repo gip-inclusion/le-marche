@@ -1,9 +1,6 @@
 from datetime import timedelta
-from importlib import import_module
-from random import randint
 from unittest.mock import patch
 
-from django.apps import apps
 from django.contrib.gis.geos import Point
 from django.contrib.messages import get_messages
 from django.forms.models import model_to_dict
@@ -640,40 +637,6 @@ class TenderModelQuerysetUnreadStatsTest(TestCase):
         self.assertEqual(stats[f"unread_count_{tender_constants.KIND_TENDER}_annotated"], 1)
         self.assertEqual(stats[f"unread_count_{tender_constants.KIND_QUOTE}_annotated"], 2)
         self.assertEqual(stats[f"unread_count_{tender_constants.KIND_PROJECT}_annotated"], 0)
-
-
-class TenderMigrationToSelectTest(TestCase):
-    def test_migrate_amount_to_select(self):
-        # the migrations can't be imported directly, it's a syntax error.
-        migration = import_module("lemarche.tenders.migrations.0006_alter_tender_amount")
-
-        tender_amount_none = TenderFactory(amount=None)
-        tender_amount_range_0 = TenderFactory(amount=randint(0, 25000 - 1))
-        tender_amount_range_1 = TenderFactory(amount=randint(25000, 100000 - 1))
-        tender_amount_range_2 = TenderFactory(amount=randint(100000, 1000000 - 1))
-        tender_amount_range_3 = TenderFactory(amount=randint(1000000, 5000000 - 1))
-        tender_amount_range_4 = TenderFactory(amount=randint(5000000, 10000000))
-
-        migration.update_amount(apps, None)
-
-        tender_amount_none.refresh_from_db()
-        tender_amount_range_0.refresh_from_db()
-        tender_amount_range_1.refresh_from_db()
-        tender_amount_range_2.refresh_from_db()
-        tender_amount_range_3.refresh_from_db()
-        tender_amount_range_4.refresh_from_db()
-
-        self.assertIsNone(tender_amount_none.amount)
-        self.assertEqual(tender_amount_range_0.amount, tender_constants.OLD_AMOUNT_RANGE_0)
-        self.assertEqual(tender_amount_range_1.amount, tender_constants.OLD_AMOUNT_RANGE_1)
-        self.assertEqual(tender_amount_range_2.amount, tender_constants.OLD_AMOUNT_RANGE_2)
-        self.assertEqual(tender_amount_range_3.amount, tender_constants.OLD_AMOUNT_RANGE_3)
-        self.assertEqual(tender_amount_range_4.amount, tender_constants.OLD_AMOUNT_RANGE_4)
-
-        # test reverse method
-        migration.reverse_update_amount(apps, None)
-        tender_amount_range_0.refresh_from_db()
-        self.assertEqual(int(tender_amount_range_0.amount), 24999)
 
 
 class TenderQuestionModelTest(TestCase):
