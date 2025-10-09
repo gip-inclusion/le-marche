@@ -7,7 +7,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
     dependencies = [
         ("perimeters", "0001_initial"),
-        ("users", "0001bis_create_extensions"),
+        ("users", "0001_initial"),
     ]
 
     operations = [
