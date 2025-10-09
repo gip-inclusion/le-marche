@@ -16,7 +16,6 @@ class DsfrIconPickerWidget(widgets.TextInput):
         return Media(
             css={
                 "all": [
-                    versioned_static("django-dsfr/icon-picker/assets/css/icon-picker.css"),
                     versioned_static("dsfr/dist/utility/utility.min.css"),
                 ]
             },
