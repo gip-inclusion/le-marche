@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("companies", "0005_company_linkedin_buyer_count"),
+        ("companies", "0001_initial"),
         ("siaes", "0089_delete_sectors"),
     ]
 
