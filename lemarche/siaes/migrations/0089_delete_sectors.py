@@ -34,7 +34,7 @@ def migrate_siaeactivity_sectors(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("sectors", "0003_sector_sectorgroup_ordering"),
+        ("sectors", "0001_initial"),
         ("siaes", "0088_remove_siaeactivity_sectors_siaeactivity_sector"),
     ]
 
