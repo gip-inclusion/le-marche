@@ -2,7 +2,6 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from tests.tenders.factories import TenderFactory
-from tests.users.factories import UserFactory
 
 
 class ContextProcessorsTest(TestCase):
@@ -15,10 +14,6 @@ class ContextProcessorsTest(TestCase):
 
         Also ensure the user ID is correctly set.
         """
-
-        user = UserFactory()
-        self.client.force_login(user)
-
         # An unknown url always matches to wagtail urls
         response = self.client.get("/tenders/doesnotexist/?token=blah&mtm_foo=truc")
         self.assertEqual(response.context["matomo_custom_url"], "^((?:[\\w\\-]+/)*)$?mtm_foo=truc")
