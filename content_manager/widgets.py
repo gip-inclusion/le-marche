@@ -16,6 +16,7 @@ class DsfrIconPickerWidget(widgets.TextInput):
         return Media(
             css={
                 "all": [
+                    versioned_static("css/icon-picker.css"),
                     versioned_static("dsfr/dist/utility/utility.min.css"),
                 ]
             },
