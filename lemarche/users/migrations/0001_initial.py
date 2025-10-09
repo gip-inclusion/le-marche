@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
         ("auth", "0012_alter_user_first_name_max_length"),
         ("companies", "0001_initial"),
         ("networks", "0004_alter_network_slug"),
-        ("sectors", "0003_sector_sectorgroup_ordering"),
+        ("sectors", "0001_initial"),
     ]
 
     operations = [

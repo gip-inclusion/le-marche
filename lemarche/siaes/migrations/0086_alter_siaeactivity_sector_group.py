@@ -21,7 +21,7 @@ def restore_restaurants(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("sectors", "0004_alter_sector_group"),
+        ("sectors", "0001_initial"),
         ("siaes", "0085_alter_siaeactivity_presta_type"),
     ]
 
