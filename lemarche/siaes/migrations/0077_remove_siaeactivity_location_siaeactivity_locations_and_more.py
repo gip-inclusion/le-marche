@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("perimeters", "0005_alter_perimeter_post_codes"),
+        ("perimeters", "0001_initial"),
         ("siaes", "0076_siaeactivity"),
     ]
 

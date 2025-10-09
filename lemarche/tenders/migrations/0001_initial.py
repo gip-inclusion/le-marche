@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("perimeters", "0005_alter_perimeter_post_codes"),
+        ("perimeters", "0001_initial"),
         ("sectors", "0004_alter_sector_group"),
         ("siaes", "0091_siaeesus"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
