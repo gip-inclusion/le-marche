@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("sectors", "0003_sector_sectorgroup_ordering"),
+        ("sectors", "0001_initial"),
         ("siaes", "0050_siae_groups"),
     ]
 
