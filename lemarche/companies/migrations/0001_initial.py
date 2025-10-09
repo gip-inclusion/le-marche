@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("labels", "0002_label_data_fields"),
+        ("labels", "0001_initial"),
     ]
 
     operations = [
