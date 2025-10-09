@@ -46,31 +46,33 @@ tarteaucitron.user.googletagmanagerId = "{{ GOOGLE_TAG_MANAGER_ID }}";
     tarteaucitron.user.crispID = "{{ CRISP_ID }}";
     (tarteaucitron.job = tarteaucitron.job || []).push('crisp');    
 {% endif %}
-
+</script>
 {% if MATOMO_HOST %}
-    // Matomo
-    tarteaucitron.user.matomoId = {{ MATOMO_SITE_ID }};
-    tarteaucitron.user.matomoHost = "{{ MATOMO_HOST }}";
-    (tarteaucitron.job = tarteaucitron.job || []).push('matomo');
-
-    // Matomo 
+    <script>
+        // Matomo
+        tarteaucitron.user.matomoId = {{ MATOMO_SITE_ID }};
+        tarteaucitron.user.matomoHost = "{{ MATOMO_HOST }}";
+        (tarteaucitron.job = tarteaucitron.job || []).push('matomo');
+    </script>
     {% if matomo_custom_url %}
-        var _paq = window._paq || [];
-        _paq.push(['setCustomUrl', new URL('{{ matomo_custom_url }}', window.location.origin).href]);
+        <script>
+            var _paq = window._paq || [];
+            _paq.push(['setCustomUrl', new URL('{{ matomo_custom_url }}', window.location.origin).href]);
 
-        {% if user.is_authenticated %}
-            _paq.push(['setUserId', '{{ user.id }}']);  // User ID
-            _paq.push(['setCustomDimension', 1, '{{ user.kind }}']);  // User Type
-            _paq.push(['setCustomDimension', 2, '{{ user.kind_detail_display }}']);  // User Type Display
-        {% endif %}
-    
-        // Matomo Tag Manager
+            {% if user.is_authenticated %}
+                _paq.push(['setUserId', '{{ user.id }}']);  // User ID
+                _paq.push(['setCustomDimension', 1, '{{ user.kind }}']);  // User Type
+                _paq.push(['setCustomDimension', 2, '{{ user.kind_detail_display }}']);  // User Type Display
+            {% endif %}
+        </script>
         {% if MATOMO_TAG_MANAGER_CONTAINER_ID %}
-            var _mtm = window._mtm = window._mtm || [];
-            _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-            g.async=true; g.src='{{ MATOMO_HOST }}js/container_{{ MATOMO_TAG_MANAGER_CONTAINER_ID }}.js'; s.parentNode.insertBefore(g,s);
+            <script>
+                // Matomo Tag Manager
+                var _mtm = window._mtm = window._mtm || [];
+                _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+                g.async=true; g.src='{{ MATOMO_HOST }}js/container_{{ MATOMO_TAG_MANAGER_CONTAINER_ID }}.js'; s.parentNode.insertBefore(g,s);
+            </script>
         {% endif %}
     {% endif %}
 {% endif %}
-</script>
