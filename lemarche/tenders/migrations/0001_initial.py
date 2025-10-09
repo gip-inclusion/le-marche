@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ("perimeters", "0001_initial"),
         ("sectors", "0001_initial"),
-        ("siaes", "0091_siaeesus"),
+        ("siaes", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
