@@ -1,5 +1,5 @@
 from django.forms import Media, widgets
-from wagtail.admin.staticfiles import versioned_static
+from django.templatetags.static import static
 
 
 class DsfrIconPickerWidget(widgets.TextInput):
@@ -16,9 +16,9 @@ class DsfrIconPickerWidget(widgets.TextInput):
         return Media(
             css={
                 "all": [
-                    versioned_static("css/icon-picker.css"),
-                    versioned_static("dsfr/dist/utility/utility.min.css"),
+                    static("css/icon-picker.css"),
+                    static("dsfr/dist/utility/utility.min.css"),
                 ]
             },
-            js=[versioned_static("django-dsfr/icon-picker/assets/js/universal-icon-picker.min.js")],
+            js=[static("django-dsfr/icon-picker/assets/js/universal-icon-picker.min.js")],
         )
