@@ -67,9 +67,6 @@ STATICFILES_FINDERS = [
     "compressor.finders.CompressorFinder",
 ]
 
-
-STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
-
 COMPRESS_ENABLED = env.bool("COMPRESS_ENABLED", default=True)
 COMPRESS_OFFLINE = True
 COMPRESS_STORAGE = "compressor.storage.GzipCompressorFileStorage"
