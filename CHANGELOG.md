@@ -6,6 +6,22 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2025.6.0](https://github.com/gip-inclusion/le-marche/compare/v2025.5.0...v2025.6.0) (2025-10-10)
+
+
+### Features
+
+* Add old history cleanup ([97a61bf](https://github.com/gip-inclusion/le-marche/commit/97a61bfc868475328a11700c4cd5b159fa48906e))
+* Clean matomo urls even for anymimous users ([8fc9dad](https://github.com/gip-inclusion/le-marche/commit/8fc9dadf1446138245ed86032dbbc13b9600d0b5))
+* Clear old session ([264e4ed](https://github.com/gip-inclusion/le-marche/commit/264e4ed1331dace3cb73dc44708a2d2ce23c4d6b))
+* masquer les slugs des urls envoyées à Matomo ([#1801](https://github.com/gip-inclusion/le-marche/issues/1801)) ([56d58db](https://github.com/gip-inclusion/le-marche/commit/56d58db9d787a87d9b182978c1af975bb7560f7d))
+
+
+### Bug Fixes
+
+* Fix and test matomo context processor ([c180658](https://github.com/gip-inclusion/le-marche/commit/c180658a6bc313b05cbdbb9251e64e26e502e9ed))
+* Fix Matomo ([#1816](https://github.com/gip-inclusion/le-marche/issues/1816)) ([e451de8](https://github.com/gip-inclusion/le-marche/commit/e451de81257f87a16a801b955a132f5930b5da8a))
+
 ## [2025.5.0](https://github.com/gip-inclusion/le-marche/compare/v2025.4.0...v2025.5.0) (2025-10-01)
 
 
