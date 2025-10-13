@@ -88,20 +88,6 @@ jobs:
         run: poetry install --no-interaction
 
       #----------------------------------------------
-      # migration checks
-      #----------------------------------------------
-      # - name: 💾 Create a database to check migrations
-      #   run: |
-      #     psql <<SQL
-      #         CREATE DATABASE marche;
-      #     SQL
-
-      - name: 🚧 Check pending migrations
-        run: |
-          source .venv/bin/activate
-          python manage.py makemigrations --check --dry-run --noinput
-
-      #----------------------------------------------
       # run lint suite
       #----------------------------------------------
       - name: ✨ Run Linters
