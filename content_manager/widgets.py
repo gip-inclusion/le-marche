@@ -14,7 +14,7 @@ class DsfrIconPickerWidget(widgets.TextInput):
     def media(self):
         return Media(
             js=[
-                "django-dsfr/icon-picker/assets/js/universal-icon-picker.min.js",
+                "django-dsfr/icon-picker/assets/js/universal-icon-picker-fix.js",
             ],
             css={
                 "all": [
