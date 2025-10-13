@@ -103,19 +103,11 @@ jobs:
 
       #----------------------------------------------
       # run lint suite
-      # Why not install default flake8 or pylint ?
-      # Because we use pyproject.toml config file, and
-      # prefer locally reproducible tests.
       #----------------------------------------------
       - name: ✨ Run Linters
         run: |
           source .venv/bin/activate
-          echo "flake8"
-          poetry run poe flake8
-          echo "black"
-          poetry run poe black --check
-          echo "isort"
-          poetry run poe isort --check-only
+          make quality
 
       #----------------------------------------------
       # run tests

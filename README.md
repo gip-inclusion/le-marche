@@ -151,10 +151,8 @@ Poetry utilise le fichier `poetry.lock`, et une commande permet de générer le 
 ```bash
 # Mise à jour dépendances
 $ poetry update
-# Mise à jour requirements/staging.txt
-$ poetry run poe export
-# Mise à jour requirements/dev.txt
-$ poetry run poe export_dev
+# Mise à jour des fichiers requirements/*.txt
+$ make export_requirements
 ```
 
 Et pour connaître les dépendances à mettre à jour :
@@ -187,18 +185,12 @@ poetry run pre-commit run
 ```
 
 Le projet utilise flake8, isort et black pour assurer la standardisation des écritures.
-Poetry est configuré pour en faciliter l'utilisation.
 
 ```bash
-# Exécuter isort, flake8 ou black, avec poetry
-$ poetry run poe black
-$ poetry run poe isort
-$ poetry run poe flake8
+# Vérifier la qualité du code
+$ make quality
 # Exécuter formattage automatique
-$ poetry run poe clean_code
-
-# Exécuter formattage automatique dans le docker
-$ poe clean_code
+$ make fix
 ```
 
 ### Testing

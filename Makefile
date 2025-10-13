@@ -1,3 +1,5 @@
+LINTER_CHECKED_DIRS := config lemarche scripts tests
+
 # Global tasks.
 # =============================================================================
 PYTHON_VERSION := python3.13
@@ -24,6 +26,23 @@ populate_db_container:
 	docker compose exec -ti app bash -c "ls -d lemarche/fixtures/django/* | xargs django-admin loaddata"
 	docker compose exec -ti app bash -c "django-admin create_content_pages"
 
+# Tooling
+# =============================================================================
+
+quality:
+	poetry run pflake8 $(LINTER_CHECKED_DIRS)
+	poetry run isort $(LINTER_CHECKED_DIRS) --check-only
+	poetry run black $(LINTER_CHECKED_DIRS) --check
+
+fix:
+	poetry run pflake8 $(LINTER_CHECKED_DIRS)
+	poetry run isort $(LINTER_CHECKED_DIRS)
+	poetry run black $(LINTER_CHECKED_DIRS)
+
+clean:
+	rm -r __pycache__/
+
+
 # Deployment
 # =============================================================================
 
@@ -35,3 +54,9 @@ test_container:
 
 test:
 	django-admin test --settings=config.settings.test --noinput --failfast --parallel auto $(TARGET)
+
+export_requirements:
+	poetry export --without-hashes --output requirements/staging.txt
+	poetry export --without-hashes --with dev --output requirements/dev.txt
+
+
