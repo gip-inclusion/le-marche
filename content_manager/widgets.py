@@ -18,7 +18,7 @@ class DsfrIconPickerWidget(widgets.TextInput):
             ],
             css={
                 "all": [
-                    "django-dsfr/icon-picker/assets/stylesheets/universal-icon-picker.css",
+                    "django-dsfr/icon-picker/assets/css/icon-picker.css",
                     "dsfr/dist/utility/utility.min.css",
                 ]
             },
