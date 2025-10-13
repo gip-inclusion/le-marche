@@ -65,8 +65,6 @@ pytest-django = "^4.9.0"
 selenium = "^4.28.1"
 tblib = "^3.0.0"
 
-[tool.poetry.scripts]
-
 [build-system]
 build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core>=1.0.0"]
