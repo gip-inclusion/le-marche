@@ -40,6 +40,7 @@ quality:
 	$(ENV_SHELL_PREFIX) pflake8 $(LINTER_CHECKED_DIRS)
 	$(ENV_SHELL_PREFIX) isort $(LINTER_CHECKED_DIRS) --check-only
 	$(ENV_SHELL_PREFIX) black $(LINTER_CHECKED_DIRS) --check
+	$(ENV_SHELL_PREFIX) python manage.py makemigrations --check --dry-run --noinput || (echo "⚠ missing migration ⚠"; exit 1)
 
 fix:
 	$(ENV_SHELL_PREFIX) pflake8 $(LINTER_CHECKED_DIRS)
