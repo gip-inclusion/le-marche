@@ -5,6 +5,7 @@
     text-transform: uppercase;
     text-align: center;
     margin: 0;
+    background-color: #ffc107;
 }
 
 /* fix bug for apply multiselect filter */
