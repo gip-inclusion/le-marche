@@ -784,15 +784,6 @@ GOOGLE_AGENDA_IFRAME_URL = env.str("GOOGLE_AGENDA_IFRAME_URL", "")
 # Misc
 # ------------------------------------------------------------------------------
 
-# header env notice (not displayed in prod)
-ENV_COLOR_MAPPING = {
-    "dev": "#dc3545",  # red
-    "review_app": "#fd7e14",  # orange
-    "staging": "#ffc107",  # yellow
-    "prod": "",
-}
-BITOUBI_ENV_COLOR = ENV_COLOR_MAPPING.get(BITOUBI_ENV, "")
-
 # Privacy timeouts
 # ------------------------------------------------------------------------------
 INACTIVE_CONVERSATION_TIMEOUT_IN_MONTHS = env.int("INACTIVE_CONVERSATION_TIMEOUT_IN_MONTHS", 6)
