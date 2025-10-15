@@ -639,7 +639,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When company synchronization fails after all retries
         """
-        siae_brevo_company_body = brevo_python.Body(name=siae.name, attributes=self._build_siae_attributes(siae))
+        siae_brevo_company_body = brevo_python.Body7(name=siae.name, attributes=self._build_siae_attributes(siae))
 
         sync_log = self._create_sync_log(siae)
         is_update = bool(siae.brevo_company_id)
@@ -679,7 +679,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
             bool: True if operation was successful, False otherwise
         """
 
-        company_brevo_body = brevo_python.Body(
+        company_brevo_body = brevo_python.Body7(
             name=company.name,
             attributes=self._build_buyer_attributes(company),
         )
@@ -733,7 +733,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
                 contact_list = self._cleanup_contact_list(contact_list)
                 # link company with contact_list
                 if len(contact_list):
-                    body_link_company_contact = brevo_python.Body2(link_contact_ids=contact_list)
+                    body_link_company_contact = brevo_python.Body8(link_contact_ids=contact_list)
                     self.api_instance.companies_link_unlink_id_patch(brevo_company_id, body_link_company_contact)
             except ApiException as e:
                 self.logger.error(f"Exception when calling Brevo->DealApi->companies_link_unlink_id_patch \n {e}")
@@ -952,7 +952,7 @@ def create_deal(tender, owner_email: str):
     """
     c = BrevoBaseApiClient()
     api_instance = brevo_python.DealsApi(c.api_client)
-    body_deal = brevo_python.Body3(
+    body_deal = brevo_python.Body10(
         name=tender.title,
         attributes={
             # default attributes
@@ -1004,7 +1004,7 @@ def link_deal_with_contact_list(tender, contact_list: list = None):
             if not contact_list:
                 contact_list = [tender.author.brevo_contact_id]
 
-            body_link = brevo_python.Body5(link_contact_ids=contact_list)
+            body_link = brevo_python.Body12(link_contact_ids=contact_list)
             api_instance.crm_deals_link_unlink_id_patch(brevo_crm_deal_id, body_link)
             logger.info("Brevo: Deal linked with contacts successfully")
         except ApiException as e:
