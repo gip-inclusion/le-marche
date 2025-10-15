@@ -6,6 +6,7 @@ from unittest import mock
 from unittest.mock import patch
 
 import openpyxl
+from brevo_python.models.create_update_contact_model import CreateUpdateContactModel
 from django.conf import settings
 from django.contrib.messages import get_messages
 from django.core.files.storage import default_storage
@@ -15,7 +16,6 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from sesame.utils import get_query_string as sesame_get_query_string
-from sib_api_v3_sdk.models.create_update_contact_model import CreateUpdateContactModel
 
 from lemarche.companies.models import CompanySiaeClientReferenceMatch
 from lemarche.conversations.models import EmailGroup
@@ -303,8 +303,8 @@ class TenderCreateViewTest(TestCase):
             kwargs.get("tender"), Tender, "Expected an instance of Tender for the 'tender' argument."
         )
 
-    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.api.contacts_api.ContactsApi.create_contact")
-    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.CreateContact")
+    @patch("lemarche.utils.apis.api_brevo.brevo_python.api.contacts_api.ContactsApi.create_contact")
+    @patch("lemarche.utils.apis.api_brevo.brevo_python.CreateContact")
     def test_create_contact_call_has_user_buyer_attributes(self, mock_create_contact, mock_api_create_contact):
         """Test CreateContact call contains user buyer attributes"""
         mock_api_create_contact.return_value = CreateUpdateContactModel(id=123)

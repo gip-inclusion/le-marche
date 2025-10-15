@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, Set
 
-import sib_api_v3_sdk
+import brevo_python
 
 from lemarche.utils.apis import api_brevo
 from lemarche.utils.apis.brevo_attributes import ALL_COMPANY_ATTRIBUTES, ALL_CONTACT_ATTRIBUTES
@@ -122,7 +122,7 @@ class Command(BaseCommand):
         """Retrieves the list of existing attributes for contacts in Brevo"""
         try:
             client = api_brevo.BrevoBaseApiClient()
-            api_instance = sib_api_v3_sdk.ContactsApi(client.api_client)
+            api_instance = brevo_python.ContactsApi(client.api_client)
 
             response = api_instance.get_attributes()
             attributes_data = response.to_dict()
@@ -142,7 +142,7 @@ class Command(BaseCommand):
         """Retrieves the list of existing attributes for companies in Brevo"""
         try:
             client = api_brevo.BrevoBaseApiClient()
-            api_instance = sib_api_v3_sdk.CompaniesApi(client.api_client)
+            api_instance = brevo_python.CompaniesApi(client.api_client)
 
             response = api_instance.companies_attributes_get()
 

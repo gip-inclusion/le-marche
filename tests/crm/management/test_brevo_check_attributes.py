@@ -11,7 +11,7 @@ class BrevoCheckAttributesCommandTest(TestCase):
     """Tests for the brevo_check_attributes management command."""
 
     @patch("lemarche.crm.management.commands.brevo_check_attributes.api_brevo.BrevoBaseApiClient")
-    @patch("lemarche.crm.management.commands.brevo_check_attributes.sib_api_v3_sdk.ContactsApi")
+    @patch("lemarche.crm.management.commands.brevo_check_attributes.brevo_python.ContactsApi")
     def test_check_contact_attributes_all_present(self, mock_contacts_api_class, mock_base_client):
         """Test when all contact attributes are present in Brevo"""
         # Mock existing attributes in Brevo
@@ -30,7 +30,7 @@ class BrevoCheckAttributesCommandTest(TestCase):
         self.assertIn("CONTACT ATTRIBUTES VERIFICATION", output)
 
     @patch("lemarche.crm.management.commands.brevo_check_attributes.api_brevo.BrevoBaseApiClient")
-    @patch("lemarche.crm.management.commands.brevo_check_attributes.sib_api_v3_sdk.ContactsApi")
+    @patch("lemarche.crm.management.commands.brevo_check_attributes.brevo_python.ContactsApi")
     def test_check_contact_attributes_missing(self, mock_contacts_api_class, mock_base_client):
         """Test when some contact attributes are missing in Brevo"""
         # Mock existing attributes in Brevo (missing some expected ones)
@@ -56,7 +56,7 @@ class BrevoCheckAttributesCommandTest(TestCase):
         self.assertIn("TYPE_ORGANISATION", output)
 
     @patch("lemarche.crm.management.commands.brevo_check_attributes.api_brevo.BrevoBaseApiClient")
-    @patch("lemarche.crm.management.commands.brevo_check_attributes.sib_api_v3_sdk.CompaniesApi")
+    @patch("lemarche.crm.management.commands.brevo_check_attributes.brevo_python.CompaniesApi")
     def test_check_company_attributes_all_present(self, mock_companies_api_class, mock_base_client):
         """Test when all company attributes are present in Brevo"""
         # Mock existing attributes in Brevo
@@ -75,7 +75,7 @@ class BrevoCheckAttributesCommandTest(TestCase):
         self.assertIn("COMPANY ATTRIBUTES VERIFICATION", output)
 
     @patch("lemarche.crm.management.commands.brevo_check_attributes.api_brevo.BrevoBaseApiClient")
-    @patch("lemarche.crm.management.commands.brevo_check_attributes.sib_api_v3_sdk.CompaniesApi")
+    @patch("lemarche.crm.management.commands.brevo_check_attributes.brevo_python.CompaniesApi")
     def test_check_company_attributes_missing(self, mock_companies_api_class, mock_base_client):
         """Test when some company attributes are missing in Brevo"""
         # Mock existing attributes in Brevo (missing some expected ones)
@@ -99,7 +99,7 @@ class BrevoCheckAttributesCommandTest(TestCase):
         self.assertIn("siae", output)
 
     @patch("lemarche.crm.management.commands.brevo_check_attributes.api_brevo.BrevoBaseApiClient")
-    @patch("lemarche.crm.management.commands.brevo_check_attributes.sib_api_v3_sdk.ContactsApi")
+    @patch("lemarche.crm.management.commands.brevo_check_attributes.brevo_python.ContactsApi")
     def test_create_missing_contact_attributes_dry_run(self, mock_contacts_api_class, mock_base_client):
         """Test creating missing contact attributes in dry run mode"""
         # Mock existing attributes in Brevo (missing some expected ones)
@@ -125,7 +125,7 @@ class BrevoCheckAttributesCommandTest(TestCase):
         mock_api_instance.create_attribute.assert_not_called()
 
     @patch("lemarche.crm.management.commands.brevo_check_attributes.api_brevo.BrevoBaseApiClient")
-    @patch("lemarche.crm.management.commands.brevo_check_attributes.sib_api_v3_sdk.ContactsApi")
+    @patch("lemarche.crm.management.commands.brevo_check_attributes.brevo_python.ContactsApi")
     def test_create_missing_contact_attributes_real(self, mock_contacts_api_class, mock_base_client):
         """Test actually creating missing contact attributes"""
         # Mock existing attributes in Brevo (missing some expected ones)
@@ -152,11 +152,9 @@ class BrevoCheckAttributesCommandTest(TestCase):
         """Test checking both contacts and companies"""
         with (
             patch("lemarche.crm.management.commands.brevo_check_attributes.api_brevo.BrevoBaseApiClient"),
+            patch("lemarche.crm.management.commands.brevo_check_attributes.brevo_python.ContactsApi") as mock_contacts,
             patch(
-                "lemarche.crm.management.commands.brevo_check_attributes.sib_api_v3_sdk.ContactsApi"
-            ) as mock_contacts,
-            patch(
-                "lemarche.crm.management.commands.brevo_check_attributes.sib_api_v3_sdk.CompaniesApi"
+                "lemarche.crm.management.commands.brevo_check_attributes.brevo_python.CompaniesApi"
             ) as mock_companies,
         ):
 

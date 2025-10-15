@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 from unittest import skip
 from unittest.mock import MagicMock, patch
 
+from brevo_python.rest import ApiException
 from django.test import TestCase, override_settings
-from sib_api_v3_sdk.rest import ApiException
 
 from lemarche.utils.apis import api_brevo
 from lemarche.utils.apis.brevo_attributes import CONTACT_ATTRIBUTES
@@ -212,7 +212,7 @@ class BrevoContactsApiClientTest(TestCase):
         }
         mock_api_instance.get_contacts.return_value = mock_response
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             client = api_brevo.BrevoContactsApiClient()
             result = client.get_all_contacts(limit_max=2, since_days=7)
 
@@ -269,7 +269,7 @@ class BrevoContactsApiClientTest(TestCase):
         # Configure successive calls
         mock_api_instance.get_contacts.side_effect = [mock_response_page1, mock_response_page2]
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             # Use custom config with small page limit for testing pagination
             config = api_brevo.BrevoConfig(default_page_limit=5)
             client = api_brevo.BrevoContactsApiClient(config)
@@ -294,7 +294,7 @@ class BrevoContactsApiClientTest(TestCase):
         }
         mock_api_instance.get_contacts.return_value = mock_response
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             client = api_brevo.BrevoContactsApiClient()
             result = client.get_all_contacts(limit_max=5)
 
@@ -314,7 +314,7 @@ class BrevoContactsApiClientTest(TestCase):
 
         mock_api_instance.get_contacts.side_effect = [ApiException(status=500, reason="Server Error"), mock_response]
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             # Use custom config with fewer retries for testing
             config = api_brevo.BrevoConfig(max_retries=2)
             client = api_brevo.BrevoContactsApiClient(config)
@@ -331,7 +331,7 @@ class BrevoContactsApiClientTest(TestCase):
         # Always raise exception
         mock_api_instance.get_contacts.side_effect = ApiException(status=500, reason="Server Error")
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             # Use custom config with fewer retries for testing
             config = api_brevo.BrevoConfig(max_retries=2)
             client = api_brevo.BrevoContactsApiClient(config)
@@ -348,7 +348,7 @@ class BrevoContactsApiClientTest(TestCase):
         # Raise unexpected exception
         mock_api_instance.get_contacts.side_effect = Exception("Unexpected error")
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             client = api_brevo.BrevoContactsApiClient()
             result = client.get_all_contacts()
 
@@ -362,7 +362,7 @@ class BrevoContactsApiClientTest(TestCase):
         mock_response.to_dict.return_value = {"contacts": [], "count": 0}
         mock_api_instance.get_contacts.return_value = mock_response
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             client = api_brevo.BrevoContactsApiClient()
             result = client.get_all_contacts()
 
@@ -376,7 +376,7 @@ class BrevoContactsApiClientTest(TestCase):
         mock_response.to_dict.return_value = {"contacts": []}
         mock_api_instance.get_contacts.return_value = mock_response
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             client = api_brevo.BrevoContactsApiClient()
             client.get_all_contacts(since_days=15)
 
@@ -399,7 +399,7 @@ class BrevoContactsApiClientTest(TestCase):
         mock_response.to_dict.return_value = {"id": 12345}
         mock_api_instance.create_contact.return_value = mock_response
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             client = api_brevo.BrevoContactsApiClient()
             response = client.create_contact(self.user, list_id=1)
 
@@ -419,7 +419,7 @@ class BrevoContactsApiClientTest(TestCase):
         mock_response.to_dict.return_value = {"id": 12345}
         mock_api_instance.create_contact.return_value = mock_response
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             client = api_brevo.BrevoContactsApiClient()
             client.create_contact(self.user, list_id=1, tender=tender)
 
@@ -452,7 +452,7 @@ class BrevoContactsApiClientTest(TestCase):
         # Mock successful contact lookup
         mock_get_contact_by_identifier.return_value = 55555
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             c = api_brevo.BrevoContactsApiClient()
             response = c.create_contact(self.user, list_id=1)
 
@@ -476,7 +476,7 @@ class BrevoContactsApiClientTest(TestCase):
 
         mock_api_instance.create_contact.side_effect = [rate_limit_exception, mock_response]
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             # Use custom config with fewer retries for testing
             config = api_brevo.BrevoConfig(max_retries=2)
             c = api_brevo.BrevoContactsApiClient(config)
@@ -499,7 +499,7 @@ class BrevoContactsApiClientTest(TestCase):
         server_error.body = None  # Ajouter l'attribut body
         mock_api_instance.create_contact.side_effect = server_error
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             with self.assertRaises(api_brevo.BrevoApiError):
                 # Use custom config with fewer retries for testing
                 config = api_brevo.BrevoConfig(max_retries=2)
@@ -520,7 +520,7 @@ class BrevoContactsApiClientTest(TestCase):
         error_exception.body = "invalid json"
         mock_api_instance.create_contact.side_effect = error_exception
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             with self.assertRaises(api_brevo.BrevoApiError):
                 # Use custom config with fewer retries for testing
                 config = api_brevo.BrevoConfig(max_retries=1)
@@ -545,7 +545,7 @@ class BrevoContactsApiClientTest(TestCase):
         mock_response.to_dict.return_value = {"id": 88888}
         mock_api_instance.create_contact.return_value = mock_response
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             c = api_brevo.BrevoContactsApiClient()
             c.create_contact(self.user, list_id=1)
 
@@ -644,7 +644,7 @@ class BrevoContactsApiClientTest(TestCase):
         api_error.body = error_body
         mock_api_instance.remove_contact_from_list.side_effect = api_error
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             client = api_brevo.BrevoContactsApiClient()
 
             # Should re-raise for retry logic
@@ -726,7 +726,7 @@ class BrevoContactsApiClientTest(TestCase):
         mock_response.to_dict.return_value = {"id": 12345, "email": "test@example.com"}
         mock_api_instance.get_contact_info.return_value = mock_response
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             client = api_brevo.BrevoContactsApiClient()
             result = client.get_contact_by_identifier("test@example.com")
 
@@ -741,7 +741,7 @@ class BrevoContactsApiClientTest(TestCase):
         server_error = ApiException(status=500, reason="Server Error")
         mock_api_instance.get_contact_info.side_effect = server_error
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             client = api_brevo.BrevoContactsApiClient()
 
             with self.assertRaises(api_brevo.BrevoApiError):
@@ -751,7 +751,7 @@ class BrevoContactsApiClientTest(TestCase):
         """Test get_all_contacts handling BrevoApiError in pagination loop"""
         mock_api_instance = MagicMock()
 
-        with patch("sib_api_v3_sdk.ContactsApi", return_value=mock_api_instance):
+        with patch("brevo_python.ContactsApi", return_value=mock_api_instance):
             # Mock the _fetch_contacts_page to raise BrevoApiError
             client = api_brevo.BrevoContactsApiClient()
 
@@ -847,7 +847,7 @@ class BrevoCompanyApiClientTest(TestCase):
         mock_response.id = 12345
         mock_api_instance.companies_post.return_value = mock_response
 
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
+        with patch("brevo_python.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
             client.create_or_update_buyer_company(self.company)
 
@@ -868,7 +868,7 @@ class BrevoCompanyApiClientTest(TestCase):
         mock_response = MagicMock()
         mock_api_instance.companies_id_patch.return_value = mock_response
 
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
+        with patch("brevo_python.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
             client.create_or_update_buyer_company(self.company)
 
@@ -914,7 +914,7 @@ class BrevoCompanyApiClientTest(TestCase):
         mock_response.id = 12345
         mock_api_instance.companies_post.return_value = mock_response
 
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
+        with patch("brevo_python.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
             client.create_or_update_buyer_company(self.company)
 
@@ -943,7 +943,7 @@ class BrevoCompanyApiClientTest(TestCase):
         mock_api_instance.companies_id_patch.side_effect = not_found_exception
         mock_api_instance.companies_post.return_value = mock_response
 
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
+        with patch("brevo_python.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
             client.create_or_update_buyer_company(self.company)
 
@@ -965,7 +965,7 @@ class BrevoCompanyApiClientTest(TestCase):
 
         mock_api_instance.companies_post.side_effect = [server_error, mock_response]
 
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
+        with patch("brevo_python.CompaniesApi", return_value=mock_api_instance):
             # Use custom config with fewer retries for testing
             config = api_brevo.BrevoConfig(max_retries=2)
             client = api_brevo.BrevoCompanyApiClient(config)
@@ -984,7 +984,7 @@ class BrevoCompanyApiClientTest(TestCase):
         mock_response.id = 67890
         mock_api_instance.companies_post.return_value = mock_response
 
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
+        with patch("brevo_python.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
             result = client.create_or_update_buyer_company(self.company)
 
@@ -1004,7 +1004,7 @@ class BrevoCompanyApiClientTest(TestCase):
         mock_response = MagicMock()
         mock_api_instance.companies_id_patch.return_value = mock_response
 
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
+        with patch("brevo_python.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
             result = client.create_or_update_buyer_company(self.company)
 
@@ -1024,7 +1024,7 @@ class BrevoCompanyApiClientTest(TestCase):
         mock_response.id = 67890
         mock_api_instance.companies_post.return_value = mock_response
 
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
+        with patch("brevo_python.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
             client.create_or_update_buyer_company(self.company)
 
@@ -1058,7 +1058,7 @@ class BrevoCompanyApiClientTest(TestCase):
         mock_api_instance.companies_id_patch.side_effect = not_found_exception
         mock_api_instance.companies_post.return_value = mock_response
 
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
+        with patch("brevo_python.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
             result = client.create_or_update_buyer_company(self.company)
 
@@ -1077,7 +1077,7 @@ class BrevoCompanyApiClientTest(TestCase):
         server_error.body = None
         mock_api_instance.companies_post.side_effect = server_error
 
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
+        with patch("brevo_python.CompaniesApi", return_value=mock_api_instance):
             # Use custom config with fewer retries for testing
             config = api_brevo.BrevoConfig(max_retries=1)
             client = api_brevo.BrevoCompanyApiClient(config)
@@ -1096,7 +1096,7 @@ class BrevoCompanyApiClientTest(TestCase):
 
         contact_list = [111, 222, 333]
 
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
+        with patch("brevo_python.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
             client.link_company_with_contact_list(12345, contact_list)
 
@@ -1113,7 +1113,7 @@ class BrevoCompanyApiClientTest(TestCase):
 
         contact_list = [111, None, 222, None, 333]
 
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
+        with patch("brevo_python.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
             client.link_company_with_contact_list(12345, contact_list)
 
@@ -1126,7 +1126,7 @@ class BrevoCompanyApiClientTest(TestCase):
         """Test that empty contact list doesn't trigger API call"""
         mock_api_instance = MagicMock()
 
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
+        with patch("brevo_python.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
             client.link_company_with_contact_list(12345, [])
 
@@ -1138,7 +1138,7 @@ class BrevoCompanyApiClientTest(TestCase):
         """Test that contact list with only None values doesn't trigger API call"""
         mock_api_instance = MagicMock()
 
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
+        with patch("brevo_python.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
             client.link_company_with_contact_list(12345, [None, None])
 
@@ -1154,7 +1154,7 @@ class BrevoCompanyApiClientTest(TestCase):
         api_error.body = None
         mock_api_instance.companies_link_unlink_id_patch.side_effect = api_error
 
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
+        with patch("brevo_python.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
 
             # Mock the logger of the client instance
@@ -1172,7 +1172,7 @@ class BrevoCompanyApiClientTest(TestCase):
         """Test that method does nothing when environment is not allowed"""
 
         # Mock an environment that's not allowed
-        with patch("sib_api_v3_sdk.CompaniesApi.companies_link_unlink_id_patch") as mock_api_link_unlink:
+        with patch("brevo_python.CompaniesApi.companies_link_unlink_id_patch") as mock_api_link_unlink:
             client = api_brevo.BrevoCompanyApiClient()
             client.link_company_with_contact_list(12345, [111, 222])
 
@@ -1222,7 +1222,7 @@ class BrevoCompanyApiClientTest(TestCase):
         siae.brevo_company_id = 99999
         siae.save()
 
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
+        with patch("brevo_python.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
 
             with patch.object(client, "logger") as mock_logger:
@@ -1249,7 +1249,7 @@ class BrevoCompanyApiClientTest(TestCase):
         self.company.brevo_company_id = 88888
         self.company.save()
 
-        with patch("sib_api_v3_sdk.CompaniesApi", return_value=mock_api_instance):
+        with patch("brevo_python.CompaniesApi", return_value=mock_api_instance):
             client = api_brevo.BrevoCompanyApiClient()
 
             with patch.object(client, "logger") as mock_logger:
@@ -1466,7 +1466,7 @@ class BrevoTransactionalEmailApiClientTest(TestCase):
 
         mock_api_instance.send_transac_email.side_effect = [server_error, mock_response]
 
-        with patch("sib_api_v3_sdk.TransactionalEmailsApi", return_value=mock_api_instance):
+        with patch("brevo_python.TransactionalEmailsApi", return_value=mock_api_instance):
             # Use custom config with fewer retries for testing
             config = api_brevo.BrevoConfig(max_retries=2)
             client = api_brevo.BrevoTransactionalEmailApiClient(config)
@@ -1491,7 +1491,7 @@ class BrevoTransactionalEmailApiClientTest(TestCase):
         server_error = ApiException(status=500, reason="Server Error")
         mock_api_instance.send_transac_email.side_effect = server_error
 
-        with patch("sib_api_v3_sdk.TransactionalEmailsApi", return_value=mock_api_instance):
+        with patch("brevo_python.TransactionalEmailsApi", return_value=mock_api_instance):
             # Use custom config with fewer retries for testing
             config = api_brevo.BrevoConfig(max_retries=1)
             client = api_brevo.BrevoTransactionalEmailApiClient(config)

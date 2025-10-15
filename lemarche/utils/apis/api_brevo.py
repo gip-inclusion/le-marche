@@ -4,10 +4,10 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-import sib_api_v3_sdk
+import brevo_python
+from brevo_python.rest import ApiException
 from django.conf import settings
 from phonenumber_field.modelfields import PhoneNumberField
-from sib_api_v3_sdk.rest import ApiException
 
 from lemarche.tenders.enums import TenderSourcesChoices
 from lemarche.utils.apis.brevo_attributes import BUYER_COMPANY_ATTRIBUTES, CONTACT_ATTRIBUTES, SIAE_COMPANY_ATTRIBUTES
@@ -63,7 +63,7 @@ class BrevoApiError(Exception):
 
 class BrevoBaseApiClient:
 
-    api_client: sib_api_v3_sdk.ApiClient
+    api_client: brevo_python.ApiClient
 
     def __init__(self, config: BrevoConfig = BrevoConfig()):
         """
@@ -77,9 +77,9 @@ class BrevoBaseApiClient:
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def set_api_client(self):
-        config = sib_api_v3_sdk.Configuration()
+        config = brevo_python.Configuration()
         config.api_key["api-key"] = settings.BREVO_API_KEY
-        self.api_client = sib_api_v3_sdk.ApiClient(config)
+        self.api_client = brevo_python.ApiClient(config)
 
     def handle_api_retry(self, exception: ApiException, attempt, operation_name):
         """
@@ -176,7 +176,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
             config (BrevoConfig, optional): Configuration instance. If None, uses default config.
         """
         super().__init__(config)
-        self.api_instance = sib_api_v3_sdk.ContactsApi(self.api_client)
+        self.api_instance = brevo_python.ContactsApi(self.api_client)
 
     # =============================================================================
 
@@ -220,7 +220,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         if tender:
             attributes |= self._additional_tender_attributes(tender)
 
-        new_contact = sib_api_v3_sdk.CreateContact(
+        new_contact = brevo_python.CreateContact(
             email=user.email,
             list_ids=[list_id],
             attributes=attributes,
@@ -394,7 +394,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When contact update fails after all retries
         """
-        update_contact_obj = sib_api_v3_sdk.UpdateContact(attributes=attributes_to_update)
+        update_contact_obj = brevo_python.UpdateContact(attributes=attributes_to_update)
         api_response = self.api_instance.update_contact(identifier=user_identifier, update_contact=update_contact_obj)
         self.logger.info(f"Success Brevo->ContactsApi->update_contact: {api_response}")
         return api_response
@@ -414,7 +414,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When contact update fails after all retries
         """
-        update_contact_obj = sib_api_v3_sdk.UpdateContact(email_blacklisted=email_blacklisted)
+        update_contact_obj = brevo_python.UpdateContact(email_blacklisted=email_blacklisted)
         api_response = self.api_instance.update_contact(identifier=user_identifier, update_contact=update_contact_obj)
         self.logger.info(f"Success Brevo->ContactsApi->update_contact to update email_blacklisted: {api_response}")
         return api_response
@@ -467,7 +467,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When contact removal fails after all retries
         """
-        contact_emails = sib_api_v3_sdk.RemoveContactFromList(emails=[user_email])
+        contact_emails = brevo_python.RemoveContactFromList(emails=[user_email])
         try:
             api_response = self.api_instance.remove_contact_from_list(list_id=list_id, contact_emails=contact_emails)
             self.logger.info(f"Success Brevo->ContactsApi->remove_contact_from_list: {api_response}")
@@ -623,7 +623,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
             config (BrevoConfig, optional): Configuration instance. If None, uses default config.
         """
         super().__init__(config)
-        self.api_instance = sib_api_v3_sdk.CompaniesApi(self.api_client)
+        self.api_instance = brevo_python.CompaniesApi(self.api_client)
 
     # =============================================================================
     # PUBLIC METHODS - SIAE COMPANY OPERATIONS
@@ -639,7 +639,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When company synchronization fails after all retries
         """
-        siae_brevo_company_body = sib_api_v3_sdk.Body(name=siae.name, attributes=self._build_siae_attributes(siae))
+        siae_brevo_company_body = brevo_python.Body(name=siae.name, attributes=self._build_siae_attributes(siae))
 
         sync_log = self._create_sync_log(siae)
         is_update = bool(siae.brevo_company_id)
@@ -679,7 +679,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
             bool: True if operation was successful, False otherwise
         """
 
-        company_brevo_body = sib_api_v3_sdk.Body(
+        company_brevo_body = brevo_python.Body(
             name=company.name,
             attributes=self._build_buyer_attributes(company),
         )
@@ -733,7 +733,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
                 contact_list = self._cleanup_contact_list(contact_list)
                 # link company with contact_list
                 if len(contact_list):
-                    body_link_company_contact = sib_api_v3_sdk.Body2(link_contact_ids=contact_list)
+                    body_link_company_contact = brevo_python.Body2(link_contact_ids=contact_list)
                     self.api_instance.companies_link_unlink_id_patch(brevo_company_id, body_link_company_contact)
             except ApiException as e:
                 self.logger.error(f"Exception when calling Brevo->DealApi->companies_link_unlink_id_patch \n {e}")
@@ -876,7 +876,7 @@ class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
             config (BrevoConfig, optional): Configuration instance. If None, uses default config.
         """
         super().__init__(config)
-        self.api_instance = sib_api_v3_sdk.TransactionalEmailsApi(self.api_client)
+        self.api_instance = brevo_python.TransactionalEmailsApi(self.api_client)
 
     def send_transactional_email_with_template(
         self,
@@ -926,7 +926,7 @@ class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
     @BrevoBaseApiClient.execute_with_retry_method(operation_name="sending transactional email")
     def _send_email_with_retry(self, data):
         """Execute the send email operation with retry logic"""
-        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
+        send_smtp_email = brevo_python.SendSmtpEmail(**data)
         response = self.api_instance.send_transac_email(send_smtp_email)
         self.logger.info("Brevo: send transactional email with template")
         return response.to_dict()
@@ -951,8 +951,8 @@ def create_deal(tender, owner_email: str):
         ApiException: If the Brevo API encounters an error during deal creation.
     """
     c = BrevoBaseApiClient()
-    api_instance = sib_api_v3_sdk.DealsApi(c.api_client)
-    body_deal = sib_api_v3_sdk.Body3(
+    api_instance = brevo_python.DealsApi(c.api_client)
+    body_deal = brevo_python.Body3(
         name=tender.title,
         attributes={
             # default attributes
@@ -994,7 +994,7 @@ def link_deal_with_contact_list(tender, contact_list: list = None):
         ApiException: If an error occurs during the linking process in the Brevo API.
     """
     brevo_client = BrevoBaseApiClient()
-    api_instance = sib_api_v3_sdk.DealsApi(brevo_client.api_client)
+    api_instance = brevo_python.DealsApi(brevo_client.api_client)
 
     if brevo_client.config.is_production_env:
         try:
@@ -1004,7 +1004,7 @@ def link_deal_with_contact_list(tender, contact_list: list = None):
             if not contact_list:
                 contact_list = [tender.author.brevo_contact_id]
 
-            body_link = sib_api_v3_sdk.Body5(link_contact_ids=contact_list)
+            body_link = brevo_python.Body5(link_contact_ids=contact_list)
             api_instance.crm_deals_link_unlink_id_patch(brevo_crm_deal_id, body_link)
             logger.info("Brevo: Deal linked with contacts successfully")
         except ApiException as e:

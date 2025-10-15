@@ -183,7 +183,7 @@ class DisabledEmailEditViewTest(TestCase):
             self.assertContains(response, group.display_name)
             self.assertContains(response, " checked>", count=2)
 
-    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.ContactsApi")
+    @patch("lemarche.utils.apis.api_brevo.brevo_python.ContactsApi")
     def test_form_submission_updates_preferences_with_marketing_disabled(self, mock_contacts_api):
         # Setup the mock
         mock_api_instance = mock_contacts_api.return_value
@@ -210,7 +210,7 @@ class DisabledEmailEditViewTest(TestCase):
         self.assertEqual(self.user.disabled_emails.count(), 1)
         self.assertIsNotNone(self.user.disabled_emails.get(group=self.email_group_2))
 
-    @patch("lemarche.utils.apis.api_brevo.sib_api_v3_sdk.ContactsApi")
+    @patch("lemarche.utils.apis.api_brevo.brevo_python.ContactsApi")
     def test_form_submission_updates_preferences_with_marketing_enabled(self, mock_contacts_api):
         # Setup the mock
         mock_api_instance = mock_contacts_api.return_value

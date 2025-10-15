@@ -200,6 +200,23 @@ urllib3 = {version = ">=1.25.4,<2.2.0 || >2.2.0,<3", markers = "python_version >
 crt = ["awscrt (==0.22.0)"]
 
 [[package]]
+name = "brevo-python"
+version = "1.2.0"
+description = "Brevo API"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "brevo_python-1.2.0.tar.gz", hash = "sha256:50d2a1aecfea81a0c162a43f78a7032b4917ba59f64fa0bee4758e45321c6d00"},
+]
+
+[package.dependencies]
+certifi = ">=2017.4.17"
+python-dateutil = ">=2.1"
+six = ">=1.10"
+urllib3 = ">=1.23"
+
+[[package]]
 name = "certifi"
 version = "2025.1.31"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -2708,23 +2725,6 @@ files = [
     {file = "shortuuid-1.0.13-py3-none-any.whl", hash = "sha256:a482a497300b49b4953e15108a7913244e1bb0d41f9d332f5e9925dba33a3c5a"},
     {file = "shortuuid-1.0.13.tar.gz", hash = "sha256:3bb9cf07f606260584b1df46399c0b87dd84773e7b25912b7e391e30797c5e72"},
 ]
-
-[[package]]
-name = "sib-api-v3-sdk"
-version = "7.6.0"
-description = "SendinBlue API"
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "sib-api-v3-sdk-7.6.0.tar.gz", hash = "sha256:8975108c4a66ca2280532017190150f98ac826eacdda6c2f859ff104d2828266"},
-]
-
-[package.dependencies]
-certifi = ">=2017.4.17"
-python-dateutil = ">=2.1"
-six = ">=1.10"
-urllib3 = ">=1.23"
 
 [[package]]
 name = "six"
