@@ -6,35 +6,70 @@
                 <div class="fr-col-12 fr-col-sm-6 fr-col-md-3">
                     <h3 class="fr-footer__top-cat">Accès rapides</h3>
                     <ul class="fr-footer__top-list">
-                        <li><a class="fr-footer__top-link" href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
-                        <li><a class="fr-footer__top-link" href="{% url 'tenders:create' %}">Publier un besoin d'achat</a></li>
-                        <li><a class="fr-footer__top-link" href="{% url 'siae:search_results' %}">Rechercher un prestataire</a></li>
-                        <li><a class="fr-footer__top-link" href="{% url 'siae:search_results' %}">Moteur de recherche multicritères</a></li>
+                        <li>
+                            <a class="fr-footer__top-link" href="{{ HOME_PAGE_PATH }}">Accueil</a>
+                        </li>
+                        <li>
+                            <a class="fr-footer__top-link" href="{% url 'tenders:create' %}">Publier un besoin d'achat</a>
+                        </li>
+                        <li>
+                            <a class="fr-footer__top-link" href="{% url 'siae:search_results' %}">Rechercher un prestataire</a>
+                        </li>
+                        <li>
+                            <a class="fr-footer__top-link" href="{% url 'siae:search_results' %}">Moteur de recherche multicritères</a>
+                        </li>
                     </ul>
                 </div>
                 <div class="fr-col-12 fr-col-sm-6 fr-col-md-3">
                     <h3 class="fr-footer__top-cat">Améliorer vos achats inclusifs</h3>
                     <ul class="fr-footer__top-list">
-                        <li><a class="fr-footer__top-link" href="{{ PURCHASING_IMPACT_PAGE }}">Auditer vos achats</a></li>
-                        <li><a class="fr-footer__top-link" href="{% url 'pages:buyer_social_impact_calculator' %}">Calculer l'impact social d'un achat inclusif</a></li>
-                        <li><a class="fr-footer__top-link" href="{{ FACILITATOR_LIST }}" target="_blank">Trouver un facilitateur des clauses sociales</a></li>
+                        <li>
+                            <a class="fr-footer__top-link" href="{{ PURCHASING_IMPACT_PAGE }}">Auditer vos achats</a>
+                        </li>
+                        <li>
+                            <a class="fr-footer__top-link"
+                               href="{% url 'pages:buyer_social_impact_calculator' %}">Calculer l'impact social d'un achat inclusif</a>
+                        </li>
+                        <li>
+                            <a class="fr-footer__top-link"
+                               href="{{ FACILITATOR_LIST }}"
+                               target="_blank">Trouver un facilitateur des clauses sociales</a>
+                        </li>
                     </ul>
                 </div>
                 <div class="fr-col-12 fr-col-sm-6 fr-col-md-3">
                     <h3 class="fr-footer__top-cat">Documentation</h3>
                     <ul class="fr-footer__top-list">
-                        <li><a class="fr-footer__top-link" href="{{ ABOUT }}">Qui sommes-nous&nbsp;?</a></li>
-                        <li><a class="fr-footer__top-link" href="{% url 'pages:decouvrir_inclusion' %}">C'est quoi l'inclusion&nbsp;?</a></li>
-                        <li><a class="fr-footer__top-link" href="{{ RESSOURCES }}">Nos ressources</a></li>
-                        <li><a class="fr-footer__top-link" href="{{ FAQ }}">FAQ</a></li>
+                        <li>
+                            <a class="fr-footer__top-link" href="{{ ABOUT }}">Qui sommes-nous&nbsp;?</a>
+                        </li>
+                        <li>
+                            <a class="fr-footer__top-link"
+                               href="/ressources/quest-ce-que-linclusion/">Qu'est-ce que l'inclusion&nbsp;?</a>
+                        </li>
+                        <li>
+                            <a class="fr-footer__top-link" href="{{ RESSOURCES }}">Nos ressources</a>
+                        </li>
+                        <li>
+                            <a class="fr-footer__top-link" href="{{ FAQ }}">FAQ</a>
+                        </li>
                     </ul>
                 </div>
                 <div class="fr-col-12 fr-col-sm-6 fr-col-md-3">
                     <h3 class="fr-footer__top-cat">En savoir plus</h3>
                     <ul class="fr-footer__top-list">
-                        <li><a class="fr-footer__top-link" href="https://github.com/gip-inclusion/le-marche" target="_blank" title="Github (lien externe)">Code source</a></li>
-                        <li><a class="fr-footer__top-link" href="{% url 'api:home' %}">API</a></li>
-                        <li><a class="fr-footer__top-link" href="{% url 'pages:stats' %}">Statistiques</a></li>
+                        <li>
+                            <a class="fr-footer__top-link"
+                               href="https://github.com/gip-inclusion/le-marche"
+                               target="_blank"
+                               title="Github (lien externe)">Code source</a>
+                        </li>
+                        <li>
+                            <a class="fr-footer__top-link" href="{% url 'api:home' %}">API</a>
+                        </li>
+                        <li>
+                            <a class="fr-footer__top-link" href="{% url 'pages:stats' %}">Statistiques</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -43,8 +78,12 @@
     <div class="fr-container">
         <div class="fr-footer__body">
             <div class="fr-footer__brand fr-enlarge-link">
-                <a href="https://inclusion.beta.gouv.fr/" target="_blank" aria-label="Découvrez les services de la plateforme de l'inclusion (lien externe)">
-                    <img src="{% static 'vendor/theme-inclusion/images/logo-plateforme-inclusion.svg' %}" alt="Logo de la Plateforme de l'inclusion" height="80">
+                <a href="https://inclusion.beta.gouv.fr/"
+                   target="_blank"
+                   aria-label="Découvrez les services de la plateforme de l'inclusion (lien externe)">
+                    <img src="{% static 'vendor/theme-inclusion/images/logo-plateforme-inclusion.svg' %}"
+                         alt="Logo de la Plateforme de l'inclusion"
+                         height="80">
                 </a>
             </div>
             <div class="fr-footer__content">
@@ -53,15 +92,35 @@
                         <strong>Ce service fait partie de la Plateforme de l'inclusion</strong>
                     </p>
                     <p class="fr-m-0">
-                        Découvrez les outils qui portent l'inclusion au <br class="d-none d-md-inline">coeur de leur service. A chaque service, son objectif. <br>
-                        <a href="https://inclusion.beta.gouv.fr/" target="_blank" class="has-external-link" aria-label="Découvrez les services de la plateforme de l'inclusion (lien externe)">Découvrez nos services</a>
+                        Découvrez les outils qui portent l'inclusion au
+                        <br class="d-none d-md-inline">
+                        coeur de leur service. A chaque service, son objectif.
+                        <br>
+                        <a href="https://inclusion.beta.gouv.fr/"
+                           target="_blank"
+                           class="has-external-link"
+                           aria-label="Découvrez les services de la plateforme de l'inclusion (lien externe)">Découvrez nos services</a>
                     </p>
                 </div>
                 <ul class="fr-footer__content-list">
-                    <li class="fr-footer__content-item"><a class="fr-footer__content-link" href="https://beta.gouv.fr/" target="_blank" aria-label="Incubateur de services publics numériques — beta.gouv.fr (lien externe)">beta.gouv.fr</a></li>
-                    <li class="fr-footer__content-item"><a class="fr-footer__content-link" href="https://www.data.gouv.fr/fr/" target="_blank" aria-label="Data.gouv.fr (lien externe)">data.gouv.fr</a></li>
-                    <li class="fr-footer__content-item"><a class="fr-footer__content-link" href="https://api.gouv.fr/" target="_blank" aria-label="Simplifiez le partage et la circulation des données administratives grace à api.gouv.fr (lien externe)">api.gouv.fr</a></li>
-
+                    <li class="fr-footer__content-item">
+                        <a class="fr-footer__content-link"
+                           href="https://beta.gouv.fr/"
+                           target="_blank"
+                           aria-label="Incubateur de services publics numériques — beta.gouv.fr (lien externe)">beta.gouv.fr</a>
+                    </li>
+                    <li class="fr-footer__content-item">
+                        <a class="fr-footer__content-link"
+                           href="https://www.data.gouv.fr/fr/"
+                           target="_blank"
+                           aria-label="Data.gouv.fr (lien externe)">data.gouv.fr</a>
+                    </li>
+                    <li class="fr-footer__content-item">
+                        <a class="fr-footer__content-link"
+                           href="https://api.gouv.fr/"
+                           target="_blank"
+                           aria-label="Simplifiez le partage et la circulation des données administratives grace à api.gouv.fr (lien externe)">api.gouv.fr</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -71,26 +130,40 @@
                     <a class="fr-footer__bottom-link" href="{% url 'pages:plan-du-site' %}">Plan du site</a>
                 </li>
                 <li class="fr-footer__bottom-item">
-                    <a class="fr-footer__bottom-link" href="{{ ACCESSIBILITY }}" title="Accessibilité">Accessibilité : non conforme</a>
+                    <a class="fr-footer__bottom-link"
+                       href="{{ ACCESSIBILITY }}"
+                       title="Accessibilité">Accessibilité : non conforme</a>
                 </li>
                 <li class="fr-footer__bottom-item">
-                    <a class="fr-footer__bottom-link" href="{{ LEGAL_INFO }}" title="Mentions légales">Mentions légales</a>
+                    <a class="fr-footer__bottom-link"
+                       href="{{ LEGAL_INFO }}"
+                       title="Mentions légales">Mentions légales</a>
                 </li>
                 <li class="fr-footer__bottom-item">
-                    <a class="fr-footer__bottom-link" href="{{ CGU }}" title="Conditions générales">Conditions générales</a>
+                    <a class="fr-footer__bottom-link"
+                       href="{{ CGU }}"
+                       title="Conditions générales">Conditions générales</a>
                 </li>
                 <li class="fr-footer__bottom-item">
-                    <a class="fr-footer__bottom-link" href="{{ CGU_API }}" title="Conditions générales de l'API">Conditions générales de l'API</a>
+                    <a class="fr-footer__bottom-link"
+                       href="{{ CGU_API }}"
+                       title="Conditions générales de l'API">Conditions générales de l'API</a>
                 </li>
                 <li class="fr-footer__bottom-item">
-                    <a class="fr-footer__bottom-link" href="{{ PRIVACY_POLICY }}" title="Confidentialité">Confidentialité</a>
+                    <a class="fr-footer__bottom-link"
+                       href="{{ PRIVACY_POLICY }}"
+                       title="Confidentialité">Confidentialité</a>
                 </li>
                 <li class="fr-footer__bottom-item">
                     <a class="fr-footer__bottom-link" href="{% url 'pages:contact' %}">Nous contacter</a>
                 </li>
             </ul>
             <div class="fr-footer__bottom-copy">
-                <p>Sauf mention explicite de propriété intellectuelle détenue par des tiers, les contenus de ce site sont proposés sous <a href="https://github.com/etalab/licence-ouverte/blob/master/LO.md" target="_blank" rel="noopener external" title="Licence etalab - nouvelle fenêtre">licence etalab-2.0</a>
+                <p>
+                    Sauf mention explicite de propriété intellectuelle détenue par des tiers, les contenus de ce site sont proposés sous <a href="https://github.com/etalab/licence-ouverte/blob/master/LO.md"
+    target="_blank"
+    rel="noopener external"
+    title="Licence etalab - nouvelle fenêtre">licence etalab-2.0</a>
                 </p>
             </div>
         </div>
