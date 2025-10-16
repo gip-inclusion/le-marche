@@ -10,7 +10,7 @@
       <script type="importmap">
         {
             "imports": {
-              "shepherd_map": "{% static 'vendor/shepherd-14.4.0/esm/shepherd.mjs' %}",
+              "shepherd_map": "{% static 'vendor/shepherd-14.5.1/esm/shepherd.mjs' %}",
               "user_guide_map": "{% static 'django_shepherd/user_guide.js' %}"
             }
         }
@@ -36,7 +36,7 @@
     <link rel="stylesheet"
           href="{% static 'vendor/remixicon-4.6.0/remixicon.css' %}">
     <link rel="stylesheet"
-          href="{% static 'vendor/shepherd-14.4.0/css/shepherd.css' %}" />
+          href="{% static 'vendor/shepherd-14.5.1/css/shepherd.css' %}" />
     {{ DISPLAY_GUIDE_PAYLOAD|json_script:"display-guide-payload" }}
     {{ DISPLAY_GUIDE_VIEWED_URL|json_script:"display-guide-viewed-url" }}
     {% if DISPLAY_GUIDE_FLAG %}
