@@ -1469,10 +1469,10 @@ class SiaeActivityQuerySet(models.QuerySet):
         return self.filter(conditions)
 
     def with_country_geo_range(self):
-        return self.filter(Q(geo_range=siae_constants.GEO_RANGE_COUNTRY))
+        return self.filter(geo_range=siae_constants.GEO_RANGE_COUNTRY)
 
     def exclude_country_geo_range(self):
-        return self.exclude(Q(geo_range=siae_constants.GEO_RANGE_COUNTRY))
+        return self.exclude(geo_range=siae_constants.GEO_RANGE_COUNTRY)
 
     def siae_within(self, point, distance_km=0, include_country_area=False):
         return (
