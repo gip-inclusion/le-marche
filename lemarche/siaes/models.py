@@ -1515,9 +1515,9 @@ class SiaeActivityQuerySet(models.QuerySet):
             ):
                 # keep this filter on siae activity to handle include_country_area on activity level
                 qs = qs.siae_within(tender.location.coords, tender.distance_location, tender.include_country_area)
-            elif tender.perimeters.count() and tender.include_country_area:  # perimeters and all country
+            elif len(tender.perimeters.all()) and tender.include_country_area:  # perimeters and all country
                 qs = qs.geo_range_in_perimeter_list(tender.perimeters.all(), include_country_area=True)
-            elif tender.perimeters.count():  # only perimeters
+            elif len(tender.perimeters.all()):  # only perimeters
                 qs = qs.geo_range_in_perimeter_list(tender.perimeters.all()).exclude_country_geo_range()
             elif tender.include_country_area:
                 qs = qs.filter(Q(geo_range=siae_constants.GEO_RANGE_COUNTRY))
