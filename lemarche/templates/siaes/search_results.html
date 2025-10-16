@@ -3,10 +3,10 @@
 {% block page_title %}
     Trouvez votre prestataire parmi 8600 prestataires inclusifs{{ block.super }}
 {% endblock page_title %}
-{% block meta_description %}
+{% block description %}
     <meta name="description"
           content="Recherchez en fonction de votre segment d'achats, périmètre géographique et types de prestation afin de trouver le prestataire idéal.">
-{% endblock meta_description %}
+{% endblock description %}
 {% block breadcrumb %}
     {% process_dict root_dir=HOME_PAGE_PATH current="Recherche" as breadcrumb_data %}
     {% dsfr_breadcrumb breadcrumb_data %}
@@ -319,7 +319,8 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
     </script>
-    <script type="text/javascript" src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
+    <script type="text/javascript"
+            src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
     {% if user.is_authenticated %}
         <script type="text/javascript" src="{% static 'js/favorite_item.js' %}"></script>
     {% endif %}

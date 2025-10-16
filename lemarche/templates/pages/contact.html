@@ -1,114 +1,91 @@
 {% extends "layouts/base.html" %}
 {% load static process_dict dsfr_tags %}
-
-{% block page_title %}Contactez les équipes du marché de l'inclusion{% endblock page_title %}
-{% block meta_description %}
-<meta name="description" content="Une demande, une question en lien avec vos achats socialement responsables ? Contactez les équipes du marché de l'inclusion.">
-{% endblock meta_description %}
-
+{% block page_title %}
+    Contactez les équipes du marché de l'inclusion
+{% endblock page_title %}
+{% block description %}
+    <meta name="description"
+          content="Une demande, une question en lien avec vos achats socialement responsables ? Contactez les équipes du marché de l'inclusion.">
+{% endblock description %}
 {% block breadcrumb %}
     {% process_dict root_dir=HOME_PAGE_PATH current="Formulaire de contact" as breadcrumb_data %}
     {% dsfr_breadcrumb breadcrumb_data %}
 {% endblock breadcrumb %}
-
 {% block content %}
-<section>
-	<div class="fr-container">
-		<div class="fr-grid-row">
-			<div class="fr-col-12">
-				<h1>Nous contacter</h1>
-				<h2>
-					Vous êtes sur le point de contacter l'équipe Support du <strong>Marché de l'inclusion</strong>.
-                </h2>
-                <p>
-					Notre équipe peut vous aider sur les thématiques liées au développement commercial des ESI (Entreprise Sociale Inclusive), les achats responsables…
-                </p>
-				<p>
-                    <span class="fr-icon-information-line"></span> En revanche, si votre demande concerne les sujets de recrutement (Pass IAE, Fiche salarié, prescription ...),
-					nous vous invitons à contacter l'équipe des <strong>Emplois de l'inclusion</strong> sur le site <a href="{{ EMPLOIS_INCLUSION_HELP_URL }}">{{ EMPLOIS_INCLUSION_HELP_URL }}</a>
-				</p>
-			</div>
-		</div>
-	</div>
-</section>
-
-<section>
-	<div class="fr-container">
-		<div class="fr-grid-row">
-			<div class="fr-col-12 fr-col-lg-7">
-                <form method="post" action="">
-                    {% csrf_token %}
-                    {% if form.non_field_errors %}
-                        <section class="fr-my-4v fr-input-group fr-input-group--error">
-                            {{ form.non_field_errors }}
-                        </section>
-                    {% endif %}
-
-                    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-                        <div class="fr-col-sm-6">
-                            {% dsfr_form_field form.first_name %}
+    <section>
+        <div class="fr-container">
+            <div class="fr-grid-row">
+                <div class="fr-col-12">
+                    <h1>Nous contacter</h1>
+                    <h2>
+                        Vous êtes sur le point de contacter l'équipe Support du <strong>Marché de l'inclusion</strong>.
+                    </h2>
+                    <p>
+                        Notre équipe peut vous aider sur les thématiques liées au développement commercial des ESI (Entreprise Sociale Inclusive), les achats responsables…
+                    </p>
+                    <p>
+                        <span class="fr-icon-information-line"></span> En revanche, si votre demande concerne les sujets de recrutement (Pass IAE, Fiche salarié, prescription ...),
+                        nous vous invitons à contacter l'équipe des <strong>Emplois de l'inclusion</strong> sur le site <a href="{{ EMPLOIS_INCLUSION_HELP_URL }}">{{ EMPLOIS_INCLUSION_HELP_URL }}</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="fr-container">
+            <div class="fr-grid-row">
+                <div class="fr-col-12 fr-col-lg-7">
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        {% if form.non_field_errors %}
+                            <section class="fr-my-4v fr-input-group fr-input-group--error">
+                                {{ form.non_field_errors }}
+                            </section>
+                        {% endif %}
+                        <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+                            <div class="fr-col-sm-6">{% dsfr_form_field form.first_name %}</div>
+                            <div class="fr-col-sm-6">{% dsfr_form_field form.last_name %}</div>
                         </div>
-                        <div class="fr-col-sm-6">
-                            {% dsfr_form_field form.last_name %}
+                        <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+                            <div class="fr-col-12">{% dsfr_form_field form.email %}</div>
                         </div>
-                    </div>
-                    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-                        <div class="fr-col-12">
-                            {% dsfr_form_field form.email %}
+                        <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+                            <div class="fr-col-12">{% dsfr_form_field form.kind %}</div>
                         </div>
-                    </div>
-                    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-                        <div class="fr-col-12">
-                            {% dsfr_form_field form.kind %}
+                        <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+                            <div class="fr-col-sm-6">{% dsfr_form_field form.siret %}</div>
+                            <div class="fr-col-sm-6">{% dsfr_form_field form.phone %}</div>
                         </div>
-                    </div>
-                    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-                        <div class="fr-col-sm-6">
-                            {% dsfr_form_field form.siret %}
+                        <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+                            <div class="fr-col-12">{% dsfr_form_field form.subject %}</div>
                         </div>
-                        <div class="fr-col-sm-6">
-                            {% dsfr_form_field form.phone %}
+                        <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+                            <div class="fr-col-12">{% dsfr_form_field form.message %}</div>
                         </div>
-                    </div>
-                    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-                        <div class="fr-col-12">
-                            {% dsfr_form_field form.subject %}
-                        </div>
-                    </div>
-                    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-                        <div class="fr-col-12">
-                            {% dsfr_form_field form.message %}
-                        </div>
-                    </div>
-
-                    <div class="mtcaptcha"></div>
-
-                    <hr>
-                    <div class="fr-grid-row">
-                        <div class="fr-col-12">
-                            <div class="fr-btns-group fr-btns-group--icon-right fr-btns-group--right fr-btns-group--inline-lg">
-                                <button class="fr-btn fr-icon-send-plane-line" type="submit">
-                                    Envoyer
-                                </button>
+                        <div class="mtcaptcha"></div>
+                        <hr>
+                        <div class="fr-grid-row">
+                            <div class="fr-col-12">
+                                <div class="fr-btns-group fr-btns-group--icon-right fr-btns-group--right fr-btns-group--inline-lg">
+                                    <button class="fr-btn fr-icon-send-plane-line" type="submit">Envoyer</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </form>
-			</div>
-		</div>
-	</div>
-</section>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock content %}
-
 {% block extra_js %}
-{% if MTCAPTCHA_PUBLIC_KEY %}
-    <script type="text/javascript">
+    {% if MTCAPTCHA_PUBLIC_KEY %}
+        <script type="text/javascript">
         // add captcha to contact form
         var mtcaptchaConfig = {
             "sitekey": "{{ MTCAPTCHA_PUBLIC_KEY }}",
             "lang": "fr"
         };
-    </script>
-    <script type="text/javascript" src="{% static 'js/mtcaptcha.js' %}"></script>
-{% endif %}
+        </script>
+        <script type="text/javascript" src="{% static 'js/mtcaptcha.js' %}"></script>
+    {% endif %}
 {% endblock extra_js %}
