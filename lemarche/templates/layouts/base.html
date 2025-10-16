@@ -10,7 +10,7 @@
       <script type="importmap">
         {
             "imports": {
-              "shepherd_map": "{% static 'vendor/shepherd-14.4.0/esm/shepherd.mjs' %}",
+              "shepherd_map": "{% static 'vendor/shepherd-14.5.1/esm/shepherd.mjs' %}",
               "user_guide_map": "{% static 'django_shepherd/user_guide.js' %}"
             }
         }
@@ -20,10 +20,10 @@
     {% dsfr_css %}
     {% compress css %}
       <link rel="stylesheet"
-            href="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.css' %}"
+            href="{% static 'vendor/alphagov-accessible-autocomplete-3.0.1/accessible-autocomplete.min.css' %}"
             type="text/css" />
       <link rel="stylesheet"
-            href="{% static 'vendor/leaflet-1.7.1/leaflet.css' %}"
+            href="{% static 'vendor/leaflet-1.9.4/leaflet.css' %}"
             type="text/css" />
       {% comment %}See https://github.com/GouvernementFR/dsfr-theme-tarteaucitron{% endcomment %}
       <link rel="stylesheet"
@@ -34,9 +34,9 @@
             type="text/x-scss" />
     {% endcompress %}
     <link rel="stylesheet"
-          href="{% static 'vendor/remixicon-4.6.0/remixicon.css' %}">
+          href="{% static 'vendor/remixicon-4.7.0/remixicon.css' %}">
     <link rel="stylesheet"
-          href="{% static 'vendor/shepherd-14.4.0/css/shepherd.css' %}" />
+          href="{% static 'vendor/shepherd-14.5.1/css/shepherd.css' %}" />
     {{ DISPLAY_GUIDE_PAYLOAD|json_script:"display-guide-payload" }}
     {{ DISPLAY_GUIDE_VIEWED_URL|json_script:"display-guide-viewed-url" }}
     {% if DISPLAY_GUIDE_FLAG %}
@@ -87,18 +87,17 @@
     {% endblock modals %}
     {% dsfr_js nonce=request.csp_nonce %}
     <script type="text/javascript"
-            src="{% static 'vendor/alpinejs@3.11.1.min.js'%}"
+            src="{% static 'vendor/alpinejs@3.15.0.min.js'%}"
             defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"
-            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-            crossorigin="anonymous"></script>
+    <script type="text/javascript"
+            src="{% static 'vendor/jquery-3.7.1.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/dsfr/utils.js'%}"></script>
     <script type="text/javascript"
-            src="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.js' %}"></script>
+            src="{% static 'vendor/alphagov-accessible-autocomplete-3.0.1/accessible-autocomplete.min.js' %}"></script>
     <script type="text/javascript"
-            src="{% static 'vendor/leaflet-1.7.1/leaflet.js' %}"></script>
+            src="{% static 'vendor/leaflet-1.9.4/leaflet.js' %}"></script>
     <script type="text/javascript"
-            src="{% static 'vendor/htmx-1.9.12/htmx.min.js' %}"></script>
+            src="{% static 'vendor/htmx-2.0.7/htmx.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/utils.js'%}"></script>
     <script type="text/javascript" src="{% static 'js/dropdown_menu.js' %}"></script>
     {% if BITOUBI_ENV not in "dev" %}
