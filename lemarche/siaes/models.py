@@ -342,10 +342,7 @@ class SiaeQuerySet(models.QuerySet):
         qs = self.tender_matching_query_set()
 
         # Subquery to filter SiaeActivity by presta_type, sector and perimeter
-        siae_activity_subquery = (
-            SiaeActivity.objects.filter_with_tender(tender).filter(siae=OuterRef("pk")).values("pk")
-        )
-        qs = qs.filter(Q(activities__in=Subquery(siae_activity_subquery)))
+        qs = qs.filter(Exists(SiaeActivity.objects.filter_with_tender(tender).filter(siae=OuterRef("pk"))))
 
         # filter by siae_kind
         if len(tender.siae_kind):
@@ -369,7 +366,7 @@ class SiaeQuerySet(models.QuerySet):
             qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
             qs = qs.order_by("-tendersiae__email_send_date")
 
-        return qs.distinct()
+        return qs
 
     def filter_with_potential_through_activities(self, sector, perimeter=None):
         """
