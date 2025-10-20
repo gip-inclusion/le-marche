@@ -1326,6 +1326,7 @@ def siae_groups_changed(sender, instance, action, **kwargs):
 
 
 class SiaeUser(models.Model):
+    # Pourquoi ne pas remplacer par un champ user sur la siae ?
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Utilisateur", on_delete=models.CASCADE)
 
@@ -1359,6 +1360,7 @@ class SiaeUserRequestQuerySet(models.QuerySet):
 
 
 class SiaeUserRequest(models.Model):
+    # C'est une demande de rattachement pour faire quoi ?
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
     initiator = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Initiateur", on_delete=models.CASCADE)
     assignee = models.ForeignKey(
@@ -1697,6 +1699,7 @@ class SiaeLabel(models.Model):
 
 
 class SiaeLabelOld(models.Model):
+    # transition vers SiaeLabel à terminer ?
     name = models.CharField(verbose_name="Nom", max_length=255)
 
     siae = models.ForeignKey(
@@ -1716,6 +1719,7 @@ class SiaeLabelOld(models.Model):
 
 
 class SiaeImage(models.Model):
+    # Est-ce qu'il peut y en avoir plus d'une par Siae ?
     name = models.CharField(verbose_name="Nom", max_length=255, blank=True)
     description = models.TextField(verbose_name="Description", blank=True)
     image_name = models.CharField(verbose_name="Nom de l'image", max_length=255)
