@@ -185,7 +185,7 @@ class PerimetersMultiAutocomplete {
         source: debounce(this.getSource, 300),
         displayMenu: 'overlay',
         inputClasses: 'fr-input',
-        menuClasses: 'fr-menu',
+        menuClasses: '',
         templates: {
           inputValue: this.inputValue,  // returns the string value to be inserted into the input
           suggestion: this.suggestion,  // used when rendering suggestions, and should return a string, which can contain HTML
