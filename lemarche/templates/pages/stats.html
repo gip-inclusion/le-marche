@@ -1,42 +1,40 @@
 {% extends "layouts/base.html" %}
 {% load dsfr_tags process_dict %}
-
-{% block page_title %}Suivi de l'impact{{ block.super }}{% endblock page_title %}
-{% block meta_description %}
-<meta name="description" content="Utilisez l'API du marché de l'inclusion pour accéder au répertoire qualifié des structures de l'insertion et du handicap. Documentation mise à jour ☑️">
-{% endblock meta_description %}
-
+{% block page_title %}
+    Suivi de l'impact{{ block.super }}
+{% endblock page_title %}
+{% block description %}
+    <meta name="description"
+          content="Utilisez l'API du marché de l'inclusion pour accéder au répertoire qualifié des structures de l'insertion et du handicap. Documentation mise à jour ☑️">
+{% endblock description %}
 {% block breadcrumb %}
     {% process_dict root_dir=HOME_PAGE_PATH current="Statistiques" as breadcrumb_data %}
     {% dsfr_breadcrumb breadcrumb_data %}
 {% endblock breadcrumb %}
-
 {% block content %}
-<section>
-    <div class="fr-container">
-        <div class="fr-grid-row">
-            <div class="fr-col-12 fr-col-lg-10">
-                <h1>
-                    <strong>Statistiques</strong>
-                </h1>
+    <section>
+        <div class="fr-container">
+            <div class="fr-grid-row">
+                <div class="fr-col-12 fr-col-lg-10">
+                    <h1>
+                        <strong>Statistiques</strong>
+                    </h1>
+                </div>
             </div>
         </div>
-    </div>
-</section>
-
-<section>
-    <div class="fr-container">
-        <div class="fr-grid-row">
-            <div class="fr-col-12">
-                <script src="https://stats.inclusion.beta.gouv.fr/app/iframeResizer.js"></script>
-                <iframe
-                    src="{{ METABASE_PUBLIC_DASHBOARD_URL }}"
-                    width="100%"
-                    height="1000"
-                    onload="iFrameResize({}, this)"
-                    frameborder="0"></iframe>
+    </section>
+    <section>
+        <div class="fr-container">
+            <div class="fr-grid-row">
+                <div class="fr-col-12">
+                    <script src="https://stats.inclusion.beta.gouv.fr/app/iframeResizer.js"></script>
+                    <iframe src="{{ METABASE_PUBLIC_DASHBOARD_URL }}"
+                            width="100%"
+                            height="1000"
+                            onload="iFrameResize({}, this)"
+                            frameborder="0"></iframe>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 {% endblock content %}

@@ -1,13 +1,15 @@
 {% extends "layouts/base.html" %}
 {% load dsfr_tags process_dict wagtailcore_tags wagtailimages_tags wagtailroutablepage_tags %}
-{% block meta_description %}<meta name="description" content="{{ page.search_description }}">{% endblock meta_description %}
-{% block page_title %}{{ page.seo_title }} {{ block.super }}{% endblock page_title %}
-
+{% block description %}
+    <meta name="description" content="{{ page.search_description }}">
+{% endblock description %}
+{% block page_title %}
+    {{ page.seo_title }} {{ block.super }}
+{% endblock page_title %}
 {% block breadcrumb %}
     {% process_dict root_dir=HOME_PAGE_PATH current=page.title as breadcrumb_data %}
     {% dsfr_breadcrumb breadcrumb_data %}
 {% endblock breadcrumb %}
-
 {% block content %}
     <section class=" mb-0">
         <div class="fr-container">
@@ -23,29 +25,34 @@
             <div class="fr-grid-row">
                 <div class="fr-col-12">
                     <div class="fr-tabs">
-                        <ul class="fr-tabs__list" role="tablist" aria-label="Filtres par catégorie">
+                        <ul class="fr-tabs__list"
+                            role="tablist"
+                            aria-label="Filtres par catégorie">
                             <li role="presentation">
                                 <a href="{% routablepageurl page "post_list" %}"
-                                    id="all-categories-tab"
-                                    class="fr-tabs__tab"
-                                    aria-controls="all_categories_panel"
-                                    aria-selected="{% if not category %}true{% else %}false{% endif %}">
+                                   id="all-categories-tab"
+                                   class="fr-tabs__tab"
+                                   aria-controls="all_categories_panel"
+                                   aria-selected="{% if not category %}true{% else %}false{% endif %}">
                                     Toutes nos ressources
                                 </a>
                             </li>
                             {% for cat in categories %}
                                 <li role="presentation">
                                     <a href="{% routablepageurl page "category_view" cat_slug=cat.slug %}"
-                                        id="{{ cat.slug }}-tab"
-                                        class="fr-tabs__tab"
-                                        aria-controls="{{ cat.slug }}_panel"
-                                        aria-selected="{% if category and cat.slug == category.slug %}true{% else %}false{% endif %}">
+                                       id="{{ cat.slug }}-tab"
+                                       class="fr-tabs__tab"
+                                       aria-controls="{{ cat.slug }}_panel"
+                                       aria-selected="{% if category and cat.slug == category.slug %}true{% else %}false{% endif %}">
                                         {{ cat.name }}
                                     </a>
                                 </li>
                             {% endfor %}
                         </ul>
-                        <div id="{% if category %}{{ category.slug }}{% else %}all_categories{% endif %}_panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel" tabindex="0">
+                        <div id="{% if category %}{{ category.slug }}{% else %}all_categories{% endif %}_panel"
+                             class="fr-tabs__panel fr-tabs__panel--selected"
+                             role="tabpanel"
+                             tabindex="0">
                             <div class="fr-grid-row fr-grid-row--gutters">
                                 {% for article in article_list %}
                                     <div class="fr-col-12 fr-col-md-6 fr-col-lg-4">{% include "cms/article_item.html" with article=article %}</div>
