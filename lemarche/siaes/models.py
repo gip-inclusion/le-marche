@@ -341,9 +341,6 @@ class SiaeQuerySet(models.QuerySet):
         """
         qs = self.tender_matching_query_set()
 
-        # Subquery to filter SiaeActivity by presta_type, sector and perimeter
-        qs = qs.filter(Exists(SiaeActivity.objects.filter_with_tender(tender).filter(siae=OuterRef("pk"))))
-
         # filter by siae_kind
         if len(tender.siae_kind):
             qs = qs.filter(kind__in=tender.siae_kind)
@@ -365,6 +362,18 @@ class SiaeQuerySet(models.QuerySet):
             # why need to filter more ?
             qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
             qs = qs.order_by("-tendersiae__email_send_date")
+
+        # Subquery to filter SiaeActivity by presta_type, sector and perimeter
+        siae_ids = list(
+            qs.values_list("pk", flat=True)
+        )  # force the list of siae to limit the SiaeActivity we'll filter in filter_with_tender
+        qs = qs.filter(
+            Exists(
+                SiaeActivity.objects.filter(siae_id__in=siae_ids)
+                .filter(siae=OuterRef("pk"))
+                .filter_with_tender(tender)
+            )
+        )
 
         return qs
 
@@ -633,7 +642,7 @@ class Siae(models.Model):
 
     DEPARTMENT_CHOICES = DEPARTMENTS_PRETTY.items()
     REGION_CHOICES = REGIONS_PRETTY.items()
-    name = models.CharField(verbose_name="Raison sociale", max_length=255)
+    name = models.CharField(verbose_name="Raison sociale", max_length=255, db_index=True)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
     brand = models.CharField(verbose_name="Nom commercial", max_length=255, blank=True)
     kind = models.CharField(
@@ -1460,10 +1469,10 @@ class SiaeActivityQuerySet(models.QuerySet):
         return self.filter(conditions)
 
     def with_country_geo_range(self):
-        return self.filter(Q(geo_range=siae_constants.GEO_RANGE_COUNTRY))
+        return self.filter(geo_range=siae_constants.GEO_RANGE_COUNTRY)
 
     def exclude_country_geo_range(self):
-        return self.exclude(Q(geo_range=siae_constants.GEO_RANGE_COUNTRY))
+        return self.exclude(geo_range=siae_constants.GEO_RANGE_COUNTRY)
 
     def siae_within(self, point, distance_km=0, include_country_area=False):
         return (
@@ -1506,9 +1515,9 @@ class SiaeActivityQuerySet(models.QuerySet):
             ):
                 # keep this filter on siae activity to handle include_country_area on activity level
                 qs = qs.siae_within(tender.location.coords, tender.distance_location, tender.include_country_area)
-            elif tender.perimeters.count() and tender.include_country_area:  # perimeters and all country
+            elif len(tender.perimeters.all()) and tender.include_country_area:  # perimeters and all country
                 qs = qs.geo_range_in_perimeter_list(tender.perimeters.all(), include_country_area=True)
-            elif tender.perimeters.count():  # only perimeters
+            elif len(tender.perimeters.all()):  # only perimeters
                 qs = qs.geo_range_in_perimeter_list(tender.perimeters.all()).exclude_country_geo_range()
             elif tender.include_country_area:
                 qs = qs.filter(Q(geo_range=siae_constants.GEO_RANGE_COUNTRY))
