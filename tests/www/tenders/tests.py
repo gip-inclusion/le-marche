@@ -1652,6 +1652,13 @@ class TenderSiaeListView(TestCase):
             detail_display_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
         )
+        cls.tendersiae_2_2 = TenderSiae.objects.create(
+            tender=cls.tender_2,
+            siae=cls.siae_3,
+            email_send_date=timezone.now(),
+            email_link_click_date=timezone.now(),
+            detail_not_interested_click_date=timezone.now(),
+        )
         cls.perimeter_city = PerimeterFactory(
             name="Grenoble",
             kind=Perimeter.KIND_CITY,

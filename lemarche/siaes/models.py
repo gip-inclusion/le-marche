@@ -411,7 +411,7 @@ class SiaeQuerySet(models.QuerySet):
             )
             qs = qs.order_by("-tendersiae__email_link_click_date")
         elif tendersiae_status == "NOT_INTERESTED":
-            qs = qs.filter(tendersiae__detail_not_interested_click_date__isnull=False)
+            qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_not_interested_click_date__isnull=False)
         else:  # "ALL"
             qs = qs.filter(tendersiae__tender=tender).order_by_super_siaes()  # same order as in send_validated_tender
 
