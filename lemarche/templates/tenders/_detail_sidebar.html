@@ -93,7 +93,7 @@
                     </div>
                 {% else %}
                     <div class="fr-col-12">
-                        {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True tender_siae_uuid=tender_siae_uuid tender_response_is_anonymous=True %}
+                        {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True tender_siae_uuid=tender_siae_uuid %}
                     </div>
                     <div class="fr-col-12">
                         {% include "tenders/_detail_cta_not_interested.html" with tender=tender user_can_click=True tender_siae_uuid=tender_siae_uuid %}
