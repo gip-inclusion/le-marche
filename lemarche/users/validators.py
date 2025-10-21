@@ -8,7 +8,6 @@ def professional_email_validator(value):
         "hotmail.fr",
         "yahoo.com",
         "yahoo.fr",
-        "laposte.fr",
         "laposte.net",
         "live.com",
         "live.fr",
