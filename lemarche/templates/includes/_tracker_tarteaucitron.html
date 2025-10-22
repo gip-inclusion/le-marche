@@ -47,7 +47,7 @@ tarteaucitron.user.googletagmanagerId = "{{ GOOGLE_TAG_MANAGER_ID }}";
     (tarteaucitron.job = tarteaucitron.job || []).push('crisp');    
 {% endif %}
 
-{% if MATOMO_HOST %}
+{% if MATOMO_HOST and matomo_custom_url %}
     // Matomo
     tarteaucitron.user.matomoId = {{ MATOMO_SITE_ID }};
     tarteaucitron.user.matomoHost = "{{ MATOMO_HOST }}";
@@ -55,7 +55,7 @@ tarteaucitron.user.googletagmanagerId = "{{ GOOGLE_TAG_MANAGER_ID }}";
 {% endif %}
 </script>
 
-{% if MATOMO_HOST and  matomo_custom_url %}
+{% if MATOMO_HOST and matomo_custom_url %}
     <script>
         var _paq = window._paq || [];
         _paq.push(['setCustomUrl', new URL('{{ matomo_custom_url }}', window.location.origin).href]);
