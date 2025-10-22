@@ -134,7 +134,7 @@
                                  alt=""
                                  height="32" />
                         </div>
-                        <div>
+                        <div class="activities-container">
                             <h2>Secteurs d'activité</h2>
                             {% for group, sector_dict in siae.grouped_activities.items %}
                                 <section class="fr-accordion">
@@ -144,26 +144,34 @@
                                                 aria-controls="accordion-group-{{ group.id }}">{{ group }}</button>
                                     </h3>
                                     <div class="fr-collapse fr-text--sm" id="accordion-group-{{ group.id }}">
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th>Secteur</th>
-                                                    <th>
-                                                        <span class="fr-icon-briefcase-line" aria-hidden="true"></span>
-                                                        <span>Type(s) de prestation</span>
-                                                    </th>
-                                                    <th>
-                                                        <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
-                                                        <span>Lieux d'intervention</span>
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for sector, activity in sector_dict.items %}
-                                                    {% include "siaes/_siae_activity_content.html" with activity=activity group=group %}
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
+                                        <div class="activities-table fr-table fr-table--no-caption fr-table--no-scroll">
+                                            <div class="fr-table__wrapper">
+                                                <div class="fr-table__container">
+                                                    <div class="fr-table__content">
+                                                        <table>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Secteur</th>
+                                                                    <th>
+                                                                        <span class="fr-icon-briefcase-line" aria-hidden="true"></span>
+                                                                        <span>Type(s) de prestation</span>
+                                                                    </th>
+                                                                    <th>
+                                                                        <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
+                                                                        <span>Lieux d'intervention</span>
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for sector, activity in sector_dict.items %}
+                                                                    {% include "siaes/_siae_activity_content.html" with activity=activity group=group %}
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </section>
                             {% empty %}
