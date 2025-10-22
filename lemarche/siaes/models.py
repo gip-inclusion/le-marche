@@ -319,7 +319,7 @@ class SiaeQuerySet(models.QuerySet):
         """
         Enrich each Siae with the number of occurences in the user's favorite lists
         """
-        return self.prefetch_related("favorite_lists").annotate(
+        return self.annotate(
             in_user_favorite_list_count_annotated=Count("favorite_lists", filter=Q(favorite_lists__user=user))
         )
 
@@ -1199,7 +1199,9 @@ class Siae(models.Model):
     def grouped_activities(self) -> dict[str, dict[str, object]]:
         """Sort activities by group and sectors in a dict"""
         grouped_activities = defaultdict(dict)
-        for activity in self.activities.with_sector_and_sector_group(self).order_by("sector"):
+        for activity in (
+            self.activities.with_sector_and_sector_group(self).prefetch_related("locations").order_by("sector")
+        ):
             grouped_activities[activity.sector.group][activity.sector] = activity
         return dict(grouped_activities)
 
@@ -1623,8 +1625,7 @@ class SiaeActivity(models.Model):
         if self.geo_range == siae_constants.GEO_RANGE_COUNTRY:
             return self.get_geo_range_display()
         elif self.geo_range == siae_constants.GEO_RANGE_ZONES:
-            locations_str = ", ".join(location.name_display for location in self.locations.all())
-            return f"{self.get_geo_range_display()} : {locations_str}"
+            return ", ".join(location.name_display for location in self.locations.all())
         elif self.geo_range == siae_constants.GEO_RANGE_CUSTOM:
             if self.geo_range_custom_distance:
                 return f"{self.geo_range_custom_distance} km de {self.siae.city}"
