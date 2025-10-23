@@ -19,12 +19,13 @@ services:
       - 6379:6379
   app:
     build:
-        context: .
-        dockerfile: ./docker/dev/django/Dockerfile
+      context: .
+      dockerfile: ./docker/dev/django/Dockerfile
     command: ./docker/dev/django/entrypoint.sh
     volumes:
       - ./lemarche:/app/lemarche
       - ./config:/app/config
+      - ./tests:/app/tests
     env_file:
       - env.docker.local
     ports:
