@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.core.management.base import BaseCommand
+from sentry_sdk.crons import monitor
 
 from lemarche.tenders.models import Tender
 from lemarche.www.tenders.tasks import send_tenders_siaes_survey
@@ -26,6 +27,7 @@ class Command(BaseCommand):
         parser.add_argument("--kind", type=str, dest="kind")
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Dry run, no sends")
 
+    @monitor(monitor_slug="send_siae_transactioned_question_emails")
     def handle(self, kind=None, reminder=False, dry_run=False, **options):
         self.stdout.write("Script to send email tender transactioned_question to interested siaes...")
 

@@ -6,6 +6,7 @@ from datetime import date, timedelta
 import boto3
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from sentry_sdk.crons import monitor
 
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
@@ -56,6 +57,7 @@ class Command(BaseCommand):
             help="Options are 'xls' (default), 'csv' or 'all'",
         )
 
+    @monitor(monitor_slug="export_all_siae_to_file")
     def handle(self, *args, **options):
         self.stdout.write("-" * 80)
         self.stdout.write("Task: export Siae list...")

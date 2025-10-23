@@ -7,6 +7,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.core.management.base import CommandError
 from django.db.models import Q
 from django.utils import timezone
+from sentry_sdk.crons import monitor
 from stdnum.fr import siret
 
 from lemarche.siaes import constants as siae_constants
@@ -95,6 +96,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Dry run, no writes")
 
+    @monitor(monitor_slug="sync_with_emplois_inclusion")
     def handle(self, dry_run=False, **options):
         if not os.environ.get("API_EMPLOIS_INCLUSION_TOKEN"):
             raise CommandError("Missing API_EMPLOIS_INCLUSION_TOKEN in env")

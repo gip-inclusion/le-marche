@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from sentry_sdk.crons import monitor
 
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.www.tenders.tasks import send_tender_interested_reminder_email_to_siaes
@@ -32,6 +33,7 @@ class Command(BaseCommand):
         )
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Dry run, no sends")
 
+    @monitor(monitor_slug="send_siae_interested_reminder_emails")
     def handle(self, dry_run=False, **options):
         self.stdout.write("-" * 80)
         self.stdout.write("Script to send Siae interested reminder emails...")

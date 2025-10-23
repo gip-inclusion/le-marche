@@ -1,6 +1,7 @@
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.utils import timezone
+from sentry_sdk.crons import monitor
 
 from lemarche.conversations.constants import ATTRIBUTES_TO_NOT_ANONYMIZE_FOR_INBOUND
 from lemarche.conversations.models import Conversation
@@ -20,6 +21,7 @@ class Command(BaseCommand):
     Usage: python manage.py anonymize_outdated_conversations
     """
 
+    @monitor(monitor_slug="anonymize_outdated_conversations")
     def handle(self, *args, **options):
         inactive_datetime = timezone.now() - relativedelta(months=settings.INACTIVE_CONVERSATION_TIMEOUT_IN_MONTHS)
         outdated_conversations = Conversation.objects.filter(created_at__lte=inactive_datetime, is_anonymized=False)

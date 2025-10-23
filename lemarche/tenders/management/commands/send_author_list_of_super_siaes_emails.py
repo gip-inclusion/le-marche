@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.utils import timezone
+from sentry_sdk.crons import monitor
 
 from lemarche.tenders.models import Tender
 from lemarche.utils.commands import BaseCommand
@@ -33,6 +34,7 @@ class Command(BaseCommand):
         )
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Dry run, no sends")
 
+    @monitor(monitor_slug="send_author_list_of_super_siaes_emails")
     def handle(self, dry_run=False, **options):
         self.stdout_info("Script to send Super Siae to tender author...")
 

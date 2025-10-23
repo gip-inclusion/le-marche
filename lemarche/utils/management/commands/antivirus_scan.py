@@ -9,6 +9,7 @@ from django.core.files.storage import default_storage
 from django.core.management.base import CommandError
 from django.db.models import Q
 from django.utils import timezone
+from sentry_sdk.crons import monitor
 
 from lemarche.tenders.models import Tender
 from lemarche.utils.apis import api_slack
@@ -22,6 +23,7 @@ class Command(BaseCommand):
         parser.add_argument("--dry-run", action="store_true", help="Dry run (no changes to the DB)")
         parser.add_argument("--minutes-since", type=int, help="Scan since X minutes")
 
+    @monitor(monitor_slug="antivirus_scan")
     def handle(self, dry_run=False, minutes_since=None, *args, **options):  # noqa: max-complexity=12
         self.stdout_info("Scanning S3 files attachments for viruses...")
         temp_dir = tempfile.mkdtemp()

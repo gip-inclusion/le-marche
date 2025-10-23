@@ -5,6 +5,7 @@ from datetime import date, timedelta
 
 import boto3
 from django.conf import settings
+from sentry_sdk.crons import monitor
 
 from lemarche.stats.models import Tracker
 from lemarche.users.models import User
@@ -57,6 +58,7 @@ class Command(BaseCommand):
     #         help="Options are 'xls' (default), 'csv' or 'all'",
     #     )
 
+    @monitor(monitor_slug="export_user_search_list")
     def handle(self, *args, **options):
         self.stdout_info("-" * 80)
         self.stdout_info("Step 1: fetching search list from stats DB")

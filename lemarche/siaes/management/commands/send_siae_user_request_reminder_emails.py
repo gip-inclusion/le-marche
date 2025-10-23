@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from sentry_sdk.crons import monitor
 
 from lemarche.siaes.models import SiaeUserRequest
 from lemarche.www.dashboard_siaes.tasks import (
@@ -23,6 +24,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Dry run, no sends")
 
+    @monitor(monitor_slug="send_siae_user_request_reminder_emails")
     def handle(self, dry_run=False, **options):
         self.stdout.write("-" * 80)
         self.stdout.write("Script to send SiaeUserRequest reminder emails...")

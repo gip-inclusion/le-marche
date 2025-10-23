@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.utils import timezone
+from sentry_sdk.crons import monitor
 
 from lemarche.users.models import User
 from lemarche.utils.apis import api_brevo
@@ -163,6 +164,7 @@ class Command(BaseCommand):
         self.stdout_info(f"- Skipped (already up to date): {self.stats['skipped']}")
         self.stdout_info(f"- Errors: {self.stats['errors']}")
 
+    @monitor(monitor_slug="crm_brevo_sync_contacts")
     def handle(
         self,
         dry_run: bool,

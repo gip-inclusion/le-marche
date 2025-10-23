@@ -1,3 +1,5 @@
+from sentry_sdk.crons import monitor
+
 from lemarche.siaes import utils as siae_utils
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis import api_slack
@@ -23,6 +25,7 @@ class Command(BaseCommand):
             "--fields", action="append", default=[], help="Filtrer sur les champs count à mettre à jour"
         )
 
+    @monitor(monitor_slug="update_siae_count_fields")
     def handle(self, *args, **options):
         self.stdout_messages_info("Updating Siae count fields...")
 
