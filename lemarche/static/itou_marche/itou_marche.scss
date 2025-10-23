@@ -325,3 +325,14 @@ p.fr-tag--green-bourgeon {
 .leaflet-touch .leaflet-bar a {
     background-image: none;
 }
+
+/* activities table */
+.activities-container {
+    .activities-table {
+
+        .fr-table__wrapper,
+        .fr-table__wrapper .fr-table__content table {
+            width: 100%;
+        }
+    }
+}
