@@ -692,7 +692,8 @@ class SiaeFilterWithPotentialThroughActivitiesTest(TestCase):
     def test_filter_with_potential_through_activities_with_sector(self):
         siae_queryset = Siae.objects.filter_with_potential_through_activities(self.sector_1)
         self.assertEqual(siae_queryset.count(), 2)
-        self.assertQuerySetEqual(siae_queryset, [self.siae_1, self.siae_3])
+        self.assertIn(self.siae_1, siae_queryset)
+        self.assertIn(self.siae_3, siae_queryset)
 
     def test_filter_with_potential_through_activities_with_sector_and_perimeter(self):
         siae_queryset = Siae.objects.filter_with_potential_through_activities(self.sector_1, self.perimeter_1)
