@@ -3145,23 +3145,6 @@ docs = ["Sphinx (>=6.0)", "myst_parser (>=0.18.1,<1.0)", "pyenchant (>=3.1.1,<4)
 testing = ["dj-database-url (>=2.0.0)", "pre-commit (<3.0)"]
 
 [[package]]
-name = "wagtail-transfer"
-version = "0.9.4"
-description = "Content transfer for Wagtail"
-optional = false
-python-versions = ">=3.8"
-groups = ["main"]
-files = [
-    {file = "wagtail_transfer-0.9.4-py3-none-any.whl", hash = "sha256:8f6cc4b919764795b0418424a3881b09984e2615922107516a0e5625635278e1"},
-]
-
-[package.dependencies]
-wagtail = ">=5.2"
-
-[package.extras]
-docs = ["mkdocs (>=1.0,<1.1)", "mkdocs-material (>=4.6,<4.7)"]
-
-[[package]]
 name = "wagtailmenus"
 version = "4.0.4"
 description = "An app to help you manage menus in your Wagtail projects more consistently."
@@ -3277,4 +3260,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.13"
-content-hash = "3c465da43a81c318aeb396609eb83100256b9bd92a6f0dc103dcf3dd970f1cce"
+content-hash = "ac0729c2f4cada3ab8a9e1edcb040285c7eb412b0e1c09db52753bb1f1951ad8"
