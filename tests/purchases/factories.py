@@ -16,3 +16,5 @@ class PurchaseFactory(DjangoModelFactory):
     purchase_year = factory.Faker("year")
     company = factory.SubFactory(CompanyFactory)
     siae = factory.SubFactory(SiaeFactory)
+    purchase_category = factory.Faker("word")
+    buying_entity = factory.Faker("word")
