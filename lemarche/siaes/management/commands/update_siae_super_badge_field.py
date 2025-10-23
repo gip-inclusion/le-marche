@@ -3,6 +3,7 @@ import calendar
 from django.conf import settings
 from django.core.management.base import CommandError
 from django.utils import timezone
+from sentry_sdk.crons import monitor
 
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis import api_slack
@@ -36,6 +37,7 @@ class Command(BaseCommand):
             help="'first' for the first weekday of the month ; 'last' for the last weekday of the month",
         )
 
+    @monitor(monitor_slug="update_siae_super_badge_field")
     def handle(self, *args, **options):
         self.stdout_messages_info("Updating Siae super_badge field...")
 

@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from sentry_sdk.crons import monitor
 
 from lemarche.tenders.models import Tender
 from lemarche.www.tenders.tasks import send_validated_sent_batch_tender, send_validated_tender
@@ -17,6 +18,7 @@ class Command(BaseCommand):
     Usage: python manage.py send_validated_tenders
     """
 
+    @monitor(monitor_slug="send_validated_tenders")
     def handle(self, *args, **options):
         # First send newly validated tenders
         validated_tenders_to_send = Tender.objects.validated_but_not_sent().is_not_outdated()

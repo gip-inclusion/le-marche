@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.core.management.base import BaseCommand
+from sentry_sdk.crons import monitor
 
 from lemarche.tenders.models import Tender
 from lemarche.www.tenders.tasks import send_tenders_author_feedback_or_survey
@@ -34,6 +35,7 @@ class Command(BaseCommand):
             help="Send a second e-mail to authors who haven't responded to the first survey",
         )
 
+    @monitor(monitor_slug="send_author_transactioned_question_emails")
     def handle(self, kind=None, reminder=False, dry_run=False, **options):
         self.stdout.write("Script to send email tender transactioned_question to authors...")
 

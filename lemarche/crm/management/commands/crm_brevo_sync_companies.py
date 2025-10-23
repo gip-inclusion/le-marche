@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.utils import timezone
+from sentry_sdk.crons import monitor
 
 from lemarche.companies.models import Company
 from lemarche.siaes.models import Siae
@@ -75,6 +76,7 @@ class Command(BaseCommand):
         )
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Simulation mode (no changes)")
 
+    @monitor(monitor_slug="crm_brevo_sync_companies")
     def handle(
         self,
         recently_updated: bool = False,
