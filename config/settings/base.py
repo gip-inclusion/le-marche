@@ -172,7 +172,6 @@ WAGTAIL_APPS = [
     "wagtailmenus",
     "wagtail_localize",
     "wagtail_localize.locales",
-    "wagtail_transfer",
     "taggit",
     "storages",
     # app from site_facile
@@ -863,18 +862,6 @@ WAGTAILMENUS_FLAT_MENUS_HANDLE_CHOICES = (
 
 WAGTAILIMAGES_EXTENSIONS = ["gif", "jpg", "jpeg", "png", "webp", "svg"]
 
-WAGTAILTRANSFER_SOURCES = {
-    "staging": {
-        "BASE_URL": os.getenv("WAGTAILTRANSFER_SOURCES_STAGING_URL", ""),
-        "SECRET_KEY": os.getenv("WAGTAILTRANSFER_SOURCES_STAGING_SECRET", ""),
-    },
-    "production": {
-        "BASE_URL": os.getenv("WAGTAILTRANSFER_SOURCES_PROD_URL", ""),
-        "SECRET_KEY": os.getenv("WAGTAILTRANSFER_SOURCES_PROD_SECRET", ""),
-    },
-}
-
-WAGTAILTRANSFER_SECRET_KEY = os.getenv("WAGTAILTRANSFER_SOURCES_PROD_SECRET", "7cd5de8229be75e1e0c2af8abc2ada7e")
 # Specific home and purchasing impact page is setted here to avoid queries on every page
 SIAE_HOME_PAGE = env.str("SIAE_HOME_PAGE", "/accueil-structure/")
 PURCHASING_IMPACT_PAGE = env.str("PURCHASING_IMPACT_PAGE", "/ressources/auditer-vos-achats/")
