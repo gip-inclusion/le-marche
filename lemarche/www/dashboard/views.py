@@ -135,7 +135,10 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
                 ],
             }
             purchase_categories = list(
-                self.filterset.qs.values_list("purchase_category", flat=True).order_by("purchase_category").distinct()
+                self.filterset.qs.filter(siae__isnull=False)
+                .values_list("purchase_category", flat=True)
+                .order_by("purchase_category")
+                .distinct()
             )
             # Build list of (category, value) for non-zero values, sort desc and take top 40
             categories_with_values = []
@@ -150,7 +153,10 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
             }
 
             buying_entities = list(
-                self.filterset.qs.values_list("buying_entity", flat=True).order_by("buying_entity").distinct()
+                self.filterset.qs.filter(siae__isnull=False)
+                .values_list("buying_entity", flat=True)
+                .order_by("buying_entity")
+                .distinct()
             )
             chart_data_purchases_by_buying_entity = {
                 "labels": buying_entities,
