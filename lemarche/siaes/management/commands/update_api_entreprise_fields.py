@@ -46,7 +46,7 @@ class Command(BaseCommand):
         parser.add_argument("--limit", type=int, default=None, help="Limiter le nombre de structures à processer")
         parser.add_argument("--wet-run", action="store_true", help="Exécuter les requêtes en base de données")
 
-    @monitor(monitor_slug="update-api-entreprise-fields")
+    @monitor(monitor_slug="update_api_entreprise_fields")
     def handle(self, *args, **options):
         self.stdout_info("-" * 80)
         self.stdout_info("Populating API Entreprise fields...")

@@ -1,3 +1,5 @@
+from sentry_sdk.crons import monitor
+
 from lemarche.companies.models import Company
 from lemarche.utils.apis import api_slack
 from lemarche.utils.commands import BaseCommand
@@ -11,6 +13,7 @@ class Command(BaseCommand):
     - poetry run python manage.py update_company_count_fields
     """
 
+    @monitor(monitor_slug="update_company_count_fields")
     def handle(self, *args, **options):
         self.stdout_messages_info("Updating Company count fields...")
 

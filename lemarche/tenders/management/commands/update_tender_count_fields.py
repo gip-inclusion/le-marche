@@ -29,7 +29,7 @@ class Command(BaseCommand):
             "--fields", action="append", default=[], help="Filtrer sur les champs count à mettre à jour"
         )
 
-    @monitor(monitor_slug="update-tender-count-fields")
+    @monitor(monitor_slug="update_tender_count_fields")
     def handle(self, *args, **options):
         self.stdout_messages_info("Updating Tender count fields (only for tenders not outdated a month ago)...")
 

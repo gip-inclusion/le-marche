@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from sentry_sdk.crons import monitor
 
 from lemarche.tenders.models import Tender
 from lemarche.www.tenders.tasks import send_tender_author_reject_message
@@ -10,6 +11,7 @@ from lemarche.www.tenders.tasks import send_tender_author_reject_message
 class Command(BaseCommand):
     help = "Si aucune modification n'est apportée dans les 10 jours suivant la demande, le Besoin est rejeté."
 
+    @monitor(monitor_slug="tenders_update_status_to_rejected")
     def handle(self, *args, **options):
         threshold_date = timezone.now() - timedelta(days=10)
         tenders_to_update = []

@@ -2,6 +2,7 @@ import calendar
 
 from django.core.management.base import CommandError
 from django.utils import timezone
+from sentry_sdk.crons import monitor
 
 from lemarche.siaes.models import Siae
 from lemarche.siaes.tasks import send_completion_reminder_email_to_siae
@@ -35,6 +36,7 @@ class Command(BaseCommand):
         )
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Dry run, no sends")
 
+    @monitor(monitor_slug="send_completion_reminder_emails")
     def handle(self, dry_run=False, **options):
         self.stdout.write("-" * 80)
         self.stdout.write("Script to send Siae completion reminder emails...")
