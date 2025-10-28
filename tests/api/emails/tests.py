@@ -128,6 +128,12 @@ class InboundEmailParsingApiTest(InboundEmailParsingApiTestV0):
         siae_conv = Conversation.objects.get_conv_from_uuid(conv_uuid=self.conv.siae_encoded, version=1)
         self.assertEqual(siae_conv, self.conv)
 
+    def test_get_conv_from_interlocutor_encoded(self):
+        conv = Conversation.objects.get_conv_from_interlocutor_encoded(interlocutor_encoded=self.conv.sender_encoded)
+        self.assertEqual(conv, self.conv)
+        conv = Conversation.objects.get_conv_from_interlocutor_encoded(interlocutor_encoded=self.conv.siae_encoded)
+        self.assertEqual(conv, self.conv)
+
 
 @override_settings(BREVO_IP_WHITELIST_RANGE="1.179.112.0/20")
 class PermissionInboundEmailTestCase(TestCase):

@@ -64,7 +64,16 @@ class InboundParsingEmailView(APIView):
             inbound_email_prefix = inbound_email["To"][0]["Address"].split("@")[0]
             # get conversation object
             version, conv_uuid, user_kind = get_info_from_email_prefix(inbound_email_prefix)
-            conv: Conversation = Conversation.objects.get_conv_from_uuid(conv_uuid=conv_uuid, version=version)
+
+            try:
+                conv: Conversation = Conversation.objects.get_conv_from_uuid(conv_uuid=conv_uuid, version=version)
+            except Conversation.MultipleObjectsReturned:
+                # collision of uuid, try to identify the correct conversation by sender_encoded or siae_encoded
+                logger.warning("Multiple conversations found for uuid: %s and version: %s", conv_uuid, version)
+                conv: Conversation = Conversation.objects.get_conv_from_interlocutor_encoded(
+                    interlocutor_encoded=inbound_email_prefix
+                )
+
             # save the input data
             data_inbound_clean = clean_saved_data_of_inbound(data_inbound=serializer.data.get("items")[0])
             conv.data.append(data_inbound_clean)
