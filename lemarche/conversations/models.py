@@ -38,6 +38,9 @@ class ConversationQuerySet(models.QuerySet):
         else:
             return self.get(Q(sender_encoded__endswith=conv_uuid) | Q(siae_encoded__endswith=conv_uuid))
 
+    def get_conv_from_interlocutor_encoded(self, interlocutor_encoded: str):
+        return self.get(Q(sender_encoded=interlocutor_encoded) | Q(siae_encoded=interlocutor_encoded))
+
 
 class Conversation(models.Model):
     KIND_SEARCH = "SEARCH"
