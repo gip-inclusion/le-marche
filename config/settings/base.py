@@ -150,6 +150,8 @@ LOCAL_APPS = [
     # Brevo CRM
     "lemarche.crm",
     "lemarche.django_shepherd",
+    # Nexus data sync
+    "lemarche.nexus",
 ]
 
 WAGTAIL_APPS = [
@@ -898,3 +900,12 @@ FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 MTCAPTCHA_PRIVATE_KEY = env.str("MTCAPTCHA_PRIVATE_KEY", "")
 MTCAPTCHA_PUBLIC_KEY = env.str("MTCAPTCHA_PUBLIC_KEY", "")
+
+
+# Nexus metabase db
+# ---------------------------------------
+NEXUS_METABASE_DB_HOST = os.getenv("NEXUS_METABASE_DB_HOST")
+NEXUS_METABASE_DB_PORT = os.getenv("NEXUS_METABASE_DB_PORT")
+NEXUS_METABASE_DB_DATABASE = os.getenv("NEXUS_METABASE_DB_DATABASE")
+NEXUS_METABASE_DB_USER = os.getenv("NEXUS_METABASE_DB_USER")
+NEXUS_METABASE_DB_PASSWORD = os.getenv("NEXUS_METABASE_DB_PASSWORD")
