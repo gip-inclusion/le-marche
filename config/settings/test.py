@@ -51,3 +51,12 @@ CACHES = {
         "LOCATION": "django_cache",
     }
 }
+
+
+# Nexus metabase db
+# ---------------------------------------
+NEXUS_METABASE_DB_HOST = DATABASES["default"]["HOST"]
+NEXUS_METABASE_DB_PORT = DATABASES["default"]["PORT"]
+NEXUS_METABASE_DB_DATABASE = DATABASES["default"]["NAME"]
+NEXUS_METABASE_DB_USER = DATABASES["default"]["USER"]
+NEXUS_METABASE_DB_PASSWORD = DATABASES["default"]["PASSWORD"]

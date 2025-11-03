@@ -4,6 +4,7 @@
     "0 0 * * * $ROOT/clevercloud/siaes_export_all_siae_to_file.sh",
     "15 0 * * * $ROOT/clevercloud/stats_export_user_download_list_to_file.sh",
     "30 0 * * * $ROOT/clevercloud/stats_export_user_search_list_to_file.sh",
+    "35 0 * * * $ROOT/clevercloud/run_management_command.sh populate_metabase_nexus",
     "0 1 * * * $ROOT/clevercloud/tenders_update_count_fields.sh",
     "15 1 * * * $ROOT/clevercloud/run_management_command.sh clean_old_history --days 180 --auto",
     "0 3 * * * $ROOT/clevercloud/run_management_command.sh clearsessions",
