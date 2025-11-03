@@ -232,6 +232,8 @@ class Command(BaseCommand):
         parser.add_argument("--reset-tables", action="store_true", default=False, help="Reset the table schema")
 
     def handle(self, *args, reset_tables=False, **kwargs):
+        if not settings.NEXUS_METABASE_DB_HOST:
+            return
         self.run_at = timezone.now()
         self.populate_users()
         self.populate_memberships()
