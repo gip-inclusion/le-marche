@@ -42,7 +42,7 @@ function resetForm() {
     }
 
     // Supprimer les boutons de la div #locations-selected
-    const locationsSelectedDiv = document.getElementById("locations-selected");
+    const locationsSelectedDiv = document.getElementById("locations-selected-id_locations");
     while (locationsSelectedDiv.firstChild) {
         locationsSelectedDiv.firstChild.remove();
     }
