@@ -55,4 +55,5 @@ def expose_settings(request):
         "SIAE_HOME_PAGE": settings.SIAE_HOME_PAGE,
         "PURCHASING_IMPACT_PAGE": settings.PURCHASING_IMPACT_PAGE,
         "POTENTIAL_ANALYSIS_PAGE": settings.POTENTIAL_ANALYSIS_PAGE,
+        "TALLY_BUYER_POLL_FORM_ID": settings.TALLY_BUYER_POLL_FORM_ID,
     }
