@@ -33,7 +33,7 @@
                                     </p>
                                     {% for tender in last_3_tenders %}
                                         <div class="fr-grid-row{% if not forloop.last %} fr-mb-8v{% endif %}">
-                                            <div class="fr-col-12">{% include "tenders/_card_list_item.html" with tender=tender %}</div>
+                                            <div class="fr-col-12">{% include "tenders/_card_list_item.html" with tender=tender use_siae_list=True %}</div>
                                         </div>
                                     {% endfor %}
                                 </div>
