@@ -1,0 +1,7 @@
+{% if client_reference.logo_url %}
+    <img class="fr-responsive-img"
+         src="{{ client_reference.logo_url }}"
+         alt="{{ client_reference.name }}" />
+{% else %}
+    {{ client_reference.name }}
+{% endif %}
