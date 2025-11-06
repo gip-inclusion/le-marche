@@ -104,8 +104,52 @@
             </div>
             <!-- siae details -->
             <div class="fr-card__end">
+                <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+                    {% if siae.client_reference_count %}
+                        <div class="fr-col-12">
+                            <div>
+                                <img src="{% static 'vendor/theme-inclusion/images/ico-bicro-marche-ref-clients.svg' %}"
+                                     alt=""
+                                     height="32" />
+                            </div>
+                            <div>
+                                <h2>Références clients</h2>
+                                {% if siae.client_reference_count <= 6 %}
+                                    <div class="fr-grid-row">
+                                        {% for client_reference in siae.client_references.all %}
+                                            <div class="fr-col-12 fr-col-sm-4">
+                                                {% include "siaes/_client_reference.html" with client_reference=client_reference %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="fr-grid-row" x-data="{ showMoreRefClients: false }">
+                                        {% for client_reference in siae.client_references.all|slice:":6" %}
+                                            <div class="fr-col-12 fr-col-sm-4">
+                                                {% include "siaes/_client_reference.html" with client_reference=client_reference %}
+                                            </div>
+                                        {% endfor %}
+                                        {% for client_reference in siae.client_references.all|slice:"6:" %}
+                                            <div class="fr-col-12 fr-col-sm-4" x-show="showMoreRefClients">
+                                                {% include "siaes/_client_reference.html" with client_reference=client_reference %}
+                                            </div>
+                                        {% endfor %}
+                                        <div class="fr-col-12 fr-mt-2w">
+                                            <button @click="showMoreRefClients = !showMoreRefClients"
+                                                    class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left">
+                                                <span x-show="!showMoreRefClients">Afficher plus de références clients</span>
+                                                <span x-show="!showMoreRefClients" class="fr-icon-arrow-down-s-line"></span>
+                                                <span x-show="showMoreRefClients">Masquer les références clients</span>
+                                                <span x-show="showMoreRefClients" class="fr-icon-arrow-up-s-line"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
                 <hr />
-                <!-- First row : Description -->
                 <div class="fr-grid-row fr-mb-4v">
                     <div class="fr-col-sm-12">
                         <div>
@@ -125,7 +169,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Second & third row : Secteurs -->
                 <hr />
                 <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
                     <div class="fr-col-sm-12">
@@ -180,7 +223,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Fourth row : Prestations -->
                 {% if siae.offer_count %}
                     <hr />
                     <div class="fr-grid-row">
@@ -209,7 +251,6 @@
                         </div>
                     </div>
                 {% endif %}
-                <!-- Fifth row : Réseaux, Références clients, Labels -->
                 {% if siae.network_count or siae.label_count %}
                     <hr />
                     <div class="fr-grid-row">
@@ -238,55 +279,6 @@
                                 </div>
                             </div>
                         {% endif %}
-                        {% if siae.client_reference_count %}
-                            <div class="fr-col-sm-6">
-                                <div>
-                                    <img src="{% static 'vendor/theme-inclusion/images/ico-bicro-marche-ref-clients.svg' %}"
-                                         alt=""
-                                         height="32" />
-                                </div>
-                                <div>
-                                    <h2>Références clients</h2>
-                                    {% if siae.client_reference_count <= 6 %}
-                                        <div class="fr-grid-row">
-                                            {% for image in siae.client_references.all %}
-                                                <div class="fr-col-12 fr-col-sm-4">
-                                                    <img class="fr-responsive-img"
-                                                         src="{{ image.logo_url }}"
-                                                         alt="{{ image.name }}" />
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    {% else %}
-                                        <div class="fr-grid-row" x-data="{ showMoreRefClients: false }">
-                                            {% for image in siae.client_references.all|slice:":6" %}
-                                                <div class="fr-col-12 fr-col-sm-4">
-                                                    <img class="fr-responsive-img"
-                                                         src="{{ image.logo_url }}"
-                                                         alt="{{ image.name }}" />
-                                                </div>
-                                            {% endfor %}
-                                            {% for image in siae.client_references.all|slice:"6:" %}
-                                                <div class="fr-col-12 fr-col-sm-4" x-show="showMoreRefClients">
-                                                    <img class="fr-responsive-img"
-                                                         src="{{ image.logo_url }}"
-                                                         alt="{{ image.name }}" />
-                                                </div>
-                                            {% endfor %}
-                                            <div class="fr-col-12 fr-mt-2w">
-                                                <button @click="showMoreRefClients = !showMoreRefClients"
-                                                        class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left">
-                                                    <span x-show="!showMoreRefClients">Afficher plus de références clients</span>
-                                                    <span x-show="!showMoreRefClients" class="fr-icon-arrow-down-s-line"></span>
-                                                    <span x-show="showMoreRefClients">Masquer les références clients</span>
-                                                    <span x-show="showMoreRefClients" class="fr-icon-arrow-up-s-line"></span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endif %}
                         {% if siae.label_count %}
                             <div class="fr-col-12 fr-col-md-6">
                                 <div>
@@ -304,7 +296,6 @@
                         {% endif %}
                     </div>
                 {% endif %}
-                <!-- Sixth row : Réalisations -->
                 {% if siae.images.count %}
                     <hr />
                     <div class="fr-grid-row">
