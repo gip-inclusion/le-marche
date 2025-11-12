@@ -59,5 +59,4 @@ class PurchaseModelTest(TestCase):
 
         # count only purchases with siae__isnull=True
         self.assertEqual(stats["total_purchases_by_category_traiteur"], 40000)
-        print(stats)
         self.assertEqual(stats["total_purchases_by_buying_entity_uss-enterprise-assurance"], 65000)
