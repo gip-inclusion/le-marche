@@ -19,5 +19,5 @@
         {% endif %}
     </time>
     <br />
-    <a href="{% url 'tenders:detail' tender.slug %}"><strong>{{ tender.title }}</strong></a>
+    <a href="{% if use_siae_list and tender.is_sent %}{% url 'tenders:detail-siae-list' tender.slug "INTERESTED" %}{% else %}{% url 'tenders:detail' tender.slug %}{% endif %}"><strong>{{ tender.title }}</strong></a>
 </div>
