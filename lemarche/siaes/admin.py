@@ -1,6 +1,6 @@
 from ckeditor.widgets import CKEditorWidget
 from django import forms
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.contrib.gis import admin as gis_admin
 from django.core.exceptions import ValidationError
@@ -30,7 +30,9 @@ from lemarche.users.models import User
 from lemarche.utils.admin.actions import export_as_xls
 from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.admin.inline_fieldset import FieldsetsInlineMixin
+from lemarche.utils.apis import api_brevo
 from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
+from lemarche.www.dashboard_siaes.tasks import send_siae_user_request_response_email_to_initiator
 
 
 class IsLiveFilter(admin.SimpleListFilter):
@@ -677,14 +679,16 @@ class SiaeUserRequestAdmin(admin.ModelAdmin):
     )
 
     autocomplete_fields = ["siae"]
-    readonly_fields = [field.name for field in SiaeUserRequest._meta.fields]
-    fields = ["logs_display" if field_name == "logs" else field_name for field_name in readonly_fields]
+    _base_readonly_fields = [field.name for field in SiaeUserRequest._meta.fields]
+    readonly_fields = [*_base_readonly_fields, "logs_display"]
+    fields = ["logs_display" if field_name == "logs" else field_name for field_name in _base_readonly_fields]
+    actions = ["action_validate_selected", "action_reject_selected"]
 
     def has_add_permission(self, request):
         return False
 
     def has_change_permission(self, request, obj=None):
-        return False
+        return super().has_change_permission(request, obj=obj)
 
     def parent_transactional_send_logs_count_with_link(self, obj):
         url = (
@@ -701,6 +705,40 @@ class SiaeUserRequestAdmin(admin.ModelAdmin):
         return "-"
 
     logs_display.short_description = SiaeUserRequest._meta.get_field("logs").verbose_name
+
+    @admin.action(description="Valider les demandes de rattachements sélectionnées")
+    def action_validate_selected(self, request, queryset):
+        processed = 0
+        for siae_user_request in queryset:
+            if siae_user_request.approve(actor=request.user):
+                send_siae_user_request_response_email_to_initiator(siae_user_request)
+                c = api_brevo.BrevoCompanyApiClient()
+                c.link_company_with_contact_list(
+                    siae_user_request.siae.brevo_company_id, [siae_user_request.initiator.email]
+                )
+                processed += 1
+        if processed:
+            messages.success(
+                request,
+                f"{processed} demande{'s' if processed > 1 else ''} validée{'s' if processed > 1 else ''}.",
+            )
+        else:
+            messages.info(request, "Aucune demande sélectionnée n'a pu être validée.")
+
+    @admin.action(description="Rejeter les demandes de rattachements sélectionnées")
+    def action_reject_selected(self, request, queryset):
+        processed = 0
+        for siae_user_request in queryset:
+            if siae_user_request.reject(actor=request.user):
+                send_siae_user_request_response_email_to_initiator(siae_user_request)
+                processed += 1
+        if processed:
+            messages.success(
+                request,
+                f"{processed} demande{'s' if processed > 1 else ''} rejetée{'s' if processed > 1 else ''}.",
+            )
+        else:
+            messages.info(request, "Aucune demande sélectionnée n'a pu être rejetée.")
 
 
 @admin.register(SiaeActivity, site=admin_site)

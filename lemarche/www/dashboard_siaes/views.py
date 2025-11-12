@@ -496,15 +496,13 @@ class SiaeUserRequestConfirmView(SiaeMemberRequiredMixin, SuccessMessageMixin, U
         - update SiaeUserRequest
         - notify user
         """
-        self.object.siae.users.add(self.object.initiator)
-        self.object.response = True
-        self.object.response_date = timezone.now()
-        self.object.logs.append({"action": "response_true", "timestamp": self.object.response_date.isoformat()})
-        self.object.save()
-        send_siae_user_request_response_email_to_initiator(self.object)
-        c = api_brevo.BrevoCompanyApiClient()
-        c.link_company_with_contact_list(self.object.siae.brevo_company_id, [self.object.initiator.email])
-        return super().form_valid(form)
+
+        if self.object.approve(actor=self.request.user):
+            send_siae_user_request_response_email_to_initiator(self.object)
+            c = api_brevo.BrevoCompanyApiClient()
+            c.link_company_with_contact_list(self.object.siae.brevo_company_id, [self.object.initiator.email])
+            return super().form_valid(form)
+        return self.form_invalid(form)
 
     def get_success_url(self):
         return reverse_lazy("dashboard_siaes:siae_users", args=[self.kwargs.get("slug")])
@@ -526,12 +524,11 @@ class SiaeUserRequestCancelView(SiaeMemberRequiredMixin, SuccessMessageMixin, Up
         - update SiaeUserRequest
         - notify user
         """
-        self.object.response = False
-        self.object.response_date = timezone.now()
-        self.object.logs.append({"action": "response_false", "timestamp": self.object.response_date.isoformat()})
-        self.object.save()
-        send_siae_user_request_response_email_to_initiator(self.object)
-        return super().form_valid(form)
+        if self.object.reject(actor=self.request.user):
+            send_siae_user_request_response_email_to_initiator(self.object)
+            return super().form_valid(form)
+
+        return self.form_invalid(form)
 
     def get_success_url(self):
         return reverse_lazy("dashboard_siaes:siae_users", args=[self.kwargs.get("slug")])
