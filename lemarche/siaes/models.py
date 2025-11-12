@@ -1405,7 +1405,11 @@ class SiaeUserRequest(models.Model):
         self.response = True
         self.response_date = timezone.now()
         self.logs.append(
-            {"action": "response_true", "timestamp": self.response_date.isoformat(), "actor": f"#{actor.id} {actor.full_name}"}
+            {
+                "action": "response_true",
+                "timestamp": self.response_date.isoformat(),
+                "actor": f"#{actor.id} {actor.full_name}" if actor else None,
+            }
         )
         self.save(update_fields=["response", "response_date", "logs", "updated_at"])
 
@@ -1425,7 +1429,11 @@ class SiaeUserRequest(models.Model):
         self.response = False
         self.response_date = timezone.now()
         self.logs.append(
-            {"action": "response_false", "timestamp": self.response_date.isoformat(), "actor": f"#{actor.id} {actor.full_name}"}
+            {
+                "action": "response_false",
+                "timestamp": self.response_date.isoformat(),
+                "actor": f"#{actor.id} {actor.full_name}" if actor else None,
+            }
         )
         self.save(update_fields=["response", "response_date", "logs", "updated_at"])
 

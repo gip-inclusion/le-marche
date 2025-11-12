@@ -1,5 +1,3 @@
-from unittest import mock
-
 from django.test import TestCase
 from django.utils import timezone
 
@@ -33,7 +31,6 @@ class SiaeUserRequestActionsTest(TestCase):
         self.assertEqual(last_log["action"], "response_true")
         self.assertEqual(last_log.get("actor"), f"#{self.admin_user.id} {self.admin_user.full_name}")
 
-    
     def test_approve_request_already_processed(self):
         self.siae_user_request.response = True
         self.siae_user_request.response_date = timezone.now()
@@ -41,7 +38,7 @@ class SiaeUserRequestActionsTest(TestCase):
 
         result = self.siae_user_request.approve(actor=self.admin_user)
         self.assertFalse(result)
-    
+
     def test_reject_pending_request(self):
         result = self.siae_user_request.reject(actor=self.admin_user)
         self.assertTrue(result)
