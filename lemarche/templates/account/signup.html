@@ -104,22 +104,6 @@
                                             </fieldset>
                                         </div>
                                     </fieldset>
-                                    <!-- Buyer survey -->
-                                    <fieldset id="statsSignupBuyerFieldset" class="fr-fieldset fr-hidden">
-                                        <div class="fr-fieldset__element">
-                                            <fieldset class="fr-fieldset">
-                                                <div class="fr-fieldset__element">
-                                                    {% dsfr_form_field form.nb_of_inclusive_provider_last_year %}
-                                                </div>
-                                                <div class="fr-fieldset__element">
-                                                    {% dsfr_form_field form.nb_of_handicap_provider_last_year %}
-                                                </div>
-                                                <div class="fr-fieldset__element">
-                                                    <p class="fr-text--sm">Ces informations resteront confidentielles, elles ne seront traitées qu'à des fins statistiques.</p>
-                                                </div>
-                                            </fieldset>
-                                        </div>
-                                    </fieldset>
                                     <!-- Legal mentions -->
                                     <fieldset class="fr-fieldset">
                                         <div class="fr-fieldset__element">
@@ -179,7 +163,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     let phoneFieldsetElement = document.getElementById('phoneFieldsetElement');
     let companyNameSiaeFormGroupDiv = document.getElementsByClassName('company-name-siae-form-group')[0];
-    let statsSignupBuyerContent = document.getElementById('statsSignupBuyerFieldset');
     let infoStructuresFieldset = document.getElementById('infoStructuresFieldset');
     let buyerKindDetailFieldsetElement = document.getElementById('buyerKindDetailFieldsetElement');
     let partnerKindFieldsetElement = document.getElementById('partnerKindFieldsetElement');
@@ -214,12 +197,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (radio.value === 'BUYER') {
             toggleFieldsetElement(true, element=buyerKindDetailFieldsetElement, required=true);
             toggleFieldsetElement(true, element=positionFieldsetElement, required=true);
-            statsSignupBuyerContent.classList.remove('fr-hidden');
             toggleFieldsetElement(true, element=sectorsFieldsetElement, required=false);
         } else {
             toggleFieldsetElement(false, element=buyerKindDetailFieldsetElement, required=false);
             toggleFieldsetElement(false, element=positionFieldsetElement, required=false);
-            statsSignupBuyerContent.classList.add('fr-hidden');
             toggleFieldsetElement(false, element=sectorsFieldsetElement, required=false);
         }
 
@@ -241,14 +222,3 @@ document.addEventListener('DOMContentLoaded', function() {
 <script type="text/javascript" src="{% static 'js/multiselect.js' %}"></script>
 {% endblock extra_js %}
 
-{% block extra_css %}
-<style>
-#statsSignupBuyerFieldset .fr-radio-group{
-    display: flex;
-}
-#statsSignupBuyerFieldset .fr-radio-group>.fr-radio-group{
-    flex: 0 0 auto;
-    margin: 0 .75rem 0 0;
-}
-</style> 
-{% endblock extra_css %}

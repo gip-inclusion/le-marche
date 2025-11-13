@@ -68,19 +68,6 @@ class LeMarcheAccountAdapter(DefaultAccountAdapter):
             "accept_share_contact_to_external_partners"
         )
 
-        extra_data = {}
-        if form.cleaned_data.get("nb_of_inclusive_provider_last_year"):
-            extra_data["nb_of_inclusive_provider_last_year"] = form.cleaned_data.get(
-                "nb_of_inclusive_provider_last_year"
-            )
-
-        if form.cleaned_data.get("nb_of_handicap_provider_last_year"):
-            extra_data["nb_of_handicap_provider_last_year"] = form.cleaned_data.get(
-                "nb_of_handicap_provider_last_year"
-            )
-
-        user.extra_data = extra_data
-
         if commit:
             user.save()
             user.sectors.set(form.cleaned_data.get("sectors"))

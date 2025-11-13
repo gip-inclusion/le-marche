@@ -8,8 +8,7 @@ from lemarche.sectors.models import Sector
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.users.validators import professional_email_validator
-from lemarche.utils import time
-from lemarche.utils.constants import EMPTY_CHOICE, HOW_MANY_CHOICES
+from lemarche.utils.constants import EMPTY_CHOICE
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.utils.password_validation import CnilCompositionPasswordValidator
 from lemarche.utils.widgets import CustomSelectMultiple
@@ -17,8 +16,8 @@ from lemarche.utils.widgets import CustomSelectMultiple
 
 class CustomSignupForm(SignupForm, DsfrBaseForm):
     KIND_CHOICES_FORM = (
-        (User.KIND_SIAE, "Une entreprise sociale inclusive (SIAE ou structure du handicap, GEIQ)"),
-        (User.KIND_BUYER, "Un acheteur"),
+        (User.KIND_SIAE, "Fournisseur inclusif (SIAE, EA, EATT ou ESAT)"),
+        (User.KIND_BUYER, "Acheteur public ou privé"),
         (User.KIND_PARTNER, "Un partenaire (réseaux, facilitateurs)"),
         (User.KIND_INDIVIDUAL, "Un particulier"),
     )
@@ -67,21 +66,6 @@ class CustomSignupForm(SignupForm, DsfrBaseForm):
         to_field_name="slug",
         required=False,
         widget=CustomSelectMultiple(),
-    )
-
-    nb_of_inclusive_provider_last_year = forms.ChoiceField(
-        # flake8: noqa E501
-        label=f"En {time.last_year()}, avec combien de prestataires inclusifs relevant du secteur de l'Insertion avez-vous déjà travaillé ?",
-        choices=HOW_MANY_CHOICES,
-        widget=forms.RadioSelect(),
-        required=False,
-    )
-    nb_of_handicap_provider_last_year = forms.ChoiceField(
-        # flake8: noqa E501
-        label=f"En {time.last_year()}, avec combien de prestataires inclusifs relevant du secteur du Handicap avez-vous déjà travaillé ?",
-        choices=HOW_MANY_CHOICES,
-        widget=forms.RadioSelect(),
-        required=False,
     )
 
     accept_rgpd = forms.BooleanField(
