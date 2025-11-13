@@ -1,6 +1,5 @@
 
 let toggleRequiredInFieldset = (required, element) => {
-    console.log('toggleRequiredInFieldset', required, element);
     element.required = required;
     
     // Find the sibling label of the element

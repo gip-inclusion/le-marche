@@ -306,8 +306,7 @@ Array.from(document.querySelectorAll(".formset-group .dropzone")).forEach(functi
         
             // Replace the prefix in the empty form template
             var newForm = emptyForm.replace(/__prefix__/g, totalForms);
-            console.log(newForm.innerHTML);
-        
+
             // Create a new div element and set its innerHTML to the new form
             var newFormElement = document.createElement('div');
             newFormElement.innerHTML = newForm;

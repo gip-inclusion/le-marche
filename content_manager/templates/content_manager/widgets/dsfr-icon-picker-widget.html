@@ -41,10 +41,7 @@
           let widgetIcon = document.getElementById('{{ widget_id }}-icon');
 
           if (widgetInput.value) {
-          widgetIcon.classList.add(widgetInput.value, "fr-icon--lg", "fr-mt-1w");
-          console.log("value updated: " + widgetIcon.classList)
-          } else {
-          console.log("no value")
+            widgetIcon.classList.add(widgetInput.value, "fr-icon--lg", "fr-mt-1w");
           }
         }, false);
 
