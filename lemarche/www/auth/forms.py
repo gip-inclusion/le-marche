@@ -8,8 +8,7 @@ from lemarche.sectors.models import Sector
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.users.validators import professional_email_validator
-from lemarche.utils import time
-from lemarche.utils.constants import EMPTY_CHOICE, HOW_MANY_CHOICES
+from lemarche.utils.constants import EMPTY_CHOICE
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.utils.password_validation import CnilCompositionPasswordValidator
 from lemarche.utils.widgets import CustomSelectMultiple
@@ -17,8 +16,8 @@ from lemarche.utils.widgets import CustomSelectMultiple
 
 class CustomSignupForm(SignupForm, DsfrBaseForm):
     KIND_CHOICES_FORM = (
-        (User.KIND_SIAE, "Une entreprise sociale inclusive (SIAE ou structure du handicap, GEIQ)"),
-        (User.KIND_BUYER, "Un acheteur"),
+        (User.KIND_SIAE, "Fournisseur inclusif (SIAE, EA, EATT ou ESAT)"),
+        (User.KIND_BUYER, "Acheteur public ou privé"),
         (User.KIND_PARTNER, "Un partenaire (réseaux, facilitateurs)"),
         (User.KIND_INDIVIDUAL, "Un particulier"),
     )
@@ -41,7 +40,7 @@ class CustomSignupForm(SignupForm, DsfrBaseForm):
     )
     # company_name is hidden by default in the frontend. Shown if the user choses kind BUYER or PARTNER
     company_name = forms.CharField(
-        label="Le nom de votre structure",
+        label="Le nom de votre organisation",
         required=False,
     )
     # position is hidden by default in the frontend. Shown if the user choses kind BUYER
@@ -69,32 +68,8 @@ class CustomSignupForm(SignupForm, DsfrBaseForm):
         widget=CustomSelectMultiple(),
     )
 
-    nb_of_inclusive_provider_last_year = forms.ChoiceField(
-        # flake8: noqa E501
-        label=f"En {time.last_year()}, avec combien de prestataires inclusifs relevant du secteur de l'Insertion avez-vous déjà travaillé ?",
-        choices=HOW_MANY_CHOICES,
-        widget=forms.RadioSelect(),
-        required=False,
-    )
-    nb_of_handicap_provider_last_year = forms.ChoiceField(
-        # flake8: noqa E501
-        label=f"En {time.last_year()}, avec combien de prestataires inclusifs relevant du secteur du Handicap avez-vous déjà travaillé ?",
-        choices=HOW_MANY_CHOICES,
-        widget=forms.RadioSelect(),
-        required=False,
-    )
-
     accept_rgpd = forms.BooleanField(
         widget=forms.widgets.CheckboxInput(attrs={"class": "form-check-input"}), required=True
-    )
-    # accept_survey is hidden by default in the frontend. Shown if the user choses kind BUYER or PARTNER
-    accept_survey = forms.BooleanField(
-        label=User._meta.get_field("accept_survey").help_text, help_text="", required=False
-    )
-
-    # accept_share_contact_to_external_partners is hidden by default in the frontend. Shown if the user choses kind SIAE  # noqa
-    accept_share_contact_to_external_partners = forms.BooleanField(
-        label=User._meta.get_field("accept_share_contact_to_external_partners").help_text, help_text="", required=False
     )
 
     class Meta:
@@ -113,8 +88,6 @@ class CustomSignupForm(SignupForm, DsfrBaseForm):
             "password1",
             "password2",
             "accept_rgpd",
-            "accept_survey",
-            "accept_share_contact_to_external_partners",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -152,6 +125,10 @@ class CustomSignupForm(SignupForm, DsfrBaseForm):
                 professional_email_validator(cleaned_data["email"])
             except ValidationError as e:
                 self.add_error("email", e)
+        # phone is required for BUYER and SIAE
+        if self.cleaned_data["kind"] in [User.KIND_BUYER, User.KIND_SIAE]:
+            if not self.cleaned_data.get("phone"):
+                self.add_error("phone", "Ce champ est obligatoire.")
         return cleaned_data
 
 

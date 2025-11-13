@@ -104,22 +104,6 @@
                                             </fieldset>
                                         </div>
                                     </fieldset>
-                                    <!-- Buyer survey -->
-                                    <fieldset id="statsSignupBuyerFieldset" class="fr-fieldset fr-hidden">
-                                        <div class="fr-fieldset__element">
-                                            <fieldset class="fr-fieldset">
-                                                <div class="fr-fieldset__element">
-                                                    {% dsfr_form_field form.nb_of_inclusive_provider_last_year %}
-                                                </div>
-                                                <div class="fr-fieldset__element">
-                                                    {% dsfr_form_field form.nb_of_handicap_provider_last_year %}
-                                                </div>
-                                                <div class="fr-fieldset__element">
-                                                    <p class="fr-text--sm">Ces informations resteront confidentielles, elles ne seront traitées qu'à des fins statistiques.</p>
-                                                </div>
-                                            </fieldset>
-                                        </div>
-                                    </fieldset>
                                     <!-- Legal mentions -->
                                     <fieldset class="fr-fieldset">
                                         <div class="fr-fieldset__element">
@@ -131,12 +115,6 @@
                                                             J'accepte les&nbsp;<a href="{{ CGU }}" target="_blank">Conditions Générales d'Utilisation</a>
                                                         </label>
                                                     </div>
-                                                </div>
-                                                <div id="acceptSurveyFielsetElement" class="fr-fieldset__element fr-hidden">
-                                                    {% dsfr_form_field form.accept_survey %}
-                                                </div>
-                                                <div id="shareContactFielsetElement" class="fr-fieldset__element fr-hidden">
-                                                    {% dsfr_form_field form.accept_share_contact_to_external_partners %}
                                                 </div>
                                             </fieldset>
                                         </div>
@@ -162,88 +140,7 @@
 {% endblock content %}
 
 {% block extra_js %}
-<script type="text/javascript">
-/**
- * Dynamic rules:
- * - if the user is not a SIAE:
- *      - show company_name field (and make it required)
- *      - add survey checkbox
- * - if the user is BUYER:
- *      - make phone field required
- *      - add buyer_kind_detail field (and make it required)
- *      - add position field (and make it required)
- *      - add survey checkbox for newsletter
- *  - if the user is an INDIVIDUAL:
- *      - hide company section
- */
-document.addEventListener('DOMContentLoaded', function() {
-    let phoneFieldsetElement = document.getElementById('phoneFieldsetElement');
-    let companyNameSiaeFormGroupDiv = document.getElementsByClassName('company-name-siae-form-group')[0];
-    let statsSignupBuyerContent = document.getElementById('statsSignupBuyerFieldset');
-    let infoStructuresFieldset = document.getElementById('infoStructuresFieldset');
-    let buyerKindDetailFieldsetElement = document.getElementById('buyerKindDetailFieldsetElement');
-    let partnerKindFieldsetElement = document.getElementById('partnerKindFieldsetElement');
-    let companyNameFieldsetElement = document.getElementById('companyNameFieldsetElement');
-    let positionFieldsetElement = document.getElementById('positionFieldsetElement');
-    let acceptSurveyFieldsetElement = document.getElementById('acceptSurveyFielsetElement');
-    let acceptShareContactFieldsetElement = document.getElementById('shareContactFielsetElement');
-    let sectorsFieldsetElement = document.getElementById('sectorsFieldsetElement');
-    
-
-    let kindRadios = document.querySelectorAll('input[type=radio][name="kind"]');
-    kindRadios.forEach(radio => radio.addEventListener('change', () => {
-        if (radio.value === 'SIAE') {
-            companyNameSiaeFormGroupDiv.classList.remove('fr-hidden');
-            toggleFieldsetElement(false, element=companyNameFieldsetElement, required=false);
-            toggleFieldsetElement(false, element=acceptSurveyFieldsetElement);
-            toggleFieldsetElement(true, element=acceptShareContactFieldsetElement);
-        } else {
-            companyNameSiaeFormGroupDiv.classList.add('fr-hidden');
-            toggleFieldsetElement(true, element=companyNameFieldsetElement, required=true);
-            toggleFieldsetElement(true, element=acceptSurveyFieldsetElement);
-            toggleFieldsetElement(false, element=acceptShareContactFieldsetElement);
-        }
-
-        if (radio.value === 'BUYER') {
-            toggleFieldsetElement(true, element=buyerKindDetailFieldsetElement, required=true);
-            toggleFieldsetElement(true, element=positionFieldsetElement, required=true);
-            toggleFieldsetElement(true, element=phoneFieldsetElement, required=true);
-            statsSignupBuyerContent.classList.remove('fr-hidden');
-            toggleFieldsetElement(true, element=sectorsFieldsetElement, required=false);
-        } else {
-            toggleFieldsetElement(false, element=buyerKindDetailFieldsetElement, required=false);
-            toggleFieldsetElement(false, element=positionFieldsetElement, required=false);
-            toggleFieldsetElement(true, element=phoneFieldsetElement, required=false);
-            statsSignupBuyerContent.classList.add('fr-hidden');
-            toggleFieldsetElement(false, element=sectorsFieldsetElement, required=false);
-        }
-
-        if (radio.value === 'PARTNER') {
-            toggleFieldsetElement(true, element=partnerKindFieldsetElement, required=true);
-        } else {
-            toggleFieldsetElement(false, element=partnerKindFieldsetElement, required=false);
-        }
-
-        if (radio.value === 'INDIVIDUAL') {
-            toggleFieldsetElement(false, element=companyNameFieldsetElement, required=false);
-            infoStructuresFieldset.classList.add('fr-hidden');
-        } else {
-            infoStructuresFieldset.classList.remove('fr-hidden');
-        }
-    }));
-});
-</script>
 <script type="text/javascript" src="{% static 'js/multiselect.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/signup_form.js' %}"></script>
 {% endblock extra_js %}
 
-{% block extra_css %}
-<style>
-#statsSignupBuyerFieldset .fr-radio-group{
-    display: flex;
-}
-#statsSignupBuyerFieldset .fr-radio-group>.fr-radio-group{
-    flex: 0 0 auto;
-    margin: 0 .75rem 0 0;
-}
-</style> 
-{% endblock extra_css %}

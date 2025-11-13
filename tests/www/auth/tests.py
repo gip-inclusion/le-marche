@@ -228,32 +228,6 @@ class SignupFormTest(StaticLiveServerTestCase):
         # assert Brevo contact creation
         mock_client_instance.create_contact.assert_called_once()
 
-    @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient")
-    def test_buyer_submits_signup_form_success_extra_data(self, mock_brevo_contacts_client):
-        self._complete_form(user_profile=self.BUYER, with_submit=False)
-
-        buyer_kind_detail_select_element = self.driver.find_element(By.CSS_SELECTOR, "select#id_buyer_kind_detail")
-        element_select_option(self.driver, buyer_kind_detail_select_element, "Grand groupe (+5000 salariés)")
-
-        nb_of_handicap = "3"
-        nb_of_inclusive = "4"
-        nb_of_handicap_provider_last_year_element = self.driver.find_element(
-            By.CSS_SELECTOR, f"input#id_nb_of_handicap_provider_last_year_{nb_of_handicap}"
-        )
-        scroll_to_and_click_element(self.driver, nb_of_handicap_provider_last_year_element)
-        nb_of_inclusive_provider_last_year_element = self.driver.find_element(
-            By.CSS_SELECTOR, f"input#id_nb_of_inclusive_provider_last_year_{nb_of_inclusive}"
-        )
-        scroll_to_and_click_element(self.driver, nb_of_inclusive_provider_last_year_element)
-        submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
-        scroll_to_and_click_element(self.driver, submit_element)
-        # should get created User
-        user = User.objects.get(email=self.BUYER["email"])
-
-        # assert extra_data are inserted
-        self.assertEqual(user.extra_data.get("nb_of_handicap_provider_last_year"), nb_of_handicap)
-        self.assertEqual(user.extra_data.get("nb_of_inclusive_provider_last_year"), nb_of_inclusive)
-
     def test_buyer_submits_signup_form_error(self):
         user_profile = self.BUYER
         del user_profile["position"]

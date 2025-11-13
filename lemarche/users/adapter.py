@@ -63,23 +63,6 @@ class LeMarcheAccountAdapter(DefaultAccountAdapter):
         user.position = form.cleaned_data.get("position")
         user.partner_kind = form.cleaned_data.get("partner_kind")
         user.accept_rgpd = form.cleaned_data.get("accept_rgpd")
-        user.accept_survey = form.cleaned_data.get("accept_survey")
-        user.accept_share_contact_to_external_partners = form.cleaned_data.get(
-            "accept_share_contact_to_external_partners"
-        )
-
-        extra_data = {}
-        if form.cleaned_data.get("nb_of_inclusive_provider_last_year"):
-            extra_data["nb_of_inclusive_provider_last_year"] = form.cleaned_data.get(
-                "nb_of_inclusive_provider_last_year"
-            )
-
-        if form.cleaned_data.get("nb_of_handicap_provider_last_year"):
-            extra_data["nb_of_handicap_provider_last_year"] = form.cleaned_data.get(
-                "nb_of_handicap_provider_last_year"
-            )
-
-        user.extra_data = extra_data
 
         if commit:
             user.save()

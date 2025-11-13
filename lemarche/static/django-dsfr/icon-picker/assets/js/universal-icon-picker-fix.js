@@ -385,7 +385,6 @@ const i18nMessages = {
                         return this._loadIconLibraries(i + 1);
                     }
                 }).catch((error) => {
-                    console.log(error);
                     return error;
                 });
         },

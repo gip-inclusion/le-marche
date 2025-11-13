@@ -259,6 +259,7 @@ class User(AbstractUser):
     )
 
     accept_rgpd = models.BooleanField(default=False)
+    # is now hidden by default in the frontend
     accept_survey = models.BooleanField(
         help_text="J'accepte de répondre à une enquête deux fois par an afin de permettre de mesurer la progression des achats inclusifs en France",  # noqa
         default=False,
@@ -272,6 +273,7 @@ class User(AbstractUser):
         default=False,
     )
 
+    # is now hidden by default in the frontend
     accept_share_contact_to_external_partners = models.BooleanField(
         verbose_name="Partage de contact à des partenaires externes",
         help_text="J'accepte que mes coordonnées de contact soient partagées avec les partenaires externes du Marché de l'inclusion afin de recevoir des opportunités commerciales (appels d'offres, marché ...)",  # noqa
