@@ -1391,6 +1391,54 @@ class SiaeUserRequest(models.Model):
         verbose_name_plural = "Demandes de rattachement"
         ordering = ["-created_at"]
 
+    @transaction.atomic
+    def approve(self, actor=None):
+        """
+        Approve the request (idempotent). Returns True if state changed.
+        """
+        if self.response is True:
+            return False
+
+        if not self.siae.users.filter(pk=self.initiator_id).exists():
+            self.siae.users.add(self.initiator)
+
+        self.response = True
+        self.response_date = timezone.now()
+        self.logs.append(
+            {
+                "action": "response_true",
+                "timestamp": self.response_date.isoformat(),
+                "actor": f"#{actor.id} {actor.full_name}" if actor else None,
+            }
+        )
+        self.save(update_fields=["response", "response_date", "logs", "updated_at"])
+
+        return True
+
+    @transaction.atomic
+    def reject(self, actor=None):
+        """
+        Reject the request (idempotent). Returns True if state changed.
+        """
+        if self.response is False:
+            return False
+
+        if self.siae.users.filter(pk=self.initiator_id).exists():
+            self.siae.users.remove(self.initiator)
+
+        self.response = False
+        self.response_date = timezone.now()
+        self.logs.append(
+            {
+                "action": "response_false",
+                "timestamp": self.response_date.isoformat(),
+                "actor": f"#{actor.id} {actor.full_name}" if actor else None,
+            }
+        )
+        self.save(update_fields=["response", "response_date", "logs", "updated_at"])
+
+        return True
+
 
 class SiaeActivityQuerySet(models.QuerySet):
     def filter_sectors(self, sectors):

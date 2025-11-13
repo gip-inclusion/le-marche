@@ -10,8 +10,10 @@ from lemarche.siaes.models import (
     SiaeImage,
     SiaeLabelOld,
     SiaeOffer,
+    SiaeUserRequest,
 )
 from tests.sectors.factories import SectorFactory
+from tests.users.factories import UserFactory
 
 
 class SiaeGroupFactory(DjangoModelFactory):
@@ -110,3 +112,18 @@ class SiaeLabelOldFactory(DjangoModelFactory):
 class SiaeImageFactory(DjangoModelFactory):
     class Meta:
         model = SiaeImage
+
+
+class SiaeUserRequestFactory(DjangoModelFactory):
+    class Meta:
+        model = SiaeUserRequest
+
+    siae = factory.SubFactory(SiaeFactory)
+    initiator = factory.SubFactory(UserFactory)
+    assignee = factory.SubFactory(UserFactory)
+    logs = factory.LazyFunction(list)
+
+    @factory.post_generation
+    def ensure_assignee_membership(self, create, extracted, **kwargs):
+        if create and self.assignee and self.siae:
+            self.siae.users.add(self.assignee)
