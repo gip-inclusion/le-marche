@@ -192,6 +192,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let kindRadios = document.querySelectorAll('input[type=radio][name="kind"]');
     kindRadios.forEach(radio => radio.addEventListener('change', () => {
+        /* Phone field required for BUYER and SIAE */
+        if (radio.value === 'BUYER' || radio.value === 'SIAE') {
+            toggleFieldsetElement(true, element=phoneFieldsetElement, required=true);
+        } else {
+            toggleFieldsetElement(false, element=phoneFieldsetElement, required=false);
+        }
+
         if (radio.value === 'SIAE') {
             companyNameSiaeFormGroupDiv.classList.remove('fr-hidden');
             toggleFieldsetElement(false, element=companyNameFieldsetElement, required=false);
@@ -207,13 +214,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (radio.value === 'BUYER') {
             toggleFieldsetElement(true, element=buyerKindDetailFieldsetElement, required=true);
             toggleFieldsetElement(true, element=positionFieldsetElement, required=true);
-            toggleFieldsetElement(true, element=phoneFieldsetElement, required=true);
             statsSignupBuyerContent.classList.remove('fr-hidden');
             toggleFieldsetElement(true, element=sectorsFieldsetElement, required=false);
         } else {
             toggleFieldsetElement(false, element=buyerKindDetailFieldsetElement, required=false);
             toggleFieldsetElement(false, element=positionFieldsetElement, required=false);
-            toggleFieldsetElement(true, element=phoneFieldsetElement, required=false);
             statsSignupBuyerContent.classList.add('fr-hidden');
             toggleFieldsetElement(false, element=sectorsFieldsetElement, required=false);
         }

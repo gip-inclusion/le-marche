@@ -152,6 +152,10 @@ class CustomSignupForm(SignupForm, DsfrBaseForm):
                 professional_email_validator(cleaned_data["email"])
             except ValidationError as e:
                 self.add_error("email", e)
+        # phone is required for BUYER and SIAE
+        if self.cleaned_data["kind"] in [User.KIND_BUYER, User.KIND_SIAE]:
+            if not self.cleaned_data.get("phone"):
+                self.add_error("phone", "Ce champ est obligatoire.")
         return cleaned_data
 
 
