@@ -119,9 +119,6 @@
                                                 <div id="acceptSurveyFielsetElement" class="fr-fieldset__element fr-hidden">
                                                     {% dsfr_form_field form.accept_survey %}
                                                 </div>
-                                                <div id="shareContactFielsetElement" class="fr-fieldset__element fr-hidden">
-                                                    {% dsfr_form_field form.accept_share_contact_to_external_partners %}
-                                                </div>
                                             </fieldset>
                                         </div>
                                     </fieldset>
@@ -169,7 +166,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let companyNameFieldsetElement = document.getElementById('companyNameFieldsetElement');
     let positionFieldsetElement = document.getElementById('positionFieldsetElement');
     let acceptSurveyFieldsetElement = document.getElementById('acceptSurveyFielsetElement');
-    let acceptShareContactFieldsetElement = document.getElementById('shareContactFielsetElement');
     let sectorsFieldsetElement = document.getElementById('sectorsFieldsetElement');
     
 
@@ -186,12 +182,10 @@ document.addEventListener('DOMContentLoaded', function() {
             companyNameSiaeFormGroupDiv.classList.remove('fr-hidden');
             toggleFieldsetElement(false, element=companyNameFieldsetElement, required=false);
             toggleFieldsetElement(false, element=acceptSurveyFieldsetElement);
-            toggleFieldsetElement(true, element=acceptShareContactFieldsetElement);
         } else {
             companyNameSiaeFormGroupDiv.classList.add('fr-hidden');
             toggleFieldsetElement(true, element=companyNameFieldsetElement, required=true);
             toggleFieldsetElement(true, element=acceptSurveyFieldsetElement);
-            toggleFieldsetElement(false, element=acceptShareContactFieldsetElement);
         }
 
         if (radio.value === 'BUYER') {

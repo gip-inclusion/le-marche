@@ -40,7 +40,7 @@ class CustomSignupForm(SignupForm, DsfrBaseForm):
     )
     # company_name is hidden by default in the frontend. Shown if the user choses kind BUYER or PARTNER
     company_name = forms.CharField(
-        label="Le nom de votre structure",
+        label="Le nom de votre organisation",
         required=False,
     )
     # position is hidden by default in the frontend. Shown if the user choses kind BUYER
@@ -76,11 +76,6 @@ class CustomSignupForm(SignupForm, DsfrBaseForm):
         label=User._meta.get_field("accept_survey").help_text, help_text="", required=False
     )
 
-    # accept_share_contact_to_external_partners is hidden by default in the frontend. Shown if the user choses kind SIAE  # noqa
-    accept_share_contact_to_external_partners = forms.BooleanField(
-        label=User._meta.get_field("accept_share_contact_to_external_partners").help_text, help_text="", required=False
-    )
-
     class Meta:
         model = User
         fields = [
@@ -98,7 +93,6 @@ class CustomSignupForm(SignupForm, DsfrBaseForm):
             "password2",
             "accept_rgpd",
             "accept_survey",
-            "accept_share_contact_to_external_partners",
         ]
 
     def __init__(self, *args, **kwargs):

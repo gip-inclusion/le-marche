@@ -308,7 +308,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
                 "fields": (
                     "accept_rgpd",
                     "accept_survey",
-                    "accept_share_contact_to_external_partners",
                     "source",
                 )
             },
