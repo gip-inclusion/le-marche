@@ -307,7 +307,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             {
                 "fields": (
                     "accept_rgpd",
-                    "accept_survey",
                     "source",
                 )
             },
