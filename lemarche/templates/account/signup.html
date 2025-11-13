@@ -116,9 +116,6 @@
                                                         </label>
                                                     </div>
                                                 </div>
-                                                <div id="acceptSurveyFielsetElement" class="fr-fieldset__element fr-hidden">
-                                                    {% dsfr_form_field form.accept_survey %}
-                                                </div>
                                             </fieldset>
                                         </div>
                                     </fieldset>
@@ -165,7 +162,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let partnerKindFieldsetElement = document.getElementById('partnerKindFieldsetElement');
     let companyNameFieldsetElement = document.getElementById('companyNameFieldsetElement');
     let positionFieldsetElement = document.getElementById('positionFieldsetElement');
-    let acceptSurveyFieldsetElement = document.getElementById('acceptSurveyFielsetElement');
     let sectorsFieldsetElement = document.getElementById('sectorsFieldsetElement');
     
 
@@ -181,11 +177,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (radio.value === 'SIAE') {
             companyNameSiaeFormGroupDiv.classList.remove('fr-hidden');
             toggleFieldsetElement(false, element=companyNameFieldsetElement, required=false);
-            toggleFieldsetElement(false, element=acceptSurveyFieldsetElement);
         } else {
             companyNameSiaeFormGroupDiv.classList.add('fr-hidden');
             toggleFieldsetElement(true, element=companyNameFieldsetElement, required=true);
-            toggleFieldsetElement(true, element=acceptSurveyFieldsetElement);
         }
 
         if (radio.value === 'BUYER') {

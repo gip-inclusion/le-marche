@@ -259,6 +259,7 @@ class User(AbstractUser):
     )
 
     accept_rgpd = models.BooleanField(default=False)
+    # is now hidden by default in the frontend
     accept_survey = models.BooleanField(
         help_text="J'accepte de répondre à une enquête deux fois par an afin de permettre de mesurer la progression des achats inclusifs en France",  # noqa
         default=False,

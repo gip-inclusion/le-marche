@@ -71,10 +71,6 @@ class CustomSignupForm(SignupForm, DsfrBaseForm):
     accept_rgpd = forms.BooleanField(
         widget=forms.widgets.CheckboxInput(attrs={"class": "form-check-input"}), required=True
     )
-    # accept_survey is hidden by default in the frontend. Shown if the user choses kind BUYER or PARTNER
-    accept_survey = forms.BooleanField(
-        label=User._meta.get_field("accept_survey").help_text, help_text="", required=False
-    )
 
     class Meta:
         model = User
@@ -92,7 +88,6 @@ class CustomSignupForm(SignupForm, DsfrBaseForm):
             "password1",
             "password2",
             "accept_rgpd",
-            "accept_survey",
         ]
 
     def __init__(self, *args, **kwargs):

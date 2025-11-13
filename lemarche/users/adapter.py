@@ -63,7 +63,6 @@ class LeMarcheAccountAdapter(DefaultAccountAdapter):
         user.position = form.cleaned_data.get("position")
         user.partner_kind = form.cleaned_data.get("partner_kind")
         user.accept_rgpd = form.cleaned_data.get("accept_rgpd")
-        user.accept_survey = form.cleaned_data.get("accept_survey")
 
         if commit:
             user.save()
