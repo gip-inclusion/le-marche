@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand
+from django.db.models import Q
 from django.utils import timezone
 from sentry_sdk.crons import monitor
 
@@ -52,9 +53,9 @@ class Command(BaseCommand):
             # gte_days_ago = gte_days_ago+2 to account for Saturday & Sunday
             if current_weekday == 0:
                 gte_days_ago = gte_days_ago - timedelta(days=2)
-            tendersiae_interested_reminder_list = TenderSiae.objects.detail_contact_click_post_reminder(
-                gte_days_ago=gte_days_ago, lt_days_ago=lt_days_ago
-            )
+            tendersiae_interested_reminder_list = TenderSiae.objects.filter(
+                Q(tender__deadline_date__isnull=True) | Q(tender__deadline_date__gte=timezone.now().date())
+            ).detail_contact_click_post_reminder(gte_days_ago=gte_days_ago, lt_days_ago=lt_days_ago)
 
             if options["tender_id"]:
                 tendersiae_interested_reminder_list = tendersiae_interested_reminder_list.filter(
