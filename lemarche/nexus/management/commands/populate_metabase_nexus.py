@@ -141,7 +141,7 @@ class Command(BaseCommand):
                 str(user.phone),
                 user.last_login,
                 "Django",
-                "employeur",
+                "fournisseur",
                 self.run_at,
             ]
 

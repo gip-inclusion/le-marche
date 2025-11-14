@@ -31,7 +31,7 @@ class TestCommand(TestCase):
                     user.phone,
                     user.last_login,
                     "Django",
-                    "employeur",
+                    "fournisseur",
                     timezone.now(),
                 ),
             ]
