@@ -13,7 +13,7 @@ jobs:
 
     env:
       DJANGO_SETTINGS_MODULE: config.settings.test
-      DJANGO_SECRET_KEY: ministryofsillywalks
+      SECRET_KEY: ministryofsillywalks
       PYTHONPATH: .
       POSTGRESQL_ADDON_HOST: localhost
       POSTGRESQL_ADDON_DB: postgres

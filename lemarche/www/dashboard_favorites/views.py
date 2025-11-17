@@ -7,7 +7,7 @@ from django.db.models.query import Prefetch
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView
 
@@ -61,7 +61,7 @@ class DashboardFavoriteListCreateView(LoginRequiredMixin, SuccessMessageMixin, C
         return HttpResponseRedirect(self.success_url)
 
     def get_success_message(self, cleaned_data):
-        return mark_safe(f"Votre liste d'achat <strong>{cleaned_data['name']}</strong> a été créée avec succès.")
+        return format_html("Votre liste d'achat <strong>{}</strong> a été créée avec succès.", cleaned_data["name"])
 
 
 class DashboardFavoriteListDetailView(FavoriteListOwnerRequiredMixin, DetailView):
@@ -110,7 +110,7 @@ class DashboardFavoriteListDeleteView(FavoriteListOwnerRequiredMixin, SuccessMes
     success_url = reverse_lazy("dashboard_favorites:list")
 
     def get_success_message(self, cleaned_data):
-        return mark_safe(f"Votre liste d'achat <strong>{self.object.name}</strong> a été supprimée avec succès.")
+        return format_html("Votre liste d'achat <strong>{}</strong> a été supprimée avec succès.", self.object.name)
 
 
 class DashboardFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
@@ -139,6 +139,7 @@ class DashboardFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, D
             )
 
     def get_success_message(self, cleaned_data):
-        return mark_safe(
-            f"<strong>{self.object.siae.name_display}</strong> a été supprimée de votre liste d'achat avec succès."
+        return format_html(
+            "<strong>{}</strong> a été supprimée de votre liste d'achat avec succès.",
+            self.object.siae.name_display,
         )
