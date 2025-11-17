@@ -31,7 +31,7 @@ locale.setlocale(locale.LC_TIME, "")
 #
 # "env" is the object that wil contain the defined environment, along some
 # default settings
-env = environ.Env(DEBUG=(bool, False), SECRET_KEY=(str, "SOME_SECRET_KEY"))
+env = environ.Env(DEBUG=(bool, False))
 
 # Build paths inside the project like this: ROOT_DIR / 'subdir'.
 ROOT_DIR = environ.Path(__file__) - 3  # (ROOT/config/settings/base.py - 3 = ROOT )
