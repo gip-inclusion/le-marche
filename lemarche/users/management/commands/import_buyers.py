@@ -17,11 +17,6 @@ class Command(BaseImportUsersCommand):
             type=str,
             help="Slug de la société à qui appartient les acheteurs importés.",
         )
-        parser.add_argument(
-            "brevo_contact_id",
-            type=int,
-            help="ID de la liste de contact Brevo à utiliser pour les acheteurs importés.",
-        )
 
     def handle(self, *args, **options):
         # Get company before processing
@@ -31,7 +26,6 @@ class Command(BaseImportUsersCommand):
     def _get_extra_context(self, options: dict) -> dict:
         return {
             "company": self.company,
-            "brevo_contact_id": options["brevo_contact_id"],
         }
 
     def _post_import_user(self, imported_user: dict, **kwargs) -> None:
@@ -40,7 +34,12 @@ class Command(BaseImportUsersCommand):
 
     def _post_import_user_actions(self, user: User, **kwargs) -> None:
         """Add user to Brevo contact list."""
-        add_to_contact_list(user, contact_type=kwargs["brevo_contact_id"])
+        try:
+            add_to_contact_list(user, contact_type="signup")
+        except Exception:
+            # Log the error but do not raise it, as this is not critical for user creation
+            # no need to add more logging here, as the BrevoApiError is already logged in add_to_contact_list
+            pass
 
     def get_user_kind(self) -> str:
         return User.KIND_BUYER

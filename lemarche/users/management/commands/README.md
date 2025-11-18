@@ -24,7 +24,7 @@ Les sous-classes doivent implémenter ces méthodes abstraites :
 ### Import d'acheteurs : `import_buyers`
 
 ```bash
-python manage.py import_buyers fichier.csv template_code company_slug brevo_contact_id
+python manage.py import_buyers fichier.csv template_code company_slug
 ```
 
 **Paramètres :**
@@ -32,7 +32,6 @@ python manage.py import_buyers fichier.csv template_code company_slug brevo_cont
 - `fichier.csv` : Fichier CSV avec les acheteurs
 - `company_slug` : Slug de l'entreprise
 - `template_code` : Code template Brevo pour l'invitation
-- `brevo_contact_id` : ID liste contact Brevo
 
 **Fonctionnalités spécifiques :**
 
@@ -78,7 +77,7 @@ python manage.py import_partners fixtures/tests/partners_import.csv welcome_part
 ### Import d'acheteurs pour une entreprise
 
 ```bash
-python manage.py import_buyers acheteurs.csv ma-entreprise welcome_buyers 123
+python manage.py import_buyers acheteurs.csv ma-entreprise welcome_buyers
 ```
 
 ## Gestion des erreurs
