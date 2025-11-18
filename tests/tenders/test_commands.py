@@ -11,9 +11,10 @@ from django.utils import timezone
 from lemarche.siaes import constants as siae_constants
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
+from tests.conversations.factories import TemplateTransactionalFactory
 from tests.sectors.factories import SectorFactory
 from tests.siaes.factories import SiaeActivityFactory, SiaeFactory
-from tests.tenders.factories import TenderFactory
+from tests.tenders.factories import TenderFactory, TenderSiaeFactory
 from tests.users.factories import UserFactory
 
 
@@ -318,3 +319,275 @@ class UpdateTenderCountFieldsCommandTest(TestCase):
 
         # Count should still be 0 as the tender has an outdated deadline
         self.assertEqual(tender.siae_count, 0)
+
+
+class SiaeInterestReminderEmailCommandTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Create the email template needed by the command
+        cls.email_template = TemplateTransactionalFactory(
+            code="TENDERS_SIAE_INTERESTED_REMINDER_2D", is_active=True, brevo_id=1
+        )
+
+        # Create a buyer user
+        cls.author = UserFactory(kind=User.KIND_BUYER)
+
+        # Create a tender
+        cls.tender = TenderFactory(author=cls.author, deadline_date=None)
+
+        # Create SIAEs
+        cls.siae1 = SiaeFactory(contact_email="siae1@example.com")
+        cls.siae2 = SiaeFactory(contact_email="siae2@example.com")
+        cls.siae3 = SiaeFactory(contact_email="siae3@example.com")
+
+    @patch("lemarche.conversations.models.TemplateTransactional.send_transactional_email")
+    @patch(
+        "lemarche.www.tenders.tasks.whitelist_recipient_list",
+        return_value=["siae1@example.com", "siae2@example.com", "siae3@example.com"],
+    )
+    @patch("django.utils.timezone.now")
+    def test_send_siae_interested_reminder_email_weekday(self, mock_now, _mock_whitelist, mock_send_email):
+        """Test the command on a weekday with TenderSiae that need reminders"""
+        # Assume today is Wednesday
+        now = timezone.make_aware(timezone.datetime(2025, 11, 12, 10, 0))
+        mock_now.return_value = now
+
+        # Create TenderSiae with detail_contact_click_date 2 days ago (should be reminded)
+        TenderSiaeFactory(
+            tender=self.tender,
+            siae=self.siae1,
+            email_send_date=now - timedelta(days=5),
+            detail_display_date=now - timedelta(days=4),
+            detail_contact_click_date=now - timedelta(days=2, hours=1),
+        )
+
+        # Create TenderSiae with detail_contact_click_date 1 day ago (should NOT be reminded)
+        TenderSiaeFactory(
+            tender=self.tender,
+            siae=self.siae2,
+            email_send_date=now - timedelta(days=5),
+            detail_display_date=now - timedelta(days=4),
+            detail_contact_click_date=now - timedelta(days=1, hours=1),
+        )
+
+        # Create TenderSiae with detail_contact_click_date 3 days ago (should NOT be reminded)
+        TenderSiaeFactory(
+            tender=self.tender,
+            siae=self.siae3,
+            email_send_date=now - timedelta(days=5),
+            detail_display_date=now - timedelta(days=4),
+            detail_contact_click_date=now - timedelta(days=3, hours=1),
+        )
+
+        out = StringIO()
+        call_command("send_siae_interested_reminder_emails", stdout=out)
+
+        output = out.getvalue()
+
+        # Check output
+        self.assertNotIn("Weekend... Stopping. Come back on Monday :)", output)
+        self.assertIn("Step 1: Find TenderSiae", output)
+        self.assertIn("Step 2: Send emails for each tender", output)
+        self.assertIn("Found 1 TenderSiaes to remind", output)
+        self.assertIn(f"Tender {self.tender.id}: 1 TenderSiaes to remind", output)
+        self.assertIn("Emails sent", output)
+
+        # Verify that send_transactional_email was called once
+        mock_send_email.assert_called_once()
+
+        # Verify the call arguments
+        call_args = mock_send_email.call_args
+        self.assertIn("recipient_email", call_args.kwargs)
+        self.assertIn("recipient_name", call_args.kwargs)
+        self.assertIn("variables", call_args.kwargs)
+        self.assertEqual(call_args.kwargs["recipient_email"], "siae1@example.com")
+
+    @patch("lemarche.conversations.models.TemplateTransactional.send_transactional_email")
+    @patch(
+        "lemarche.www.tenders.tasks.whitelist_recipient_list",
+        return_value=["siae1@example.com", "siae2@example.com", "siae3@example.com"],
+    )
+    @patch("django.utils.timezone.now")
+    def test_send_siae_interested_reminder_email_weekend(self, mock_now, _mock_whitelist, mock_send_email):
+        """Test the command on a weekend - should not send emails"""
+        # Assume today is Saturday
+        now = timezone.make_aware(timezone.datetime(2025, 11, 15, 10, 0))
+        mock_now.return_value = now
+
+        out = StringIO()
+        call_command("send_siae_interested_reminder_emails", stdout=out)
+
+        output = out.getvalue()
+
+        # Check output
+        self.assertIn("Weekend... Stopping. Come back on Monday :)", output)
+        self.assertNotIn("Step 1: Find TenderSiae", output)
+
+        # Verify that send_transactional_email was NOT called
+        mock_send_email.assert_not_called()
+
+    @patch("lemarche.conversations.models.TemplateTransactional.send_transactional_email")
+    @patch(
+        "lemarche.www.tenders.tasks.whitelist_recipient_list",
+        return_value=["siae1@example.com", "siae2@example.com", "siae3@example.com"],
+    )
+    @patch("django.utils.timezone.now")
+    def test_send_siae_interested_reminder_email_monday(self, mock_now, _mock_whitelist, mock_send_email):
+        """Test the command on Monday - should account for weekend"""
+        # Assume today is Monday
+        now = timezone.make_aware(timezone.datetime(2025, 11, 17, 10, 0))
+        mock_now.return_value = now
+
+        # Create TenderSiae with detail_contact_click_date 4 days + 1 hour ago (Friday, should be reminded on Monday)
+        TenderSiaeFactory(
+            tender=self.tender,
+            siae=self.siae1,
+            email_send_date=now - timedelta(days=6),
+            detail_display_date=now - timedelta(days=5),
+            detail_contact_click_date=now - timedelta(days=4),  # Friday
+        )
+
+        out = StringIO()
+        call_command("send_siae_interested_reminder_emails", stdout=out)
+
+        output = out.getvalue()
+
+        # Check output
+        self.assertNotIn("Weekend... Stopping. Come back on Monday :)", output)
+        self.assertIn("Step 1: Find TenderSiae", output)
+        self.assertIn("Found 1 TenderSiaes to remind", output)
+
+        # Verify that send_transactional_email was called
+        mock_send_email.assert_called_once()
+
+    @patch("lemarche.conversations.models.TemplateTransactional.send_transactional_email")
+    @patch(
+        "lemarche.www.tenders.tasks.whitelist_recipient_list",
+        return_value=["siae1@example.com", "siae2@example.com", "siae3@example.com"],
+    )
+    @patch("django.utils.timezone.now")
+    def test_send_siae_interested_reminder_email_dry_run(self, mock_now, _mock_whitelist, mock_send_email):
+        """Test the command with dry-run option - should not send emails"""
+        # Assume today is Wednesday
+        now = timezone.make_aware(timezone.datetime(2025, 11, 12, 10, 0))
+        mock_now.return_value = now
+
+        # Create TenderSiae with detail_contact_click_date 3 days + 1 hour ago
+        TenderSiaeFactory(
+            tender=self.tender,
+            siae=self.siae1,
+            email_send_date=now - timedelta(days=5),
+            detail_display_date=now - timedelta(days=4),
+            detail_contact_click_date=now - timedelta(days=3),
+        )
+
+        out = StringIO()
+        call_command("send_siae_interested_reminder_emails", "--dry-run", stdout=out)
+
+        output = out.getvalue()
+
+        # Check output
+        self.assertIn("Step 1: Find TenderSiae", output)
+        self.assertIn("Found 1 TenderSiaes to remind", output)
+        self.assertNotIn("Step 2: Send emails for each tender", output)
+        self.assertNotIn("Emails sent", output)
+
+        # Verify that send_transactional_email was NOT called
+        mock_send_email.assert_not_called()
+
+    @patch("lemarche.conversations.models.TemplateTransactional.send_transactional_email")
+    @patch(
+        "lemarche.www.tenders.tasks.whitelist_recipient_list",
+        return_value=["siae1@example.com", "siae2@example.com", "siae3@example.com"],
+    )
+    @patch("django.utils.timezone.now")
+    def test_send_siae_interested_reminder_email_with_tender_id(self, mock_now, _mock_whitelist, mock_send_email):
+        """Test the command with --tender-id option"""
+        # Assume today is Wednesday
+        now = timezone.make_aware(timezone.datetime(2025, 11, 12, 10, 0))
+        mock_now.return_value = now
+
+        # Create another tender
+        tender2 = TenderFactory(author=self.author, deadline_date=None)
+
+        # Create TenderSiae for first tender
+        # Use 2 days + 1 hour ago to ensure it's strictly less than lt_days_ago (which is exactly 2 days ago)
+        TenderSiaeFactory(
+            tender=self.tender,
+            siae=self.siae1,
+            email_send_date=now - timedelta(days=5),
+            detail_display_date=now - timedelta(days=4),
+            detail_contact_click_date=now - timedelta(days=2, hours=1),
+        )
+
+        # Create TenderSiae for second tender
+        TenderSiaeFactory(
+            tender=tender2,
+            siae=self.siae2,
+            email_send_date=now - timedelta(days=5),
+            detail_display_date=now - timedelta(days=4),
+            detail_contact_click_date=now - timedelta(days=2, hours=1),
+        )
+
+        out = StringIO()
+        call_command("send_siae_interested_reminder_emails", "--tender-id", str(self.tender.id), stdout=out)
+
+        output = out.getvalue()
+
+        # Check output
+        self.assertIn("Found 1 TenderSiaes to remind", output)
+        self.assertIn(f"Tender {self.tender.id}: 1 TenderSiaes to remind", output)
+        self.assertNotIn(f"Tender {tender2.id}", output)
+
+        # Verify that send_transactional_email was called only once (for the specified tender)
+        mock_send_email.assert_called_once()
+
+    @patch("lemarche.conversations.models.TemplateTransactional.send_transactional_email")
+    @patch(
+        "lemarche.www.tenders.tasks.whitelist_recipient_list",
+        return_value=["siae2@example.com"],
+    )
+    @patch("django.utils.timezone.now")
+    def test_send_siae_interested_reminder_email_with_deadline(self, mock_now, _mock_whitelist, mock_send_email):
+        """Test that tenders with past deadline are excluded"""
+        # Assume today is Wednesday
+        now = timezone.make_aware(timezone.datetime(2025, 11, 12, 10, 0))
+        mock_now.return_value = now
+
+        # Create tender with past deadline
+        tender_past_deadline = TenderFactory(author=self.author, deadline_date=(now - timedelta(days=1)).date())
+
+        # Create TenderSiae for tender with past deadline
+        TenderSiaeFactory(
+            tender=tender_past_deadline,
+            siae=self.siae1,
+            email_send_date=now - timedelta(days=5),
+            detail_display_date=now - timedelta(days=4),
+            detail_contact_click_date=now - timedelta(days=2, hours=1),
+        )
+
+        # Create TenderSiae for tender without deadline
+        TenderSiaeFactory(
+            tender=self.tender,
+            siae=self.siae2,
+            email_send_date=now - timedelta(days=5),
+            detail_display_date=now - timedelta(days=4),
+            detail_contact_click_date=now - timedelta(days=2, hours=1),
+        )
+
+        out = StringIO()
+        call_command("send_siae_interested_reminder_emails", stdout=out)
+
+        output = out.getvalue()
+
+        # Check output - should only find the tender without deadline
+        self.assertIn("Found 1 TenderSiaes to remind", output)
+        self.assertIn(f"Tender {self.tender.id}: 1 TenderSiaes to remind", output)
+        self.assertNotIn(f"Tender {tender_past_deadline.id}", output)
+
+        # Verify that send_transactional_email was called only once
+        mock_send_email.assert_called_once()
+
+        # Verify the call arguments
+        call_args = mock_send_email.call_args
+        self.assertEqual(call_args.kwargs["recipient_email"], "siae2@example.com")
