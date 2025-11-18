@@ -545,7 +545,7 @@ class SiaeInterestReminderEmailCommandTest(TestCase):
     @patch("lemarche.conversations.models.TemplateTransactional.send_transactional_email")
     @patch(
         "lemarche.www.tenders.tasks.whitelist_recipient_list",
-        return_value=["siae1@example.com", "siae2@example.com", "siae3@example.com"],
+        return_value=["siae2@example.com"],
     )
     @patch("django.utils.timezone.now")
     def test_send_siae_interested_reminder_email_with_deadline(self, mock_now, _mock_whitelist, mock_send_email):
@@ -587,3 +587,7 @@ class SiaeInterestReminderEmailCommandTest(TestCase):
 
         # Verify that send_transactional_email was called only once
         mock_send_email.assert_called_once()
+
+        # Verify the call arguments
+        call_args = mock_send_email.call_args
+        self.assertEqual(call_args.kwargs["recipient_email"], "siae2@example.com")
