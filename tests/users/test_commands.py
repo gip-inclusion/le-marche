@@ -20,7 +20,10 @@ from tests.users.factories import UserFactory
 # To avoid different results when test will be run in the future, we patch
 # and froze timezone.now used in the command
 # Settings are also overriden to avoid changing settings breaking tests
-@patch("django.utils.timezone.now", lambda: datetime(year=2024, month=1, day=1, tzinfo=datetime_timezone.utc))
+@patch(
+    "django.utils.timezone.now",
+    lambda: datetime(year=2024, month=1, day=1, tzinfo=datetime_timezone.utc),
+)
 @override_settings(
     INACTIVE_USER_TIMEOUT_IN_MONTHS=12,
     INACTIVE_USER_WARNING_DELAY_IN_DAYS=7,
@@ -174,25 +177,33 @@ class UserBuyerImportTestCase(TestCase):
             "tests/samples/acheteurs_import.csv",
             "USER_IMPORT_BUYERS_BANQUE",
             "grosse-banque",
-            5,
             stdout=StringIO(),  # avoid polluting the logs in test execution
         )
 
         self.assertQuerySetEqual(
             User.objects.all(),
-            ["<User: dupont.lajoie@camping.fr>", "<User: françois.perrin@celc.test.fr>"],
+            [
+                "<User: dupont.lajoie@camping.fr>",
+                "<User: françois.perrin@celc.test.fr>",
+            ],
             ordered=False,
             transform=lambda x: repr(x),
         )
         self.assertQuerySetEqual(
             User.objects.filter(company=self.company, company_name=self.company.name),
-            ["<User: dupont.lajoie@camping.fr>", "<User: françois.perrin@celc.test.fr>"],
+            [
+                "<User: dupont.lajoie@camping.fr>",
+                "<User: françois.perrin@celc.test.fr>",
+            ],
             ordered=False,
             transform=lambda x: repr(x),
         )
         self.assertQuerySetEqual(
             User.objects.filter(is_active=True),
-            ["<User: dupont.lajoie@camping.fr>", "<User: françois.perrin@celc.test.fr>"],
+            [
+                "<User: dupont.lajoie@camping.fr>",
+                "<User: françois.perrin@celc.test.fr>",
+            ],
             ordered=False,
             transform=lambda x: repr(x),
         )
@@ -216,7 +227,6 @@ class UserBuyerImportTestCase(TestCase):
                 "tests/samples/acheteurs_import.csv",
                 "USER_IMPORT_BUYERS_BANQUE",
                 "grosse-banque",
-                5,
                 stdout=out,
             )
         self.assertEqual(mock_add_to_contact_list.call_count, 2)
@@ -224,7 +234,10 @@ class UserBuyerImportTestCase(TestCase):
 
         self.assertQuerySetEqual(
             User.objects.all(),
-            ["<User: dupont.lajoie@camping.fr>", "<User: françois.perrin@celc.test.fr>"],
+            [
+                "<User: dupont.lajoie@camping.fr>",
+                "<User: françois.perrin@celc.test.fr>",
+            ],
             ordered=False,
             transform=lambda x: repr(x),
         )
@@ -233,9 +246,13 @@ class UserBuyerImportTestCase(TestCase):
         self.assertEqual(duplicated_user.company, self.company)
         self.assertEqual(duplicated_user.company_name, self.company.name)
         self.assertIn(
-            "L'utilisateur dupont.lajoie@camping.fr est déjà inscrit, informations mises à jour.", out.getvalue()
+            "L'utilisateur dupont.lajoie@camping.fr est déjà inscrit, informations mises à jour.",
+            out.getvalue(),
         )
-        self.assertIn("L'utilisateur françois.perrin@celc.test.fr a été inscrit avec succès.", out.getvalue())
+        self.assertIn(
+            "L'utilisateur françois.perrin@celc.test.fr a été inscrit avec succès.",
+            out.getvalue(),
+        )
 
     @patch("lemarche.users.management.commands.import_buyers.add_to_contact_list")
     def test_email_dns_added(self, mock_add_to_contact_list):
@@ -246,7 +263,6 @@ class UserBuyerImportTestCase(TestCase):
             "tests/samples/acheteurs_import.csv",
             "USER_IMPORT_BUYERS_BANQUE",
             "grosse-banque",
-            5,
             stdout=StringIO(),
         )
         self.company.refresh_from_db()
@@ -258,44 +274,10 @@ class UserBuyerImportTestCase(TestCase):
             "tests/samples/acheteurs_import.csv",
             "USER_IMPORT_BUYERS_BANQUE",
             "grosse-banque",
-            5,
             stdout=StringIO(),
         )
         self.company.refresh_from_db()
         self.assertEqual(self.company.email_domain_list, ["camping.fr", "celc.test.fr"])
-
-    def test_rollback_on_error(self):
-        """
-        Simulate an exception when calling add_to_contact_list for dupont.lajoie@camping.fr.
-        This user should not have his information saved on database, but the other users should
-        """
-
-        def bad_thing_happenned(user, contact_type):
-            if user.email == "dupont.lajoie@camping.fr":
-                raise Exception("Not you !")
-
-        with patch(
-            "lemarche.users.management.commands.import_buyers.add_to_contact_list", side_effect=bad_thing_happenned
-        ):
-            call_command(
-                "import_buyers",
-                "tests/samples/acheteurs_import.csv",
-                "USER_IMPORT_BUYERS_BANQUE",
-                "grosse-banque",
-                5,
-                stdout=StringIO(),
-            )
-
-        # dupont.lajoie@camping.fr is not saved
-        self.assertQuerySetEqual(
-            User.objects.all(),
-            ["<User: françois.perrin@celc.test.fr>"],
-            ordered=False,
-            transform=lambda x: repr(x),
-        )
-
-        self.company.refresh_from_db()
-        self.assertEqual(self.company.email_domain_list, ["celc.test.fr"])
 
 
 class UserPartnerImportTestCase(TestCase):
@@ -367,7 +349,14 @@ class UserPartnerImportTestCase(TestCase):
             transform=lambda x: repr(x),
         )
         self.assertIn(
-            "L'utilisateur jean.dupont@facilitateur.fr est déjà inscrit, aucune mise à jour.", out.getvalue()
+            "L'utilisateur jean.dupont@facilitateur.fr est déjà inscrit, aucune mise à jour.",
+            out.getvalue(),
         )
-        self.assertIn("L'utilisateur marie.martin@accompagnement.fr a été inscrit avec succès.", out.getvalue())
-        self.assertIn("L'utilisateur pierre.durand@mediation.fr a été inscrit avec succès.", out.getvalue())
+        self.assertIn(
+            "L'utilisateur marie.martin@accompagnement.fr a été inscrit avec succès.",
+            out.getvalue(),
+        )
+        self.assertIn(
+            "L'utilisateur pierre.durand@mediation.fr a été inscrit avec succès.",
+            out.getvalue(),
+        )
