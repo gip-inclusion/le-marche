@@ -38,11 +38,12 @@ class BaseImportUsersCommand(BaseCommand):
 
         for imported_user in imported_list:
             try:
-                with transaction.atomic():
-                    self._import_user(
-                        imported_user, template_code=options["template_code"], **self._get_extra_context(options)
-                    )
-                    self._post_import_user(imported_user, **self._get_extra_context(options))
+                self._import_user(
+                    imported_user,
+                    template_code=options["template_code"],
+                    **self._get_extra_context(options),
+                )
+                self._post_import_user(imported_user, **self._get_extra_context(options))
             except Exception as e:
                 self.stdout.write(f"Erreur lors de l'import de l'utilisateur {imported_user['EMAIL']}: {e}")
 
