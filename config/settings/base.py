@@ -141,6 +141,7 @@ LOCAL_APPS = [
     "lemarche.notes",
     "lemarche.cpv",
     "lemarche.purchases",
+    "lemarche.jobs",
     # API
     "lemarche.api",
     # Stats
