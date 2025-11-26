@@ -18,7 +18,8 @@ class SectorAppellationsViewTest(TestCase):
     def test_sector_appellations_view(self):
         url = reverse("jobs:sector-appellations")
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "")
 
         url = reverse("jobs:sector-appellations") + f"?sectors={self.sector.slug}"
         response = self.client.get(url)

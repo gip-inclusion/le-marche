@@ -19,7 +19,7 @@ class SectorAppellationsView(View):
         # getlist allows multiple ?sectors=slug1&sectors=slug2
         sectors_params = request.GET.getlist("sectors")
         if not sectors_params:
-            return HttpResponse("", status=400)
+            return HttpResponse("", status=200)
 
         # to avoid DoS
         if len(sectors_params) > 10:

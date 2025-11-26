@@ -1,0 +1,12 @@
+<div class="fr-mb-2w" id="sector-appellations-container">
+    {% if appellations %}
+        <label class="fr-label">Métiers concernés</label>
+        <ul>
+            {% for appellation in appellations %}
+                <li>{{ appellation.name }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="fr-text--sm fr-text--secondary">Aucun poste associé à ce secteur</p>
+    {% endif %}
+</div>
