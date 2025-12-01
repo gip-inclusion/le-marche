@@ -778,6 +778,14 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             self.message_user(request, "Les structures concernées ont été mises à jour.")
             return HttpResponseRedirect("./#structures")  # redirect to structures sections
         if request.POST.get("_validate_send_to_siaes"):
+            # Check if sectors are filled before validating
+            if obj.sectors.count() == 0:
+                self.message_user(
+                    request,
+                    "Erreur : Les secteurs d'activité doivent être renseignés avant de valider le besoin.",
+                    level="ERROR",
+                )
+                return HttpResponseRedirect(".")
             obj.set_validated()
             if obj.is_followed_by_us:
                 try:
@@ -790,6 +798,14 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             self.message_user(request, "Ce dépôt de besoin a été validé. Il sera envoyé en temps voulu :)")
             return HttpResponseRedirect(".")
         if request.POST.get("_validate_send_to_commercial_partners"):
+            # Check if sectors are filled before validating
+            if obj.sectors.count() == 0:
+                self.message_user(
+                    request,
+                    "Erreur : Les secteurs d'activité doivent être renseignés avant de valider le besoin.",
+                    level="ERROR",
+                )
+                return HttpResponseRedirect(".")
             obj.send_to_commercial_partners_only = True
             obj.set_validated()
             # we don't need to send it in the crm, parteners manage them
