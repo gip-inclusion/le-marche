@@ -9,6 +9,7 @@ from django.test import RequestFactory, TestCase
 
 from lemarche.tenders.admin import TenderAdmin
 from lemarche.tenders.models import Tender
+from tests.sectors.factories import SectorFactory
 from tests.tenders.factories import TenderFactory
 from tests.users.factories import UserFactory
 
@@ -41,8 +42,33 @@ class TenderAdminTestCase(TestCase):
 
     @patch("lemarche.tenders.admin.api_brevo.create_deal")  # Mock the create_deal API call
     @patch("lemarche.tenders.admin.api_brevo.link_deal_with_contact_list")  # Mock the link_deal API call
+    def test_validate_send_to_siaes_not_validated_if_sectors_are_not_filled(self, mock_link_deal, mock_create_deal):
+        tender = TenderFactory(is_followed_by_us=False, sectors=[])  # Tender object
+        request = self.setUpRequest()
+
+        # Call the response_change method without the validation action enabled
+        response = self.admin.response_change(request, tender)
+
+        # Check that the create_deal and link_deal functions were not called
+        mock_create_deal.assert_not_called()
+        mock_link_deal.assert_not_called()
+
+        # Verify the response
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(".", response.url)
+
+        # Verify the flash messages
+        messages = list(get_messages(request))
+        self.assertEqual(len(messages), 1)  # Expecting only one message
+        self.assertEqual(
+            str(messages[0]), "Erreur : Les secteurs d'activité doivent être renseignés avant de valider le besoin."
+        )
+
+    @patch("lemarche.tenders.admin.api_brevo.create_deal")  # Mock the create_deal API call
+    @patch("lemarche.tenders.admin.api_brevo.link_deal_with_contact_list")  # Mock the link_deal API call
     def test_validate_send_to_siaes_not_synch_brevo(self, mock_link_deal, mock_create_deal):
-        tender = TenderFactory(is_followed_by_us=False)  # Tender object
+        sectors = SectorFactory.create_batch(3)
+        tender = TenderFactory(is_followed_by_us=False, sectors=sectors)  # Tender object
         request = self.setUpRequest()
 
         # Call the response_change method without the validation action enabled
@@ -64,7 +90,8 @@ class TenderAdminTestCase(TestCase):
     @patch("lemarche.tenders.admin.api_brevo.create_deal")  # Mock the create_deal API call
     @patch("lemarche.tenders.admin.api_brevo.link_deal_with_contact_list")  # Mock the link_deal API call
     def test_validate_send_to_siaes_with_sync_brevo(self, mock_link_deal, mock_create_deal):
-        tender = TenderFactory(is_followed_by_us=True)  # Tender object
+        sectors = SectorFactory.create_batch(3)
+        tender = TenderFactory(is_followed_by_us=True, sectors=sectors)  # Tender object
         request = self.setUpRequest()
 
         # Call the response_change method
