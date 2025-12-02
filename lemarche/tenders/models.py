@@ -467,7 +467,7 @@ class Tender(models.Model):
         "sectors.Sector",
         verbose_name="Secteurs d'activité",
         related_name="tenders",
-        blank=False,
+        blank=True,
         help_text="Sélectionnez un ou plusieurs secteurs d'activité",
     )
     location: Perimeter = models.ForeignKey(
