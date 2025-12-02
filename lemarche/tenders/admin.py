@@ -563,7 +563,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     class Media:
         js = ["/static/js/admin_tender_confirmation.js"]
 
-    def handle_email_sent_for_modification(self, request, obj):
+    def _handle_email_sent_for_modification(self, request, obj):
         """
         Send an email to the author and set some fields with 'set_modification_request'
         Display an error message if the email can't be sent
@@ -773,54 +773,82 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         """
         Catch submit of custom admin button to Validate or Resend Tender
         """
-        if request.POST.get("_calculate_tender"):
-            obj.set_siae_found_list()
-            self.message_user(request, "Les structures concernées ont été mises à jour.")
-            return HttpResponseRedirect("./#structures")  # redirect to structures sections
-        if request.POST.get("_validate_send_to_siaes"):
-            # Check if sectors are filled before validating
-            if obj.sectors.count() == 0:
-                self.message_user(
-                    request,
-                    "Erreur : Les secteurs d'activité doivent être renseignés avant de valider le besoin.",
-                    level="ERROR",
-                )
-                return HttpResponseRedirect(".")
-            obj.set_validated()
-            if obj.is_followed_by_us:
-                try:
-                    api_brevo.create_deal(tender=obj, owner_email=request.user.email)
-                    # we link deal(tender) with author contact
-                    api_brevo.link_deal_with_contact_list(tender=obj)
-                    self.message_user(request, "Ce dépôt de besoin a été synchronisé avec Brevo")
-                except Exception as e:
-                    self.message_user(request, f"Erreur dans la synchronisation du DDB avec Brevo {str(e)}")
-            self.message_user(request, "Ce dépôt de besoin a été validé. Il sera envoyé en temps voulu :)")
-            return HttpResponseRedirect(".")
-        if request.POST.get("_validate_send_to_commercial_partners"):
-            # Check if sectors are filled before validating
-            if obj.sectors.count() == 0:
-                self.message_user(
-                    request,
-                    "Erreur : Les secteurs d'activité doivent être renseignés avant de valider le besoin.",
-                    level="ERROR",
-                )
-                return HttpResponseRedirect(".")
-            obj.send_to_commercial_partners_only = True
-            obj.set_validated()
-            # we don't need to send it in the crm, parteners manage them
-            self.message_user(request, "Ce dépôt de besoin a été validé. Il sera envoyé aux partenaires :)")
-            return HttpResponseRedirect(".")
-        if request.POST.get("_send_modification_request"):
-            return self.handle_email_sent_for_modification(request, obj)
-        if request.POST.get("_reject_tender"):
-            obj.set_rejected()
-            return self.handle_rejected_status(request, obj)
-        elif request.POST.get("_restart_tender"):
-            restart_send_tender_task(tender=obj)
-            self.message_user(request, "Ce dépôt de besoin a été renvoyé aux structures")
-            return HttpResponseRedirect(".")
+        # Delegate handling of each custom action to dedicated methods
+        action_handlers = [
+            ("_calculate_tender", self._handle_calculate_tender),
+            ("_validate_send_to_siaes", self._handle_validate_send_to_siaes),
+            ("_validate_send_to_commercial_partners", self._handle_validate_send_to_commercial_partners),
+            ("_send_modification_request", self._handle_email_sent_for_modification),
+            ("_reject_tender", self._handle_reject_tender),
+            ("_restart_tender", self._handle_restart_tender),
+        ]
+
+        for action_key, handler in action_handlers:
+            if request.POST.get(action_key):
+                return handler(request, obj)
+
         return super().response_change(request, obj)
+
+    def _handle_calculate_tender(self, request, obj: Tender):
+        """Handle calculate tender button action."""
+        obj.set_siae_found_list()
+        self.message_user(request, "Les structures concernées ont été mises à jour.")
+        # redirect to structures sections
+        return HttpResponseRedirect(request.path + "#structures")
+
+    def _handle_validate_send_to_siaes(self, request, obj: Tender):
+        """Handle validation and send to SIAEs action."""
+        # Check if sectors are filled before validating
+        if obj.sectors.count() == 0:
+            self.message_user(
+                request,
+                "Erreur : Les secteurs d'activité doivent être renseignés avant de valider le besoin.",
+                level="ERROR",
+            )
+            # redirect to change page and force scroll to top (override any "#structures" fragment)
+            return HttpResponseRedirect(request.path + "#")
+        obj.set_validated()
+        if obj.is_followed_by_us:
+            try:
+                api_brevo.create_deal(tender=obj, owner_email=request.user.email)
+                # we link deal(tender) with author contact
+                api_brevo.link_deal_with_contact_list(tender=obj)
+                self.message_user(request, "Ce dépôt de besoin a été synchronisé avec Brevo")
+            except Exception as e:
+                self.message_user(request, f"Erreur dans la synchronisation du DDB avec Brevo {str(e)}")
+        self.message_user(request, "Ce dépôt de besoin a été validé. Il sera envoyé en temps voulu :)")
+        # redirect to change page and force scroll to top (override any "#structures" fragment)
+        return HttpResponseRedirect(request.path + "#")
+
+    def _handle_validate_send_to_commercial_partners(self, request, obj: Tender):
+        """Handle validation and send only to commercial partners action."""
+        # Check if sectors are filled before validating
+        if obj.sectors.count() == 0:
+            self.message_user(
+                request,
+                "Erreur : Les secteurs d'activité doivent être renseignés avant de valider le besoin.",
+                level="ERROR",
+            )
+            # redirect to change page and force scroll to top (override any "#structures" fragment)
+            return HttpResponseRedirect(request.path + "#")
+        obj.send_to_commercial_partners_only = True
+        obj.set_validated()
+        # we don't need to send it in the crm, partners manage them
+        self.message_user(request, "Ce dépôt de besoin a été validé. Il sera envoyé aux partenaires :)")
+        # redirect to change page and force scroll to top (override any "#structures" fragment)
+        return HttpResponseRedirect(request.path + "#")
+
+    def _handle_reject_tender(self, request, obj: Tender):
+        """Handle reject tender action."""
+        obj.set_rejected()
+        return self.handle_rejected_status(request, obj)
+
+    def _handle_restart_tender(self, request, obj: Tender):
+        """Handle restart tender action."""
+        restart_send_tender_task(tender=obj)
+        self.message_user(request, "Ce dépôt de besoin a été renvoyé aux structures")
+        # redirect to change page and force scroll to top (override any "#structures" fragment)
+        return HttpResponseRedirect(request.path + "#")
 
     def extra_data_display(self, instance: Tender = None):
         if instance:
