@@ -104,9 +104,6 @@
       {% include "includes/_tracker_tarteaucitron.html" %}
       {% include "includes/_tracker_itou.html" %}
     {% endif %}
-    {% if request.path == "/" %}
-      {% include "includes/_tally_buyer_poll.html" %}
-    {% endif %}
     {% block extra_js %}
     {% endblock extra_js %}
   </body>
