@@ -21,7 +21,7 @@ urlpatterns = [
     path("profil/prestataires/", include("lemarche.www.dashboard_siaes.urls")),
     path("profil/reseaux/", include("lemarche.www.dashboard_networks.urls")),
     path("profil/listes-dachats/", include("lemarche.www.dashboard_favorites.urls")),
-    path("jobs/", include("lemarche.www.jobs.urls")),
+    path("metiers/", include("lemarche.www.jobs.urls")),
     # sitemap
     path("sitemap.xml", sitemap, name="sitemap"),  # appears above the default Wagtail page serving route
     # admin blog

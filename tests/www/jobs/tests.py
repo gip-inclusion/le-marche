@@ -5,6 +5,30 @@ from tests.jobs.factories import AppellationFactory
 from tests.sectors.factories import SectorFactory
 
 
+class SectorAppellationsFormViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.sector = SectorFactory()
+        cls.appellation = AppellationFactory(sectors=[cls.sector])
+
+    def test_demo_page_loads(self):
+        """Test that the demo page loads successfully."""
+        url = reverse("jobs:sector-appellations-form")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Secteurs d'activité et métiers correspondants")
+        self.assertContains(response, "Sélectionnez des secteurs")
+
+    def test_demo_page_has_form(self):
+        """Test that the demo page contains the sector selection form."""
+        url = reverse("jobs:sector-appellations-form")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="appellations-container"')
+        self.assertContains(response, "hx-get=")
+        self.assertContains(response, "multiselect:change")
+
+
 class SectorAppellationsViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
