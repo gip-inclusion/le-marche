@@ -7,6 +7,7 @@ from django.utils.http import urlsafe_base64_encode
 
 from lemarche.conversations.models import TemplateTransactional
 from lemarche.users.models import User
+from lemarche.utils.apis import api_slack
 from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url
 
@@ -20,7 +21,7 @@ def generate_password_reset_link(user):
     return f"https://{domain}{reset_path}"
 
 
-def send_signup_notification_email(user):
+def notify_team_new_user(user):
     email_subject = f"Marché de l'inclusion : inscription d'un nouvel utilisateur ({user.get_kind_display()})"
     email_body = render_to_string(
         "auth/signup_notification_email_body.txt",
@@ -39,6 +40,12 @@ def send_signup_notification_email(user):
         email_body=email_body,
         recipient_list=[settings.NOTIFY_EMAIL],
     )
+
+    # send slack notification if the channel is set and the user is a siae
+    if settings.SLACK_WEBHOOK_C4_NEW_SIAE_USER_NOTIFICATION_CHANNEL and user.kind == User.KIND_SIAE:
+        api_slack.send_message_to_channel(
+            text=email_body, service_id=settings.SLACK_WEBHOOK_C4_NEW_SIAE_USER_NOTIFICATION_CHANNEL
+        )
 
 
 def send_new_user_password_reset_link(user: User, template_code: str = "NEW_USER_PASSWORD_RESET"):
