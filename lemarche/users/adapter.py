@@ -6,11 +6,10 @@ from lemarche.users.models import User
 from lemarche.utils.apis import api_brevo
 from lemarche.utils.emails import add_to_contact_list
 from lemarche.utils.urls import get_safe_url
-from lemarche.www.auth.tasks import send_signup_notification_email
+from lemarche.www.auth.tasks import notify_team_new_user
 
 
 class LeMarcheAccountAdapter(DefaultAccountAdapter):
-
     def get_login_redirect_url(self, request):
         """
         This redirect is called only if the user already has a verifier email.
@@ -74,7 +73,7 @@ class LeMarcheAccountAdapter(DefaultAccountAdapter):
                 # Log the error but do not raise it, as this is not critical for user creation
                 # no need to add more logging here, as the BrevoApiError is already logged in add_to_contact_list
                 pass
-            # signup notification email for the team
-            send_signup_notification_email(user)
+            # signup notification email and slack notification for the team
+            notify_team_new_user(user)
 
         return user
