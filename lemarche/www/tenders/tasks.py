@@ -735,8 +735,8 @@ def send_super_siaes_email_to_author(tender: Tender, top_siaes: list[Siae]):
                     "NAME": siae.name_display,
                     "KIND": siae.get_kind_display(),
                     "CONTACT_NAME": siae.contact_full_name,
-                    "CONTACT_N": siae.contact_phone_display,
-                    "contact_email": siae.contact_email,
+                    "CONTACT_PHONE": siae.contact_phone_display,
+                    "CONTACT_EMAIL": siae.contact_email,
                 }
             )
 
