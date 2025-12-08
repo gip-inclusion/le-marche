@@ -462,7 +462,6 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
         # init
         user = self.request.user
         user_kind = user.kind if user.is_authenticated else "anonymous"
-        show_nps = self.request.GET.get("nps", None)
         # enrich context
         context["parent_title"] = (
             settings.TENDER_DETAIL_TITLE_SIAE if user_kind == User.KIND_SIAE else settings.TENDER_DETAIL_TITLE_OTHERS
@@ -511,8 +510,6 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
                     ).exists()
 
                 context["is_new_for_siaes"] = self.is_new_for_siaes
-                if show_nps:
-                    context["nps_form_id"] = settings.TALLY_SIAE_NPS_FORM_ID
             elif user.kind == User.KIND_PARTNER:
                 context["user_partner_can_display_tender_contact_details"] = user.can_display_tender_contact_details
             else:
@@ -631,7 +628,6 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrTenderSiaeUUIDParamMixi
 
     def get_success_url(self, tender_siae_uuid=None):
         success_url = reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
-        success_url += "?nps=true"
         if tender_siae_uuid:
             success_url += f"&tender_siae_uuid={tender_siae_uuid}"
         return success_url
@@ -947,7 +943,6 @@ class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, Updat
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["tender"] = self.object
-        context["nps_form_id"] = settings.TALLY_BUYER_NPS_FORM_ID
         context["breadcrumb_data"] = {
             "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
             "links": [
