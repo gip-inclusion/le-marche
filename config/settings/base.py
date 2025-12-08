@@ -777,8 +777,6 @@ FACILITATOR_LIST = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRtavj-NHym
 FORM_PARTENAIRES = (
     "https://docs.google.com/forms/d/e/1FAIpQLScx1k-UJ-962_rSgPJGabc327gGjFUho6ypgcZHCubuwTl7Lg/viewform"
 )
-TALLY_BUYER_NPS_FORM_ID = env.str("TALLY_BUYER_NPS_FORM_ID", "")
-TALLY_SIAE_NPS_FORM_ID = env.str("TALLY_SIAE_NPS_FORM_ID", "")
 PARTNER_APPROCH_USER_ID = env.int("PARTNER_APPROCH_USER_ID", 0)
 GOOGLE_AGENDA_IFRAME_URL = env.str("GOOGLE_AGENDA_IFRAME_URL", "")
 
