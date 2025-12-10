@@ -27,6 +27,7 @@ def notify_team_new_user(user):
         "auth/signup_notification_email_body.txt",
         {
             "user_email": user.email,
+            "user_phone": user.phone,
             "user_id": user.id,
             "user_last_name": user.last_name,
             "user_first_name": user.first_name,
