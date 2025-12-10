@@ -1,0 +1,22 @@
+{% load static %}
+<dialog id="invite-colleagues-modal" class="fr-modal" aria-labelledby="invite-colleagues-modal-title">
+    <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                    <form id="invite-colleagues-form"
+                          hx-post="{% url 'dashboard:invite_colleagues' %}"
+                          method="post"
+                          hx-swap="innerHTML"
+                          hx-target="#invite-colleagues-form-container"
+                        >
+                        {% csrf_token %}
+                        <div id="invite-colleagues-form-container">
+                            {% include "dashboard/_invite_colleagues_form.html" %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</dialog>

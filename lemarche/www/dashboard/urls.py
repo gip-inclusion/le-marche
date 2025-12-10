@@ -4,6 +4,7 @@ from lemarche.www.dashboard.views import (
     DashboardHomeView,
     DisabledEmailEditView,
     InclusivePurchaseStatsDashboardView,
+    InviteColleaguesView,
     ProfileEditView,
 )
 
@@ -15,6 +16,7 @@ urlpatterns = [
     path("modifier/", ProfileEditView.as_view(), name="profile_edit"),
     path("notifications/", DisabledEmailEditView.as_view(), name="notifications_edit"),
     path("part-achat-inclusif/", InclusivePurchaseStatsDashboardView.as_view(), name="inclusive_purchase_stats"),
+    path("inviter-collegues/", InviteColleaguesView.as_view(), name="invite_colleagues"),
     # FavoriteList
     # see dashboard_favorites/urls.py
     # Network

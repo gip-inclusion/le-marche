@@ -10,8 +10,17 @@
 {% block content %}
     <div class="fr-container">
         <div class="fr-grid-row">
-            <div class="fr-col-12">
+            <div class="fr-col-12 fr-col-lg-8">
                 <h1>{{ DASHBOARD_TITLE }}</h1>
+            </div>
+            <div class="fr-col-12 fr-col-lg-4 fr-mt-4w fr-mt-lg-0">
+                <div class="fr-btns-group fr-btns-group--right">
+                    <button class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-mail-line"
+                            aria-controls="invite-colleagues-modal"
+                            data-fr-opened="true">
+                        Inviter mes collègues
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -102,4 +111,7 @@
             </div>
         </div>
     </div>
+    {% if invite_colleagues_email_formset %}
+        {% include "dashboard/_invite_colleagues_modal.html" %}
+    {% endif %}
 {% endblock content %}

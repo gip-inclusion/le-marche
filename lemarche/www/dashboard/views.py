@@ -1,8 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.text import slugify
+from django.views import View
 from django.views.generic import DetailView, FormView, UpdateView
 from django_filters.views import FilterView
 
@@ -14,7 +16,8 @@ from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.www.dashboard.filters import PurchaseFilterSet
-from lemarche.www.dashboard.forms import DisabledEmailEditForm, ProfileEditForm
+from lemarche.www.dashboard.forms import DisabledEmailEditForm, InviteColleaguesFormSet, ProfileEditForm
+from lemarche.www.dashboard.tasks import send_user_invite_colleagues_email
 
 
 SLUG_RESSOURCES_CAT_SIAES = "solutions"
@@ -84,6 +87,7 @@ class DashboardHomeView(LoginRequiredMixin, DetailView):
             context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
             context["siae_count"] = Siae.objects.is_live().count()
             context["tender_count"] = Tender.objects.sent().count() + 30  # historic number (before form)
+            context["invite_colleagues_email_formset"] = InviteColleaguesFormSet()
         return context
 
 
@@ -221,3 +225,49 @@ class DisabledEmailEditView(LoginRequiredMixin, SuccessMessageMixin, FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+
+
+class InviteColleaguesView(LoginRequiredMixin, View):
+    """
+    View to handle colleague invitations for buyer accounts.
+    Sends transactional emails via Brevo to invited colleagues.
+    """
+
+    template_name = "dashboard/_invite_colleagues_form.html"
+
+    def post(self, request, *args, **kwargs):
+        add_field = "add" in request.POST
+
+        if add_field:
+            # Get existing data and create a new formset with one extra form
+            data = request.POST.copy()
+            total_forms = int(data.get("form-TOTAL_FORMS", 3))
+            data["form-TOTAL_FORMS"] = total_forms + 1
+            data[f"form-{total_forms}-email"] = ""
+
+            formset = InviteColleaguesFormSet(data)
+            return render(request, self.template_name, {"invite_colleagues_email_formset": formset})
+
+        formset = InviteColleaguesFormSet(request.POST)
+        if formset.is_valid():
+            # Get all non-empty emails
+            emails = [form.cleaned_data["email"] for form in formset if form.cleaned_data.get("email")]
+
+            if not emails:
+                # If no emails provided, return formset with a general error
+                return render(
+                    request,
+                    self.template_name,
+                    {
+                        "invite_colleagues_email_formset": formset,
+                        "error_message": "Veuillez saisir au moins une adresse email.",
+                    },
+                )
+
+            # Send invitations one by one
+            for email in emails:
+                send_user_invite_colleagues_email(email)
+
+            return render(request, "dashboard/_invite_colleagues_success.html", {"emails_count": len(emails)})
+
+        return render(request, self.template_name, {"invite_colleagues_email_formset": formset})

@@ -74,3 +74,24 @@ class DisabledEmailEditForm(forms.Form):
         DisabledEmail.objects.exclude(pk__in=[de.pk for de in disabled_emails]).delete()
 
         update_contact_email_blacklisted(self.user.email, disabled_emails_marketing)
+
+
+class EmailForm(forms.Form):
+    email = forms.EmailField(
+        required=False,
+        widget=forms.EmailInput(attrs={"placeholder": "moncollegue@entreprise.com"}),
+        label="Email",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["email"].widget.group_class = "fr-input-group fr-mt-2w"
+
+
+# Create a formset with a minimum of 3 forms and a maximum of 10
+InviteColleaguesFormSet = forms.formset_factory(
+    EmailForm,
+    extra=3,
+    max_num=10,
+    validate_max=True,
+)
