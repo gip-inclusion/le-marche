@@ -25,10 +25,4 @@
             }, 500);
         });
     }
-
-    // Also save timestamp when user manually opens the modal
-    const openButton = document.getElementById('invite-colleagues-btn');
-    if (openButton) {
-        openButton.addEventListener('click', saveModalShowTimestamp);
-    }
 })();
