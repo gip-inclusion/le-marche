@@ -227,7 +227,7 @@ class DisabledEmailEditView(LoginRequiredMixin, SuccessMessageMixin, FormView):
         return super().form_valid(form)
 
 
-class InviteColleaguesView(LoginRequiredMixin, View):
+class InviteColleaguesView(View):
     """
     View to handle colleague invitations for buyer accounts.
     Sends transactional emails via Brevo to invited colleagues.

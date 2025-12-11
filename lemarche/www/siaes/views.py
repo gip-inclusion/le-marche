@@ -26,6 +26,7 @@ from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
 from lemarche.www.conversations.forms import ContactForm
+from lemarche.www.dashboard.forms import InviteColleaguesFormSet
 from lemarche.www.siaes.forms import SiaeFavoriteForm, SiaeFilterForm, SiaeSiretFilterForm
 
 
@@ -126,6 +127,9 @@ class SiaeSearchResultsView(FormMixin, ListView):
         context["siaes_json"] = serialize(
             "geojson", context["siaes"], geometry_field="coords", fields=("id", "name", "brand", "slug")
         )
+
+        if self.request.GET:  # form submitted or show_invite_colleagues_modal is in the GET params
+            context["invite_colleagues_email_formset"] = InviteColleaguesFormSet()
         return context
 
 
@@ -339,7 +343,7 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
     def get_success_message(self, cleaned_data, siae, favorite_list):
         return format_html(
-            "<strong>{}</strong> a été ajoutée à " "votre liste d'achat <strong>{}</strong>.",
+            "<strong>{}</strong> a été ajoutée à votre liste d'achat <strong>{}</strong>.",
             siae.name_display,
             favorite_list.name,
         )
