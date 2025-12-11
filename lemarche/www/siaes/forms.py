@@ -11,6 +11,7 @@ from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae, SiaeActivity, SiaeClientReference, SiaeGroup
 from lemarche.tenders.models import Tender
+from lemarche.users.validators import professional_email_validator
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.utils.widgets import CustomSelectMultiple
 from lemarche.www.siaes.widgets import CustomLocationWidget
@@ -473,3 +474,25 @@ class SiaeSiretFilterForm(forms.Form):
         siret = self.cleaned_data["siret"]
         siret = siret.replace(" ", "")
         return siret
+
+
+class EmailForm(forms.Form):
+    email = forms.EmailField(
+        required=False,
+        widget=forms.EmailInput(attrs={"placeholder": "moncollegue@entreprise.com"}),
+        label="Email",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["email"].widget.group_class = "fr-input-group fr-mt-2w"
+        self.fields["email"].validators.append(professional_email_validator)
+
+
+# Create a formset with a minimum of 3 forms and a maximum of 10
+InviteColleaguesFormSet = forms.formset_factory(
+    EmailForm,
+    extra=3,
+    max_num=10,
+    validate_max=True,
+)

@@ -216,6 +216,12 @@
         </div>
     </div>
     {% include "includes/_super_siae_arguments_badge.html" %}
+    {% if invite_colleagues_email_formset %}
+        <!-- buttons needed for modal to be triggered -->
+        <button class="fr-hidden" aria-controls="invite-colleagues-modal" id="invite-colleagues-btn" data-fr-opened="false"></button>
+        {% include "siaes/_invite_colleagues_modal.html" %}
+        <script src="{% static 'js/invite_colleagues_modal.js' %}"></script>
+    {% endif %}
 {% endblock content %}
 {% block modals %}
     {% include "auth/_login_or_signup_modal.html" %}

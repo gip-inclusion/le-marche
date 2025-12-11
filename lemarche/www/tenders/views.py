@@ -334,7 +334,7 @@ class TenderCreateMultiStepView(SessionWizardView):
     def get_success_url(self):
         # if self.request.user.is_authenticated and not self.request.user.kind == User.KIND_SIAE:
         #     return reverse_lazy("tenders:list")  # super().get_success_url() doesn't work if called from CSRF error
-        return reverse_lazy("siae:search_results")
+        return reverse_lazy("siae:search_results") + "?show_invite_colleagues_modal=true"
 
     def get_success_message(self, cleaned_data, tender, is_draft):
         return mark_safe(

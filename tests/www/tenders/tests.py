@@ -129,7 +129,10 @@ class TenderCreateViewTest(TestCase):
         mock_get_user.return_value = user
 
         tenders_step_data = self._generate_fake_data_form({"general-title": title})
-        self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+        self._check_every_step(
+            tenders_step_data,
+            final_redirect_page=reverse("siae:search_results") + "?show_invite_colleagues_modal=true",
+        )
         tender = Tender.objects.get(title=title)
 
         return tender, user
@@ -154,7 +157,10 @@ class TenderCreateViewTest(TestCase):
     def test_tender_wizard_form_all_good_authenticated(self):
         tenders_step_data = self._generate_fake_data_form()
         self.client.force_login(self.user_buyer)
-        final_response = self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+        final_response = self._check_every_step(
+            tenders_step_data,
+            final_redirect_page=reverse("siae:search_results") + "?show_invite_colleagues_modal=true",
+        )
         tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
@@ -182,7 +188,10 @@ class TenderCreateViewTest(TestCase):
         # remove required field in survey
         tenders_step_data[3].pop("survey-scale_marche_useless")
         with self.assertRaises(AssertionError):
-            self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+            self._check_every_step(
+                tenders_step_data,
+                final_redirect_page=reverse("siae:search_results") + "?show_invite_colleagues_modal=true",
+            )
 
     def test_tender_wizard_form_external_link_validation(self):
         self.client.force_login(self.user_buyer)
@@ -190,7 +199,10 @@ class TenderCreateViewTest(TestCase):
         # set a wrong external_link (should be a valid url)
         tenders_step_data[1]["detail-external_link"] = "test"
         with self.assertRaises(AssertionError):
-            self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+            self._check_every_step(
+                tenders_step_data,
+                final_redirect_page=reverse("siae:search_results") + "?show_invite_colleagues_modal=true",
+            )
 
     def test_tender_wizard_form_tender_with_external_link_response_kind_validation(self):
         self.client.force_login(self.user_buyer)
@@ -199,7 +211,10 @@ class TenderCreateViewTest(TestCase):
         # set a wrong reponse_kind (should have RESPONSE_KIND_EXTERNAL)
         tenders_step_data[2]["contact-response_kind"] = []
         with self.assertRaises(AssertionError):
-            self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+            self._check_every_step(
+                tenders_step_data,
+                final_redirect_page=reverse("siae:search_results") + "?show_invite_colleagues_modal=true",
+            )
 
     def test_tender_wizard_form_external_link_required_for_tender(self):
         self.client.force_login(self.user_buyer)
@@ -207,7 +222,10 @@ class TenderCreateViewTest(TestCase):
         # remove required field in survey
         tenders_step_data[1].pop("detail-external_link")
         with self.assertRaises(AssertionError):
-            self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+            self._check_every_step(
+                tenders_step_data,
+                final_redirect_page=reverse("siae:search_results") + "?show_invite_colleagues_modal=true",
+            )
 
     def test_tender_wizard_form_contact_response_required_for_project(self):
         self.client.force_login(self.user_buyer)
@@ -215,12 +233,18 @@ class TenderCreateViewTest(TestCase):
         # remove required field in survey
         tenders_step_data[2].pop("contact-response_kind")
         with self.assertRaises(AssertionError):
-            self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+            self._check_every_step(
+                tenders_step_data,
+                final_redirect_page=reverse("siae:search_results") + "?show_invite_colleagues_modal=true",
+            )
 
     @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, contact_type, tender: None)
     def test_tender_wizard_form_all_good_anonymous(self):
         tenders_step_data = self._generate_fake_data_form()
-        final_response = self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+        final_response = self._check_every_step(
+            tenders_step_data,
+            final_redirect_page=reverse("siae:search_results") + "?show_invite_colleagues_modal=true",
+        )
         tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
@@ -239,7 +263,10 @@ class TenderCreateViewTest(TestCase):
     def test_tender_wizard_form_all_good_perimeters(self):
         self.client.force_login(self.user_buyer)
         tenders_step_data = self._generate_fake_data_form()
-        self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+        self._check_every_step(
+            tenders_step_data,
+            final_redirect_page=reverse("siae:search_results") + "?show_invite_colleagues_modal=true",
+        )
         tender: Tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
@@ -255,7 +282,10 @@ class TenderCreateViewTest(TestCase):
     @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, contact_type, tender: None)
     def test_tender_wizard_form_draft(self):
         tenders_step_data = self._generate_fake_data_form(_step_5={"is_draft": "1"})
-        final_response = self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+        final_response = self._check_every_step(
+            tenders_step_data,
+            final_redirect_page=reverse("siae:search_results") + "?show_invite_colleagues_modal=true",
+        )
         tender: Tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
@@ -280,7 +310,10 @@ class TenderCreateViewTest(TestCase):
             _step_2={"detail-questions_list": json.dumps(initial_data_questions_list)}  # json field
         )
 
-        self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+        self._check_every_step(
+            tenders_step_data,
+            final_redirect_page=reverse("siae:search_results") + "?show_invite_colleagues_modal=true",
+        )
         tender: Tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
@@ -362,7 +395,10 @@ class TenderCreateViewTest(TestCase):
 
         self.client.force_login(self.user_buyer)
 
-        self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+        self._check_every_step(
+            tenders_step_data,
+            final_redirect_page=reverse("siae:search_results") + "?show_invite_colleagues_modal=true",
+        )
 
         tender = Tender.objects.get(title=title)
         self.assertTrue(tender.attachment_one)
@@ -389,7 +425,10 @@ class TenderCreateViewTest(TestCase):
 
         self.client.force_login(self.user_buyer)
         try:
-            self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+            self._check_every_step(
+                tenders_step_data,
+                final_redirect_page=reverse("siae:search_results") + "?show_invite_colleagues_modal=true",
+            )
         except AssertionError as e:
             if "{'attachment_one': ['Format de fichier non[63 chars]DS']} != {}" in str(e):
                 # handle the specific assertion error
@@ -1238,7 +1277,6 @@ class TenderDetailViewTest(TestCase):
 
 
 class TenderDetailIncitativeMessageTestCase(TestCase):
-
     def setUp(self):
         self.siae_user_1 = UserFactory(kind=User.KIND_SIAE)
         self.tender_1 = TenderFactory(
@@ -1292,7 +1330,6 @@ class TenderDetailIncitativeMessageTestCase(TestCase):
 
 
 class TenderDetailLabelTestCase(TestCase):
-
     def setUp(self):
         siae = SiaeFactory()
         buyer_company = CompanyFactory(
@@ -2222,7 +2259,6 @@ class TenderQuestionAnswerTestCase(TestCase):
 
 
 class TenderSiaeDownloadViewTestCase(TestCase):
-
     def setUp(self):
         self.user = UserFactory(kind=User.KIND_BUYER)
 
@@ -2280,7 +2316,6 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         self.assertEqual(len(rows), 1)  # There is one kind ETTI siae in our sample data
 
     def test_filtering(self):
-
         with self.subTest(
             status="TARGETED"
         ):  # That status is implicit, it switches to targeted when no status is given
@@ -2371,7 +2406,6 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         self.assertEqual(sheet["C3"].value, "answer_for_q2_from_siae_2")
 
     def test_get_tender_siae_download_url(self):
-
         with self.subTest(status="ALL"):
             url = get_tender_siae_download_url(self.tender)
             response = self.client.get(url)
@@ -2419,7 +2453,6 @@ class TenderSiaeDownloadViewTestCase(TestCase):
 
 
 class TenderSiaeListLocalSiaeTestCase(TestCase):
-
     def setUp(self):
         buyer = UserFactory(kind=User.KIND_BUYER)
         self.client.force_login(buyer)
@@ -2440,7 +2473,6 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
         self.assertQuerySetEqual([siae_1, siae_2], response.context["siaes"], ordered=False)
 
     def test_local_badge_from_city(self):
-
         # Buyer chose a city in when creating the tender
         # Data here represents how a city is stored in the database with actual data
         # (some fields are not populated if it's a REGION or DEPARTMENT)

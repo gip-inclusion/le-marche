@@ -1,0 +1,54 @@
+{% load static dsfr_tags %}
+<div class="fr-modal__header">
+    <button class="fr-btn--close fr-btn" aria-controls="invite-colleagues-modal" title="Fermer">
+        Fermer
+    </button>
+</div>
+<div class="fr-modal__content">
+    <h1 id="invite-colleagues-modal-title" class="fr-modal__title">
+        Invitez vos collègues
+    </h1>
+    <p class="fr-text--sm fr-mb-4w">
+        Invitez vos collègues acheteurs et recevez un guide PDF pour apprendre les achats inclusifs 
+        ou bénéficiez d'une formation gratuite d'une heure aux achats inclusifs (au choix).
+    </p>
+
+    {% if error_message %}
+        <div class="fr-alert fr-alert--error fr-mb-4w">
+            <p class="fr-alert__title">Erreur</p>
+            <p>{{ error_message }}</p>
+        </div>
+    {% endif %}
+
+    {% include "includes/forms/_dsfr_formset.html" with formset=invite_colleagues_email_formset %}
+
+    {% if invite_colleagues_email_formset|length < invite_colleagues_email_formset.max_num %}
+        <div class="fr-mt-2w">
+            <button
+                name="add"
+                value="1"
+                type="submit"
+                class="fr-btn fr-btn--secondary"
+            >
+                Ajouter un autre collègue
+            </button>
+        </div>
+    {% endif %}
+</div>
+<div class="fr-modal__footer">
+    <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg">
+        <li>
+            <button class="fr-btn fr-btn--secondary" 
+                    aria-controls="invite-colleagues-modal"
+                    type="button">
+                Annuler
+            </button>
+        </li>
+        <li>
+            <button type="submit" 
+                    id="submit-invitations-btn"
+                    class="fr-btn">Terminé
+            </button>
+        </li>
+    </ul>
+</div>

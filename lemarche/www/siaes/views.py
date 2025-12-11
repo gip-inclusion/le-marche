@@ -10,11 +10,11 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.core.serializers import serialize
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.html import format_html
+from django.views import View
 from django.views.generic import DetailView, ListView, TemplateView, UpdateView
-from django.views.generic.base import View
 from django.views.generic.edit import FormMixin
 
 from lemarche.conversations.models import Conversation
@@ -26,7 +26,8 @@ from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
 from lemarche.www.conversations.forms import ContactForm
-from lemarche.www.siaes.forms import SiaeFavoriteForm, SiaeFilterForm, SiaeSiretFilterForm
+from lemarche.www.siaes.forms import InviteColleaguesFormSet, SiaeFavoriteForm, SiaeFilterForm, SiaeSiretFilterForm
+from lemarche.www.siaes.tasks import send_user_invite_colleagues_email
 
 
 CURRENT_SEARCH_QUERY_COOKIE_NAME = "current_search"
@@ -126,6 +127,9 @@ class SiaeSearchResultsView(FormMixin, ListView):
         context["siaes_json"] = serialize(
             "geojson", context["siaes"], geometry_field="coords", fields=("id", "name", "brand", "slug")
         )
+
+        if self.request.GET:  # form submitted or show_invite_colleagues_modal is in the GET params
+            context["invite_colleagues_email_formset"] = InviteColleaguesFormSet()
         return context
 
 
@@ -339,7 +343,7 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
     def get_success_message(self, cleaned_data, siae, favorite_list):
         return format_html(
-            "<strong>{}</strong> a été ajoutée à " "votre liste d'achat <strong>{}</strong>.",
+            "<strong>{}</strong> a été ajoutée à votre liste d'achat <strong>{}</strong>.",
             siae.name_display,
             favorite_list.name,
         )
@@ -432,3 +436,49 @@ class SiaeSiretSearchView(TemplateView):
         ctx["status_message"] = message
         ctx["logo_list"] = logo_list
         return ctx
+
+
+class InviteColleaguesView(View):
+    """
+    View to handle colleague invitations for buyer accounts.
+    Sends transactional emails via Brevo to invited colleagues.
+    """
+
+    template_name = "siaes/_invite_colleagues_form.html"
+
+    def post(self, request, *args, **kwargs):
+        add_field = "add" in request.POST
+
+        if add_field:
+            # Get existing data and create a new formset with one extra form
+            data = request.POST.copy()
+            total_forms = int(data.get("form-TOTAL_FORMS", 3))
+            data["form-TOTAL_FORMS"] = total_forms + 1
+            data[f"form-{total_forms}-email"] = ""
+
+            formset = InviteColleaguesFormSet(data)
+            return render(request, self.template_name, {"invite_colleagues_email_formset": formset})
+
+        formset = InviteColleaguesFormSet(request.POST)
+        if formset.is_valid():
+            # Get all non-empty emails
+            emails = [form.cleaned_data["email"] for form in formset if form.cleaned_data.get("email")]
+
+            if not emails:
+                # If no emails provided, return formset with a general error
+                return render(
+                    request,
+                    self.template_name,
+                    {
+                        "invite_colleagues_email_formset": formset,
+                        "error_message": "Veuillez saisir au moins une adresse email.",
+                    },
+                )
+
+            # Send invitations one by one
+            for email in emails:
+                send_user_invite_colleagues_email(email)
+
+            return render(request, "siaes/_invite_colleagues_success.html", {"emails_count": len(emails)})
+
+        return render(request, self.template_name, {"invite_colleagues_email_formset": formset})
