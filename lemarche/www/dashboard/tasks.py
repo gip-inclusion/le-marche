@@ -15,7 +15,7 @@ def send_user_invite_colleagues_email(email):
         recipient_email = recipient_list[0]
 
         variables = {
-            "REGISTER_URL": f"https://{get_domain_url()}{reverse_lazy('auth:register')}",
+            "REGISTER_URL": f"https://{get_domain_url()}{reverse_lazy('auth:account_signup')}",
         }
 
         email_template.send_transactional_email(
