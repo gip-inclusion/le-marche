@@ -525,6 +525,13 @@ class TenderModelQuerysetStatsTest(TestCase):
         # tender_with_siae_2 is not sent
         self.assertEqual(Tender.objects.filter_with_siaes(self.user_siae.siaes.all()).count(), 1)
 
+    def test_filter_with_siaes_status(self):
+        # tender_with_siae_2 is sent but rolled back in draft status
+        self.tender_with_siae_2.status = Tender.StatusChoices.STATUS_DRAFT
+        self.tender_with_siae_2.save()
+        # tender_with_siae_2 is doesn't appear in the qs, have date sent but not status sent
+        self.assertEqual(Tender.objects.filter_with_siaes(self.user_siae.siaes.all()).count(), 1)
+
     def test_with_siae_stats(self):
         self.assertEqual(Tender.objects.count(), 2 + 1)
         tender_with_siae_1 = Tender.objects.with_siae_stats().filter(id=self.tender_with_siae_1.id).first()
