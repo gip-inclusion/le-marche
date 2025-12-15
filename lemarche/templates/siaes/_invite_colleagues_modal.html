@@ -8,6 +8,7 @@
                           method="post"
                           hx-swap="innerHTML"
                           hx-target="#invite-colleagues-form-container"
+                          hx-disabled-elt="#submit-invitations-btn"
                         >
                         {% csrf_token %}
                         <div id="invite-colleagues-form-container">
