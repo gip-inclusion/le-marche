@@ -196,11 +196,16 @@ class TenderQuerySet(models.QuerySet):
     def filter_with_siaes(self, siaes):
         """
         Return the list of tenders corresponding to the list of
-        - we return only sent tenders
+        - we return only sent tenders (with datetime and status)
         - the tender-siae matching has already been done with filter_with_tender()
         - with annotation to new if it's new for siaes
         """
-        return self.sent().filter(tendersiae__is_deleted_by_siae=False, tendersiae__siae__in=siaes).distinct()
+        return (
+            self.sent()
+            .filter(status=Tender.StatusChoices.STATUS_SENT)
+            .filter(tendersiae__is_deleted_by_siae=False, tendersiae__siae__in=siaes)
+            .distinct()
+        )
 
     def with_deadline_date_is_outdated(self, limit_date=datetime.today()):
         return self.annotate(
