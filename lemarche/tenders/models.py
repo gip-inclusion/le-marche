@@ -1131,6 +1131,7 @@ class TenderSiaeQuerySet(models.QuerySet):
 
 
 class TenderSiae(models.Model):
+    # a quoi correspond ce modèle ? est-ce qu'il peut y en avoir plus d'un par couple tender / siae ?
     FIELDS_RELATION = [
         "email_send_date",
         "email_link_click_date",
