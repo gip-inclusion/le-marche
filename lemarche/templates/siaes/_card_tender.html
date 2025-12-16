@@ -89,6 +89,11 @@
 
                 {% if siae.client_references_with_logo %}
                     <div class="fr-mt-4w">
+                        <div class="fr-grid-row">
+                            <div class="fr-col-12">
+                                <p class="fr-text">Ils font confiance à ce fournisseur :</p>
+                            </div>
+                        </div>
                         <div class="fr-grid-row fr-grid-row--gutters">
                             {% for client_reference in siae.client_references_with_logo %}
                                 <div class="fr-col-md-2">

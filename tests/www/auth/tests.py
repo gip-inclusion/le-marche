@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from django.urls import reverse
 from freezegun import freeze_time
 from selenium import webdriver
@@ -37,7 +37,6 @@ def element_select_option(driver, element, option=""):
     field_select.select_by_visible_text(option)
 
 
-@override_settings(GOOGLE_AGENDA_IFRAME_URL="some_google_url")
 class SignupFormTest(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
@@ -224,7 +223,10 @@ class SignupFormTest(StaticLiveServerTestCase):
         scroll_to_and_click_element(self.driver, submit_element)
 
         # should redirect BUYER to search
-        self._assert_signup_success(redirect_url=reverse("auth:booking-meeting-view"), user_kind=User.KIND_BUYER)
+        self._assert_signup_success(
+            redirect_url=reverse("siae:search_results") + "?show_invite_colleagues_modal=true",
+            user_kind=User.KIND_BUYER,
+        )
         # assert Brevo contact creation
         mock_client_instance.create_contact.assert_called_once()
 
@@ -337,54 +339,6 @@ class SignupFormTestcase(TestCase):
 
         form = CustomSignupForm(data=self.form_data)
         self.assertTrue(form.is_valid())
-
-
-@override_settings(GOOGLE_AGENDA_IFRAME_URL="some_google_url")
-class SignupMeetingTestCase(TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.form_data = {
-            "kind": User.KIND_BUYER,
-            "accept_rgpd": True,
-            "first_name": "Prenom",
-            "last_name": "Nom",
-            "phone": "0123456789",
-            "company_name": "Ma boite",
-            "position": "Role important",
-            "email": "buyer@example.com",
-            "password1": "+j2fABqwRGS4j4w",
-            "password2": "+j2fABqwRGS4j4w",
-        }
-
-        Paragraph.objects.get_or_create(
-            slug="rdv-signup",
-            defaults={"title": "Prise de rendez vous"},
-        )
-        Paragraph.objects.get_or_create(
-            slug="rdv-contact",
-            defaults={"title": "Numéro tel"},
-        )
-
-    @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient")
-    def test_magic_link_test_case(self, mock_brevo_contacts_client):
-        """View should not redirect to meeting if the User is signing up
-        with the magic link"""
-        self.assertEqual(User.objects.count(), 0)
-
-        post_response = self.client.post(path=f"{reverse('account_signup')}?skip_meeting=true", data=self.form_data)
-        self.assertEqual(post_response.status_code, 302)
-
-    @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient")
-    def test_meeting_redirect(self, mock_brevo_contacts_client):
-        """View should redirect to meeting"""
-        self.assertEqual(User.objects.count(), 0)
-
-        post_response = self.client.post(path=reverse("account_signup"), data=self.form_data)
-        self.assertEqual(post_response.status_code, 302)
-        self.assertFalse(User.objects.get().have_followed_onboarding)
-        self.assertRedirects(post_response, reverse("auth:booking-meeting-view"))
 
 
 class LoginFormTest(StaticLiveServerTestCase):

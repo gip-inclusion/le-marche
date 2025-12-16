@@ -781,7 +781,6 @@ FORM_PARTENAIRES = (
     "https://docs.google.com/forms/d/e/1FAIpQLScx1k-UJ-962_rSgPJGabc327gGjFUho6ypgcZHCubuwTl7Lg/viewform"
 )
 PARTNER_APPROCH_USER_ID = env.int("PARTNER_APPROCH_USER_ID", 0)
-GOOGLE_AGENDA_IFRAME_URL = env.str("GOOGLE_AGENDA_IFRAME_URL", "")
 
 # Misc
 # ------------------------------------------------------------------------------
