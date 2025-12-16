@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from django.urls import reverse
 from freezegun import freeze_time
 from selenium import webdriver
@@ -37,7 +37,6 @@ def element_select_option(driver, element, option=""):
     field_select.select_by_visible_text(option)
 
 
-@override_settings(GOOGLE_AGENDA_IFRAME_URL="some_google_url")
 class SignupFormTest(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
@@ -224,7 +223,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         scroll_to_and_click_element(self.driver, submit_element)
 
         # should redirect BUYER to search
-        self._assert_signup_success(redirect_url=reverse("auth:booking-meeting-view"), user_kind=User.KIND_BUYER)
+        self._assert_signup_success(redirect_url=reverse("siae:search_results"), user_kind=User.KIND_BUYER)
         # assert Brevo contact creation
         mock_client_instance.create_contact.assert_called_once()
 
@@ -339,9 +338,7 @@ class SignupFormTestcase(TestCase):
         self.assertTrue(form.is_valid())
 
 
-@override_settings(GOOGLE_AGENDA_IFRAME_URL="some_google_url")
 class SignupMeetingTestCase(TestCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -384,7 +381,7 @@ class SignupMeetingTestCase(TestCase):
         post_response = self.client.post(path=reverse("account_signup"), data=self.form_data)
         self.assertEqual(post_response.status_code, 302)
         self.assertFalse(User.objects.get().have_followed_onboarding)
-        self.assertRedirects(post_response, reverse("auth:booking-meeting-view"))
+        self.assertRedirects(post_response, reverse("siae:search_results"))
 
 
 class LoginFormTest(StaticLiveServerTestCase):

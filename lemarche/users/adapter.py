@@ -1,5 +1,4 @@
 from allauth.account.adapter import DefaultAccountAdapter
-from django.conf import settings
 from django.urls import reverse_lazy
 
 from lemarche.users.models import User
@@ -32,8 +31,8 @@ class LeMarcheAccountAdapter(DefaultAccountAdapter):
     def get_signup_redirect_url(self, request):
         success_url = super().get_signup_redirect_url(request)
 
-        if settings.GOOGLE_AGENDA_IFRAME_URL and self.request.user.kind == User.KIND_BUYER:
-            success_url = reverse_lazy("auth:booking-meeting-view")
+        if self.request.user.kind == User.KIND_BUYER:
+            success_url = reverse_lazy("siae:search_results")
         next_url = self.request.GET.get("next", None)
         # sanitize next_url
         if next_url:
