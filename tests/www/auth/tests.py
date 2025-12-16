@@ -223,7 +223,10 @@ class SignupFormTest(StaticLiveServerTestCase):
         scroll_to_and_click_element(self.driver, submit_element)
 
         # should redirect BUYER to search
-        self._assert_signup_success(redirect_url=reverse("siae:search_results"), user_kind=User.KIND_BUYER)
+        self._assert_signup_success(
+            redirect_url=reverse("siae:search_results") + "?show_invite_colleagues_modal=true",
+            user_kind=User.KIND_BUYER,
+        )
         # assert Brevo contact creation
         mock_client_instance.create_contact.assert_called_once()
 

@@ -724,7 +724,7 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
         qs = qs.prefetch_related(
             Prefetch(
                 "client_references",
-                queryset=SiaeClientReference.objects.exclude(logo_url__isnull=True).exclude(logo_url="")[:5],
+                queryset=SiaeClientReference.objects.exclude(logo_url__isnull=True).exclude(logo_url="")[:6],
                 to_attr="client_references_with_logo",
             )
         )

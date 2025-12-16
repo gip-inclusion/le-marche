@@ -1875,8 +1875,8 @@ class TenderSiaeListView(TestCase):
         self.assertNotIn(ref_without_logo_1.id, ref_ids)
         self.assertNotIn(ref_without_logo_2.id, ref_ids)
 
-    def test_maximum_5_client_references_with_logo_are_displayed(self):
-        """Test that when there are 6+ client references with logo, only 5 are displayed"""
+    def test_maximum_6_client_references_with_logo_are_displayed(self):
+        """Test that when there are 6+ client references with logo, only 6 are displayed"""
         # Create 7 client references with logo
         references = []
         for i in range(7):
@@ -1894,7 +1894,7 @@ class TenderSiaeListView(TestCase):
         siae_1_in_response = [s for s in response.context["siaes"] if s.id == self.siae_1.id][0]
         self.assertTrue(hasattr(siae_1_in_response, "client_references_with_logo"))
         # Only 5 references should be present (limit)
-        self.assertEqual(len(siae_1_in_response.client_references_with_logo), 5)
+        self.assertEqual(len(siae_1_in_response.client_references_with_logo), 6)
         # All displayed references should have a logo_url
         for ref in siae_1_in_response.client_references_with_logo:
             self.assertIsNotNone(ref.logo_url)
