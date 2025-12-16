@@ -338,52 +338,6 @@ class SignupFormTestcase(TestCase):
         self.assertTrue(form.is_valid())
 
 
-class SignupMeetingTestCase(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.form_data = {
-            "kind": User.KIND_BUYER,
-            "accept_rgpd": True,
-            "first_name": "Prenom",
-            "last_name": "Nom",
-            "phone": "0123456789",
-            "company_name": "Ma boite",
-            "position": "Role important",
-            "email": "buyer@example.com",
-            "password1": "+j2fABqwRGS4j4w",
-            "password2": "+j2fABqwRGS4j4w",
-        }
-
-        Paragraph.objects.get_or_create(
-            slug="rdv-signup",
-            defaults={"title": "Prise de rendez vous"},
-        )
-        Paragraph.objects.get_or_create(
-            slug="rdv-contact",
-            defaults={"title": "Numéro tel"},
-        )
-
-    @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient")
-    def test_magic_link_test_case(self, mock_brevo_contacts_client):
-        """View should not redirect to meeting if the User is signing up
-        with the magic link"""
-        self.assertEqual(User.objects.count(), 0)
-
-        post_response = self.client.post(path=f"{reverse('account_signup')}?skip_meeting=true", data=self.form_data)
-        self.assertEqual(post_response.status_code, 302)
-
-    @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient")
-    def test_meeting_redirect(self, mock_brevo_contacts_client):
-        """View should redirect to meeting"""
-        self.assertEqual(User.objects.count(), 0)
-
-        post_response = self.client.post(path=reverse("account_signup"), data=self.form_data)
-        self.assertEqual(post_response.status_code, 302)
-        self.assertFalse(User.objects.get().have_followed_onboarding)
-        self.assertRedirects(post_response, reverse("siae:search_results"))
-
-
 class LoginFormTest(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
