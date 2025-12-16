@@ -32,7 +32,7 @@ class LeMarcheAccountAdapter(DefaultAccountAdapter):
         success_url = super().get_signup_redirect_url(request)
 
         if self.request.user.kind == User.KIND_BUYER:
-            success_url = reverse_lazy("siae:search_results")
+            success_url = reverse_lazy("siae:search_results") + "?show_invite_colleagues_modal=true"
         next_url = self.request.GET.get("next", None)
         # sanitize next_url
         if next_url:
