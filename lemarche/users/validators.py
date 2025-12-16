@@ -2,6 +2,10 @@ from django.core.exceptions import ValidationError
 
 
 def professional_email_validator(value):
+    # Skip validation for empty values or values without "@" (handled by required field validation)
+    if not value or "@" not in value:
+        return
+
     excluded_domains = [
         "gmail.com",
         "hotmail.com",

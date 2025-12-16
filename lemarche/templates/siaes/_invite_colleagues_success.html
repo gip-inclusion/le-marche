@@ -1,0 +1,25 @@
+<div class="fr-modal__header">
+    <button class="fr-btn--close fr-btn" aria-controls="invite-colleagues-modal" title="Fermer">
+        Fermer
+    </button>
+</div>
+<div class="fr-modal__content">
+    <h1 id="invite-colleagues-modal-title" class="fr-modal__title">
+        Invitation envoyée avec succès
+    </h1>
+    <div class="fr-alert fr-alert--success fr-mb-4w">
+        <p>
+            {{ emails_count }} invitation{{ emails_count|pluralize }} envoyée{{ emails_count|pluralize }} avec succès.
+        </p>
+    </div>
+</div>
+<div class="fr-modal__footer">
+    <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg">
+        <li>
+            <button class="fr-btn fr-btn--secondary" aria-controls="invite-colleagues-modal" type="button">
+                Continuer sur le marché de l'inclusion
+            </button>
+        </li>
+    </ul>
+</div>
+

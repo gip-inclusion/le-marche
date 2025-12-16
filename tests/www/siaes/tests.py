@@ -11,6 +11,7 @@ from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae, SiaeESUS
 from lemarche.www.siaes.forms import SiaeFilterForm, SiaeSiretFilterForm
 from lemarche.www.siaes.views import SiaeSiretSearchView
+from tests.conversations.factories import TemplateTransactionalFactory
 from tests.favorites.factories import FavoriteListFactory
 from tests.labels.factories import LabelFactory
 from tests.networks.factories import NetworkFactory
@@ -53,6 +54,15 @@ class SiaeSearchDisplayResultsTest(TestCase):
         self.client.force_login(self.user_admin)
         response = self.client.get(url)
         self.assertContains(response, "pas encore inscrite")
+
+    def test_search_should_display_invite_colleagues_modal(self):
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        self.assertNotContains(response, "invite-colleagues-modal")
+        self.assertNotContains(response, "invite-colleagues-form")
+        response = self.client.get(url + "?show_invite_colleagues_modal=true")
+        self.assertContains(response, "invite-colleagues-modal")
+        self.assertContains(response, "invite-colleagues-form")
 
 
 class SiaeSearchHosmozNetworkTest(TestCase):
@@ -1255,7 +1265,6 @@ class SiaeFavoriteViewTestCase(TestCase):
 
 
 class SiaeSiretSearchTestCase(TestCase):
-
     def setUp(self):
         self.url = reverse("siae:siret_search")
 
@@ -1348,3 +1357,157 @@ class SiaeSiretSearchTestCase(TestCase):
             " mais une erreur est apparue en interrogeant des bases de données externes.",
         )
         self.assertEqual(response.context["logo_list"], [])
+
+
+class InviteColleaguesViewTest(TestCase):
+    def setUp(self):
+        self.url = reverse("siae:invite_colleagues")
+        TemplateTransactionalFactory(code="USER_INVITE_COLLEAGUES")
+
+    @patch("lemarche.conversations.models.TemplateTransactional.send_transactional_email")
+    def test_invite_colleagues_with_no_emails(self, mock_send_email):
+        data = {
+            "form-TOTAL_FORMS": "3",
+            "form-INITIAL_FORMS": "0",
+            "form-MIN_NUM_FORMS": "0",
+            "form-MAX_NUM_FORMS": "10",
+            "form-0-email": "",
+            "form-1-email": "",
+            "form-2-email": "",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "siaes/_invite_colleagues_form.html")
+        self.assertContains(response, "Veuillez saisir au moins une adresse email.")
+
+    @patch("lemarche.conversations.models.TemplateTransactional.send_transactional_email")
+    @patch(
+        "lemarche.www.siaes.tasks.whitelist_recipient_list",
+        return_value=["colleague1@example.com", "colleague2@example.com", "colleague3@example.com"],
+    )
+    def test_invite_colleagues_with_one_email(self, mock_whitelist, mock_send_email):
+        data = {
+            "form-TOTAL_FORMS": "3",
+            "form-INITIAL_FORMS": "0",
+            "form-MIN_NUM_FORMS": "0",
+            "form-MAX_NUM_FORMS": "10",
+            "form-0-email": "colleague1@example.com",
+            "form-1-email": "",
+            "form-2-email": "",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "siaes/_invite_colleagues_success.html")
+        self.assertContains(response, "1 invitation envoyée avec succès")
+        self.assertEqual(mock_send_email.call_count, 1)
+
+    @patch("lemarche.conversations.models.TemplateTransactional.send_transactional_email")
+    @patch(
+        "lemarche.www.siaes.tasks.whitelist_recipient_list",
+        return_value=["colleague1@example.com", "colleague2@example.com", "colleague3@example.com"],
+    )
+    def test_invite_colleagues_with_multiple_emails(self, mock_whitelist, mock_send_email):
+        data = {
+            "form-TOTAL_FORMS": "3",
+            "form-INITIAL_FORMS": "0",
+            "form-MIN_NUM_FORMS": "0",
+            "form-MAX_NUM_FORMS": "10",
+            "form-0-email": "colleague1@example.com",
+            "form-1-email": "colleague2@example.com",
+            "form-2-email": "colleague3@example.com",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "siaes/_invite_colleagues_success.html")
+        self.assertContains(response, "3 invitations envoyées avec succès")
+        self.assertEqual(mock_send_email.call_count, 3)
+
+    @patch("lemarche.conversations.models.TemplateTransactional.send_transactional_email")
+    @patch(
+        "lemarche.www.siaes.tasks.whitelist_recipient_list",
+        return_value=["colleague1@example.com", "colleague2@example.com", "colleague3@example.com"],
+    )
+    def test_invite_colleagues_with_invalid_email(self, mock_whitelist, mock_send_email):
+        data = {
+            "form-TOTAL_FORMS": "3",
+            "form-INITIAL_FORMS": "0",
+            "form-MIN_NUM_FORMS": "0",
+            "form-MAX_NUM_FORMS": "10",
+            "form-0-email": "invalid-email",
+            "form-1-email": "colleague2@example.com",
+            "form-2-email": "colleague3@example.com",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "siaes/_invite_colleagues_form.html")
+        self.assertContains(response, "Saisissez une adresse e-mail valide.")
+        self.assertEqual(mock_send_email.call_count, 0)
+
+    @patch("lemarche.conversations.models.TemplateTransactional.send_transactional_email")
+    @patch(
+        "lemarche.www.siaes.tasks.whitelist_recipient_list",
+        return_value=["perso@hotmail.com"],
+    )
+    def test_invite_colleagues_with_invalid_professional_email(self, mock_whitelist, mock_send_email):
+        data = {
+            "form-TOTAL_FORMS": "3",
+            "form-INITIAL_FORMS": "0",
+            "form-MIN_NUM_FORMS": "0",
+            "form-MAX_NUM_FORMS": "10",
+            "form-0-email": "perso@hotmail.com",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "siaes/_invite_colleagues_form.html")
+        self.assertContains(response, "Seules les adresses professionnelles sont autoris")
+        self.assertEqual(mock_send_email.call_count, 0)
+
+
+class InviteColleaguesAddFieldViewTest(TestCase):
+    def setUp(self):
+        self.url = reverse("siae:invite_colleagues")
+        TemplateTransactionalFactory(code="USER_INVITE_COLLEAGUES")
+
+    @patch("lemarche.conversations.models.TemplateTransactional.send_transactional_email")
+    @patch(
+        "lemarche.www.siaes.tasks.whitelist_recipient_list",
+        return_value=[
+            "colleague1@example.com",
+            "colleague2@example.com",
+            "colleague3@example.com",
+            "colleague4@example.com",
+        ],
+    )
+    def test_add_field_returns_html(self, mock_whitelist, mock_send_email):
+        data = {
+            "form-TOTAL_FORMS": "3",
+            "form-INITIAL_FORMS": "0",
+            "form-MIN_NUM_FORMS": "0",
+            "form-MAX_NUM_FORMS": "10",
+            "form-0-email": "colleague1@example.com",
+            "form-1-email": "colleague2@example.com",
+            "form-2-email": "colleague3@example.com",
+            "add": "1",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "siaes/_invite_colleagues_form.html")
+        self.assertContains(response, "form-3-email")
+
+        response = self.client.post(
+            self.url,
+            {
+                "form-TOTAL_FORMS": "4",
+                "form-INITIAL_FORMS": "0",
+                "form-MAX_NUM_FORMS": "10",
+                "form-0-email": "colleague1@example.com",
+                "form-1-email": "colleague2@example.com",
+                "form-2-email": "colleague3@example.com",
+                "form-3-email": "colleague4@example.com",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "siaes/_invite_colleagues_success.html")
+
+        self.assertContains(response, "4 invitations envoyées avec succès")
+        self.assertEqual(mock_send_email.call_count, 4)
