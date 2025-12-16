@@ -35,7 +35,7 @@ from tests.conversations.factories import TemplateTransactionalFactory
 from tests.labels.factories import LabelFactory
 from tests.perimeters.factories import PerimeterFactory
 from tests.sectors.factories import SectorFactory
-from tests.siaes.factories import SiaeActivityFactory, SiaeFactory
+from tests.siaes.factories import SiaeActivityFactory, SiaeClientReferenceFactory, SiaeFactory
 from tests.tenders.factories import QuestionAnswerFactory, TenderFactory, TenderQuestionFactory, TenderSiaeFactory
 from tests.users.factories import UserFactory
 
@@ -1238,7 +1238,6 @@ class TenderDetailViewTest(TestCase):
 
 
 class TenderDetailIncitativeMessageTestCase(TestCase):
-
     def setUp(self):
         self.siae_user_1 = UserFactory(kind=User.KIND_SIAE)
         self.tender_1 = TenderFactory(
@@ -1292,7 +1291,6 @@ class TenderDetailIncitativeMessageTestCase(TestCase):
 
 
 class TenderDetailLabelTestCase(TestCase):
-
     def setUp(self):
         siae = SiaeFactory()
         buyer_company = CompanyFactory(
@@ -1809,6 +1807,60 @@ class TenderSiaeListView(TestCase):
         self.assertEqual(len(response.context["siaes"]), 4)
         self.assertContains(response, "Déjà référencé", count=1)
 
+    def test_only_client_references_with_logo_are_displayed(self):
+        """Test that only client references with logo_url are displayed"""
+        # Create client references with and without logo
+        ref_with_logo_1 = SiaeClientReferenceFactory(
+            siae=self.siae_1, name="Client with logo 1", logo_url="https://example.com/logo1.png"
+        )
+        ref_with_logo_2 = SiaeClientReferenceFactory(
+            siae=self.siae_1, name="Client with logo 2", logo_url="https://example.com/logo2.png"
+        )
+        ref_without_logo_1 = SiaeClientReferenceFactory(siae=self.siae_1, name="Client without logo 1", logo_url="")
+        ref_without_logo_2 = SiaeClientReferenceFactory(siae=self.siae_1, name="Client without logo 2", logo_url="")
+
+        self.client.force_login(self.user_buyer_1)
+        url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        # Check that siae_1 has the client_references_with_logo attribute
+        siae_1_in_response = [s for s in response.context["siaes"] if s.id == self.siae_1.id][0]
+        self.assertTrue(hasattr(siae_1_in_response, "client_references_with_logo"))
+        # Only 2 references with logo should be present
+        self.assertEqual(len(siae_1_in_response.client_references_with_logo), 2)
+        # Check that the references are the ones with logo
+        ref_ids = [ref.id for ref in siae_1_in_response.client_references_with_logo]
+        self.assertIn(ref_with_logo_1.id, ref_ids)
+        self.assertIn(ref_with_logo_2.id, ref_ids)
+        self.assertNotIn(ref_without_logo_1.id, ref_ids)
+        self.assertNotIn(ref_without_logo_2.id, ref_ids)
+
+    def test_maximum_5_client_references_with_logo_are_displayed(self):
+        """Test that when there are 6+ client references with logo, only 5 are displayed"""
+        # Create 7 client references with logo
+        references = []
+        for i in range(7):
+            ref = SiaeClientReferenceFactory(
+                siae=self.siae_1, name=f"Client with logo {i + 1}", logo_url=f"https://example.com/logo{i + 1}.png"
+            )
+            references.append(ref)
+
+        self.client.force_login(self.user_buyer_1)
+        url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        # Check that siae_1 has the client_references_with_logo attribute
+        siae_1_in_response = [s for s in response.context["siaes"] if s.id == self.siae_1.id][0]
+        self.assertTrue(hasattr(siae_1_in_response, "client_references_with_logo"))
+        # Only 5 references should be present (limit)
+        self.assertEqual(len(siae_1_in_response.client_references_with_logo), 5)
+        # All displayed references should have a logo_url
+        for ref in siae_1_in_response.client_references_with_logo:
+            self.assertIsNotNone(ref.logo_url)
+            self.assertNotEqual(ref.logo_url, "")
+
 
 class TenderDetailSurveyTransactionedViewTest(TestCase):
     @classmethod
@@ -2222,7 +2274,6 @@ class TenderQuestionAnswerTestCase(TestCase):
 
 
 class TenderSiaeDownloadViewTestCase(TestCase):
-
     def setUp(self):
         self.user = UserFactory(kind=User.KIND_BUYER)
 
@@ -2280,7 +2331,6 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         self.assertEqual(len(rows), 1)  # There is one kind ETTI siae in our sample data
 
     def test_filtering(self):
-
         with self.subTest(
             status="TARGETED"
         ):  # That status is implicit, it switches to targeted when no status is given
@@ -2371,7 +2421,6 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         self.assertEqual(sheet["C3"].value, "answer_for_q2_from_siae_2")
 
     def test_get_tender_siae_download_url(self):
-
         with self.subTest(status="ALL"):
             url = get_tender_siae_download_url(self.tender)
             response = self.client.get(url)
@@ -2419,7 +2468,6 @@ class TenderSiaeDownloadViewTestCase(TestCase):
 
 
 class TenderSiaeListLocalSiaeTestCase(TestCase):
-
     def setUp(self):
         buyer = UserFactory(kind=User.KIND_BUYER)
         self.client.force_login(buyer)
@@ -2440,7 +2488,6 @@ class TenderSiaeListLocalSiaeTestCase(TestCase):
         self.assertQuerySetEqual([siae_1, siae_2], response.context["siaes"], ordered=False)
 
     def test_local_badge_from_city(self):
-
         # Buyer chose a city in when creating the tender
         # Data here represents how a city is stored in the database with actual data
         # (some fields are not populated if it's a REGION or DEPARTMENT)

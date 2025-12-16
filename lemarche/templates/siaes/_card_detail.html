@@ -115,9 +115,9 @@
                             <div>
                                 <h2>Références clients</h2>
                                 {% if siae.client_reference_count <= 6 %}
-                                    <div class="fr-grid-row">
+                                    <div class="grid" data-masonry='{ "itemSelector": ".grid-item", "columnWidth": 230, "gutter": 10 }'>
                                         {% for client_reference in siae.client_references.all %}
-                                            <div class="fr-col-12 fr-col-sm-4">
+                                            <div class="grid-item">
                                                 {% include "siaes/_client_reference.html" with client_reference=client_reference %}
                                             </div>
                                         {% endfor %}
@@ -348,3 +348,16 @@
         </div>
     </div>
 </div>
+
+
+<style>
+    .grid-item { width: 230px; margin-bottom: 10px;}
+    .grid-item--width2 { width: 460px; }
+    .grid-item img {
+      filter: grayscale(100%);
+      transition: filter 0.2s ease;
+    }  
+    .grid-item:hover img {
+      filter: grayscale(0%);
+    }
+</style>

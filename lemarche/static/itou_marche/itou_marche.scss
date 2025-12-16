@@ -336,3 +336,13 @@ p.fr-tag--green-bourgeon {
         }
     }
 }
+
+/* client references */
+.client-reference-logo {
+    filter: grayscale(100%);
+    transition: filter 0.2s ease;
+
+    &:hover {
+        filter: grayscale(0%);
+    }
+}
