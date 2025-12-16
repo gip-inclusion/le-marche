@@ -21,7 +21,7 @@ from django.views.generic import DetailView, ListView, UpdateView, View
 from django.views.generic.edit import FormMixin, FormView
 from formtools.wizard.views import SessionWizardView
 
-from lemarche.siaes.models import Siae
+from lemarche.siaes.models import Siae, SiaeClientReference
 from lemarche.siaes.tasks import send_reminder_email_to_siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.enums import TenderSourcesChoices
@@ -718,6 +718,14 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
                 "questionanswer_set",
                 queryset=QuestionAnswer.objects.filter(question__tender=self.tender),
                 to_attr="questions_for_tender",
+            )
+        )
+        # Limit to 5 client references with logo
+        qs = qs.prefetch_related(
+            Prefetch(
+                "client_references",
+                queryset=SiaeClientReference.objects.exclude(logo_url__isnull=True).exclude(logo_url="")[:5],
+                to_attr="client_references_with_logo",
             )
         )
         tender_siae = TenderSiae.objects.filter(tender=self.tender, siae=OuterRef("pk"))

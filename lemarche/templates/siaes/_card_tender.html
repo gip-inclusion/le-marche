@@ -86,6 +86,19 @@
                            rel="noopener">Accéder à la fiche commerciale</a>
                     </div>
                 </div>
+
+                {% if siae.client_references_with_logo %}
+                    <div class="fr-mt-4w">
+                        <div class="fr-grid-row fr-grid-row--gutters">
+                            {% for client_reference in siae.client_references_with_logo %}
+                                <div class="fr-col-md-2">
+                                    {% include "siaes/_client_reference.html" with client_reference=client_reference %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
                 {% if siae.questions_for_tender %}
                     <div x-show="showQuestions" class="fr-mt-4w">
                         {% for answer in siae.questions_for_tender %}
