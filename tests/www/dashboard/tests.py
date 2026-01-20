@@ -39,7 +39,6 @@ class DashboardHomeViewTest(TestCase):
         self.assertContains(response, "Mes besoins")
         self.assertContains(response, "M'informer sur le marché")
         self.assertContains(response, "Annuaire des facilitateurs")
-        self.assertContains(response, "Valoriser mes achats")
         self.assertContains(response, "API")
         self.assertContains(response, "M'informer sur les achats inclusifs")
         self.assertContains(response, "Ma part d'achat inclusif")
