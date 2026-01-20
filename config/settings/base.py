@@ -508,7 +508,7 @@ API_PERIMETER_AUTOCOMPLETE_MAX_RESULTS = 20
 
 # Base Adresse Nationale (BAN).
 # https://adresse.data.gouv.fr/faq
-API_BAN_BASE_URL = "https://api-adresse.data.gouv.fr"
+API_BAN_BASE_URL = "https://data.geopf.fr"
 # https://api.gouv.fr/api/api-geo.html#doc_tech
 API_GEO_BASE_URL = "https://geo.api.gouv.fr"
 
