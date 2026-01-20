@@ -49,11 +49,6 @@ urlpatterns = [
         TemplateView.as_view(template_name="pages/partenaires.html"),
         name="partenaires",
     ),
-    path(
-        "valoriser-achats/",
-        TemplateView.as_view(template_name="pages/valoriser-achats.html"),
-        name="valoriser_achats",
-    ),
     # Sentry endpoint for frontend errors
     path("sentry-debug/", trigger_error, name="sentry_debug"),
     # Tracking endpoint for the frontend
