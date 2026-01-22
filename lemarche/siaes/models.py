@@ -1328,6 +1328,8 @@ def siae_groups_changed(sender, instance, action, **kwargs):
 
 
 class SiaeUser(models.Model):
+    """A membership"""
+
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Utilisateur", on_delete=models.CASCADE)
 
@@ -1361,6 +1363,9 @@ class SiaeUserRequestQuerySet(models.QuerySet):
 
 
 class SiaeUserRequest(models.Model):
+    """Request for a membership"""
+
+    # C'est une demande de rattachement pour faire quoi ?
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
     initiator = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Initiateur", on_delete=models.CASCADE)
     assignee = models.ForeignKey(
@@ -1746,6 +1751,8 @@ class SiaeLabel(models.Model):
 
 
 class SiaeLabelOld(models.Model):
+    """Labels manually typed by a Siae. The cleanup was never done"""
+
     name = models.CharField(verbose_name="Nom", max_length=255)
 
     siae = models.ForeignKey(

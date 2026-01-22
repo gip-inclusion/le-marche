@@ -1131,6 +1131,9 @@ class TenderSiaeQuerySet(models.QuerySet):
 
 
 class TenderSiae(models.Model):
+    """Link between a Tender and a Siae."""
+
+    # FIXME: Add a unique constraint on (siae, tender)
     FIELDS_RELATION = [
         "email_send_date",
         "email_link_click_date",
