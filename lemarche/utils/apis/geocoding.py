@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def call_ban_geocoding_api(address, post_code=None, limit=1):
-    api_url = f"{settings.API_BAN_BASE_URL}/geocodage/search/"
+    api_url = f"{settings.API_GEOPF_BASE_URL}/geocodage/search/"
 
     args = {"q": address, "limit": limit}
 
