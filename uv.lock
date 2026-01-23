@@ -97,15 +97,6 @@ wheels = [
 ]
 
 [[package]]
-name = "boto"
-version = "2.49.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/c8/af/54a920ff4255664f5d238b5aebd8eedf7a07c7a5e71e27afcfe840b82f51/boto-2.49.0.tar.gz", hash = "sha256:ea0d3b40a2d852767be77ca343b58a9e3a4b00d9db440efb8da74b4e58025e5a", size = 1478498, upload-time = "2018-07-11T20:58:58.057Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/23/10/c0b78c27298029e4454a472a1919bde20cb182dab1662cec7f2ca1dcc523/boto-2.49.0-py2.py3-none-any.whl", hash = "sha256:147758d41ae7240dc989f0039f27da8ca0d53734be0eb869ef16e3adcfa462e8", size = 1359202, upload-time = "2018-07-11T20:58:55.711Z" },
-]
-
-[[package]]
 name = "boto3"
 version = "1.35.99"
 source = { registry = "https://pypi.org/simple" }
@@ -985,7 +976,6 @@ name = "lemarche"
 version = "1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "boto" },
     { name = "boto3" },
     { name = "brevo-python" },
     { name = "crawlerdetect" },
@@ -1012,7 +1002,6 @@ dependencies = [
     { name = "djangorestframework" },
     { name = "drf-spectacular" },
     { name = "huey" },
-    { name = "pillow-heif" },
     { name = "psycopg", extra = ["binary"] },
     { name = "python-stdnum" },
     { name = "redis" },
@@ -1046,7 +1035,6 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "boto", specifier = ">=2.49.0,<3" },
     { name = "boto3", specifier = "<1.36.0" },
     { name = "brevo-python", specifier = ">=1.0" },
     { name = "crawlerdetect", specifier = ">=0.1,<0.2" },
@@ -1073,7 +1061,6 @@ requires-dist = [
     { name = "djangorestframework", specifier = ">=3.0,<4" },
     { name = "drf-spectacular", specifier = ">=0.26,<0.27" },
     { name = "huey", specifier = ">=2.0,<3" },
-    { name = "pillow-heif", specifier = ">=1.0,<2" },
     { name = "psycopg", extras = ["binary"], specifier = ">3" },
     { name = "python-stdnum", specifier = ">=1.20,<2" },
     { name = "redis", specifier = ">=5.0,<6" },
