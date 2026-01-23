@@ -40,7 +40,7 @@ document.addEventListener('alpine:init', () => {
             }
             if (valuesJson) {
                 // Initialiser les tags à partir des valeurs initiales du formulaire
-                this.initialValues = JSON.parse(valuesJson);                
+                this.initialValues = JSON.parse(valuesJson);
                 this.initSelectedValues(this.initialValues);
             }
         },
@@ -117,15 +117,23 @@ document.addEventListener('alpine:init', () => {
                 this.selected = this.selected.filter(item => item !== label);
             }
             this.updateInput();
+            // Emit custom event on window for HTMX or other listeners
+            window.dispatchEvent(new CustomEvent('multiselect:change', {
+                detail: { selectedValues: [...this.selectedValues], name: this.name }
+            }));
         },
 
-        removeSelection(index) {            
+        removeSelection(index) {
             this.selectedValues.splice(index, 1);
             this.selected.splice(index, 1);
             this.updateInput();
+            // Emit custom event on window for HTMX or other listeners
+            window.dispatchEvent(new CustomEvent('multiselect:change', {
+                detail: { selectedValues: [...this.selectedValues], name: this.name }
+            }));
         },
 
-        reset() {   
+        reset() {
             this.selectedValues = [];
             this.selected = [];
         },
