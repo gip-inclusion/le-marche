@@ -28,7 +28,7 @@ class Command(BaseCommand):
         phone_updated = 0
         employees_count_updated = 0
 
-        with open(file_path, mode="r", encoding="utf-8") as file:
+        with open(file_path, encoding="utf-8") as file:
             reader = csv.DictReader(file, delimiter="|")
             for data in reader:
                 # csv header: "Raison sociale"|"Siret"|"Type de structure"|"Métiers proposés"|"Adresse"|"Code Postal|"

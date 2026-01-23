@@ -167,14 +167,14 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         else:
             if format == "csv":
                 response = HttpResponse(content_type="text/csv", charset="utf-8")
-                response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
+                response["Content-Disposition"] = f'attachment; filename="{filename_with_extension}"'
 
                 writer = csv.writer(response)
                 export_siae_to_csv(writer, siae_list, with_contact_info)
 
             else:  # "xls"
                 response = HttpResponse(content_type="application/ms-excel")
-                response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
+                response["Content-Disposition"] = f'attachment; filename="{filename_with_extension}"'
 
                 wb = export_siae_to_excel(siae_list, with_contact_info)
                 wb.save(response)

@@ -60,7 +60,7 @@ class LabelAdmin(admin.ModelAdmin):
         s3_upload = S3Upload(kind="label_logo")
         extra_context["s3_form_values_label_logo"] = s3_upload.form_values
         extra_context["s3_upload_config_label_logo"] = s3_upload.config
-        return super(LabelAdmin, self).change_view(request, object_id, form_url, extra_context=extra_context)
+        return super().change_view(request, object_id, form_url, extra_context=extra_context)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

@@ -64,8 +64,8 @@ class Command(BaseCommand):
         msg_success = [
             "----- Company users -----",
             f"Done! Processed {companies_with_email_domain_list.count()} companies with email_domain_list",
-            f"Users with company: before {old_users_with_company_count} / after {new_users_with_company_count} / {new_users_with_company_count-old_users_with_company_count}",  # noqa
-            f"Companies with user: before {old_companies_with_user_count} / after {new_companies_with_user_count} / {new_companies_with_user_count-old_companies_with_user_count}",  # noqa
+            f"Users with company: before {old_users_with_company_count} / after {new_users_with_company_count} / {new_users_with_company_count - old_users_with_company_count}",  # noqa
+            f"Companies with user: before {old_companies_with_user_count} / after {new_companies_with_user_count} / {new_companies_with_user_count - old_companies_with_user_count}",  # noqa
         ]
 
         self.stdout_messages_success(msg_success)

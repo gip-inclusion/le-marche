@@ -13,7 +13,7 @@ class ContactForm(forms.Form):
     body_message = forms.CharField(label="Votre message", widget=forms.Textarea)
 
     def __init__(self, user=None, *args, **kwargs):
-        super(ContactForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if user and user.is_authenticated:
             self.fields["first_name"].widget = forms.HiddenInput()
             self.fields["last_name"].widget = forms.HiddenInput()

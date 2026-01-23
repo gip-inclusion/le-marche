@@ -111,7 +111,7 @@ class Command(BaseCommand):
             "Entité acheteuse (optionnelle)",
         ]
 
-        with open(self.csv_file, "r", encoding=self.encoding) as file:
+        with open(self.csv_file, encoding=self.encoding) as file:
             reader = csv.DictReader(file, delimiter=self.delimiter)
             if not reader.fieldnames:
                 raise CommandError("Could not read CSV headers")
@@ -178,7 +178,7 @@ class Command(BaseCommand):
 
         # Progress indicator
         if stats["imported"] % 100 == 0:
-            self.stdout_info(f'Processed {stats["imported"]} rows...')
+            self.stdout_info(f"Processed {stats['imported']} rows...")
 
     def _validate_row_data(self, supplier_name, supplier_siret):
         """Validate required fields in a row."""
@@ -239,11 +239,11 @@ class Command(BaseCommand):
                 "\n" + "=" * 50,
                 "IMPORT SUMMARY",
                 "=" * 50,
-                f'Total rows processed: {stats["total_rows"]}',
-                f'Successfully imported: {stats["imported"]}',
-                f'Skipped due to errors: {stats["skipped"]}',
-                f'Errors encountered: {stats["errors"]}',
-                f'SIAE matches found: {stats["siae_matches"]}',
+                f"Total rows processed: {stats['total_rows']}",
+                f"Successfully imported: {stats['imported']}",
+                f"Skipped due to errors: {stats['skipped']}",
+                f"Errors encountered: {stats['errors']}",
+                f"SIAE matches found: {stats['siae_matches']}",
             ]
         )
 

@@ -8,7 +8,6 @@ from lemarche.django_shepherd.models import UserGuide
 
 
 class GuideContextTestCase(TestCase):
-
     def setUp(self):
         self.request_factory = RequestFactory()
         self.url_with_param = "http://localhost:8000/prestataires/truc/?blalb=something"
@@ -60,7 +59,6 @@ class GuideContextTestCase(TestCase):
 
 
 class StepViewed(TestCase):
-
     def setUp(self):
         self.user = get_user_model().objects.create_user(email="fake@email.com", password="1234")
         self.url_with_param = "http://localhost:8000/prestataires/truc/?blalb=something"

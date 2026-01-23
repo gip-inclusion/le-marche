@@ -409,7 +409,6 @@ class SiaeUpdateCountFieldsCommandTest(TransactionTestCase):
 
 
 class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
-
     def setUp(self):
         super().setUp()
         self.siae = SiaeFactory()
@@ -582,7 +581,6 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
     lambda self, logo_id: "http://someurl/logo.png",
 )
 class HosmoZCommandTest(TestCase):
-
     def setUp(self):
         self.hosmoz_network = NetworkFactory(slug="hosmoz")
 

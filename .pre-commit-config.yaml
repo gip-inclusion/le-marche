@@ -1,17 +1,13 @@
 repos:
-  - repo: https://github.com/psf/black
-    rev: 25.1.0
+  - repo: local
     hooks:
-      - id: black
-        language_version: python3
-  - repo: https://github.com/pycqa/isort
-    rev: 6.0.1
-    hooks:
-      - id: isort
-  - repo: https://github.com/PyCQA/flake8
-    rev: 7.3.0
-    hooks:
-      - id: flake8
-        args: ["--max-line-length=119"]  # strange behavior, have to duplicate arg here to be taken into account
-        language_version: python3
-        exclude: migrations/
+      - id: ruff-format
+        name: Ruff format
+        entry: ruff format
+        types: [python]
+        language: system
+      - id: ruff-check
+        name: Ruff check
+        entry: ruff check --fix
+        types: [python]
+        language: system

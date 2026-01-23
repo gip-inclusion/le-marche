@@ -9,7 +9,7 @@ from lemarche.utils.s3 import API_CONNECTION_DICT
 
 
 def get_admin_change_view_url(obj: object) -> str:
-    return reverse("admin:{}_{}_change".format(obj._meta.app_label, type(obj).__name__.lower()), args=(obj.pk,))
+    return reverse(f"admin:{obj._meta.app_label}_{type(obj).__name__.lower()}_change", args=(obj.pk,))
 
 
 class MarcheAdminSite(admin.AdminSite):

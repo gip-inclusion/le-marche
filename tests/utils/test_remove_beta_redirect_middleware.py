@@ -5,7 +5,6 @@ from lemarche.utils.remove_beta_redirect_middleware import RemoveBetaRedirectMid
 
 
 class RemoveBetaRedirectMiddlewareTest(TestCase):
-
     def setUp(self):
         self.factory = RequestFactory()
         self.middleware = RemoveBetaRedirectMiddleware(lambda request: HttpResponse(status=200))

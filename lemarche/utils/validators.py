@@ -19,7 +19,7 @@ class OptionalSchemeURLValidator(URLValidator):
             value = "https://" + value
 
         # call the classic URLValidator
-        super(OptionalSchemeURLValidator, self).__call__(value)
+        super().__call__(value)
 
         # Validate DNS resolution
         domain = urlparse(value).netloc

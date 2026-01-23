@@ -16,7 +16,7 @@ class InboundEmailParsingApiTestV0(TestCase):
         cls.conv: Conversation = ConversationFactory(version=0)
         email_data_file_url = os.path.join(os.path.dirname(__file__), "data_inbound_tests.json")
 
-        with open(email_data_file_url, "r") as file:
+        with open(email_data_file_url) as file:
             email_data = json.load(file)
             cls.email_data = email_data.copy()
         cls.item_email_data = cls.email_data["items"][0]

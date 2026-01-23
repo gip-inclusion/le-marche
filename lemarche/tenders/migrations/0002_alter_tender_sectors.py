@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("sectors", "0001_initial"),
         ("tenders", "0001_initial"),

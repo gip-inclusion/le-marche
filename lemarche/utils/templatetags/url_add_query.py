@@ -16,5 +16,5 @@ def url_add_query(context, **kwargs):
     mutable_querydict = querydict.copy()
     for item in kwargs:
         mutable_querydict[item] = str(kwargs[item])
-    link = "?{}".format(mutable_querydict.urlencode())
+    link = f"?{mutable_querydict.urlencode()}"
     return link

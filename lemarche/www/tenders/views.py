@@ -855,7 +855,7 @@ class TenderSiaeInterestedDownloadView(TenderAuthorOrAdminRequiredMixin, DetailV
         filename_with_extension = self.get_filename(extension="csv")
 
         response = HttpResponse(content_type="text/csv", charset="utf-8")
-        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
+        response["Content-Disposition"] = f'attachment; filename="{filename_with_extension}"'
 
         writer = csv.writer(response)
         writer.writerow(header_list)
@@ -877,7 +877,7 @@ class TenderSiaeInterestedDownloadView(TenderAuthorOrAdminRequiredMixin, DetailV
         filename_with_extension = self.get_filename(extension="xlsx")
 
         response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
+        response["Content-Disposition"] = f'attachment; filename="{filename_with_extension}"'
 
         wb = openpyxl.Workbook()
         ws = wb.active

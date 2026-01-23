@@ -161,7 +161,7 @@ class SiaeGroup(models.Model):
         """
         https://stackoverflow.com/a/23363123
         """
-        super(SiaeGroup, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         for field_name in self.TRACK_UPDATE_FIELDS:
             setattr(self, f"__previous_{field_name}", getattr(self, field_name))
 
@@ -451,7 +451,8 @@ class SiaeQuerySet(models.QuerySet):
         - Level 1 (basic): user_count + sector_count + description
         - Level 2: user_count + sector_count + description + logo + client_reference_count
         - Level 3: user_count + sector_count + description + logo + client_reference_count + image_count
-        - Level 4 (full): user_count + sector_count + description + logo + client_reference_count + image_count + label_count  # noqa
+        - Level 4 (full): user_count + sector_count + description + logo + client_reference_count + image_count
+          + label_count
         """
         return self.annotate(
             content_filled_basic_annotated=Case(
@@ -1065,7 +1066,7 @@ class Siae(models.Model):
         if self.ca or self.api_entreprise_ca:
             ca = self.ca or self.api_entreprise_ca
             # https://stackoverflow.com/a/18891054/4293684
-            ca_formatted = "{:,}".format(ca).replace(",", " ")
+            ca_formatted = f"{ca:,}".replace(",", " ")
             return f"{ca_formatted}€"
         return "non disponible"
 

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone as datetime_timezone
+from datetime import UTC, datetime
 from io import StringIO
 from unittest.mock import patch
 
@@ -22,7 +22,7 @@ from tests.users.factories import UserFactory
 # Settings are also overriden to avoid changing settings breaking tests
 @patch(
     "django.utils.timezone.now",
-    lambda: datetime(year=2024, month=1, day=1, tzinfo=datetime_timezone.utc),
+    lambda: datetime(year=2024, month=1, day=1, tzinfo=UTC),
 )
 @override_settings(
     INACTIVE_USER_TIMEOUT_IN_MONTHS=12,
@@ -30,7 +30,7 @@ from tests.users.factories import UserFactory
 )
 class UserAnonymizationTestCase(TestCase):
     def setUp(self):
-        frozen_now = datetime(year=2024, month=1, day=1, tzinfo=datetime_timezone.utc)
+        frozen_now = datetime(year=2024, month=1, day=1, tzinfo=UTC)
         self.frozen_last_year = frozen_now - relativedelta(years=1)
         self.frozen_warning_date = self.frozen_last_year + relativedelta(days=7)
 

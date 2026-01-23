@@ -52,7 +52,6 @@ class DashboardFavoriteListViewTest(TestCase):
 
 
 class DashboardFavoriteDeleteViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory(kind=User.KIND_BUYER)
         self.siae_1 = SiaeFactory(name="SIAE_1")

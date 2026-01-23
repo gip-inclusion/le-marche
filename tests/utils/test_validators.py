@@ -5,7 +5,6 @@ from lemarche.utils.validators import validate_naf, validate_post_code, validate
 
 
 class ValidatorsTest(TestCase):
-
     def test_post_code_validator(self):
         validator = validate_post_code
         POST_CODE_OK = ["00000", "12345", "38000"]

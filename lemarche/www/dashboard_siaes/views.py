@@ -261,7 +261,6 @@ class SiaeActivitySectorFormView(SiaeMemberRequiredMixin, TemplateView):
 
 
 class HtmxActivityValidationMixin:
-
     def form_invalid(self, form):
         """Form htmx, not sent in case of valid form because lost in redirect"""
         response = super().form_invalid(form)

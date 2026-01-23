@@ -19,7 +19,6 @@ def get_buying_entities_choices():
 
 
 class PurchaseFilterSet(django_filters.FilterSet):
-
     class InclusiveSectorTypeChoices(TextChoices):
         INSERTION = "INSERTION", "Insertion"
         HANDICAP = "HANDICAP", "Handicap"

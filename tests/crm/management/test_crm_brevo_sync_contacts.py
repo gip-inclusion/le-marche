@@ -16,7 +16,6 @@ class CrmBrevoSyncContactsCommandTest(TransactionTestCase):
     """Tests for the crm_brevo_sync_contacts management command."""
 
     def setUp(self):
-
         # Create test users
         self.user1 = UserFactory(email="user1@example.com", kind="BUYER")
         self.user2 = UserFactory(email="user2@example.com", kind="BUYER")

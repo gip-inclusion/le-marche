@@ -8,7 +8,7 @@ from content_manager.models import ContentPage, Tag
 
 class ArticleList(RoutablePageMixin, Page):
     def get_context(self, request, *args, **kwargs):
-        context = super(ArticleList, self).get_context(request, *args, **kwargs)
+        context = super().get_context(request, *args, **kwargs)
         context["article_list"] = self.posts
         context["search_type"] = getattr(self, "search_type", "")
         context["search_term"] = getattr(self, "search_term", "")
