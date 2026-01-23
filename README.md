@@ -29,10 +29,10 @@ Voici un tableau explicatif de la nomenclature utilisée dans le code (par rappo
 Étapes d'une installation en local à des fins de développement.
 L'environnement fourni permet de fonctionner de deux manières différentes :
 
-1. Poetry + Postgres (sans Docker)
+1. UV + Postgres (sans Docker)
 2. Docker + Docker Compose (installe tout l'environnement nécessaire)
 
-### Poetry (sans Docker)
+### UV (sans Docker)
 
 #### Configuration
 
@@ -48,24 +48,24 @@ $ source ./env.local.sh
 
 Prérequis :
 
-- packets python à installer : poetry, python3.13, python3.13-dev
+- packets python à installer : uv
 - initialiser une db Postgres (ne pas oublier l'extension PostGIS)
 
 Installation et exécution :
 
 ```bash
-> Installation environnement Python
-$ poetry install
+# Installation environnement Python
+$ uv sync
 
-> Configuration environnement
+# Configuration environnement
 $ source ./env.local.sh
 
-> Exécution
-$ poetry run python manage.py runserver
-$ poetry run python manage.py [COMMANDES]
+# Activation de l'environnement virtuel
+source .venv/bin/activate
 
-> Avec surcharge `PYTHONPATH` (à résoudre)
-$ env PYTHONPATH=./lemarche:./lemarche/c4_directory poetry run python manage.py [COMMANDES]
+# Exécution
+$ ./manage.py runserver
+$ ./manage.py [COMMANDES]
 ```
 
 ### Docker
@@ -108,26 +108,18 @@ Une fois lancé, l'application est disponible sur <http://localhost:8880/>.
 Le dépôt de besoin utilise les périmètres. Il est possible de les charger avec les commandes Django :
 
 ```bash
-django-admin import_regions
-django-admin import_departements
-django-admin import_communes
+./manage.py import_regions
+./manage.py import_departements
+./manage.py import_communes
 ```
 
 ### Données de test
 
-- fixtures :
-
 ```bash
-ls -d lemarche/fixtures/django/* | xargs django-admin loaddata
+make populate_db
 ```
 
-- commande Django :
-
-```bash
-django-admin create_content_pages
-```
-
-> **Remarque** : La commande `create_content_pages` crée 6 pages de types ContentPage :
+> **Remarque** : `populate_db` exécute la commande `create_content_pages` qui crée 6 pages de types ContentPage :
 ('accessibilite', 'cgu', 'cgu-api', 'confidentialite', 'mentions-legales' et 'qui-sommes-nous').
 
 ## API
@@ -144,21 +136,11 @@ de la documentation autogénérée.
 ### Dépendances et environnement
 
 Le projet centralise ses dépendances dans le fichier [pyproject.toml](pyproject.toml).
-Poetry utilise le fichier `poetry.lock`, et une commande permet de générer le fichier `requirements.txt`.
-
-(c'est ce choix qui motive l'utilisation de `pflake8` et `poethepoet`).
+Uv utilise le fichier `uv.lock`
 
 ```bash
 # Mise à jour dépendances
-$ poetry update
-# Mise à jour des fichiers requirements/*.txt
-$ make export_requirements
-```
-
-Et pour connaître les dépendances à mettre à jour :
-
-```bash
-poetry show --outdated
+$ uv lock --upgrade
 ```
 
 ### Migrations
@@ -167,8 +149,8 @@ Si l'environnement est neuf ou n'est plus à jour, appliquez les migrations néc
 
 ```bash
 # Avec manage.py
-$ poetry run python manage.py makemigrations
-$ poetry run python manage.py migrate
+$ ./manage.py makemigrations
+$ ./manage.py migrate
 ```
 
 ## Développement
@@ -180,8 +162,7 @@ Le repo suit le workflow [par branche de fonctionnalité](https://www.atlassian.
 Mettre en place le `pre-commit` :
 
 ```bash
-poetry run pre-commit install
-poetry run pre-commit run
+pre-commit install
 ```
 
 Le projet utilise flake8, isort et black pour assurer la standardisation des écritures.
@@ -201,9 +182,9 @@ Les tests se trouvent dans les fichiers `tests.py` ou les répertoires [tests](t
 Pour lancer les tests :
 
 ```bash
-poetry run python manage.py test
+./manage.py test
 # pour lancer un lot de tests en particulier
-poetry run python manage.py test -- lemarche.api.siaes.tests.SiaeListApiTest
+./manage.py test -- lemarche.api.siaes.tests.SiaeListApiTest
 ```
 
 ## Taches asynchrones

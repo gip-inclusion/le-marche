@@ -13,9 +13,9 @@ class Command(BaseCommand):
     Before the insert we clean the table of users in stats db
 
     Usage:
-    poetry run python manage.py import_users_for_stats
-    poetry run python manage.py import_users_for_stats --clean
-    poetry run python manage.py import_users_for_stats --no-clean
+    ./manage.py import_users_for_stats
+    ./manage.py import_users_for_stats --clean
+    ./manage.py import_users_for_stats --no-clean
     """
 
     def add_arguments(self, parser):

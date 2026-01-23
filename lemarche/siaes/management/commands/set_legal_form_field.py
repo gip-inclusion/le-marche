@@ -26,8 +26,8 @@ def read_csv(file_path):
 class Command(BaseCommand):
     """
     Usage:
-    - poetry run python manage.py set_legal_form_field --dry-run
-    - poetry run python manage.py set_legal_form_field
+    - ./manage.py set_legal_form_field --dry-run
+    - ./manage.py set_legal_form_field
     """
 
     def add_arguments(self, parser):

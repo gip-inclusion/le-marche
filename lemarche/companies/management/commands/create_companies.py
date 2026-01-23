@@ -13,7 +13,7 @@ from lemarche.utils.emails import GENERIC_EMAIL_DOMAIN_SUFFIX_LIST
 class Command(BaseCommand):
     """
     Usage:
-    - poetry run python manage.py create_companies
+    - ./manage.py create_companies
 
     Common rules:
     "ville", "commune" --> Commune (138)

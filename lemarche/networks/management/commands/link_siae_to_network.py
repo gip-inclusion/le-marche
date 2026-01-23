@@ -7,8 +7,8 @@ from lemarche.utils.commands import BaseCommand
 
 class Command(BaseCommand):
     """
-    poetry run python manage.py link_siae_to_network --file file.csv --network 8 --siret-column 'SIRET' --dry-run
-    poetry run python manage.py link_siae_to_network --file file.csv --network 8 --siret-column 'SIRET'
+    ./manage.py link_siae_to_network --file file.csv --network 8 --siret-column 'SIRET' --dry-run
+    ./manage.py link_siae_to_network --file file.csv --network 8 --siret-column 'SIRET'
     """
 
     def add_arguments(self, parser):

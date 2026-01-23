@@ -62,7 +62,7 @@ class Command(BaseCommand):
     - 2008 CPV codes: 9454 in total
 
     Usage
-    - poetry run python manage.py import_cpv
+    - ./manage.py import_cpv
     """
 
     def handle(self, *args, **options):

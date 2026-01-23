@@ -89,8 +89,8 @@ class Command(BaseCommand):
     3. Don't forget to delist the siae who were not updated or inactive
 
     Usage:
-    - poetry run python manage.py sync_with_emplois_inclusion --dry-run
-    - poetry run python manage.py sync_with_emplois_inclusion
+    - ./manage.py sync_with_emplois_inclusion --dry-run
+    - ./manage.py sync_with_emplois_inclusion
     """
 
     def add_arguments(self, parser):

@@ -11,10 +11,10 @@ class Command(UpdateAPICommand):
 
     Note: Only on Siae who have coords, filter only on Siae not updated by the API since a two months
 
-    Usage: poetry run python manage.py update_api_zrr_fields
-    Usage: poetry run python manage.py update_api_zrr_fields --limit 10
-    Usage: poetry run python manage.py update_api_zrr_fields --force
-    Usage: poetry run python manage.py update_api_zrr_fields --limit 100 --no-force
+    Usage: ./manage.py update_api_zrr_fields
+    Usage: ./manage.py update_api_zrr_fields --limit 10
+    Usage: ./manage.py update_api_zrr_fields --force
+    Usage: ./manage.py update_api_zrr_fields --limit 100 --no-force
     """
 
     API_NAME = "ZRR"

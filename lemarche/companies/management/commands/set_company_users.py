@@ -10,9 +10,9 @@ class Command(BaseCommand):
     Only for companies that have their 'email_domain_list' field set
 
     Usage:
-    - poetry run python manage.py set_company_users --dry-run
-    - poetry run python manage.py set_company_users --only-add
-    - poetry run python manage.py set_company_users
+    - ./manage.py set_company_users --dry-run
+    - ./manage.py set_company_users --only-add
+    - ./manage.py set_company_users
     """
 
     def add_arguments(self, parser):

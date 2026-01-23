@@ -115,7 +115,7 @@ def extract_duplicates(esat_list):
 
 class Command(BaseCommand):
     """
-    Usage: poetry run python manage.py import_esat_gesat
+    Usage: ./manage.py import_esat_gesat
     """
 
     def handle(self, *args, **options):

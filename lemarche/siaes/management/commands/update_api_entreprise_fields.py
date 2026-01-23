@@ -36,9 +36,9 @@ class Command(BaseCommand):
     Note: Only on Siae who have api_entreprise_*_last_sync_date as None
 
     Usage:
-    - poetry run python manage.py update_api_entreprise_fields
-    - poetry run python manage.py update_api_entreprise_fields --siret 01234567891011
-    - poetry run python manage.py update_api_entreprise_fields --limit 100
+    - ./manage.py update_api_entreprise_fields
+    - ./manage.py update_api_entreprise_fields --siret 01234567891011
+    - ./manage.py update_api_entreprise_fields --limit 100
     """
 
     def add_arguments(self, parser):

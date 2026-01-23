@@ -4,9 +4,9 @@ LINTER_CHECKED_DIRS := config lemarche scripts tests
 # =============================================================================
 PYTHON_VERSION := python3.13
 
-USE_POETRY := $(shell test -d .poetry && echo 'TRUE')
-ifeq "$(USE_POETRY)" "TRUE"
-	ENV_SHELL_PREFIX := poetry run
+USE_VENV := $(shell test -d .venv && echo 'TRUE')
+ifeq "$(USE_VENV)" "TRUE"
+	ENV_SHELL_PREFIX := 
 else
 	ENV_SHELL_PREFIX := docker compose exec -ti app
 endif
@@ -59,8 +59,5 @@ deploy_prod: scripts/deploy_prod.sh
 test:
 	$(ENV_SHELL_PREFIX) python manage.py test --settings=config.settings.test --noinput --failfast --parallel auto $(TARGET)
 
-export_requirements:
-	poetry export --without-hashes --output requirements/staging.txt
-	poetry export --without-hashes --with dev --output requirements/dev.txt
 
 
