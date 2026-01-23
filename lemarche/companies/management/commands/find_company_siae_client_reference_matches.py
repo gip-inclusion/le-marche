@@ -13,10 +13,10 @@ class Command(BaseCommand):
     Find potential matches between Company and SiaeClientReference using trigram similarity.
 
     Usage:
-    - poetry run python manage.py find_company_siae_client_reference_matches
-    - poetry run python manage.py find_company_siae_client_reference_matches --days 30
-    - poetry run python manage.py find_company_siae_client_reference_matches --min-score 0.3
-    - poetry run python manage.py find_company_siae_client_reference_matches --wet-run
+    - ./manage.py find_company_siae_client_reference_matches
+    - ./manage.py find_company_siae_client_reference_matches --days 30
+    - ./manage.py find_company_siae_client_reference_matches --min-score 0.3
+    - ./manage.py find_company_siae_client_reference_matches --wet-run
     """
 
     def add_arguments(self, parser):

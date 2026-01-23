@@ -84,7 +84,7 @@ class Command(BaseCommand):
     The source file is a .xml
     We transform each Siae to a dict for easier processing
 
-    Usage: poetry run python manage.py import_esat_handeco
+    Usage: ./manage.py import_esat_handeco
     """
 
     def handle(self, *args, **options):

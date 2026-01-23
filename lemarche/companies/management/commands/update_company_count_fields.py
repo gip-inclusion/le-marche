@@ -10,7 +10,7 @@ class Command(BaseCommand):
     Goal: update the '_count' fields of each Company
 
     Usage:
-    - poetry run python manage.py update_company_count_fields
+    - ./manage.py update_company_count_fields
     """
 
     @monitor(monitor_slug="update_company_count_fields")

@@ -43,9 +43,9 @@ class Command(BaseCommand):
     4. Cleanup
 
     Usage:
-    poetry run python manage.py export_all_siae_to_file
-    poetry run python manage.py export_all_siae_to_file  --format csv
-    poetry run python manage.py export_all_siae_to_file  --format all
+    ./manage.py export_all_siae_to_file
+    ./manage.py export_all_siae_to_file  --format csv
+    ./manage.py export_all_siae_to_file  --format all
     """
 
     def add_arguments(self, parser):

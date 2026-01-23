@@ -13,11 +13,6 @@ ENV APP_DIR="/app" \
     PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100 \
-    POETRY_VERSION=2.2.0 \
-    POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_IN_PROJECT=1 \
-    POETRY_VIRTUALENVS_CREATE=1 \
-    POETRY_CACHE_DIR=/opt/.cache \
     NODE_VERSION=15
 
 # Add new user to run the whole thing as non-root.
@@ -34,9 +29,9 @@ ENV VIRTUAL_ENV=$APP_DIR/.venv \
     PATH="$APP_DIR/.venv/bin:$PATH"
 
 # Install Python dependencies
-COPY poetry.lock pyproject.toml $APP_DIR
-RUN pip install poetry==$POETRY_VERSION && pip install -I uwsgi
-RUN poetry install --no-interaction --no-ansi --no-root
+COPY uv.lock pyproject.toml $APP_DIR
+RUN pip install uv && pip install -I uwsgi
+RUN uv sync
 
 COPY ./blog ./blog
 COPY ./content_manager ./content_manager

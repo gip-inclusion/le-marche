@@ -30,8 +30,8 @@ class Command(BaseCommand):
     - the file should be in the same folder as this management command file
     - make sure the column names correspond
 
-    Usage: poetry run python manage.py import_siae_groups
-    Usage: poetry run python manage.py import_siae_groups --delete
+    Usage: ./manage.py import_siae_groups
+    Usage: ./manage.py import_siae_groups --delete
     """
 
     def add_arguments(self, parser):

@@ -59,7 +59,7 @@ def read_csv(file_path):
 
 class Command(BaseCommand):
     """
-    Usage: poetry run python manage.py import_sep
+    Usage: ./manage.py import_sep
     """
 
     def handle(self, *args, **options):
