@@ -52,16 +52,16 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "coverage>=7.0,<8",
-    "django-debug-toolbar>=5.0,<6",
-    "factory-boy>=3.0,<4",
-    "freezegun>=1.5,<2",
-    "ipdb>=0.13,<0.14",
-    "pre-commit>=4.0,<5",
-    "pyproject-flake8>=7.0,<8",
+    "coverage",
+    "django-debug-toolbar",
+    "factory-boy",
+    "freezegun",
+    "ipdb",
+    "pre-commit",
+    "pyproject-flake8",
     "ruff",
-    "selenium>=4.0,<5",
-    "tblib>=3.0,<4",
+    "selenium",
+    "tblib",
 ]
 
 [tool.ruff]
