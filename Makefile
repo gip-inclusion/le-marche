@@ -13,7 +13,7 @@ endif
 
 # DOCKER commands
 # =============================================================================
-.PHONY: shell_on_django_container shell_on_postgres_container populate_db populate_db_container
+.PHONY: shell_on_django_container shell_on_postgres_container load_fixtures populate_db populate_db_container
 
 # Django
 shell_on_django_container:
@@ -24,9 +24,11 @@ shell_on_postgres_container:
 	docker compose exec -ti db /bin/bash
 
 # After migrate
-populate_db:
-	pg_restore -d marche --if-exists --clean --no-owner --no-privileges lemarche/perimeters/management/commands/data/perimeters_20220104.sql
+load_fixtures:
 	ls -d lemarche/fixtures/django/* | xargs ./manage.py loaddata
+
+populate_db: load_fixtures
+	pg_restore -d marche --if-exists --clean --no-owner --no-privileges lemarche/perimeters/management/commands/data/perimeters_20220104.sql
 	./manage.py create_content_pages
 
 populate_db_container:
