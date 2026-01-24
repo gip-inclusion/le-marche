@@ -33,7 +33,7 @@ dependencies = [
     "django-sesame>=3.0",
     "django-simple-history>=3.7.0",
     "django-storages>=1.0",
-    "drf-spectacular>=0.26,<0.27",
+    "drf-spectacular>=0.26",
     "huey>=2.0",
     "psycopg[binary]>3",
     "python-stdnum>=1.20",
