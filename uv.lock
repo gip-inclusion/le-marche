@@ -427,11 +427,11 @@ wheels = [
 
 [[package]]
 name = "django-environ"
-version = "0.9.0"
+version = "0.12.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/bf/5a/0325376b74279c89cfbdfd134d044094dfce91c1e8f21ea4088f43f56f68/django-environ-0.9.0.tar.gz", hash = "sha256:bff5381533056328c9ac02f71790bd5bf1cea81b1beeb648f28b81c9e83e0a21", size = 49835, upload-time = "2022-06-15T14:49:19.591Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d6/04/65d2521842c42f4716225f20d8443a50804920606aec018188bbee30a6b0/django_environ-0.12.0.tar.gz", hash = "sha256:227dc891453dd5bde769c3449cf4a74b6f2ee8f7ab2361c93a07068f4179041a", size = 56804, upload-time = "2025-01-13T17:03:37.74Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/60/5a/f231f5d3e15217cdf0164019cff5c4a7e5ba6bb5fd502759f94972786e17/django_environ-0.9.0-py2.py3-none-any.whl", hash = "sha256:f21a5ef8cc603da1870bbf9a09b7e5577ab5f6da451b843dbcc721a7bca6b3d9", size = 17918, upload-time = "2022-06-15T14:49:17.175Z" },
+    { url = "https://files.pythonhosted.org/packages/83/b3/0a3bec4ecbfee960f39b1842c2f91e4754251e0a6ed443db9fe3f666ba8f/django_environ-0.12.0-py2.py3-none-any.whl", hash = "sha256:92fb346a158abda07ffe6eb23135ce92843af06ecf8753f43adf9d2366dcc0ca", size = 19957, upload-time = "2025-01-13T17:03:32.918Z" },
 ]
 
 [[package]]
@@ -1016,7 +1016,7 @@ requires-dist = [
     { name = "django-cors-headers", specifier = ">=3.0,<4" },
     { name = "django-datadog-logger", specifier = ">=0.7" },
     { name = "django-dsfr", specifier = "==1.4.3" },
-    { name = "django-environ", specifier = ">=0.9,<0.10" },
+    { name = "django-environ", specifier = ">=0.9" },
     { name = "django-extensions", specifier = ">=3.0" },
     { name = "django-filter", specifier = ">=23.0" },
     { name = "django-formtools", specifier = ">=2.0" },

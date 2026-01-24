@@ -22,7 +22,7 @@ dependencies = [
     "django-cors-headers>=3.0,<4",
     "django-datadog-logger>=0.7",
     "django-dsfr==1.4.3",
-    "django-environ>=0.9,<0.10",
+    "django-environ>=0.9",
     "django-extensions>=3.0",
     "django-filter>=23.0",
     "django-formtools>=2.0",
