@@ -1023,10 +1023,10 @@ requires-dist = [
     { name = "shortuuid", specifier = ">=1.0" },
     { name = "unidecode", specifier = ">=1.3.8" },
     { name = "wagtail", specifier = ">=6.1,<7" },
-    { name = "wagtail-localize", specifier = ">=1.9,<2" },
-    { name = "wagtail-markdown", specifier = ">=0.12.1,<0.13" },
-    { name = "wagtail-modeladmin", specifier = ">=2.0.0,<3" },
-    { name = "wagtailmenus", specifier = ">=4.0,<5" },
+    { name = "wagtail-localize", specifier = ">=1.9" },
+    { name = "wagtail-markdown", specifier = ">=0.12.1" },
+    { name = "wagtail-modeladmin", specifier = ">=2.0.0" },
+    { name = "wagtailmenus", specifier = ">=4.0" },
     { name = "xlwt", specifier = ">=1.0" },
 ]
 
@@ -1819,16 +1819,16 @@ wheels = [
 
 [[package]]
 name = "wagtail-markdown"
-version = "0.12.1"
+version = "0.13.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "bleach" },
     { name = "markdown" },
     { name = "wagtail" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e2/4b/d7b76d1e0c4b29fcd074bd75839232fb2c4aae55d28fb59c0c2edab37e94/wagtail_markdown-0.12.1.tar.gz", hash = "sha256:54f1ba375348e86e03f4eca7d2ac3d33245ead9f854028d7ee9c479448f1e678", size = 126684, upload-time = "2024-03-09T15:23:08.134Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ae/96/9da5747f14895dee20881de0009ea8a34daeacc0d7ecd0787d732a988d8c/wagtail_markdown-0.13.0.tar.gz", hash = "sha256:7631d702358df59318d3b5f225762c5ab28b93a9d40f4b39bb531f9bf8e3ce60", size = 126876, upload-time = "2025-10-06T19:52:31.898Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0d/0c/1a87dbb0f38aae30ff5e7c38bf0ab1ce7cc7c1d8d1e94a74173d55a3b397/wagtail_markdown-0.12.1-py3-none-any.whl", hash = "sha256:bb5f02b6bdfef74b50a74e7aa3f255c7bc9787cec8d03dae50fc9404a0097dba", size = 128401, upload-time = "2024-03-09T15:23:06.212Z" },
+    { url = "https://files.pythonhosted.org/packages/de/92/17e137077498839f07ffa8afa830b0e76b24a5f643c6ae692275096c42be/wagtail_markdown-0.13.0-py3-none-any.whl", hash = "sha256:e35c2d36ac06d74203ba02127edb9bebe1ff026ba5363dbbc101da1c81740b57", size = 128498, upload-time = "2025-10-06T19:52:29.792Z" },
 ]
 
 [[package]]
