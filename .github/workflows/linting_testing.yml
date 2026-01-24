@@ -65,6 +65,9 @@ jobs:
       #----------------------------------------------
       - name: ✨ Run Linters
         run: make quality
+      - name: ✨ Verify DB initialization (migrations, fixtures, ...)
+        run: python manage.py migrate && make load_fixtures
+
 
       #----------------------------------------------
       # Check migrations
