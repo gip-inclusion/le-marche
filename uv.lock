@@ -217,11 +217,11 @@ wheels = [
 
 [[package]]
 name = "crawlerdetect"
-version = "0.1.7"
+version = "0.3.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/0d/d8/60a3b7f2859a209430d16eb36b9bcc584828ead4d3bc440b8a1829c134e2/crawlerdetect-0.1.7.tar.gz", hash = "sha256:28837b434250bc4647b8b1056ab9a5bdd7133072c029b59987a3faadadb21b04", size = 20447, upload-time = "2023-08-17T10:02:24.854Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f6/97/f33c16f3ececdfb98582ef0559aee745bcc9fe00d9873fbdb74ad06d7b8b/crawlerdetect-0.3.2.tar.gz", hash = "sha256:1c2f9ccbb786c756c4f5bce62503ac0792b88b0291df6dbd5633f3e9c8a7f432", size = 16775, upload-time = "2025-07-09T16:54:18.415Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d6/40/96d88f551b675caed88b652b8df1e5d77199ce81acd0cd44ef0547810785/crawlerdetect-0.1.7-py2.py3-none-any.whl", hash = "sha256:cd7417f87105d508e5dee99ac1aed9f46b7f70019618c8974db29f103e4c2b33", size = 18298, upload-time = "2023-08-17T10:02:22.594Z" },
+    { url = "https://files.pythonhosted.org/packages/e6/47/1be5b2bc4ce8ab32e592817946017efb89f65957c0d17aa346b97c023f18/crawlerdetect-0.3.2-py3-none-any.whl", hash = "sha256:42e53a1fca1f99fc9459d5c699300e94e02d0a23d1cec4750fe37ce61e6e8441", size = 16507, upload-time = "2025-07-09T16:54:16.573Z" },
 ]
 
 [[package]]
@@ -1005,7 +1005,7 @@ dev = [
 requires-dist = [
     { name = "boto3", specifier = "<1.36.0" },
     { name = "brevo-python", specifier = ">=1.0" },
-    { name = "crawlerdetect", specifier = ">=0.1,<0.2" },
+    { name = "crawlerdetect", specifier = ">=0.1" },
     { name = "django", specifier = ">=5.2,<6" },
     { name = "django-admin-list-filters", specifier = ">=1.2" },
     { name = "django-allauth", specifier = ">=65.0" },
