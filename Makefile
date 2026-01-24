@@ -11,9 +11,9 @@ else
 	ENV_SHELL_PREFIX := docker compose exec -ti app
 endif
 
-.PHONY: shell_on_django_container shell_on_postgres_container
 # DOCKER commands
 # =============================================================================
+.PHONY: shell_on_django_container shell_on_postgres_container populate_db populate_db_container
 
 # Django
 shell_on_django_container:
@@ -35,6 +35,7 @@ populate_db_container:
 
 # Tooling
 # =============================================================================
+.PHONY: quality fix clean
 
 quality:
 	$(ENV_SHELL_PREFIX) ruff format --check $(LINTER_CHECKED_DIRS)
@@ -51,6 +52,7 @@ clean:
 
 # Deployment
 # =============================================================================
+.PHONY: deploy_prod test
 
 deploy_prod: scripts/deploy_prod.sh
 	./scripts/deploy_prod.sh
