@@ -19,7 +19,7 @@ dependencies = [
     "django-better-admin-arrayfield>=1.4",
     "django-ckeditor>=6.0",
     "django-compressor>=4.4",
-    "django-cors-headers>=3.0,<4",
+    "django-cors-headers>=3.0",
     "django-datadog-logger>=0.7",
     "django-dsfr==1.4.3",
     "django-environ>=0.9",
