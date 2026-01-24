@@ -62,7 +62,6 @@ class BrevoApiError(Exception):
 
 
 class BrevoBaseApiClient:
-
     api_client: brevo_python.ApiClient
 
     def __init__(self, config: BrevoConfig = BrevoConfig()):
@@ -105,7 +104,7 @@ class BrevoBaseApiClient:
         if attempt < max_retries:
             wait_time = retry_delay * (attempt + 1)
             self.logger.warning(
-                f"Error {operation_name}, attempt {attempt + 1}/{max_retries} " f"in {wait_time}s: {exception}"
+                f"Error {operation_name}, attempt {attempt + 1}/{max_retries} in {wait_time}s: {exception}"
             )
             return True, wait_time
         else:
@@ -476,7 +475,7 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
             error_body = self._get_error_body(e)
             if error_body and error_body.get("message") == "Contact already removed from list and/or does not exist":
                 self.logger.info(
-                    "calling Brevo->ContactsApi->remove_contact_from_list: " "contact doesn't exist in this list"
+                    "calling Brevo->ContactsApi->remove_contact_from_list: contact doesn't exist in this list"
                 )
                 return {}
             raise e  # Re-raise for retry logic
@@ -867,7 +866,6 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
 
 
 class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
-
     def __init__(self, config: BrevoConfig = BrevoConfig()):
         """
         Initialize the Brevo Transactional Email API client.
@@ -969,12 +967,12 @@ def create_deal(tender, owner_email: str):
     try:
         # create deal
         new_deal = api_instance.crm_deals_post(body_deal).to_dict()
-        logger.info("Succes Brevo->Create a deal : %s\n" % new_deal)
+        logger.info("Succes Brevo->Create a deal : %s\n", new_deal)
         # save brevo deal id
         tender.brevo_deal_id = new_deal.get("id")
         tender.save()
     except ApiException as e:
-        logger.error("Exception when calling Brevo->DealApi->create_deal: %s\n" % e)
+        logger.error("Exception when calling Brevo->DealApi->create_deal: %s\n", e)
         raise ApiException(e)
 
 
@@ -1008,4 +1006,4 @@ def link_deal_with_contact_list(tender, contact_list: list = None):
             api_instance.crm_deals_link_unlink_id_patch(brevo_crm_deal_id, body_link)
             logger.info("Brevo: Deal linked with contacts successfully")
         except ApiException as e:
-            logger.error("Exception when calling Brevo->DealApi->crm_deals_link_unlink_id_patch: %s\n" % e)
+            logger.error("Exception when calling Brevo->DealApi->crm_deals_link_unlink_id_patch: %s\n", e)

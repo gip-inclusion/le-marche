@@ -9,7 +9,8 @@ def create_template(apps, schema_editor):
         {
             "name": "Dépôt de besoin : auteur : modifications requises",
             "code": "TENDERS_AUTHOR_MODIFICATION_REQUEST",
-            "description": "Envoyé à l'auteur du besoin pour lui demander de le modifier ou de prendre rendez-vous avec les admins",
+            "description": "Envoyé à l'auteur du besoin pour lui demander de le modifier ou de prendre rendez-vous "
+            "avec les admins",
         },
         {
             "name": "Dépôt de besoin : auteur : dépôt de besoin rejeté",
@@ -117,9 +118,11 @@ def create_template(apps, schema_editor):
             "description": "Template Tally envoyé à l'auteur du besoin concernant les super SIAE",
         },
         {
-            "name": "Dépôt de besoin : auteur : notification quand son besoin a été validé et pris en charge par les partenaires commerciaux",
+            "name": "Dépôt de besoin : auteur : notification quand son besoin a été validé et pris en charge par "
+            "les partenaires commerciaux",
             "code": "TENDERS_AUTHOR_CONFIRMATION_VALIDATED_COMMERCIAL_PARTNERS",
-            "description": "Envoyé à l'auteur du besoin lorsque son besoin a été validé et qu'il n'est pas envoyé aux structures mais proposé aux partenaires commerciaux",
+            "description": "Envoyé à l'auteur du besoin lorsque son besoin a été validé et qu'il n'est pas envoyé"
+            " aux structures mais proposé aux partenaires commerciaux",
         },
     ]
 
@@ -136,31 +139,41 @@ def create_email_groups(apps, schema_editor):
     email_groups = [
         {
             "display_name": "Structure(s) intéressée(s)",
-            "description": "En désactivant cette option, vous ne serez plus averti par email lorsque des fournisseurs s'intéressent à votre besoin, ce qui pourrait vous faire perdre des opportunités de collaboration rapide et efficace.",
+            "description": "En désactivant cette option, vous ne serez plus averti par email lorsque des fournisseurs"
+            " s'intéressent à votre besoin, ce qui pourrait vous faire perdre des opportunités de"
+            " collaboration rapide et efficace.",
             "relevant_user_kind": "BUYER",
             "can_be_unsubscribed": True,
         },
         {
             "display_name": "Communication marketing",
-            "description": "En désactivant cette option, vous ne recevrez plus par email nos newsletters, enquêtes, invitations à des webinaires et Open Labs, ce qui pourrait vous priver d'informations utiles et de moments d'échange exclusifs.",
+            "description": "En désactivant cette option, vous ne recevrez plus par email nos newsletters, enquêtes,"
+            " invitations à des webinaires et Open Labs, ce qui pourrait vous priver d'informations"
+            " utiles et de moments d'échange exclusifs.",
             "relevant_user_kind": "BUYER",
             "can_be_unsubscribed": True,
         },
         {
             "display_name": "Opportunités commerciales",
-            "description": "En désactivant cette option, vous ne recevrez plus par email les demandes de devis et les appels d'offres spécialement adaptés à votre activité, ce qui pourrait vous faire manquer des opportunités importantes pour votre entreprise.",
+            "description": "En désactivant cette option, vous ne recevrez plus par email les demandes de devis et"
+            " les appels d'offres spécialement adaptés à votre activité, ce qui pourrait vous faire"
+            " manquer des opportunités importantes pour votre entreprise.",
             "relevant_user_kind": "SIAE",
             "can_be_unsubscribed": True,
         },
         {
             "display_name": "Demandes de mise en relation",
-            "description": "En désactivant cette option, vous ne recevrez plus par email les demandes de mise en relation de clients intéressés par votre structure, ce qui pourrait vous faire perdre des opportunités précieuses de collaboration et de développement.",
+            "description": "En désactivant cette option, vous ne recevrez plus par email les demandes de mise en"
+            " relation de clients intéressés par votre structure, ce qui pourrait vous faire perdre"
+            " des opportunités précieuses de collaboration et de développement.",
             "relevant_user_kind": "SIAE",
             "can_be_unsubscribed": True,
         },
         {
             "display_name": "Communication marketing",
-            "description": "En désactivant cette option, vous ne recevrez plus par email nos newsletters, enquêtes, invitations aux webinaires et Open Labs, ce qui pourrait vous faire passer à côté d’informations clés, de ressources utiles et d’événements exclusifs.",
+            "description": "En désactivant cette option, vous ne recevrez plus par email nos newsletters, enquêtes,"
+            " invitations aux webinaires et Open Labs, ce qui pourrait vous faire passer à côté"
+            " d’informations clés, de ressources utiles et d’événements exclusifs.",
             "relevant_user_kind": "SIAE",
             "can_be_unsubscribed": True,
         },

@@ -10,7 +10,6 @@ from tests.tenders.factories import TenderFactory
 
 
 class AntivirusScanCommandTest(TransactionTestCase):
-
     def setUp(self):
         # create a tender with an attachment
         self.tender = TenderFactory.create()

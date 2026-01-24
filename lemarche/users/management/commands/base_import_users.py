@@ -32,7 +32,7 @@ class BaseImportUsersCommand(BaseCommand):
 
     def handle(self, *args, **options):
         # Subclasses can override this to add setup logic (e.g., get company)
-        with open(options["filename"], "r", encoding="utf-8") as csvfile:
+        with open(options["filename"], encoding="utf-8") as csvfile:
             reader = csv.DictReader(csvfile)
             imported_list = list(reader)
 

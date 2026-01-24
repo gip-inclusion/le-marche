@@ -169,7 +169,6 @@ class Command(BaseCommand):
         )
 
         def serializer(membership):
-
             return [
                 SOURCE,
                 f"{SOURCE}--{membership.user_id}",

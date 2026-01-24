@@ -26,7 +26,6 @@ def create_cache_table(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -76,7 +75,8 @@ class Migration(migrations.Migration):
                     "is_active",
                     models.BooleanField(
                         default=True,
-                        help_text="Designates whether this user should be treated as active. Unselect this instead of deleting accounts.",
+                        help_text="Designates whether this user should be treated as active. Unselect this instead of "
+                        "deleting accounts.",
                         verbose_name="active",
                     ),
                 ),
@@ -96,7 +96,8 @@ class Migration(migrations.Migration):
                     "groups",
                     models.ManyToManyField(
                         blank=True,
-                        help_text="The groups this user belongs to. A user will get all permissions granted to each of their groups.",
+                        help_text="The groups this user belongs to. A user will get all permissions granted to each of"
+                        " their groups.",
                         related_name="user_set",
                         related_query_name="user",
                         to="auth.group",
@@ -146,21 +147,25 @@ class Migration(migrations.Migration):
                     "accept_survey",
                     models.BooleanField(
                         default=False,
-                        help_text="J'accepte de répondre à une enquête deux fois par an afin de permettre de mesurer la progression des achats inclusifs en France",
+                        help_text="J'accepte de répondre à une enquête deux fois par an afin de permettre de mesurer "
+                        "la progression des achats inclusifs en France",
                     ),
                 ),
                 (
                     "accept_offers_for_pro_sector",
                     models.BooleanField(
                         default=False,
-                        help_text="Je m'engage à ce que les offres déposées sur la Place de marché soient destinées à des structures professionnelles (association, secteur privé ou public)",
+                        help_text="Je m'engage à ce que les offres déposées sur la Place de marché soient destinées à "
+                        "des structures professionnelles (association, secteur privé ou public)",
                     ),
                 ),
                 (
                     "accept_quote_promise",
                     models.BooleanField(
                         default=False,
-                        help_text="Je m'engage à traiter les demandes de devis qui me seront adressées (soumettre un devis, solliciter des informations complémentaires ou  refuser une demande constituent des réponses)",
+                        help_text="Je m'engage à traiter les demandes de devis qui me seront adressées (soumettre un "
+                        "devis, solliciter des informations complémentaires ou  refuser une demande constituent des "
+                        "réponses)",
                     ),
                 ),
                 ("position", models.CharField(blank=True, max_length=255, verbose_name="Poste")),
@@ -192,7 +197,9 @@ class Migration(migrations.Migration):
                     "accept_share_contact_to_external_partners",
                     models.BooleanField(
                         default=False,
-                        help_text="J'accepte que mes coordonnées de contact soient partagées avec les partenaires externes du Marché de l'inclusion afin de recevoir des opportunités commerciales (appels d'offres, marché ...)",
+                        help_text="J'accepte que mes coordonnées de contact soient partagées avec les partenaires "
+                        "externes du Marché de l'inclusion afin de recevoir des opportunités commerciales (appels "
+                        "d'offres, marché ...)",
                         verbose_name="Partage de contact à des partenaires externes",
                     ),
                 ),
@@ -226,7 +233,8 @@ class Migration(migrations.Migration):
                     "can_display_tender_contact_details",
                     models.BooleanField(
                         default=False,
-                        help_text="Permet à certains utilisateurs partenaires de voir directement les coordonnées. Les autres auront un message leur demandant de contacter les admins",
+                        help_text="Permet à certains utilisateurs partenaires de voir directement les coordonnées. "
+                        "Les autres auront un message leur demandant de contacter les admins",
                         verbose_name="Ce partenaire a accès aux coordonnées de l'acheteur ?",
                     ),
                 ),

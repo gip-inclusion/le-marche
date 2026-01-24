@@ -25,7 +25,7 @@ class CustomSelectMultiple(forms.CheckboxSelectMultiple):
                     _value = option["value"] if not hasattr(option["value"], "value") else option["value"].value
                     group["options"].append(
                         {
-                            "id": f'{attrs["id"]}_{_value}',
+                            "id": f"{attrs['id']}_{_value}",
                             "label": str(option["label"]),
                             "value": _value,
                         }
@@ -36,7 +36,7 @@ class CustomSelectMultiple(forms.CheckboxSelectMultiple):
                     _value = option["value"] if not hasattr(option["value"], "value") else option["value"].value
                     options.append(
                         {
-                            "id": f'{attrs["id"]}_{_value}',
+                            "id": f"{attrs['id']}_{_value}",
                             "label": str(option["label"]),
                             "value": _value,
                         }

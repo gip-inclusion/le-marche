@@ -11,7 +11,6 @@ class RemoveBetaRedirectMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-
         # If the host does not contain '.beta.', don't redirect
         if ".beta." not in request.get_host():
             return self.get_response(request)

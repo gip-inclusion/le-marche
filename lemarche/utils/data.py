@@ -74,7 +74,7 @@ def phone_number_is_valid(phone_number):
         phonenumbers.is_valid_number(number_string) / returns True or False
     - with PhoneNumber
         from phonenumber_field.phonenumber import PhoneNumber
-        PhoneNumber.from_string(number_string).is_valid() / returns True or NumberParseException.INVALID_COUNTRY_CODE  # noqa
+        PhoneNumber.from_string(number_string).is_valid() / returns True or NumberParseException.INVALID_COUNTRY_CODE
 
     A number without a country code (example: +33) will be considered invalid.
     """

@@ -16,7 +16,6 @@ import lemarche.utils.fields
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -313,7 +312,9 @@ class Migration(migrations.Migration):
                     "distance_location",
                     models.IntegerField(
                         blank=True,
-                        help_text="Si vous décidez de faire un ciblage en km, vérifiez que le lieu d’intervention est bien renseigné et est une ville et que le kilométrage indiqué correspond à la réalité du besoin et des prestataires en face",
+                        help_text="Si vous décidez de faire un ciblage en km, vérifiez que le lieu d’intervention "
+                        "est bien renseigné et est une ville et que le kilométrage indiqué correspond à la réalité "
+                        "du besoin et des prestataires en face",
                         null=True,
                         verbose_name="Distance en kilomètres autour du lieu d'intervention",
                     ),
@@ -322,15 +323,18 @@ class Migration(migrations.Migration):
                     "include_country_area",
                     models.BooleanField(
                         default=False,
-                        help_text="Laisser vide pour exclure les structures qui ont comme périmètre d'intervention 'France entière'",
-                        verbose_name="Inclure les structures qui ont comme périmètre d'intervention 'France entière' ?",
+                        help_text="Laisser vide pour exclure les structures qui ont comme périmètre d'intervention "
+                        "'France entière'",
+                        verbose_name="Inclure les structures qui ont comme périmètre d'intervention "
+                        "'France entière' ?",
                     ),
                 ),
                 (
                     "is_country_area",
                     models.BooleanField(
                         default=False,
-                        help_text="Retournera uniquement les structures qui ont comme périmètre d'intervention 'France entière'",
+                        help_text="Retournera uniquement les structures qui ont comme périmètre d'intervention "
+                        "'France entière'",
                         verbose_name="France entière",
                     ),
                 ),
@@ -338,7 +342,9 @@ class Migration(migrations.Migration):
                     "with_ai_matching",
                     models.BooleanField(
                         default=False,
-                        help_text="Effectue une recherche sémantique avec la description du besoin pour ajouter des structures au ciblage traditionnel. La distance en kilomètres autour du lieu d'intervention (de type ville) est prise en compte.",
+                        help_text="Effectue une recherche sémantique avec la description du besoin pour ajouter des "
+                        "structures au ciblage traditionnel. La distance en kilomètres autour du lieu d'intervention "
+                        "(de type ville) est prise en compte.",
                         verbose_name="Activer le ciblage alternatif IA",
                     ),
                 ),
@@ -373,7 +379,8 @@ class Migration(migrations.Migration):
                     models.CharField(
                         choices=[("0", "Non"), ("1", "Peu probablement"), ("2", "Très probablement"), ("3", "Oui")],
                         default="0",
-                        help_text="Si le Marché de l'inclusion n'existait pas, auriez-vous consulté des prestataires inclusifs* pour ce besoin ?",
+                        help_text="Si le Marché de l'inclusion n'existait pas, auriez-vous consulté des prestataires "
+                        "inclusifs* pour ce besoin ?",
                         max_length=2,
                         verbose_name="Utilité du marché de l'inclusion",
                     ),
@@ -388,14 +395,16 @@ class Migration(migrations.Migration):
                             ("DI", "Annuaire spécialisé (GESAT, UNEA, Handeco)"),
                             (
                                 "RC",
-                                "Recommandations et bouche-à-oreille (Réseaux sociaux, recommandations personnelles, collègues)",
+                                "Recommandations et bouche-à-oreille (Réseaux sociaux, recommandations personnelles, "
+                                "collègues)",
                             ),
                             ("KP", "Prestataires connus et habituels (Fournisseurs actuels)"),
                             ("PT", "Appel d'offres et consultations publiques (BOAMP, JOUE, AWS, appels d'offres)"),
                             ("FA", "Facilitateurs de clauses sociales"),
                             (
                                 "LS",
-                                "Sourcing local et salons professionnels (Recherche locale, salons, événements professionnels)",
+                                "Sourcing local et salons professionnels (Recherche locale, salons, événements "
+                                "professionnels)",
                             ),
                         ],
                         default="DK",

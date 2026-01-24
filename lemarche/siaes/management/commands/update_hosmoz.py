@@ -76,7 +76,7 @@ class Command(BaseCommand):
         self.import_hosmoz()
 
     def import_hosmoz(self):
-        with open(self.csv_file, "r") as f:
+        with open(self.csv_file) as f:
             reader = csv.DictReader(f)
             for row in reader:
                 self.import_row(row)
@@ -98,7 +98,6 @@ class Command(BaseCommand):
             return f"{API_CONNECTION_DICT['endpoint_url']}/{self.bucket_name}/{bucket_path}"
 
     def import_row(self, row):
-
         form_data = {
             "contact_email": row["Email"],
             "contact_phone": row["Tel public"],

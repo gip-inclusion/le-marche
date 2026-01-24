@@ -500,7 +500,8 @@ class SiaePerimeterSearchFilterTest(TestCase):
         We should return:
         - all the Siae exactly in the city - Grenoble (4 Siae)
         + all the Siae in the city's department (except GEO_RANGE_CUSTOM) - Isere (0 new Siae)
-        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble (1 new Siae: La Tronche. Chamrousse is outside)  # noqa
+        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble
+          (1 new Siae: La Tronche. Chamrousse is outside)
         + all the Siae with activities in the region Auvergne-Rhône-Alpes (1 new Siae)
         + all the Siae with activities in the department Isere (1 new Siae)
         """
@@ -514,8 +515,10 @@ class SiaePerimeterSearchFilterTest(TestCase):
         We should return:
         - all the Siae exactly in the city - Chamrousse (1 Siae)
         + all the Siae in the city's department (except GEO_RANGE_CUSTOM) - Isere (3 new Siae)
-        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble (1 Siae, 0 new: Chamrousse. Grenoble & La Tronche are outside)  # noqa
-        + all the Siae with activities in the region Auvergne-Rhône-Alpes (0 new Siae, siae_8 already matched by city's department)  # noqa
+        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble
+          (1 Siae, 0 new: Chamrousse. Grenoble & La Tronche are outside)
+        + all the Siae with activities in the region Auvergne-Rhône-Alpes
+          (0 new Siae, siae_8 already matched by city's department)
         + all the Siae with activities in the department Isere (1 new Siae)
         """
         form = SiaeFilterForm(data={"perimeters": [self.chamrousse_perimeter]})
@@ -527,7 +530,8 @@ class SiaePerimeterSearchFilterTest(TestCase):
         We should return:
         - all the Siae exactly in these cities - Grenoble & Chamrousse (4 + 1 Siae)
         + all the Siae in the cities departments (except GEO_RANGE_CUSTOM) - Isere (0 new Siae)
-        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble or Chamrousse (2 Siae, 1 new) # noqa
+        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble or
+          Chamrousse (2 Siae, 1 new)
         + all the Siae with activities in the region Auvergne-Rhône-Alpes (1 new Siae)
         + all the Siae with activities in the department Isere (1 new Siae)
         """
@@ -540,9 +544,11 @@ class SiaePerimeterSearchFilterTest(TestCase):
         We should return:
         - all the Siae exactly in these cities - Grenoble & Quimper (4 + 4)
         + all the Siae in the cities departments (except GEO_RANGE_CUSTOM) - Isere & 29 (0 new Siae)
-        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble or Quimper (1 new Siae) # noqa
+        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of
+          Grenoble or Quimper (1 new Siae)
         + all the Siae with activities in the region Auvergne-Rhône-Alpes (1 new Siae)
-        + all the Siae with activities in the department Isere (0 new Siae, siae_9 already matched by city's department)
+        + all the Siae with activities in the department Isere
+          (0 new Siae, siae_9 already matched by city's department)
         """
         form = SiaeFilterForm(data={"perimeters": [self.grenoble_perimeter, self.quimper_perimeter]})
         qs = form.filter_queryset()

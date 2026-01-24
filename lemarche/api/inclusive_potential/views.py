@@ -7,7 +7,6 @@ from lemarche.api.inclusive_potential.utils import get_inclusive_potential_data
 
 
 class InclusivePotentialView(APIView):
-
     @extend_schema(exclude=True)
     def get(self, request):
         serializer = InclusivePotentialQuerySerializer(data=request.query_params)

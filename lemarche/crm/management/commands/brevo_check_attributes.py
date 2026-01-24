@@ -1,5 +1,4 @@
 import logging
-from typing import Dict, Set
 
 import brevo_python
 
@@ -108,17 +107,17 @@ class Command(BaseCommand):
         if missing_attributes and create_missing:
             self._create_missing_company_attributes(missing_attributes, dry_run)
 
-    def _get_expected_contact_attributes(self) -> Set[str]:
+    def _get_expected_contact_attributes(self) -> set[str]:
         """Returns expected attributes for contacts based on code usage"""
         # Uses centralized constants from brevo_attributes.py
         return set(ALL_CONTACT_ATTRIBUTES)
 
-    def _get_expected_company_attributes(self) -> Set[str]:
+    def _get_expected_company_attributes(self) -> set[str]:
         """Returns expected attributes for companies based on code usage"""
         # Uses centralized constants from brevo_attributes.py
         return set(ALL_COMPANY_ATTRIBUTES)
 
-    def _get_brevo_contact_attributes(self) -> Set[str]:
+    def _get_brevo_contact_attributes(self) -> set[str]:
         """Retrieves the list of existing attributes for contacts in Brevo"""
         try:
             client = api_brevo.BrevoBaseApiClient()
@@ -138,7 +137,7 @@ class Command(BaseCommand):
             self.stdout_error(f"Error retrieving Brevo contact attributes: {e}")
             return set()
 
-    def _get_brevo_company_attributes(self) -> Set[str]:
+    def _get_brevo_company_attributes(self) -> set[str]:
         """Retrieves the list of existing attributes for companies in Brevo"""
         try:
             client = api_brevo.BrevoBaseApiClient()
@@ -160,7 +159,7 @@ class Command(BaseCommand):
             return set()
 
     def _display_attribute_report(
-        self, entity_type: str, expected: Set[str], existing: Set[str], missing: Set[str], unknown: Set[str]
+        self, entity_type: str, expected: set[str], existing: set[str], missing: set[str], unknown: set[str]
     ):
         """Displays the attribute comparison report"""
         self.stdout_info(f"\n📊 Report for {entity_type}:")
@@ -180,7 +179,7 @@ class Command(BaseCommand):
             for attr in sorted(unknown):
                 self.stdout_warning(f"    - {attr}")
 
-    def _create_missing_contact_attributes(self, missing_attributes: Set[str], dry_run: bool):
+    def _create_missing_contact_attributes(self, missing_attributes: set[str], dry_run: bool):
         """Creates missing attributes for contacts"""
         self.stdout_info("\n🔧 Creating missing contact attributes...")
 
@@ -201,7 +200,7 @@ class Command(BaseCommand):
 
         self.stdout_info(f"\nContact creation result: {created_count} created, {failed_count} failures")
 
-    def _create_missing_company_attributes(self, missing_attributes: Set[str], dry_run: bool):
+    def _create_missing_company_attributes(self, missing_attributes: set[str], dry_run: bool):
         """Creates missing attributes for companies"""
         self.stdout_info("\n🔧 Creating missing company attributes...")
 
@@ -222,7 +221,7 @@ class Command(BaseCommand):
 
         self.stdout_info(f"\nCompany creation result: {created_count} created, {failed_count} failures")
 
-    def _get_attribute_type_definition(self, attr_name: str) -> Dict:
+    def _get_attribute_type_definition(self, attr_name: str) -> dict:
         """Returns the type definition for a given attribute"""
         # Mapping of attributes to their types
         type_mapping = {

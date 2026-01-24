@@ -46,15 +46,6 @@ SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 
 
-# django-extensions settings.
-# https://django-extensions.readthedocs.io/en/latest/index.html
-# ----------------------------------------------------
-SHELL_PLUS = "ipython"
-SHELL_PLUS_IMPORTS = [
-    "import csv, json, yaml",
-    "from datetime import datetime, date, timedelta",
-]
-
 # django-debug-toolbar settings.
 # https://django-debug-toolbar.readthedocs.io/en/latest/
 # ----------------------------------------------------

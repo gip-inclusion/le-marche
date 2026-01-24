@@ -157,7 +157,6 @@ class BrevoCheckAttributesCommandTest(TestCase):
                 "lemarche.crm.management.commands.brevo_check_attributes.brevo_python.CompaniesApi"
             ) as mock_companies,
         ):
-
             # Mock responses for both APIs
             for mock_api_class in [mock_contacts, mock_companies]:
                 mock_api_instance = MagicMock()

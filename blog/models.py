@@ -73,7 +73,7 @@ class BlogIndexPage(SitesFacilesBasePage):
         return posts
 
     def get_context(self, request, tag=None, category=None, author=None, source=None, year=None, *args, **kwargs):
-        context = super(BlogIndexPage, self).get_context(request, *args, **kwargs)
+        context = super().get_context(request, *args, **kwargs)
         posts = self.posts
         locale = Locale.objects.get(language_code=get_language())
 
@@ -308,7 +308,7 @@ class Category(TranslatableMixin, index.Indexed, models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
-        return super(Category, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     panels = [
         TitleFieldPanel("name"),

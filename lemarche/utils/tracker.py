@@ -78,8 +78,7 @@ def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
             "action": action,
             "data": {
                 # need to be removed later, because we need complete migration
-                "meta": DEFAULT_PAYLOAD["data"]
-                | meta,
+                "meta": DEFAULT_PAYLOAD["data"] | meta,
             },
             "user_id": user_id,
             "user_kind": user_kind,
