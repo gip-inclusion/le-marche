@@ -117,6 +117,7 @@ class SiaeImageFactory(DjangoModelFactory):
 class SiaeUserRequestFactory(DjangoModelFactory):
     class Meta:
         model = SiaeUserRequest
+        skip_postgeneration_save = True
 
     siae = factory.SubFactory(SiaeFactory)
     initiator = factory.SubFactory(UserFactory)
