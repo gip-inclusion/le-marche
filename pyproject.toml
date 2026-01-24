@@ -60,7 +60,6 @@ dev = [
     "pre-commit",
     "ruff",
     "selenium",
-    "tblib",
 ]
 
 [tool.ruff]
