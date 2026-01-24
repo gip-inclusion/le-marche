@@ -173,7 +173,7 @@ class TemplateTransactionalAdmin(admin.ModelAdmin):
             reverse("admin:conversations_templatetransactionalsendlog_changelist")
             + f"?template_transactionals__in={obj.id}"
         )
-        return format_html(f'<a href="{url}">{obj.send_log_count}</a>')
+        return format_html('<a href="{}">{}</a>', url, obj.send_log_count)
 
     template_transactional_send_log_count_with_link.short_description = "Logs d'envois"
     template_transactional_send_log_count_with_link.admin_order_field = "send_log_count"
@@ -210,26 +210,26 @@ class TemplateTransactionalSendLogAdmin(admin.ModelAdmin):
         if obj.recipient_content_type and obj.recipient_object_id:
             if obj.recipient_content_type.model == "tender":
                 url = reverse("admin:tenders_tender_change", args=[obj.recipient_object_id])
-                return format_html(f'<a href="{url}">{obj.recipient_object_id}</a>')
+                return format_html('<a href="{}">{}</a>', url, obj.recipient_object_id)
             elif obj.recipient_content_type.model == "siae":
                 url = reverse("admin:siaes_siae_change", args=[obj.recipient_object_id])
-                return format_html(f'<a href="{url}">{obj.recipient_object_id}</a>')
+                return format_html('<a href="{}">{}</a>', url, obj.recipient_object_id)
             elif obj.recipient_content_type.model == "user":
                 url = reverse("admin:users_user_change", args=[obj.recipient_object_id])
-                return format_html(f'<a href="{url}">{obj.recipient_object_id}</a>')
+                return format_html('<a href="{}">{}</a>', url, obj.recipient_object_id)
         return obj.recipient_object.id
 
     def parent_object_id_with_link(self, obj):
         if obj.parent_content_type and obj.parent_object_id:
             if obj.parent_content_type.model == "tender":
                 url = reverse("admin:tenders_tender_change", args=[obj.parent_object_id])
-                return format_html(f'<a href="{url}">{obj.parent_object_id}</a>')
+                return format_html('<a href="{}">{}</a>', url, obj.parent_object_id)
             if obj.parent_content_type.model == "tendersiae":
                 url = reverse("admin:tenders_tendersiae_change", args=[obj.parent_object_id])
-                return format_html(f'<a href="{url}">{obj.parent_object_id}</a>')
+                return format_html('<a href="{}">{}</a>', url, obj.parent_object_id)
             elif obj.parent_content_type.model == "siaeuserrequest":
                 url = reverse("admin:siaes_siaeuserrequest_change", args=[obj.parent_object_id])
-                return format_html(f'<a href="{url}">{obj.parent_object_id}</a>')
+                return format_html('<a href="{}">{}</a>', url, obj.parent_object_id)
         return obj.context_object.id
 
     def extra_data_display(self, instance: TemplateTransactionalSendLog = None):

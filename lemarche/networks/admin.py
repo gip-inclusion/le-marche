@@ -64,14 +64,14 @@ class NetworkAdmin(admin.ModelAdmin):
 
     def siae_count_annotated_with_link(self, network):
         url = reverse("admin:siaes_siae_changelist") + f"?networks__id__exact={network.id}"
-        return format_html(f'<a href="{url}">{network.siae_count_annotated}</a>')
+        return format_html('<a href="{}">{}</a>', url, network.siae_count_annotated)
 
     siae_count_annotated_with_link.short_description = "Nombre de structures rattachées"
     siae_count_annotated_with_link.admin_order_field = "siae_count_annotated"
 
     def user_partner_count_annotated_with_link(self, network):
         url = reverse("admin:users_user_changelist") + f"?partner_network__id__exact={network.id}"
-        return format_html(f'<a href="{url}">{network.user_partner_count_annotated}</a>')
+        return format_html('<a href="{}">{}</a>', url, network.user_partner_count_annotated)
 
     user_partner_count_annotated_with_link.short_description = "Nombre d'utilisateurs (partenaires) rattachés"
     user_partner_count_annotated_with_link.admin_order_field = "user_partner_count_annotated"

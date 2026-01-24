@@ -99,7 +99,7 @@ class SiaeLabelInline(admin.TabularInline):
 
     def label_with_link(self, siae_label):
         url = reverse("admin:labels_label_change", args=[siae_label.label_id])
-        return format_html(f'<a href="{url}">{siae_label.label}</a>')
+        return format_html('<a href="{}">{}</a>', url, siae_label.label)
 
     label_with_link.short_description = Label._meta.verbose_name
 
@@ -142,7 +142,7 @@ class SiaeUserInline(admin.TabularInline):
 
     def user_with_link(self, siae_user):
         url = reverse("admin:users_user_change", args=[siae_user.user_id])
-        return format_html(f'<a href="{url}">{siae_user.user}</a>')
+        return format_html('<a href="{}">{}</a>', url, siae_user.user)
 
     user_with_link.short_description = User._meta.verbose_name
 
@@ -159,13 +159,13 @@ class ConversationsInline(admin.TabularInline):
 
     def title_with_link(self, conversation: Conversation):
         url = reverse("admin:conversations_conversation_change", args=[conversation.id])
-        return format_html(f'<a href="{url}">{conversation.title}</a>')
+        return format_html('<a href="{}">{}</a>', url, conversation.title)
 
     title_with_link.short_description = "Titre"
 
     def nb_message_with_link(self, conversation: Conversation):
         url = reverse("admin:conversations_conversation_change", args=[conversation.id])
-        return format_html(f'<a href="{url}">{conversation.nb_messages}</a>')
+        return format_html('<a href="{}">{}</a>', url, conversation.nb_messages)
 
     nb_message_with_link.short_description = "Nombre de messages"
 
@@ -499,56 +499,56 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
 
     def user_count_with_link(self, siae):
         url = reverse("admin:users_user_changelist") + f"?siaes__in={siae.id}"
-        return format_html(f'<a href="{url}">{siae.user_count}</a>')
+        return format_html('<a href="{}">{}</a>', url, siae.user_count)
 
     user_count_with_link.short_description = User._meta.verbose_name_plural
     user_count_with_link.admin_order_field = "user_count"
 
     def network_count_with_link(self, siae):
         url = reverse("admin:networks_network_changelist") + f"?siaes__in={siae.id}"
-        return format_html(f'<a href="{url}">{siae.network_count}</a>')
+        return format_html('<a href="{}">{}</a>', url, siae.network_count)
 
     network_count_with_link.short_description = Network._meta.verbose_name_plural
     network_count_with_link.admin_order_field = "network_count"
 
     def group_count_with_link(self, siae):
         url = reverse("admin:siaes_siaegroup_changelist") + f"?siaes__in={siae.id}"
-        return format_html(f'<a href="{url}">{siae.group_count}</a>')
+        return format_html('<a href="{}">{}</a>', url, siae.group_count)
 
     group_count_with_link.short_description = SiaeGroup._meta.verbose_name_plural
     group_count_with_link.admin_order_field = "group_count"
 
     def activity_count_with_link(self, siae):
         url = reverse("admin:siaes_siaeactivity_changelist") + f"?siae__id__exact={siae.id}"
-        return format_html(f'<a href="{url}">{siae.offer_count}</a>')
+        return format_html('<a href="{}">{}</a>', url, siae.offer_count)
 
     activity_count_with_link.short_description = SiaeActivity._meta.verbose_name_plural
     activity_count_with_link.admin_order_field = "offer_count"
 
     def offer_count_with_link(self, siae):
         url = reverse("admin:siaes_siaeoffer_changelist") + f"?siae__id__exact={siae.id}"
-        return format_html(f'<a href="{url}">{siae.offer_count}</a>')
+        return format_html('<a href="{}">{}</a>', url, siae.offer_count)
 
     offer_count_with_link.short_description = SiaeOffer._meta.verbose_name_plural
     offer_count_with_link.admin_order_field = "offer_count"
 
     def label_count_with_link(self, siae):
         url = reverse("admin:siaes_siaelabelold_changelist") + f"?siae__id__exact={siae.id}"
-        return format_html(f'<a href="{url}">{siae.label_count}</a>')
+        return format_html('<a href="{}">{}</a>', url, siae.label_count)
 
     label_count_with_link.short_description = "Labels"
     label_count_with_link.admin_order_field = "label_count"
 
     def client_reference_count_with_link(self, siae):
         url = reverse("admin:siaes_siaeclientreference_changelist") + f"?siae__id__exact={siae.id}"
-        return format_html(f'<a href="{url}">{siae.client_reference_count}</a>')
+        return format_html('<a href="{}">{}</a>', url, siae.client_reference_count)
 
     client_reference_count_with_link.short_description = "Réf. clients"
     client_reference_count_with_link.admin_order_field = "client_reference_count"
 
     def image_count_with_link(self, siae):
         url = reverse("admin:siaes_siaeimage_changelist") + f"?siae__id__exact={siae.id}"
-        return format_html(f'<a href="{url}">{siae.image_count}</a>')
+        return format_html('<a href="{}">{}</a>', url, siae.image_count)
 
     image_count_with_link.short_description = SiaeImage._meta.verbose_name_plural
     image_count_with_link.admin_order_field = "image_count"
@@ -580,7 +580,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
 
     def tender_count_annotated_with_link(self, siae):
         url = reverse("admin:tenders_tender_changelist") + f"?siaes__in={siae.id}"
-        return format_html(f'<a href="{url}">{getattr(siae, "tender_count_annotated", 0)}</a>')
+        return format_html('<a href="{}">{}</a>', url, getattr(siae, "tender_count_annotated", 0))
 
     tender_count_annotated_with_link.short_description = "Besoins concernés"
     tender_count_annotated_with_link.admin_order_field = "tender_count_annotated"
@@ -590,7 +590,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
             reverse("admin:tenders_tender_changelist")
             + f"?siaes__in={siae.id}&tendersiae__email_send_date__isnull=False"
         )
-        return format_html(f'<a href="{url}">{getattr(siae, "tender_email_send_count_annotated", 0)}</a>')
+        return format_html('<a href="{}">{}</a>', url, getattr(siae, "tender_email_send_count_annotated", 0))
 
     tender_email_send_count_annotated_with_link.short_description = "Besoins reçus"
     tender_email_send_count_annotated_with_link.admin_order_field = "tender_email_send_count_annotated"
@@ -600,7 +600,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
             reverse("admin:tenders_tender_changelist")
             + f"?siaes__in={siae.id}&tendersiae__email_link_click_date__isnull=False"
         )
-        return format_html(f'<a href="{url}">{getattr(siae, "tender_email_link_click_count_annotated", 0)}</a>')
+        return format_html('<a href="{}">{}</a>', url, getattr(siae, "tender_email_link_click_count_annotated", 0))
 
     tender_email_link_click_count_annotated_with_link.short_description = "Besoins cliqués"
     tender_email_link_click_count_annotated_with_link.admin_order_field = "tender_email_link_click_count_annotated"
@@ -610,7 +610,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
             reverse("admin:tenders_tender_changelist")
             + f"?siaes__in={siae.id}&tendersiae__detail_display_date__isnull=False"
         )
-        return format_html(f'<a href="{url}">{getattr(siae, "tender_detail_display_count_annotated", 0)}</a>')
+        return format_html('<a href="{}">{}</a>', url, getattr(siae, "tender_detail_display_count_annotated", 0))
 
     tender_detail_display_count_annotated_with_link.short_description = "Besoins vus"
     tender_detail_display_count_annotated_with_link.admin_order_field = "tender_detail_display_count_annotated"
@@ -620,7 +620,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
             reverse("admin:tenders_tender_changelist")
             + f"?siaes__in={siae.id}&tendersiae__detail_contact_click_date__isnull=False"
         )
-        return format_html(f'<a href="{url}">{getattr(siae, "tender_detail_contact_click_count_annotated", 0)}</a>')
+        return format_html('<a href="{}">{}</a>', url, getattr(siae, "tender_detail_contact_click_count_annotated", 0))
 
     tender_detail_contact_click_count_annotated_with_link.short_description = "Besoins intéressés"
     tender_detail_contact_click_count_annotated_with_link.admin_order_field = (
@@ -632,7 +632,9 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
             reverse("admin:tenders_tender_changelist")
             + f"?siaes__in={siae.id}&tendersiae__detail_not_interested_click_date__isnull=False"
         )
-        return format_html(f'<a href="{url}">{getattr(siae, "tender_detail_not_interested_count_annotated", 0)}</a>')
+        return format_html(
+            '<a href="{}">{}</a>', url, getattr(siae, "tender_detail_not_interested_count_annotated", 0)
+        )
 
     tender_detail_not_interested_count_annotated_with_link.short_description = "Besoins pas intéressés"
     tender_detail_not_interested_count_annotated_with_link.admin_order_field = (
@@ -641,7 +643,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
 
     def recipient_transactional_send_logs_count_with_link(self, obj):
         url = reverse("admin:conversations_templatetransactionalsendlog_changelist") + f"?siae__id__exact={obj.id}"
-        return format_html(f'<a href="{url}">{obj.recipient_transactional_send_logs.count()}</a>')
+        return format_html('<a href="{}">{}</a>', url, obj.recipient_transactional_send_logs.count())
 
     recipient_transactional_send_logs_count_with_link.short_description = (
         TemplateTransactionalSendLog._meta.verbose_name
@@ -695,7 +697,7 @@ class SiaeUserRequestAdmin(admin.ModelAdmin):
             reverse("admin:conversations_templatetransactionalsendlog_changelist")
             + f"?siaeuserrequest__id__exact={obj.id}"
         )
-        return format_html(f'<a href="{url}">{obj.parent_transactional_send_logs.count()}</a>')
+        return format_html('<a href="{}">{}</a>', url, obj.parent_transactional_send_logs.count())
 
     parent_transactional_send_logs_count_with_link.short_description = TemplateTransactionalSendLog._meta.verbose_name
 
@@ -775,7 +777,7 @@ class SiaeActivityAdmin(admin.ModelAdmin):
 
     def siae_with_link(self, siae_offer):
         url = reverse("admin:siaes_siae_change", args=[siae_offer.siae_id])
-        return format_html(f'<a href="{url}">{siae_offer.siae}</a>')
+        return format_html('<a href="{}">{}</a>', url, siae_offer.siae)
 
     siae_with_link.short_description = Siae._meta.verbose_name
     siae_with_link.admin_order_field = "siae"
@@ -793,7 +795,7 @@ class SiaeOfferAdmin(admin.ModelAdmin):
 
     def siae_with_link(self, siae_offer):
         url = reverse("admin:siaes_siae_change", args=[siae_offer.siae_id])
-        return format_html(f'<a href="{url}">{siae_offer.siae}</a>')
+        return format_html('<a href="{}">{}</a>', url, siae_offer.siae)
 
     siae_with_link.short_description = Siae._meta.verbose_name
     siae_with_link.admin_order_field = "siae"
@@ -810,7 +812,7 @@ class SiaeLabelOldAdmin(admin.ModelAdmin):
 
     def siae_with_link(self, siae_label):
         url = reverse("admin:siaes_siae_change", args=[siae_label.siae_id])
-        return format_html(f'<a href="{url}">{siae_label.siae}</a>')
+        return format_html('<a href="{}">{}</a>', url, siae_label.siae)
 
     siae_with_link.short_description = Siae._meta.verbose_name
     siae_with_link.admin_order_field = "siae"
@@ -827,7 +829,7 @@ class SiaeClientReferenceAdmin(admin.ModelAdmin):
 
     def siae_with_link(self, siae_client_reference):
         url = reverse("admin:siaes_siae_change", args=[siae_client_reference.siae_id])
-        return format_html(f'<a href="{url}">{siae_client_reference.siae}</a>')
+        return format_html('<a href="{}">{}</a>', url, siae_client_reference.siae)
 
     siae_with_link.short_description = Siae._meta.verbose_name
     siae_with_link.admin_order_field = "siae"
@@ -855,7 +857,7 @@ class SiaeImageAdmin(admin.ModelAdmin):
 
     def siae_with_link(self, siae_image):
         url = reverse("admin:siaes_siae_change", args=[siae_image.siae_id])
-        return format_html(f'<a href="{url}">{siae_image.siae}</a>')
+        return format_html('<a href="{}">{}</a>', url, siae_image.siae)
 
     siae_with_link.short_description = Siae._meta.verbose_name
     siae_with_link.admin_order_field = "siae"
@@ -944,7 +946,7 @@ class SiaeGroupAdmin(admin.ModelAdmin):
 
     def siae_count_annotated_with_link(self, siae_group):
         url = reverse("admin:siaes_siae_changelist") + f"?groups__in={siae_group.id}"
-        return format_html(f'<a href="{url}">{siae_group.siae_count_annotated}</a>')
+        return format_html('<a href="{}">{}</a>', url, siae_group.siae_count_annotated)
 
     siae_count_annotated_with_link.short_description = "Nombre de structures (live)"
     siae_count_annotated_with_link.admin_order_field = "siae_count_annotated"
