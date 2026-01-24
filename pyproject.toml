@@ -58,7 +58,6 @@ dev = [
     "freezegun",
     "ipdb",
     "pre-commit",
-    "pyproject-flake8",
     "ruff",
     "selenium",
     "tblib",
