@@ -10,6 +10,7 @@ from lemarche.siaes.models import (
     SiaeImage,
     SiaeLabelOld,
     SiaeOffer,
+    SiaeUser,
     SiaeUserRequest,
 )
 from tests.sectors.factories import SectorFactory
@@ -64,6 +65,14 @@ class SiaeFactory(DjangoModelFactory):
     def networks(self, create, extracted, **kwargs):
         if extracted:
             self.networks.add(*extracted)
+
+
+class SiaeUserFactory(DjangoModelFactory):
+    class Meta:
+        model = SiaeUser
+
+    siae = factory.SubFactory(SiaeFactory)
+    user = factory.SubFactory(UserFactory)
 
 
 class SiaeActivityFactory(DjangoModelFactory):
