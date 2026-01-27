@@ -10,8 +10,8 @@ from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import get_language, gettext_lazy as _
+from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
-from modelcluster.tags import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel, TitleFieldPanel
 from wagtail.admin.widgets.slug import SlugInput

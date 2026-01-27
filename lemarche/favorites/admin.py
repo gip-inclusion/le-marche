@@ -46,14 +46,14 @@ class FavoriteListAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     def user_with_link(self, favorite_list):
         url = reverse("admin:users_user_change", args=[favorite_list.user_id])
-        return format_html(f'<a href="{url}">{favorite_list.user}</a>')
+        return format_html('<a href="{}">{}</a>', url, favorite_list.user)
 
     user_with_link.short_description = "Utilisateur"
     user_with_link.admin_order_field = "user"
 
     def siae_count_annotated_with_link(self, favorite_list):
         url = reverse("admin:siaes_siae_changelist") + f"?favorite_lists__in={favorite_list.id}"
-        return format_html(f'<a href="{url}">{favorite_list.siae_count_annotated}</a>')
+        return format_html('<a href="{}">{}</a>', url, favorite_list.siae_count_annotated)
 
     siae_count_annotated_with_link.short_description = "Nombre de structures"
     siae_count_annotated_with_link.admin_order_field = "siae_count_annotated"

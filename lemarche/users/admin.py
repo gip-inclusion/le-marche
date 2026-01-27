@@ -13,6 +13,7 @@ from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 from lemarche.conversations.models import TemplateTransactionalSendLog
 from lemarche.notes.models import Note
@@ -200,7 +201,7 @@ class SiaeUserInline(admin.TabularInline):
 
     def siae_with_link(self, siae_user):
         url = reverse("admin:siaes_siae_change", args=[siae_user.siae_id])
-        return format_html(f'<a href="{url}">{siae_user.siae}</a>')
+        return format_html('<a href="{}">{}</a>', url, siae_user.siae)
 
     siae_with_link.short_description = Siae._meta.verbose_name
 
@@ -450,28 +451,28 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
 
     def siae_count_annotated_with_link(self, user):
         url = reverse("admin:siaes_siae_changelist") + f"?users__in={user.id}"
-        return format_html(f'<a href="{url}">{getattr(user, "siae_count_annotated", 0)}</a>')
+        return format_html('<a href="{}">{}</a>', url, getattr(user, "siae_count_annotated", 0))
 
     siae_count_annotated_with_link.short_description = "Nombre de structures"
     siae_count_annotated_with_link.admin_order_field = "siae_count_annotated"
 
     def tender_count_annotated_with_link(self, user):
         url = reverse("admin:tenders_tender_changelist") + f"?author__id__exact={user.id}"
-        return format_html(f'<a href="{url}">{getattr(user, "tender_count_annotated", 0)}</a>')
+        return format_html('<a href="{}">{}</a>', url, getattr(user, "tender_count_annotated", 0))
 
     tender_count_annotated_with_link.short_description = "Nombre de besoins déposés"
     tender_count_annotated_with_link.admin_order_field = "tender_count_annotated"
 
     def favorite_list_count_with_link(self, user):
         url = reverse("admin:favorites_favoritelist_changelist") + f"?users__in={user.id}"
-        return format_html(f'<a href="{url}">{user.favorite_list_count}</a>')
+        return format_html('<a href="{}">{}</a>', url, user.favorite_list_count)
 
     favorite_list_count_with_link.short_description = "Nombre de listes de favoris"
     favorite_list_count_with_link.admin_order_field = "favorite_list_count"
 
     def recipient_transactional_send_logs_count_with_link(self, obj):
         url = reverse("admin:conversations_templatetransactionalsendlog_changelist") + f"?user__id__exact={obj.id}"
-        return format_html(f'<a href="{url}">{obj.recipient_transactional_send_logs.count()}</a>')
+        return format_html('<a href="{}">{}</a>', url, obj.recipient_transactional_send_logs.count())
 
     recipient_transactional_send_logs_count_with_link.short_description = (
         TemplateTransactionalSendLog._meta.verbose_name
@@ -486,12 +487,11 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
 
     def onboard_user_button(self, user):
         if user.have_followed_onboarding:
-            return format_html('<img src="/static/admin/img/icon-yes.svg" alt="True">')
+            return mark_safe('<img src="/static/admin/img/icon-yes.svg" alt="True">')
         else:
             return format_html(
-                f"<a class='button'"
-                f" href='{reverse('admin:onboard_user', args=[user.pk])}'>"
-                f"Confirmer que l'utilisateur a suivi la procédure d'onboarding</a>"
+                "<a class='button' href='{}'>Confirmer que l'utilisateur a suivi la procédure d'onboarding</a>",
+                reverse("admin:onboard_user", args=[user.pk]),
             )
 
     onboard_user_button.short_description = "L'utilisateur a suivi la procédure d'onboarding"

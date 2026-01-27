@@ -67,7 +67,7 @@ class CodeAdmin(admin.ModelAdmin):
 
     def sector_count_annotated_with_link(self, code):
         url = reverse("admin:sectors_sector_changelist") + f"?cpv_codes__in={code.id}"
-        return format_html(f'<a href="{url}">{code.sector_count_annotated}</a>')
+        return format_html('<a href="{}">{}</a>', url, code.sector_count_annotated)
 
     sector_count_annotated_with_link.short_description = "Nombre de secteurs correspondants"
     sector_count_annotated_with_link.admin_order_field = "sector_count_annotated"

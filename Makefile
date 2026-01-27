@@ -60,7 +60,8 @@ deploy_prod: scripts/deploy_prod.sh
 	./scripts/deploy_prod.sh
 
 test:
-	$(ENV_SHELL_PREFIX) python manage.py test --settings=config.settings.test --noinput --failfast --parallel auto $(TARGET)
+	$(ENV_SHELL_PREFIX) pytest --numprocesses=logical --create-db
+
 
 
 

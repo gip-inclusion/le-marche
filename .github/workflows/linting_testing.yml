@@ -89,4 +89,4 @@ jobs:
       # collectstatic needed for selenium tests
       #----------------------------------------------
       - name: 🤹‍ Run Tests
-        run: ./manage.py test --parallel auto tests
+        run: make test

@@ -364,16 +364,27 @@ class TenderMatchingActivitiesTest(TestCase):
 
     def test_performance(self):
         # create 100 siaes with 10 activities each
+        siaes = []
+        siae_activities = []
+        locations = []
         for i in range(100):
-            siae = SiaeFactory(is_active=True, coords=Point(48.86385199985207, 2.337071483848432))
+            siae = SiaeFactory.build(is_active=True, coords=Point(48.86385199985207, 2.337071483848432))
+            siae.set_slug()
+            siaes.append(siae)
             for j in range(10):
-                siae_activity = SiaeActivityFactory(
+                siae_activity = SiaeActivityFactory.build(
                     siae=siae,
                     sector=self.sectors[j % 10],
                     presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
                     with_zones_perimeter=True,
                 )
-                siae_activity.locations.set([self.perimeter_paris])
+                siae_activities.append(siae_activity)
+                locations.append(
+                    SiaeActivity.locations.through(perimeter=self.perimeter_paris, siaeactivity=siae_activity)
+                )
+        Siae.objects.bulk_create(siaes)
+        SiaeActivity.objects.bulk_create(siae_activities)
+        SiaeActivity.locations.through.objects.bulk_create(locations)
 
         tender = TenderFactory(sectors=self.sectors, perimeters=self.perimeters)
 

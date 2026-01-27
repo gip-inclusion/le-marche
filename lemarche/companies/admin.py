@@ -117,14 +117,14 @@ class CompanyAdmin(admin.ModelAdmin, DynamicArrayMixin):
 
     def user_count_annotated_with_link(self, company):
         url = reverse("admin:users_user_changelist") + f"?company__id__exact={company.id}"
-        return format_html(f'<a href="{url}">{company.user_count_annotated}</a>')
+        return format_html('<a href="{}">{}</a>', url, company.user_count_annotated)
 
     user_count_annotated_with_link.short_description = "Utilisateurs rattachés"
     user_count_annotated_with_link.admin_order_field = "user_count_annotated"
 
     def user_tender_count_annotated_with_link(self, company):
         url = reverse("admin:tenders_tender_changelist") + f"?author__company_id__exact={company.id}"
-        return format_html(f'<a href="{url}">{company.user_tender_count_annotated}</a>')
+        return format_html('<a href="{}">{}</a>', url, company.user_tender_count_annotated)
 
     user_tender_count_annotated_with_link.short_description = "Besoins déposés par les utilisateurs"
     user_tender_count_annotated_with_link.admin_order_field = "user_tender_count_annotated"
@@ -205,7 +205,7 @@ class CompanySiaeClientReferenceMatchAdmin(admin.ModelAdmin):
     def company_with_link(self, match):
         if match.company:
             url = reverse("admin:companies_company_change", args=[match.company.id])
-            return format_html(f'<a href="{url}">{match.company.name}</a>')
+            return format_html('<a href="{}">{}</a>', url, match.company.name)
         return match.company_name
 
     company_with_link.short_description = "Entreprise"
@@ -214,7 +214,7 @@ class CompanySiaeClientReferenceMatchAdmin(admin.ModelAdmin):
     def client_reference_with_link(self, match):
         if match.siae_client_reference:
             url = reverse("admin:siaes_siaeclientreference_change", args=[match.siae_client_reference.id])
-            return format_html(f'<a href="{url}">{match.siae_client_reference.name}</a>')
+            return format_html('<a href="{}">{}</a>', url, match.siae_client_reference.name)
         return match.client_reference_name
 
     client_reference_with_link.short_description = "Référence client"

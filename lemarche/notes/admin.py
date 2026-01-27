@@ -40,11 +40,11 @@ class NoteAdmin(admin.ModelAdmin):
         if obj.content_type and obj.object_id:
             if obj.content_type.model == "tender":
                 url = reverse("admin:tenders_tender_change", args=[obj.object_id])
-                return format_html(f'<a href="{url}">{obj.object_id}</a>')
+                return format_html('<a href="{}">{}</a>', url, obj.object_id)
             elif obj.content_type.model == "siae":
                 url = reverse("admin:siaes_siae_change", args=[obj.object_id])
-                return format_html(f'<a href="{url}">{obj.object_id}</a>')
+                return format_html('<a href="{}">{}</a>', url, obj.object_id)
             elif obj.content_type.model == "user":
                 url = reverse("admin:users_user_change", args=[obj.object_id])
-                return format_html(f'<a href="{url}">{obj.object_id}</a>')
+                return format_html('<a href="{}">{}</a>', url, obj.object_id)
         return obj.object.id

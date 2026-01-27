@@ -105,7 +105,7 @@ class LabelAdmin(admin.ModelAdmin):
 
     def siae_count_annotated_with_link(self, label):
         url = reverse("admin:siaes_siae_changelist") + f"?labels__id__exact={label.id}"
-        return format_html(f'<a href="{url}">{label.siae_count_annotated}</a>')
+        return format_html('<a href="{}">{}</a>', url, label.siae_count_annotated)
 
     siae_count_annotated_with_link.short_description = "Nombre de structures"
     siae_count_annotated_with_link.admin_order_field = "siae_count_annotated"

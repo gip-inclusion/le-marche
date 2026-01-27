@@ -652,7 +652,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     def question_count_with_link(self, tender):
         url = reverse("admin:tenders_tenderquestion_changelist") + f"?tender__in={tender.id}"
-        return format_html(f'<a href="{url}">{tender.questions.count()}</a>')
+        return format_html('<a href="{}">{}</a>', url, tender.questions.count())
 
     question_count_with_link.short_description = TenderQuestion._meta.verbose_name_plural
 
@@ -661,13 +661,13 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         id_list = [str(answer.id) for answer in answers]
         id_string = ",".join(id_list)
         url = reverse("admin:tenders_questionanswer_changelist") + f"?id__in={id_string}"
-        return format_html(f'<a href="{url}">{answers.count()}</a>')
+        return format_html('<a href="{}">{}</a>', url, answers.count())
 
     answer_count_with_link.short_description = QuestionAnswer._meta.verbose_name_plural
 
     def title_with_link(self, tender):
         url = reverse("admin:tenders_tender_change", args=[tender.id])
-        return format_html(f'<a href="{url}">{tender.title}</a>')
+        return format_html('<a href="{}">{}</a>', url, tender.title)
 
     title_with_link.short_description = "Titre du besoin"
     title_with_link.admin_order_field = "title"
@@ -705,7 +705,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     def siae_count_annotated_with_link(self, tender):
         url = reverse("admin:siaes_siae_changelist") + f"?tenders__in={tender.id}&tendersiae__source__in="
         url += ",".join(tender_constants.TENDER_SIAE_SOURCES_EXCEPT_IA)
-        return format_html(f'<a href="{url}">{getattr(tender, "siae_count_annotated", 0)}</a>')
+        return format_html('<a href="{}">{}</a>', url, getattr(tender, "siae_count_annotated", 0))
 
     siae_count_annotated_with_link.short_description = "S. concernées"
 
@@ -720,7 +720,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             reverse("admin:siaes_siae_changelist")
             + f"?tenders__in={tender.id}&tendersiae__email_send_date__isnull=False"
         )
-        return format_html(f'<a href="{url}">{getattr(tender, "siae_email_send_count_annotated", 0)}</a>')
+        return format_html('<a href="{}">{}</a>', url, getattr(tender, "siae_email_send_count_annotated", 0))
 
     siae_email_send_count_annotated_with_link.short_description = "S. contactées"
     siae_email_send_count_annotated_with_link.admin_order_field = "siae_email_send_count_annotated"
@@ -730,7 +730,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             reverse("admin:siaes_siae_changelist")
             + f"?tenders__in={tender.id}&tendersiae__detail_contact_click_date__isnull=False"
         )
-        return format_html(f'<a href="{url}">{getattr(tender, "siae_detail_contact_click_count_annotated", 0)}</a>')
+        return format_html('<a href="{}">{}</a>', url, getattr(tender, "siae_detail_contact_click_count_annotated", 0))
 
     siae_detail_contact_click_count_annotated_with_link.short_description = "S. intéressées"
 
@@ -748,7 +748,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             + f"?tenders__in={tender.id}&tendersiae__detail_not_interested_click_date__isnull=False"
         )
         return format_html(
-            f'<a href="{url}">{getattr(tender, "siae_detail_not_interested_click_count_annotated", 0)}</a>'
+            '<a href="{}">{}</a>', url, getattr(tender, "siae_detail_not_interested_click_count_annotated", 0)
         )
 
     siae_detail_not_interested_click_count_annotated_with_link.short_description = "S. pas intéressées"
@@ -758,7 +758,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     def parent_transactional_send_logs_count_with_link(self, obj):
         url = reverse("admin:conversations_templatetransactionalsendlog_changelist") + f"?tender__id__exact={obj.id}"
-        return format_html(f'<a href="{url}">{obj.parent_transactional_send_logs.count()}</a>')
+        return format_html('<a href="{}">{}</a>', url, obj.parent_transactional_send_logs.count())
 
     parent_transactional_send_logs_count_with_link.short_description = TemplateTransactionalSendLog._meta.verbose_name
 
@@ -871,7 +871,7 @@ class TenderQuestionAdmin(admin.ModelAdmin):
 
     def tender_with_link(self, tender_question):
         url = reverse("admin:tenders_tender_change", args=[tender_question.tender_id])
-        return format_html(f'<a href="{url}">{tender_question.tender}</a>')
+        return format_html('<a href="{}">{}</a>', url, tender_question.tender)
 
     tender_with_link.short_description = "Besoin d'achat"
     tender_with_link.admin_order_field = "tender"
@@ -1061,14 +1061,16 @@ class TenderSiaeAdmin(admin.ModelAdmin):
 
     def siae_with_app_link(self, tendersiae):
         url = reverse("siae:detail", args=[tendersiae.siae.slug])
-        return format_html(f'<a href="{url}" target="_blank">{tendersiae.siae.brand} ({tendersiae.siae.name})</a>')
+        return format_html(
+            '<a href="{}" target="_blank">{} ({})</a>', url, tendersiae.siae.brand, tendersiae.siae.name
+        )
 
     siae_with_app_link.short_description = "Structure (lien vers l'app)"
     siae_with_app_link.admin_order_field = "siae"
 
     def tender_with_link(self, tendersiae):
         url = reverse("admin:tenders_tender_change", args=[tendersiae.tender.slug])
-        return format_html(f'<a href="{url}">{tendersiae.tender}</a>')
+        return format_html('<a href="{}">{}</a>', url, tendersiae.tender)
 
     tender_with_link.short_description = "Besoin d'achat (lien vers l'admin)"
     tender_with_link.admin_order_field = "tender"
@@ -1083,7 +1085,7 @@ class TenderSiaeAdmin(admin.ModelAdmin):
         url = (
             reverse("admin:conversations_templatetransactionalsendlog_changelist") + f"?tendersiae__id__exact={obj.id}"
         )
-        return format_html(f'<a href="{url}">{obj.parent_transactional_send_logs.count()}</a>')
+        return format_html('<a href="{}">{}</a>', url, obj.parent_transactional_send_logs.count())
 
     parent_transactional_send_logs_count_with_link.short_description = TemplateTransactionalSendLog._meta.verbose_name
 
