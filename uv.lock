@@ -1892,7 +1892,7 @@ wheels = [
 
 [[package]]
 name = "wagtail-localize"
-version = "1.12.2"
+version = "1.13"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
@@ -1900,9 +1900,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "wagtail" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/6f/80/2a2385da7611b82d65a1f20c2e2c92aa5a11d72c8d5dfa58048978ee81f7/wagtail_localize-1.12.2.tar.gz", hash = "sha256:a2006793571ae35d3118f091f25c5072eb501a30911b17d98fad028162b63902", size = 283749, upload-time = "2025-07-14T15:46:05.149Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6c/19/781b910e3ee3b1f955376efe92c6f192e8e43130dd2ec892592aaac27073/wagtail_localize-1.13.tar.gz", hash = "sha256:48ecfcd6d002009697b84d77ebcb042451a68da916a1f5ca0e161b472c2b74c8", size = 285949, upload-time = "2026-01-25T16:46:42.592Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ca/1c/59232a830bbe073f3091e03203021a0711424448c3860c20040748939d00/wagtail_localize-1.12.2-py3-none-any.whl", hash = "sha256:42d4a3b6eafac30c87740f8d914da3f9587ec57f934872bde93a42edce449e8e", size = 508608, upload-time = "2025-07-14T15:46:03.295Z" },
+    { url = "https://files.pythonhosted.org/packages/27/ab/18535934b8503000ef0bcd892f505f728a44cbb9499ae3d4e052647e1ef9/wagtail_localize-1.13-py3-none-any.whl", hash = "sha256:48296cb90eb3317bea62ecd5f23cc57088c9c9d39aca3b2261e4f19fa15de2cf", size = 511068, upload-time = "2026-01-25T16:46:40.628Z" },
 ]
 
 [[package]]
