@@ -4,7 +4,6 @@ https://github.com/betagouv/itou/blob/master/itou/utils/storage/s3.py
 """
 
 import boto3
-from botocore.client import Config
 from django.conf import settings
 
 
@@ -15,14 +14,7 @@ API_CONNECTION_DICT = {
     "aws_access_key_id": settings.S3_STORAGE_ACCESS_KEY_ID,
     "aws_secret_access_key": settings.S3_STORAGE_SECRET_ACCESS_KEY,
     "region_name": settings.S3_STORAGE_BUCKET_REGION,
-    "config": Config(
-        signature_version="s3v4",
-        # CleverCloud S3 implementation does not support recent data integrity features from AWS.
-        # https://github.com/boto/boto3/issues/4392
-        # https://github.com/boto/boto3/issues/4398#issuecomment-2619946229
-        request_checksum_calculation="when_required",
-        response_checksum_validation="when_required",
-    ),
+    "config": settings.AWS_S3_CLIENT_CONFIG,
 }
 
 
