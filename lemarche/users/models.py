@@ -12,8 +12,10 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.forms.models import model_to_dict
 from django.utils import timezone
+from itoutils.django.nexus.models import NexusModelMixin, NexusQuerySetMixin
 from phonenumber_field.modelfields import PhoneNumberField
 
+from lemarche.nexus import sync
 from lemarche.stats.models import StatsUser
 from lemarche.users import constants as user_constants
 from lemarche.users.tasks import notify_user_onboarded
@@ -21,11 +23,7 @@ from lemarche.utils.data import phone_number_display
 from lemarche.utils.emails import anonymize_email
 
 
-class UserQueryset(models.QuerySet):
-    """
-    Custom queryset with additional filtering methods for users.
-    """
-
+class UserQueryset(NexusQuerySetMixin, models.QuerySet):
     def is_admin_bizdev(self):
         return self.filter(kind=user_constants.KIND_ADMIN, position__iexact="Bizdev", is_staff=True)
 
@@ -150,10 +148,10 @@ class UserManager(BaseUserManager):
         return self.get_queryset().with_tender_stats()
 
 
-class User(AbstractUser):
-    """
-    C4 Custom User Model
-    """
+class User(NexusModelMixin, AbstractUser):
+    nexus_tracked_fields = sync.USER_TRACKED_FIELDS
+    nexus_sync = staticmethod(sync.sync_users)
+    nexus_delete = staticmethod(sync.delete_users)
 
     objects = UserManager()
 
@@ -354,6 +352,9 @@ class User(AbstractUser):
         """
         self.set_last_updated_fields()
         super().save(*args, **kwargs)
+
+    def should_sync_to_nexus(self):
+        return self.is_active and self.email
 
     def set_onboarded_and_send_email(self):
         """Set have_followed_onboarding and send email"""
