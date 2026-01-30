@@ -382,7 +382,7 @@ class TenderMatchingActivitiesTest(TestCase):
                 locations.append(
                     SiaeActivity.locations.through(perimeter=self.perimeter_paris, siaeactivity=siae_activity)
                 )
-        Siae.objects.bulk_create(siaes)
+        Siae.objects.bulk_create(siaes, nexus_no_sync=True)  # Disable nexus sync to allow use of bulk_create
         SiaeActivity.objects.bulk_create(siae_activities)
         SiaeActivity.locations.through.objects.bulk_create(locations)
 
