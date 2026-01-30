@@ -735,7 +735,7 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
                     body_link_company_contact = brevo_python.Body8(link_contact_ids=contact_list)
                     self.api_instance.companies_link_unlink_id_patch(brevo_company_id, body_link_company_contact)
             except ApiException as e:
-                self.logger.error(f"Exception when calling Brevo->DealApi->companies_link_unlink_id_patch \n {e}")
+                self.logger.exception(f"Exception when calling Brevo->DealApi->companies_link_unlink_id_patch \n {e}")
 
     # =============================================================================
     # PRIVATE METHODS - COMMON COMPANY SUPPORT
