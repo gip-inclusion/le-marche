@@ -10,8 +10,8 @@ updates:
     schedule:
       interval: "weekly"
     commit-message:
-      prefix: "requirement"
-      prefix-development: "dev requirement"
+      prefix: "chore: requirement - "
+      prefix-development: "chore: dev requirement - "
     # Only allow updates to the lockfile for pip and
     # ignore any version updates that affect the manifest
     versioning-strategy: lockfile-only
