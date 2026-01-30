@@ -1163,8 +1163,8 @@ class BrevoCompanyApiClientTest(TestCase):
                 client.link_company_with_contact_list(12345, [111, 222])
 
                 # Verify error was logged
-                mock_logger.error.assert_called_once()
-                error_msg = mock_logger.error.call_args[0][0]
+                mock_logger.exception.assert_called_once()
+                error_msg = mock_logger.exception.call_args[0][0]
                 self.assertIn("Exception when calling Brevo->DealApi->companies_link_unlink_id_patch", error_msg)
 
     @override_settings(BITOUBI_ENV="dev")
