@@ -59,7 +59,7 @@ class SiaeFactory(DjangoModelFactory):
     @factory.post_generation
     def users(self, create, extracted, **kwargs):
         if extracted:
-            self.users.add(*extracted)
+            SiaeUser.objects.bulk_create([SiaeUser(user=user, siae=self) for user in extracted])
 
     @factory.post_generation
     def networks(self, create, extracted, **kwargs):
