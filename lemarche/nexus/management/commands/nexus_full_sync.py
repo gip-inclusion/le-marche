@@ -7,6 +7,7 @@ from lemarche.users.models import User
 
 
 class Command(BaseNexusFullSyncCommand):
+    CHUNK_SIZE = 5_000
     structure_serializer = staticmethod(serialize_siae)
     user_serializer = staticmethod(serialize_user)
     membership_serializer = staticmethod(serialize_membership)
