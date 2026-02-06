@@ -37,7 +37,7 @@ env = environ.Env(DEBUG=(bool, False))
 
 # Build paths inside the project like this: ROOT_DIR / 'subdir'.
 ROOT_DIR = environ.Path(__file__) - 3  # (ROOT/config/settings/base.py - 3 = ROOT )
-APPS_DIR = ROOT_DIR.path("lemarche")
+APPS_DIR = os.path.abspath(os.path.join(ROOT_DIR, "lemarche"))
 
 
 # Quick-start development settings - unsuitable for production
@@ -219,7 +219,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [str(APPS_DIR.path("templates"))],
+        "DIRS": [os.path.join(APPS_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -914,3 +914,6 @@ NEXUS_METABASE_DB_PORT = os.getenv("NEXUS_METABASE_DB_PORT")
 NEXUS_METABASE_DB_DATABASE = os.getenv("NEXUS_METABASE_DB_DATABASE")
 NEXUS_METABASE_DB_USER = os.getenv("NEXUS_METABASE_DB_USER")
 NEXUS_METABASE_DB_PASSWORD = os.getenv("NEXUS_METABASE_DB_PASSWORD")
+
+NEXUS_API_BASE_URL = os.getenv("NEXUS_API_BASE_URL")
+NEXUS_API_TOKEN = os.getenv("NEXUS_API_TOKEN")

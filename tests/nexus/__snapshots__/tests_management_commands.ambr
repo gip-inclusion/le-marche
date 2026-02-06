@@ -1,0 +1,203 @@
+# serializer version: 1
+# name: test_full_sync
+  dict({
+    'num_queries': 4,
+    'queries': list([
+      dict({
+        'origin': list([
+          'Command.sync_structures[itoutils/django/nexus/management/base_full_sync.py]',
+          'Command.handle[itoutils/django/nexus/management/base_full_sync.py]',
+        ]),
+        'sql': '''
+          SELECT "siaes_siae"."id",
+                 "siaes_siae"."name",
+                 "siaes_siae"."slug",
+                 "siaes_siae"."brand",
+                 "siaes_siae"."kind",
+                 "siaes_siae"."description",
+                 "siaes_siae"."siret",
+                 "siaes_siae"."siret_is_valid",
+                 "siaes_siae"."naf",
+                 "siaes_siae"."nature",
+                 "siaes_siae"."legal_form",
+                 "siaes_siae"."website",
+                 "siaes_siae"."email",
+                 "siaes_siae"."phone",
+                 "siaes_siae"."address",
+                 "siaes_siae"."city",
+                 "siaes_siae"."department",
+                 "siaes_siae"."region",
+                 "siaes_siae"."post_code",
+                 "siaes_siae"."coords",
+                 "siaes_siae"."contact_first_name",
+                 "siaes_siae"."contact_last_name",
+                 "siaes_siae"."contact_website",
+                 "siaes_siae"."contact_email",
+                 "siaes_siae"."contact_phone",
+                 "siaes_siae"."contact_social_website",
+                 "siaes_siae"."image_name",
+                 "siaes_siae"."logo_url",
+                 "siaes_siae"."is_consortium",
+                 "siaes_siae"."_is_cocontracting",
+                 "siaes_siae"."asp_id",
+                 "siaes_siae"."is_active",
+                 "siaes_siae"."is_delisted",
+                 "siaes_siae"."is_first_page",
+                 "siaes_siae"."admin_name",
+                 "siaes_siae"."admin_email",
+                 "siaes_siae"."year_constitution",
+                 "siaes_siae"."employees_insertion_count",
+                 "siaes_siae"."employees_insertion_count_last_updated",
+                 "siaes_siae"."employees_permanent_count",
+                 "siaes_siae"."employees_permanent_count_last_updated",
+                 "siaes_siae"."ca",
+                 "siaes_siae"."ca_last_updated",
+                 "siaes_siae"."super_badge",
+                 "siaes_siae"."super_badge_last_updated",
+                 "siaes_siae"."c2_etp_count",
+                 "siaes_siae"."c2_etp_count_date_saisie",
+                 "siaes_siae"."c2_etp_count_last_sync_date",
+                 "siaes_siae"."is_qpv",
+                 "siaes_siae"."qpv_name",
+                 "siaes_siae"."qpv_code",
+                 "siaes_siae"."api_qpv_last_sync_date",
+                 "siaes_siae"."is_zrr",
+                 "siaes_siae"."zrr_name",
+                 "siaes_siae"."zrr_code",
+                 "siaes_siae"."api_zrr_last_sync_date",
+                 "siaes_siae"."api_entreprise_forme_juridique",
+                 "siaes_siae"."api_entreprise_forme_juridique_code",
+                 "siaes_siae"."api_entreprise_entreprise_last_sync_date",
+                 "siaes_siae"."api_entreprise_date_constitution",
+                 "siaes_siae"."api_entreprise_employees",
+                 "siaes_siae"."api_entreprise_employees_year_reference",
+                 "siaes_siae"."api_entreprise_etablissement_last_sync_date",
+                 "siaes_siae"."api_entreprise_ca",
+                 "siaes_siae"."api_entreprise_ca_date_fin_exercice",
+                 "siaes_siae"."api_entreprise_exercice_last_sync_date",
+                 "siaes_siae"."c1_id",
+                 "siaes_siae"."c4_id_old",
+                 "siaes_siae"."c1_last_sync_date",
+                 "siaes_siae"."c1_sync_skip",
+                 "siaes_siae"."brevo_company_id",
+                 "siaes_siae"."user_count",
+                 "siaes_siae"."sector_count",
+                 "siaes_siae"."network_count",
+                 "siaes_siae"."group_count",
+                 "siaes_siae"."offer_count",
+                 "siaes_siae"."client_reference_count",
+                 "siaes_siae"."label_count",
+                 "siaes_siae"."image_count",
+                 "siaes_siae"."etablissement_count",
+                 "siaes_siae"."signup_date",
+                 "siaes_siae"."content_filled_basic_date",
+                 "siaes_siae"."completion_rate",
+                 "siaes_siae"."tender_count",
+                 "siaes_siae"."tender_email_send_count",
+                 "siaes_siae"."tender_email_link_click_count",
+                 "siaes_siae"."tender_detail_display_count",
+                 "siaes_siae"."tender_detail_contact_click_count",
+                 "siaes_siae"."logs",
+                 "siaes_siae"."source",
+                 "siaes_siae"."extra_data",
+                 "siaes_siae"."import_raw_object",
+                 "siaes_siae"."created_at",
+                 "siaes_siae"."updated_at"
+          FROM "siaes_siae"
+          WHERE ("siaes_siae"."is_active"
+                 AND NOT "siaes_siae"."is_delisted")
+          ORDER BY "siaes_siae"."id" ASC
+        ''',
+      }),
+      dict({
+        'origin': list([
+          'get_domain_url[utils/urls.py]',
+          'get_object_share_url[utils/urls.py]',
+          'serialize_siae[nexus/sync.py]',
+          'Command.serialize_structures[itoutils/django/nexus/management/base_full_sync.py]',
+          'Command.sync_structures[itoutils/django/nexus/management/base_full_sync.py]',
+          'Command.handle[itoutils/django/nexus/management/base_full_sync.py]',
+        ]),
+        'sql': '''
+          SELECT "django_site"."id",
+                 "django_site"."domain",
+                 "django_site"."name"
+          FROM "django_site"
+          WHERE "django_site"."id" = %s
+          LIMIT 21
+        ''',
+      }),
+      dict({
+        'origin': list([
+          'Command.sync_users[itoutils/django/nexus/management/base_full_sync.py]',
+          'Command.handle[itoutils/django/nexus/management/base_full_sync.py]',
+        ]),
+        'sql': '''
+          SELECT "users_user"."id",
+                 "users_user"."password",
+                 "users_user"."last_login",
+                 "users_user"."is_superuser",
+                 "users_user"."is_staff",
+                 "users_user"."is_active",
+                 "users_user"."date_joined",
+                 "users_user"."email",
+                 "users_user"."first_name",
+                 "users_user"."last_name",
+                 "users_user"."kind",
+                 "users_user"."phone",
+                 "users_user"."company_id",
+                 "users_user"."company_name",
+                 "users_user"."position",
+                 "users_user"."buyer_kind",
+                 "users_user"."buyer_kind_detail",
+                 "users_user"."partner_kind",
+                 "users_user"."partner_network_id",
+                 "users_user"."can_display_tender_contact_details",
+                 "users_user"."source",
+                 "users_user"."api_key",
+                 "users_user"."api_key_last_updated",
+                 "users_user"."accept_rgpd",
+                 "users_user"."accept_survey",
+                 "users_user"."accept_offers_for_pro_sector",
+                 "users_user"."accept_quote_promise",
+                 "users_user"."accept_share_contact_to_external_partners",
+                 "users_user"."brevo_contact_id",
+                 "users_user"."favorite_list_count",
+                 "users_user"."dashboard_last_seen_date",
+                 "users_user"."tender_list_last_seen_date",
+                 "users_user"."extra_data",
+                 "users_user"."is_anonymized",
+                 "users_user"."have_followed_onboarding",
+                 "users_user"."created_at",
+                 "users_user"."updated_at"
+          FROM "users_user"
+          WHERE ("users_user"."is_active"
+                 AND "users_user"."kind" = %s
+                 AND NOT ("users_user"."email" = %s)
+                 AND NOT ("users_user"."email" IS NULL))
+          ORDER BY "users_user"."id" ASC
+        ''',
+      }),
+      dict({
+        'origin': list([
+          'Command.sync_memberships[itoutils/django/nexus/management/base_full_sync.py]',
+          'Command.handle[itoutils/django/nexus/management/base_full_sync.py]',
+        ]),
+        'sql': '''
+          SELECT "siaes_siaeuser"."id",
+                 "siaes_siaeuser"."siae_id",
+                 "siaes_siaeuser"."user_id",
+                 "siaes_siaeuser"."created_at",
+                 "siaes_siaeuser"."updated_at"
+          FROM "siaes_siaeuser"
+          INNER JOIN "siaes_siae" ON ("siaes_siaeuser"."siae_id" = "siaes_siae"."id")
+          INNER JOIN "users_user" ON ("siaes_siaeuser"."user_id" = "users_user"."id")
+          WHERE ("siaes_siae"."is_active"
+                 AND NOT "siaes_siae"."is_delisted"
+                 AND "users_user"."is_active")
+          ORDER BY "siaes_siaeuser"."id" ASC
+        ''',
+      }),
+    ]),
+  })
+# ---
