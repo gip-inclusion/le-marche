@@ -105,7 +105,8 @@
                  "siaes_siae"."updated_at"
           FROM "siaes_siae"
           WHERE ("siaes_siae"."is_active"
-                 AND NOT "siaes_siae"."is_delisted")
+                 AND NOT "siaes_siae"."is_delisted"
+                 AND NOT ("siaes_siae"."siret" = %s))
           ORDER BY "siaes_siae"."id" ASC
         ''',
       }),

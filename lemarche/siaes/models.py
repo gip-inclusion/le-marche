@@ -987,7 +987,7 @@ class Siae(NexusModelMixin, models.Model):
                 raise e
 
     def should_sync_to_nexus(self):
-        return self.is_live
+        return self.is_live and self.siret
 
     @property
     def is_live(self) -> bool:

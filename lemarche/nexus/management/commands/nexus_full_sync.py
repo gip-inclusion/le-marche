@@ -12,7 +12,7 @@ class Command(BaseNexusFullSyncCommand):
     membership_serializer = staticmethod(serialize_membership)
 
     def get_structures_queryset(self):
-        return Siae.objects.is_live().order_by("pk")
+        return Siae.objects.is_live().exclude(siret="").order_by("pk")
 
     def get_users_queryset(self):
         return (
