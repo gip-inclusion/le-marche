@@ -354,7 +354,7 @@ class User(NexusModelMixin, AbstractUser):
         super().save(*args, **kwargs)
 
     def should_sync_to_nexus(self):
-        return self.is_active and self.email
+        return self.is_active and self.email and self.kind == user_constants.KIND_SIAE
 
     def set_onboarded_and_send_email(self):
         """Set have_followed_onboarding and send email"""
