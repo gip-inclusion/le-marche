@@ -38,13 +38,10 @@ tarteaucitron.init({
     "forceLanguage": "fr",
 });
 
-// Google Tag Manager
-tarteaucitron.user.googletagmanagerId = "{{ GOOGLE_TAG_MANAGER_ID }}";
-(tarteaucitron.job = tarteaucitron.job || []).push('googletagmanager');
 
 {% if CRISP_ID %}
     tarteaucitron.user.crispID = "{{ CRISP_ID }}";
-    (tarteaucitron.job = tarteaucitron.job || []).push('crisp');    
+    (tarteaucitron.job = tarteaucitron.job || []).push('crisp');
 {% endif %}
 
 {% if MATOMO_HOST and matomo_custom_url %}
@@ -54,7 +51,6 @@ tarteaucitron.user.googletagmanagerId = "{{ GOOGLE_TAG_MANAGER_ID }}";
     (tarteaucitron.job = tarteaucitron.job || []).push('matomo');
 {% endif %}
 </script>
-
 {% if MATOMO_HOST and matomo_custom_url %}
     <script>
         var _paq = window._paq || [];
