@@ -15,7 +15,7 @@ from django.utils import timezone
 from itoutils.django.nexus.models import NexusModelMixin, NexusQuerySetMixin
 from phonenumber_field.modelfields import PhoneNumberField
 
-from lemarche.nexus import sync
+from lemarche.nexus import sync, tasks
 from lemarche.stats.models import StatsUser
 from lemarche.users import constants as user_constants
 from lemarche.users.tasks import notify_user_onboarded
@@ -150,8 +150,8 @@ class UserManager(BaseUserManager):
 
 class User(NexusModelMixin, AbstractUser):
     nexus_tracked_fields = sync.USER_TRACKED_FIELDS
-    nexus_sync = staticmethod(sync.sync_users)
-    nexus_delete = staticmethod(sync.delete_users)
+    nexus_sync = staticmethod(tasks.async_sync_users)
+    nexus_delete = staticmethod(tasks.async_delete_users)
 
     objects = UserManager()
 

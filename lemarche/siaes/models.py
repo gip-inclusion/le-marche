@@ -40,7 +40,7 @@ from simple_history.models import HistoricalRecords
 
 from lemarche.companies.models import CompanySiaeClientReferenceMatch
 from lemarche.networks.models import Network
-from lemarche.nexus import sync
+from lemarche.nexus import sync, tasks
 from lemarche.perimeters.models import Perimeter
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.tasks import set_siae_coords
@@ -565,8 +565,8 @@ class SiaeQuerySet(NexusQuerySetMixin, models.QuerySet):
 
 class Siae(NexusModelMixin, models.Model):
     nexus_tracked_fields = sync.SIAE_TRACKED_FIELDS
-    nexus_sync = staticmethod(sync.sync_siaes)
-    nexus_delete = staticmethod(sync.delete_siaes)
+    nexus_sync = staticmethod(tasks.async_sync_siaes)
+    nexus_delete = staticmethod(tasks.async_delete_siaes)
 
     FIELDS_FROM_C1 = [
         "name",
@@ -1346,8 +1346,8 @@ class SiaeUser(NexusModelMixin, models.Model):
     """A membership"""
 
     nexus_tracked_fields = sync.SIAEUSER_TRACKED_FIELDS
-    nexus_sync = staticmethod(sync.sync_siaeusers)
-    nexus_delete = staticmethod(sync.delete_siaeusers)
+    nexus_sync = staticmethod(tasks.async_sync_siaeusers)
+    nexus_delete = staticmethod(tasks.async_delete_siaeusers)
 
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Utilisateur", on_delete=models.CASCADE)
