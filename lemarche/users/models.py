@@ -150,8 +150,8 @@ class UserManager(BaseUserManager):
 
 class User(NexusModelMixin, AbstractUser):
     nexus_tracked_fields = sync.USER_TRACKED_FIELDS
-    nexus_sync = staticmethod(sync.sync_users)
-    nexus_delete = staticmethod(sync.delete_users)
+    nexus_sync = staticmethod(sync.async_sync_users)
+    nexus_delete = staticmethod(sync.async_delete_users)
 
     objects = UserManager()
 

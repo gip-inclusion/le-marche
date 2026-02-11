@@ -1,6 +1,7 @@
 import logging
 
 from django.conf import settings
+from huey.contrib.djhuey import task
 from itoutils.django.nexus.api import NexusAPIClient, NexusAPIException
 
 from lemarche.utils.urls import get_object_share_url
@@ -92,6 +93,7 @@ def serialize_siae(siae):
     }
 
 
+@task()
 def sync_siaes(siaes):
     if settings.NEXUS_API_BASE_URL:
         try:
@@ -102,6 +104,7 @@ def sync_siaes(siaes):
             logger.exception("Nexus: failed to sync siaes")
 
 
+@task()
 def delete_siaes(siae_pks):
     if settings.NEXUS_API_BASE_URL:
         try:
@@ -127,6 +130,7 @@ def serialize_membership(siaeuser):
     }
 
 
+@task()
 def sync_siaeusers(siaeusers):
     if settings.NEXUS_API_BASE_URL:
         try:
@@ -137,6 +141,7 @@ def sync_siaeusers(siaeusers):
             logger.exception("Nexus: failed to sync siaeusers")
 
 
+@task()
 def delete_siaeusers(siaeuser_pks):
     if settings.NEXUS_API_BASE_URL:
         try:
@@ -145,3 +150,33 @@ def delete_siaeusers(siaeuser_pks):
             pass  # The client already logged the error, we don't want to crash if we can't connect to Nexus
         except Exception:
             logger.exception("Nexus: failed to delete siaeusers")
+
+
+@task()
+def async_sync_users(users):
+    sync_users(users)
+
+
+@task()
+def async_delete_users(user_pks):
+    delete_users(user_pks)
+
+
+@task()
+def async_sync_siaes(siaes):
+    sync_siaes(siaes)
+
+
+@task()
+def async_delete_siaes(siae_pks):
+    delete_siaes(siae_pks)
+
+
+@task()
+def async_sync_siaeusers(siaeusers):
+    sync_siaeusers(siaeusers)
+
+
+@task()
+def async_delete_siaeusers(siaeuser_pks):
+    delete_siaeusers(siaeuser_pks)
