@@ -1,353 +1,390 @@
 {% extends "layouts/base.html" %}
 {% load process_dict dsfr_tags static %}
-
-{% block page_title %}Partenaires{{ block.super }}{% endblock page_title %}
-
+{% block page_title %}
+    Partenaires{{ block.super }}
+{% endblock page_title %}
 {% block breadcrumb %}
     {% process_dict root_dir=HOME_PAGE_PATH current="Partenaires" as breadcrumb_data %}
     {% dsfr_breadcrumb breadcrumb_data %}
 {% endblock breadcrumb %}
-
 {% block content %}
-<section class="fr-mb-8v">
-    <div class="fr-container">
-        <div class="fr-grid-row align-items-center">
-            <div class="fr-col-12 fr-col-lg-10">
-                <h1>
-                    Faites vous accompagner <br class="fr-hidden fr-unhidden-lg">par des experts des achats <br class="fr-hidden fr-unhidden-lg">inclusifs.
-                </h1>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="fr-mb-8v">
-    <div class="fr-container">
-        <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12 fr-col-lg-5">
-                <article>
-                    <h2>Acheter auprès des structures de handicap</h2>
-                    <p class="fr-text--bold">
-                        Il existe plus de 2000 structures du handicap, réparties partout en France, dans plus de 150 secteurs d'activité !
-                        Acheter auprès de ces structures garantie des achats responsables, innovants et locaux !
-                    </p>
-                    <p class="fr-text--bold">
-                        Vous souhaitez lancer ou renforcer efficacement votre politique d'achat auprès du secteur du handicap ?
-                        Cela requiert souvent le bon réseau, les bonnes formations et les bons conseils !
-                    </p>
-                    <p class="fr-text--bold">
-                        Depuis plusieurs années, des organisations reconnues ont développé une expertise pour vous aider à aller plus loin dans votre démarche d'achat inclusif.
-                        Découvrez-les !
-                    </p>
-                </article>
-            </div>
-            <div class="fr-col-12 fr-col-lg-7">
-                <picture>
-                    <img src="{% static 'images/restaurant-cuisiniers.min.jpg' %}" class="fr-responsive-img" alt="Des cuisiniers dans un restaurant" />
-                </picture>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="fr-mb-8v">
-    <div class="fr-container">
-        <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12 fr-col-lg-6">
-                <div class="fr-card fr-card--shadow">
-                    <div class="fr-card__body">
-                        <div class="fr-card__content">
-                            <h3 class="fr-card__title">RESEAU GESAT</h3>
-                            <p class="fr-card__desc">
-                                Depuis 40 ans, le Réseau Gesat, réseau économique des prestataires ESAT et EA, vous accompagne à toutes les étapes de votre démarche d'achats responsables et inclusifs pour répondre à vos enjeux de compétitivité et de RSE.
-                                Diagnostic achats, conseil, sensibilisation, formation… découvrez nos solutions !
-                            </p>
-                        </div>
-                        <div class="fr-card__footer">
-                            <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-right">
-                                <li>
-                                    <a href="{{ FORM_PARTENAIRES }}" id="track_partners_gesat" class="fr-btn fr-btn--tertiary fr-icon-arrow-right-up-line fr-btn--icon-right" target="_blank" rel="noopener">
-                                        Contactez-nous
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="fr-card__header">
-                        <div class="fr-card__img">
-                            <img src="{% static 'images/logo-partners-reseau-gesat-cropped.min.png' %}" class="fr-responsive-img" alt="Logo de GESAT" loading="lazy" />
-                        </div>
-                    </div>
+    <section class="fr-mb-8v">
+        <div class="fr-container">
+            <div class="fr-grid-row align-items-center">
+                <div class="fr-col-12 fr-col-lg-10">
+                    <h1>
+                        Faites vous accompagner
+                        <br class="fr-hidden fr-unhidden-lg">
+                        par des experts des achats
+                        <br class="fr-hidden fr-unhidden-lg">
+                        inclusifs.
+                    </h1>
                 </div>
             </div>
-            <div class="fr-col-12 fr-col-lg-6">
-                <div class="fr-card fr-card--shadow">
-                    <div class="fr-card__body">
-                        <div class="fr-card__content">
-                            <h3 class="fr-card__title">HANDECO</h3>
-                            <div class="fr-card__desc">
-                                <p>
-                                    HANDECO est une association loi 1901 créée et soutenue par les plus importantes associations et fédérations nationales du secteur du Handicap et de l’Emploi,
-                                    dont APF France Handicap, Fédération APAJH, Fondation ANAIS et NEXEM.
-                                    Son objet essentiel est d’accompagner durablement les entreprises dans leur démarche d’achats socialement responsables et de faciliter ainsi les relations commerciales entre les donneurs d’ordre privés et publics et les EA, les ESAT et les TIH.
-                                    <br>Tête de réseau nationale, HANDECO organise des événements tout au long de l’année et développe une offre de services innovante et unique sur le marché :
+        </div>
+    </section>
+    <section class="fr-mb-8v">
+        <div class="fr-container">
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-lg-5">
+                    <article>
+                        <h2>Acheter auprès des structures de handicap</h2>
+                        <p class="fr-text--bold">
+                            Il existe plus de 2000 structures du handicap, réparties partout en France, dans plus de 150 secteurs d'activité !
+                            Acheter auprès de ces structures garantie des achats responsables, innovants et locaux !
+                        </p>
+                        <p class="fr-text--bold">
+                            Vous souhaitez lancer ou renforcer efficacement votre politique d'achat auprès du secteur du handicap ?
+                            Cela requiert souvent le bon réseau, les bonnes formations et les bons conseils !
+                        </p>
+                        <p class="fr-text--bold">
+                            Depuis plusieurs années, des organisations reconnues ont développé une expertise pour vous aider à aller plus loin dans votre démarche d'achat inclusif.
+                            Découvrez-les !
+                        </p>
+                    </article>
+                </div>
+                <div class="fr-col-12 fr-col-lg-7">
+                    <picture>
+                        <img src="{% static 'images/restaurant-cuisiniers.min.jpg' %}"
+                             class="fr-responsive-img"
+                             alt="Des cuisiniers dans un restaurant" />
+                    </picture>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="fr-mb-8v">
+        <div class="fr-container">
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-lg-6">
+                    <div class="fr-card fr-card--shadow">
+                        <div class="fr-card__body">
+                            <div class="fr-card__content">
+                                <h3 class="fr-card__title">RESEAU GESAT</h3>
+                                <p class="fr-card__desc">
+                                    Depuis 40 ans, le Réseau Gesat, réseau économique des prestataires ESAT et EA, vous accompagne à toutes les étapes de votre démarche d'achats responsables et inclusifs pour répondre à vos enjeux de compétitivité et de RSE.
+                                    Diagnostic achats, conseil, sensibilisation, formation… découvrez nos solutions !
                                 </p>
-                                <ul>
+                            </div>
+                            <div class="fr-card__footer">
+                                <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-right">
                                     <li>
-                                        un annuaire national qualifié des EA, des ESAT et des TIH
-                                    </li>
-                                    <li>
-                                        une place de marché en ligne
-                                    </li>
-                                    <li>
-                                        des modules de formation et de sensibilisation à la carte
-                                    </li>
-                                    <li>
-                                        des prestations de conseil.
+                                        <a href="{{ FORM_PARTENAIRES }}"
+                                           id="track_partners_gesat"
+                                           class="fr-btn fr-btn--tertiary fr-icon-arrow-right-up-line fr-btn--icon-right"
+                                           target="_blank"
+                                           rel="noopener">Contactez-nous</a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
-                        <div class="fr-card__footer">
-                            <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-right">
-                                <li>
-                                    <a href="{{ FORM_PARTENAIRES }}" id="track_partners_handeco" class="fr-btn fr-btn--tertiary fr-icon-arrow-right-up-line fr-btn--icon-right" target="_blank" rel="noopener">
-                                        Contactez-nous
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="fr-card__header">
+                            <div class="fr-card__img">
+                                <img src="{% static 'images/logo-partners-reseau-gesat-cropped.min.png' %}"
+                                     class="fr-responsive-img"
+                                     alt="Logo de GESAT"
+                                     loading="lazy" />
+                            </div>
                         </div>
                     </div>
-                    <div class="fr-card__header">
-                        <div class="fr-card__img">
-                            <img src="{% static 'images/logo-partners-handeco2.min.png' %}" class="fr-responsive-img" alt="Logo de Handeco" loading="lazy" />
+                </div>
+                <div class="fr-col-12 fr-col-lg-6">
+                    <div class="fr-card fr-card--shadow">
+                        <div class="fr-card__body">
+                            <div class="fr-card__content">
+                                <h3 class="fr-card__title">HANDECO</h3>
+                                <div class="fr-card__desc">
+                                    <p>
+                                        HANDECO est une association loi 1901 créée et soutenue par les plus importantes associations et fédérations nationales du secteur du Handicap et de l’Emploi,
+                                        dont APF France Handicap, Fédération APAJH, Fondation ANAIS et NEXEM.
+                                        Son objet essentiel est d’accompagner durablement les entreprises dans leur démarche d’achats socialement responsables et de faciliter ainsi les relations commerciales entre les donneurs d’ordre privés et publics et les EA, les ESAT et les TIH.
+                                        <br>
+                                        Tête de réseau nationale, HANDECO organise des événements tout au long de l’année et développe une offre de services innovante et unique sur le marché :
+                                    </p>
+                                    <ul>
+                                        <li>un annuaire national qualifié des EA, des ESAT et des TIH</li>
+                                        <li>une place de marché en ligne</li>
+                                        <li>des modules de formation et de sensibilisation à la carte</li>
+                                        <li>des prestations de conseil.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="fr-card__footer">
+                                <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-right">
+                                    <li>
+                                        <a href="{{ FORM_PARTENAIRES }}"
+                                           id="track_partners_handeco"
+                                           class="fr-btn fr-btn--tertiary fr-icon-arrow-right-up-line fr-btn--icon-right"
+                                           target="_blank"
+                                           rel="noopener">Contactez-nous</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="fr-card__header">
+                            <div class="fr-card__img">
+                                <img src="{% static 'images/logo-partners-handeco2.min.png' %}"
+                                     class="fr-responsive-img"
+                                     alt="Logo de Handeco"
+                                     loading="lazy" />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-
-<section class="fr-mb-8v">
-    <div class="fr-container">
-        <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12 fr-col-lg-7">
-                <picture>
-                    <img src="{% static 'images/reparation-velo.min.jpg' %}" class="fr-responsive-img" alt="Des réparateurs de vélo" />
-                </picture>
-            </div>
-            <div class="fr-col-12 fr-col-lg-5">
-                <article>
-                    <h2>Acheter auprès des structures de l'insertion</h2>
-                    <p class="fr-text--bold">
-                        Il existe plus de 5600 entreprises d'insertion par l'activité économique, réparties partout en France, dans plus de 100 secteurs d'activité !
-                        Acheter auprès de ces structures garantie des achats responsables, innovants et locaux !
-                    </p>
-                    <p class="fr-text--bold">
-                        Vous souhaitez lancer ou renforcer efficacement votre politique d'achat ?
-                        Cela requiert souvent le bon réseau, les bonnes formations et les bons conseils !
-                    </p>
-                    <p class="fr-text--bold">
-                        Depuis plusieurs années, des organisations reconnues ont développé une expertise pour vous aider à aller plus loin dans votre démarche d'achat inclusif.
-                        Découvrez-les !
-                    </p>
-                </article>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="fr-mb-8v">
-    <div class="fr-container">
-        <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12 fr-col-md-6  fr-col-lg-4">
-                <div class="fr-card fr-card--shadow">
-                    <div class="fr-card__body">
-                        <div class="fr-card__content">
-                            <h3 class="fr-card__title">Les Facilitateurs</h3>
-                            <p class="fr-card__desc">
-                                Vous êtes une entreprise attributaire d'un marché public ?
-                                Les facilitateurs sont des experts qui vous accompagnent à la bonne mise en œuvre des clauses sociales.
-                            </p>
-                        </div>
-                        <div class="fr-card__footer">
-                            <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-right">
-                                <li>
-                                    <a href="{{ FACILITATOR_LIST }}" id="track_partners_facilitator_list" class="fr-btn fr-btn--tertiary fr-icon-arrow-right-up-line fr-btn--icon-right" target="_blank" rel="noopener">
-                                        Liste des facilitateurs
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="fr-card__header">
-                        <div class="fr-card__img">
-                            <img src="{% static 'images/logo-partners-facilitateurs-cropped.min.jpg' %}" class="fr-responsive-img" alt="Logo des GEIQ" loading="lazy" />
-                        </div>
-                    </div>
+    </section>
+    <section class="fr-mb-8v">
+        <div class="fr-container">
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-lg-7">
+                    <picture>
+                        <img src="{% static 'images/reparation-velo.min.jpg' %}"
+                             class="fr-responsive-img"
+                             alt="Des réparateurs de vélo" />
+                    </picture>
                 </div>
-            </div>
-            <div class="fr-col-12 fr-col-md-6  fr-col-lg-4">
-                <div class="fr-card fr-card--shadow">
-                    <div class="fr-card__body">
-                        <div class="fr-card__content">
-                            <h3 class="fr-card__title">Les Geiq</h3>
-                            <p class="fr-card__desc">
-                                Garante de l'identité et de l'image de son réseau, la fédération favorise
-                                le développement des Geiq au niveau local et assure le lien avec les institutions et partenaires.
-                            </p>
-                        </div>
-                        <div class="fr-card__footer">
-                            <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-right">
-                                <li>
-                                    <a href="https://www.lesgeiq.fr/" id="track_partners_geiq" class="fr-btn fr-btn--tertiary fr-icon-arrow-right-up-line fr-btn--icon-right" target="_blank" rel="noopener">
-                                        En savoir plus
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="fr-card__header">
-                        <div class="fr-card__img">
-                            <img src="{% static 'images/logo-partners-les-geiq.min.png' %}" class="fr-responsive-img" alt="Logo des GEIQ" loading="lazy" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="fr-col-12 fr-col-md-6  fr-col-lg-4">
-                <div class="fr-card fr-card--shadow">
-                    <div class="fr-card__body">
-                        <div class="fr-card__content">
-                            <h3 class="fr-card__title">Coorace</h3>
-                            <p class="fr-card__desc">
-                                Coorace est un réseau national de l'économie sociale et solidaire qui fédère
-                                557 entreprises d'utilité sociale et territoriale.
-                            </p>
-                        </div>
-                        <div class="fr-card__footer">
-                            <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-right">
-                                <li>
-                                    <a href="http://www.coorace.org/" id="track_partners_coorace" class="fr-btn fr-btn--tertiary fr-icon-arrow-right-up-line fr-btn--icon-right" target="_blank" rel="noopener">
-                                        En savoir plus
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="fr-card__header">
-                        <div class="fr-card__img">
-                            <img src="{% static 'images/logo-partners-coorace2-cropped.min.png' %}" class="fr-responsive-img" alt="Logo de Coorace" loading="lazy" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="fr-col-12 fr-col-md-6  fr-col-lg-4">
-                <div class="fr-card fr-card--shadow">
-                    <div class="fr-card__body">
-                        <div class="fr-card__content">
-                            <h3 class="fr-card__title">UNAI</h3>
-                            <p class="fr-card__desc">
-                                L'UNAI est la tête de réseau nationale des associations intermédiaires.
-                                Ouverte à toutes les AI, elle représente et défend leur modèle en les fédérant à l'échelon local et national.
-                            </p>
-                        </div>
-                        <div class="fr-card__footer">
-                            <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-right">
-                                <li>
-                                    <a href="https://unai.fr/" id="track_partners_unai" class="fr-btn fr-btn--tertiary fr-icon-arrow-right-up-line fr-btn--icon-right" target="_blank" rel="noopener">
-                                        En savoir plus
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="fr-card__header">
-                        <div class="fr-card__img">
-                            <img src="{% static 'images/logo-partners-unai.svg' %}" class="fr-responsive-img" alt="Logo de l'UNAI" loading="lazy" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="fr-col-12 fr-col-md-6  fr-col-lg-4">
-                <div class="fr-card fr-card--shadow">
-                    <div class="fr-card__body">
-                        <div class="fr-card__content">
-                            <h3 class="fr-card__title">Fédération des Entreprises d'Insertion</h3>
-                            <p class="fr-card__desc">
-                                La fédération créée en 1988 représente les 1404 entreprises d’insertion (EI)
-                                et entreprises de travail temporaire d’insertion (ETTI) de France.
-                            </p>
-                        </div>
-                        <div class="fr-card__footer">
-                            <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-right">
-                                <li>
-                                    <a href="http://www.lesentreprisesdinsertion.org/" id="track_partners_fei" class="fr-btn fr-btn--tertiary fr-icon-arrow-right-up-line fr-btn--icon-right" target="_blank" rel="noopener">
-                                        En savoir plus
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="fr-card__header">
-                        <div class="fr-card__img">
-                            <img src="{% static 'images/logo-partners-fei.min.png' %}" class="fr-responsive-img" alt="Logo de la fédération des entreprises d'insertion" loading="lazy" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="fr-col-12 fr-col-md-6  fr-col-lg-4">
-                <div class="fr-card fr-card--shadow">
-                    <div class="fr-card__body">
-                        <div class="fr-card__content">
-                            <h3 class="fr-card__title">AES</h3>
-                            <p class="fr-card__desc">
-                                AES accompagne les donneurs d’ordre publics et privés pour le développement
-                                de leurs politiques d’achat solidaires et circulaires.
-                            </p>
-                        </div>
-                        <div class="fr-card__footer">
-                            <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-right">
-                                <li>
-                                    <a href="https://www.linkedin.com/company/economies-solidaires/" id="track_partners_aes" class="fr-btn fr-btn--tertiary fr-icon-arrow-right-up-line fr-btn--icon-right" target="_blank" rel="noopener">
-                                        En savoir plus
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="fr-card__header">
-                        <div class="fr-card__img">
-                            <img src="{% static 'images/logo-partners-agence-des-economies-solidaires.min.jpg' %}" class="fr-responsive-img" alt="Logo de l'agence des économies solidaires" loading="lazy" />
-                        </div>
-                    </div>
+                <div class="fr-col-12 fr-col-lg-5">
+                    <article>
+                        <h2>Acheter auprès des structures de l'insertion</h2>
+                        <p class="fr-text--bold">
+                            Il existe plus de 5600 entreprises d'insertion par l'activité économique, réparties partout en France, dans plus de 100 secteurs d'activité !
+                            Acheter auprès de ces structures garantie des achats responsables, innovants et locaux !
+                        </p>
+                        <p class="fr-text--bold">
+                            Vous souhaitez lancer ou renforcer efficacement votre politique d'achat ?
+                            Cela requiert souvent le bon réseau, les bonnes formations et les bons conseils !
+                        </p>
+                        <p class="fr-text--bold">
+                            Depuis plusieurs années, des organisations reconnues ont développé une expertise pour vous aider à aller plus loin dans votre démarche d'achat inclusif.
+                            Découvrez-les !
+                        </p>
+                    </article>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-
-<section class="fr-mb-8v">
-    <div class="fr-container">
-        <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-m-8v">
-            <div class="fr-col-12 fr-col-lg-8">
-                <div class="fr-card">
-                    <div class="fr-card__body">
-                        <div class="fr-card__content">
-                            <h3 class="fr-card__title">
-                                Vous accompagnez des acheteurs public ou privé dans leurs achats inclusifs ?
-                                Vous souhaitez être réferencé sur cette page ?
-                            </h3>
-                            <div class="fr-card__desc">
-                                <div class="fr-grid-row fr-grid-row--center">
-                                    <div class="fr-col-12 fr-col-lg-4">
-                                        <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline fr-btns-group--icon-right">
-                                            <li>
-                                                <a href="{% url 'pages:contact' %}" class="fr-btn fr-icon-arrow-right-line fr-btn--icon-right fr-mt-4v">
-                                                    Contactez-nous
-                                                </a>
-                                            </li>
-                                        </ul>
+    </section>
+    <section class="fr-mb-8v">
+        <div class="fr-container">
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-md-6  fr-col-lg-4">
+                    <div class="fr-card fr-card--shadow">
+                        <div class="fr-card__body">
+                            <div class="fr-card__content">
+                                <h3 class="fr-card__title">Les Facilitateurs</h3>
+                                <p class="fr-card__desc">
+                                    Vous êtes une entreprise attributaire d'un marché public ?
+                                    Les facilitateurs sont des experts qui vous accompagnent à la bonne mise en œuvre des clauses sociales.
+                                </p>
+                            </div>
+                            <div class="fr-card__footer">
+                                <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-right">
+                                    <li>
+                                        <a href="{{ FACILITATOR_LIST }}"
+                                           id="track_partners_facilitator_list"
+                                           class="fr-btn fr-btn--tertiary fr-icon-arrow-right-up-line fr-btn--icon-right"
+                                           target="_blank"
+                                           rel="noopener">Liste des facilitateurs</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="fr-card__header">
+                            <div class="fr-card__img">
+                                <img src="{% static 'images/logo-partners-facilitateurs-cropped.min.jpg' %}"
+                                     class="fr-responsive-img"
+                                     alt="Logo des GEIQ"
+                                     loading="lazy" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="fr-col-12 fr-col-md-6  fr-col-lg-4">
+                    <div class="fr-card fr-card--shadow">
+                        <div class="fr-card__body">
+                            <div class="fr-card__content">
+                                <h3 class="fr-card__title">Les Geiq</h3>
+                                <p class="fr-card__desc">
+                                    Garante de l'identité et de l'image de son réseau, la fédération favorise
+                                    le développement des Geiq au niveau local et assure le lien avec les institutions et partenaires.
+                                </p>
+                            </div>
+                            <div class="fr-card__footer">
+                                <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-right">
+                                    <li>
+                                        <a href="https://www.lesgeiq.fr/"
+                                           id="track_partners_geiq"
+                                           class="fr-btn fr-btn--tertiary fr-icon-arrow-right-up-line fr-btn--icon-right"
+                                           target="_blank"
+                                           rel="noopener">En savoir plus</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="fr-card__header">
+                            <div class="fr-card__img">
+                                <img src="{% static 'images/logo-partners-les-geiq.min.png' %}"
+                                     class="fr-responsive-img"
+                                     alt="Logo des GEIQ"
+                                     loading="lazy" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="fr-col-12 fr-col-md-6  fr-col-lg-4">
+                    <div class="fr-card fr-card--shadow">
+                        <div class="fr-card__body">
+                            <div class="fr-card__content">
+                                <h3 class="fr-card__title">Coorace</h3>
+                                <p class="fr-card__desc">
+                                    Coorace est un réseau national de l'économie sociale et solidaire qui fédère
+                                    557 entreprises d'utilité sociale et territoriale.
+                                </p>
+                            </div>
+                            <div class="fr-card__footer">
+                                <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-right">
+                                    <li>
+                                        <a href="http://www.coorace.org/"
+                                           id="track_partners_coorace"
+                                           class="fr-btn fr-btn--tertiary fr-icon-arrow-right-up-line fr-btn--icon-right"
+                                           target="_blank"
+                                           rel="noopener">En savoir plus</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="fr-card__header">
+                            <div class="fr-card__img">
+                                <img src="{% static 'images/logo-partners-coorace2-cropped.min.png' %}"
+                                     class="fr-responsive-img"
+                                     alt="Logo de Coorace"
+                                     loading="lazy" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="fr-col-12 fr-col-md-6  fr-col-lg-4">
+                    <div class="fr-card fr-card--shadow">
+                        <div class="fr-card__body">
+                            <div class="fr-card__content">
+                                <h3 class="fr-card__title">UNAI</h3>
+                                <p class="fr-card__desc">
+                                    L'UNAI est la tête de réseau nationale des associations intermédiaires.
+                                    Ouverte à toutes les AI, elle représente et défend leur modèle en les fédérant à l'échelon local et national.
+                                </p>
+                            </div>
+                            <div class="fr-card__footer">
+                                <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-right">
+                                    <li>
+                                        <a href="https://unai.fr/"
+                                           id="track_partners_unai"
+                                           class="fr-btn fr-btn--tertiary fr-icon-arrow-right-up-line fr-btn--icon-right"
+                                           target="_blank"
+                                           rel="noopener">En savoir plus</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="fr-card__header">
+                            <div class="fr-card__img">
+                                <img src="{% static 'images/logo-partners-unai.svg' %}"
+                                     class="fr-responsive-img"
+                                     alt="Logo de l'UNAI"
+                                     loading="lazy" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="fr-col-12 fr-col-md-6  fr-col-lg-4">
+                    <div class="fr-card fr-card--shadow">
+                        <div class="fr-card__body">
+                            <div class="fr-card__content">
+                                <h3 class="fr-card__title">Fédération des Entreprises d'Insertion</h3>
+                                <p class="fr-card__desc">
+                                    La fédération créée en 1988 représente les 1404 entreprises d’insertion (EI)
+                                    et entreprises de travail temporaire d’insertion (ETTI) de France.
+                                </p>
+                            </div>
+                            <div class="fr-card__footer">
+                                <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-right">
+                                    <li>
+                                        <a href="http://www.lesentreprisesdinsertion.org/"
+                                           id="track_partners_fei"
+                                           class="fr-btn fr-btn--tertiary fr-icon-arrow-right-up-line fr-btn--icon-right"
+                                           target="_blank"
+                                           rel="noopener">En savoir plus</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="fr-card__header">
+                            <div class="fr-card__img">
+                                <img src="{% static 'images/logo-partners-fei.min.png' %}"
+                                     class="fr-responsive-img"
+                                     alt="Logo de la fédération des entreprises d'insertion"
+                                     loading="lazy" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="fr-col-12 fr-col-md-6  fr-col-lg-4">
+                    <div class="fr-card fr-card--shadow">
+                        <div class="fr-card__body">
+                            <div class="fr-card__content">
+                                <h3 class="fr-card__title">AES</h3>
+                                <p class="fr-card__desc">
+                                    AES accompagne les donneurs d’ordre publics et privés pour le développement
+                                    de leurs politiques d’achat solidaires et circulaires.
+                                </p>
+                            </div>
+                            <div class="fr-card__footer">
+                                <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-right">
+                                    <li>
+                                        <a href="https://www.linkedin.com/company/economies-solidaires/"
+                                           id="track_partners_aes"
+                                           class="fr-btn fr-btn--tertiary fr-icon-arrow-right-up-line fr-btn--icon-right"
+                                           target="_blank"
+                                           rel="noopener">En savoir plus</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="fr-card__header">
+                            <div class="fr-card__img">
+                                <img src="{% static 'images/logo-partners-agence-des-economies-solidaires.min.jpg' %}"
+                                     class="fr-responsive-img"
+                                     alt="Logo de l'agence des économies solidaires"
+                                     loading="lazy" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="fr-mb-8v">
+        <div class="fr-container">
+            <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-m-8v">
+                <div class="fr-col-12 fr-col-lg-8">
+                    <div class="fr-card">
+                        <div class="fr-card__body">
+                            <div class="fr-card__content">
+                                <h3 class="fr-card__title">
+                                    Vous accompagnez des acheteurs public ou privé dans leurs achats inclusifs ?
+                                    Vous souhaitez être réferencé sur cette page ?
+                                </h3>
+                                <div class="fr-card__desc">
+                                    <div class="fr-grid-row fr-grid-row--center">
+                                        <div class="fr-col-12 fr-col-lg-4">
+                                            <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline fr-btns-group--icon-right">
+                                                <li>
+                                                    <a href="{% url 'pages:contact' %}"
+                                                       class="fr-btn fr-icon-arrow-right-line fr-btn--icon-right fr-mt-4v">
+                                                        Contactez-nous
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -356,6 +393,5 @@
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 {% endblock content %}
