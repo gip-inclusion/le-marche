@@ -622,7 +622,6 @@ SPECTACULAR_SETTINGS = {
 # Trackers
 # ------------------------------------------------------------------------------
 
-GOOGLE_TAG_MANAGER_ID = env.str("GOOGLE_TAG_MANAGER_ID", "")
 MATOMO_SITE_ID = int(env.str("MATOMO_SITE_ID", 0))
 MATOMO_HOST = env.str("MATOMO_HOST", "")
 MATOMO_TAG_MANAGER_CONTAINER_ID = env.str("MATOMO_TAG_MANAGER_CONTAINER_ID", "")

@@ -18,7 +18,6 @@ def expose_settings(request):
     return {
         "BITOUBI_ENV": settings.BITOUBI_ENV,
         # external services
-        "GOOGLE_TAG_MANAGER_ID": settings.GOOGLE_TAG_MANAGER_ID,
         "MATOMO_SITE_ID": settings.MATOMO_SITE_ID,
         "MATOMO_HOST": settings.MATOMO_HOST,
         "MATOMO_TAG_MANAGER_CONTAINER_ID": settings.MATOMO_TAG_MANAGER_CONTAINER_ID,
