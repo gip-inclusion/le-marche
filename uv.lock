@@ -2089,15 +2089,15 @@ wheels = [
 
 [[package]]
 name = "wagtailmenus"
-version = "4.0.5"
+version = "4.0.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django-cogwheels" },
     { name = "wagtail" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4a/b5/08bd15bc5d6ed8f2823df2a870349e7e7d3263bdae67715c001b88ce6670/wagtailmenus-4.0.5.tar.gz", hash = "sha256:a71e70bd3aa0697dc04947d1af8ce402d69c67f1040cd2ad601c797d67ae1681", size = 116810, upload-time = "2025-11-29T20:34:23.138Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/9d/91/b27e7b9fde2380bbc48188ff10d7625482160d0e19056fe253c63db3ddc2/wagtailmenus-4.0.6.tar.gz", hash = "sha256:ae95035ae629d0dee36a5b94a4633129b81de5b4e8c796ff65a9444408c904e4", size = 117133, upload-time = "2026-02-14T23:36:37.525Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/36/86/ce0e2c429357ab3013fdb59234096dbb8111e14ed8ca06b8d69b7e08531b/wagtailmenus-4.0.5-py3-none-any.whl", hash = "sha256:d34f4846a7a452d14bbf52c7b14bc4215e90bf271aea2f7ed616bea23389b313", size = 200484, upload-time = "2025-11-29T20:34:21.319Z" },
+    { url = "https://files.pythonhosted.org/packages/19/13/9aaf2a49ba5da60b0533b384bfab02bb1617114fba6d4a9078e952212f11/wagtailmenus-4.0.6-py3-none-any.whl", hash = "sha256:bc0423a56742abde2ed32c70eb07ba2efb64faafa7b693ff4ccc657d3a8b4261", size = 200597, upload-time = "2026-02-14T23:36:35.441Z" },
 ]
 
 [[package]]
