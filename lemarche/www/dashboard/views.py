@@ -167,6 +167,24 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
                 ],
             }
 
+            # QPV / ZRR breakdown: QPV only, ZRR only, both, neither
+            qpv_zrr_labels = [
+                "QPV uniquement",
+                "ZRR uniquement",
+                "QPV et ZRR",
+                "Ni QPV ni ZRR",
+            ]
+            qpv_zrr_keys = [
+                "total_purchases_qpv_only",
+                "total_purchases_zrr_only",
+                "total_purchases_qpv_and_zrr",
+                "total_purchases_no_qpv_no_zrr",
+            ]
+            chart_data_qpv_zrr = {
+                "labels": [label for label, key in zip(qpv_zrr_labels, qpv_zrr_keys) if purchases_stats[key] > 0],
+                "dataset": [purchases_stats[key] for key in qpv_zrr_keys if purchases_stats[key] > 0],
+            }
+
             context.update(
                 {
                     "total_purchases": purchases_stats["total_amount_annotated"],
@@ -192,6 +210,7 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
                     "chart_data_siae_type": chart_data_siae_type,
                     "chart_data_purchases_by_category": chart_data_purchases_by_category,
                     "chart_data_purchases_by_buying_entity": chart_data_purchases_by_buying_entity,
+                    "chart_data_qpv_zrr": chart_data_qpv_zrr,
                 }
             )
         return context

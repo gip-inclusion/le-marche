@@ -1,4 +1,5 @@
 import django_filters
+from django import forms
 from django.db.models import TextChoices
 
 from lemarche.purchases.models import Purchase
@@ -41,10 +42,27 @@ class PurchaseFilterSet(django_filters.FilterSet):
     buying_entity = django_filters.MultipleChoiceFilter(
         choices=get_buying_entities_choices, widget=CustomSelectMultiple()
     )
+    is_qpv = django_filters.BooleanFilter(
+        label="Uniquement structures QPV",
+        widget=forms.CheckboxInput(),
+        method="filter_is_qpv",
+    )
+    is_zrr = django_filters.BooleanFilter(
+        label="Uniquement structures ZRR",
+        widget=forms.CheckboxInput(),
+        method="filter_is_zrr",
+    )
 
     class Meta:
         model = Purchase
-        fields = ["inclusive_sector_type", "siae_type", "purchase_category", "buying_entity"]
+        fields = [
+            "inclusive_sector_type",
+            "siae_type",
+            "purchase_category",
+            "buying_entity",
+            "is_qpv",
+            "is_zrr",
+        ]
 
     def filter_inclusive_sector_type(self, queryset, name, value):
         kind_list = []
@@ -60,3 +78,13 @@ class PurchaseFilterSet(django_filters.FilterSet):
 
     def filter_siae_type(self, queryset, name, value):
         return queryset.filter(siae__kind__in=value)
+
+    def filter_is_qpv(self, queryset, name, value):
+        if value is True:
+            queryset = queryset.filter(siae__isnull=False, siae__is_qpv=True)
+        return queryset
+
+    def filter_is_zrr(self, queryset, name, value):
+        if value is True:
+            queryset = queryset.filter(siae__isnull=False, siae__is_zrr=True)
+        return queryset

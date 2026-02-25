@@ -60,3 +60,45 @@ class PurchaseModelTest(TestCase):
         # count only purchases with siae__isnull=True
         self.assertEqual(stats["total_purchases_by_category_traiteur"], 40000)
         self.assertEqual(stats["total_purchases_by_buying_entity_uss-enterprise-assurance"], 65000)
+
+        # All SIAEs in this test have default is_qpv=False, is_zrr=False -> all inclusive in "no qpv no zrr"
+        self.assertEqual(stats["total_purchases_qpv_only"], 0)
+        self.assertEqual(stats["total_purchases_zrr_only"], 0)
+        self.assertEqual(stats["total_purchases_no_qpv_no_zrr"], 195000)
+
+    def test_purchase_with_stats_qpv_zrr_breakdown(self):
+        """QPV / ZRR aggregates: QPV only, ZRR only, both, neither."""
+        company = CompanyFactory()
+        user = UserFactory(company=company)
+
+        PurchaseFactory(
+            company=company,
+            siae__is_qpv=True,
+            siae__is_zrr=False,
+            purchase_amount=10000,
+        )
+        PurchaseFactory(
+            company=company,
+            siae__is_qpv=False,
+            siae__is_zrr=True,
+            purchase_amount=20000,
+        )
+        PurchaseFactory(
+            company=company,
+            siae__is_qpv=True,
+            siae__is_zrr=True,
+            purchase_amount=5000,
+        )
+        PurchaseFactory(
+            company=company,
+            siae__is_qpv=False,
+            siae__is_zrr=False,
+            purchase_amount=30000,
+        )
+        PurchaseFactory(company=company, siae=None, purchase_amount=5000)
+
+        stats = Purchase.objects.get_purchase_for_user(user).with_stats()
+        self.assertEqual(stats["total_purchases_qpv_only"], 10000)
+        self.assertEqual(stats["total_purchases_zrr_only"], 20000)
+        self.assertEqual(stats["total_purchases_qpv_and_zrr"], 5000)
+        self.assertEqual(stats["total_purchases_no_qpv_no_zrr"], 30000)
