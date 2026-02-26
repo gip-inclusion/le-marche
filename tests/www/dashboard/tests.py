@@ -154,6 +154,84 @@ class InclusivePurchaseStatsDashboardViewTest(TestCase):
             "<strong>2</strong> fournisseurs sur les <strong>3</strong> fournisseurs référencés sont inclusifs",
         )
 
+    def test_view_includes_chart_data_qpv_zrr_with_correct_segments(self):
+        """chart_data_qpv_zrr has 4 segments: QPV only, ZRR only, both, neither."""
+        self.client.force_login(self.user)
+        PurchaseFactory(
+            company=self.user.company,
+            siae__kind=KIND_INSERTION_LIST[0],
+            siae__is_qpv=True,
+            siae__is_zrr=False,
+            purchase_amount=15000,
+        )
+        PurchaseFactory(
+            company=self.user.company,
+            siae__kind=KIND_INSERTION_LIST[0],
+            siae__is_qpv=False,
+            siae__is_zrr=True,
+            purchase_amount=25000,
+        )
+        PurchaseFactory(
+            company=self.user.company,
+            siae__kind=KIND_INSERTION_LIST[0],
+            siae__is_qpv=True,
+            siae__is_zrr=True,
+            purchase_amount=5000,
+        )
+        PurchaseFactory(
+            company=self.user.company,
+            siae__kind=KIND_INSERTION_LIST[0],
+            siae__is_qpv=False,
+            siae__is_zrr=False,
+            purchase_amount=10000,
+        )
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        chart = response.context["chart_data_qpv_zrr"]
+        self.assertEqual(
+            chart["labels"],
+            ["QPV uniquement", "ZRR uniquement", "QPV et ZRR", "Ni QPV ni ZRR"],
+        )
+        self.assertEqual(chart["dataset"], [15000, 25000, 5000, 10000])
+
+    def test_filter_is_qpv_restricts_to_qpv_siaes_only(self):
+        """When is_qpv checkbox is checked, only purchases with siae.is_qpv=True are counted."""
+        self.client.force_login(self.user)
+        PurchaseFactory(
+            company=self.user.company,
+            siae__is_qpv=True,
+            siae__is_zrr=False,
+            purchase_amount=10000,
+        )
+        PurchaseFactory(
+            company=self.user.company,
+            siae__is_qpv=False,
+            siae__is_zrr=False,
+            purchase_amount=20000,
+        )
+        response = self.client.get(self.url, {"is_qpv": "on"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["total_purchases"], 10000)
+
+    def test_filter_is_zrr_restricts_to_zrr_siaes_only(self):
+        """When is_zrr checkbox is checked, only purchases with siae.is_zrr=True are counted."""
+        self.client.force_login(self.user)
+        PurchaseFactory(
+            company=self.user.company,
+            siae__is_qpv=False,
+            siae__is_zrr=True,
+            purchase_amount=15000,
+        )
+        PurchaseFactory(
+            company=self.user.company,
+            siae__is_qpv=False,
+            siae__is_zrr=False,
+            purchase_amount=25000,
+        )
+        response = self.client.get(self.url, {"is_zrr": "on"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["total_purchases"], 15000)
+
 
 class DisabledEmailEditViewTest(TestCase):
     def setUp(self):

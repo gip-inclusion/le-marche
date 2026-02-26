@@ -34,6 +34,10 @@
                                 <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.purchase_category %}</div>
                                 <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.buying_entity %}</div>
                             </div>
+                            <div class="fr-grid-row fr-grid-row--gutters">
+                                <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.is_qpv %}</div>
+                                <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.is_zrr %}</div>
+                            </div>
                             <button class="fr-mt-2v fr-mb-2v fr-btn" type="submit">Appliquer les filtres</button>
                         </form>
                     </div>
@@ -168,6 +172,25 @@
                                 </div>
                             </div>
                         {% endif %}
+                        {% if chart_data_qpv_zrr.labels %}
+                            <div class="fr-col-12 fr-col-lg-6">
+                                <div class="fr-card">
+                                    <div class="fr-card__body">
+                                        <div class="fr-card__content">
+                                            <h3 class="fr-card__title">Répartition QPV / ZRR</h3>
+                                            <div class="fr-card__desc">
+                                                <canvas id="qpvZrrChart" width="400" height="300"></canvas>
+                                            </div>
+                                            <div class="fr-card__footer">
+                                                <p class="fr-text--sm fr-mt-2v">
+                                                    Part des achats vers des structures en QPV (Quartier prioritaire de la ville) et/ou en ZRR (Zone de revitalisation rurale).
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 {% else %}
                     <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w fr-mt-2w">
@@ -280,6 +303,22 @@
                 }]
             }
 
+            // Data for QPV / ZRR doughnut (QPV only, ZRR only, both, neither)
+            const qpvZrrData = {
+                labels: {{ chart_data_qpv_zrr.labels | safe }},
+                datasets: [{
+                    data: {{ chart_data_qpv_zrr.dataset | safe }},
+                    backgroundColor: [
+                        '#3558a2',
+                        '#6b4423',
+                        '#2f4077',
+                        '#c8c9ce',
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            };
+
             // Common configuration for charts
             const commonOptions = {
                 responsive: true,
@@ -376,6 +415,23 @@
                 },
                 plugins: [ChartDataLabels]
             });
+
+            // Doughnut chart (QPV / ZRR)
+            const qpvZrrChartEl = document.getElementById('qpvZrrChart');
+            if (qpvZrrChartEl && qpvZrrData.labels.length > 0) {
+                new Chart(qpvZrrChartEl, {
+                    type: 'doughnut',
+                    data: qpvZrrData,
+                    options: {
+                        ...commonOptions,
+                        cutout: '50%',
+                        plugins: {
+                            ...commonOptions.plugins,
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            }
 
             new Chart(document.getElementById('purchaseCategoryChart'), {
                 type: 'bar',

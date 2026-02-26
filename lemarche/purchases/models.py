@@ -43,6 +43,60 @@ class PurchaseQuerySet(models.QuerySet):
                 output_field=IntegerField(),
             )
 
+        # QPV / ZRR breakdown (4 segments: QPV only, ZRR only, both, neither)
+        aggregates["total_purchases_qpv_only"] = ExpressionWrapper(
+            Coalesce(
+                Round(
+                    Sum(
+                        "purchase_amount",
+                        filter=Q(siae__isnull=False, siae__is_qpv=True, siae__is_zrr=False),
+                    ),
+                    0,
+                ),
+                0,
+            ),
+            output_field=IntegerField(),
+        )
+        aggregates["total_purchases_zrr_only"] = ExpressionWrapper(
+            Coalesce(
+                Round(
+                    Sum(
+                        "purchase_amount",
+                        filter=Q(siae__isnull=False, siae__is_qpv=False, siae__is_zrr=True),
+                    ),
+                    0,
+                ),
+                0,
+            ),
+            output_field=IntegerField(),
+        )
+        aggregates["total_purchases_qpv_and_zrr"] = ExpressionWrapper(
+            Coalesce(
+                Round(
+                    Sum(
+                        "purchase_amount",
+                        filter=Q(siae__isnull=False, siae__is_qpv=True, siae__is_zrr=True),
+                    ),
+                    0,
+                ),
+                0,
+            ),
+            output_field=IntegerField(),
+        )
+        aggregates["total_purchases_no_qpv_no_zrr"] = ExpressionWrapper(
+            Coalesce(
+                Round(
+                    Sum(
+                        "purchase_amount",
+                        filter=Q(siae__isnull=False, siae__is_qpv=False, siae__is_zrr=False),
+                    ),
+                    0,
+                ),
+                0,
+            ),
+            output_field=IntegerField(),
+        )
+
         # get sum of purchases by purchases category
         for category in (
             self.filter(siae__isnull=False)
