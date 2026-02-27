@@ -158,12 +158,13 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
                 .order_by("buying_entity")
                 .distinct()
             )
+            buying_entity_slugs = [slugify(buying_entity) or "none" for buying_entity in buying_entities]
             chart_data_purchases_by_buying_entity = {
-                "labels": buying_entities,
+                "labels": [buying_entity or "Non renseigné" for buying_entity in buying_entities],
                 "dataset": [
-                    purchases_stats[f"total_purchases_by_buying_entity_{slugify(buying_entity)}"]
-                    for buying_entity in buying_entities
-                    if purchases_stats[f"total_purchases_by_buying_entity_{slugify(buying_entity)}"] > 0
+                    purchases_stats[f"total_purchases_by_buying_entity_{buying_entity_slug}"]
+                    for buying_entity_slug in buying_entity_slugs
+                    if purchases_stats[f"total_purchases_by_buying_entity_{buying_entity_slug}"] > 0
                 ],
             }
 
