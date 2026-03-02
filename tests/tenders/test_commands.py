@@ -7,6 +7,7 @@ from django.core.management import call_command
 from django.db.models import signals
 from django.test import TestCase
 from django.utils import timezone
+from freezegun import freeze_time
 
 from lemarche.siaes import constants as siae_constants
 from lemarche.tenders.models import Tender, TenderSiae
@@ -126,10 +127,9 @@ class TestSendAuthorListOfSuperSiaesEmails(TestCase):
         cls.tender_after.refresh_from_db()
 
     @patch("lemarche.www.tenders.tasks.send_super_siaes_email_to_author")
-    @patch("django.utils.timezone.now")
-    def test_command_on_weekend(self, mock_now, mock_send_email):
+    @freeze_time(timezone.make_aware(timezone.datetime(2024, 4, 7)))
+    def test_command_on_weekend(self, mock_send_email):
         # Assume today is Sunday
-        mock_now.return_value = timezone.make_aware(timezone.datetime(2024, 4, 7))
 
         out = StringIO()
         call_command("send_author_list_of_super_siaes_emails", stdout=out)
@@ -139,11 +139,9 @@ class TestSendAuthorListOfSuperSiaesEmails(TestCase):
         self.assertFalse(mock_send_email.called)
 
     @patch("lemarche.www.tenders.tasks.send_super_siaes_email_to_author")
-    @patch("django.utils.timezone.now")
-    def test_command_on_weekday(self, mock_now, mock_send_email):
+    @freeze_time(timezone.make_aware(timezone.datetime(2024, 4, 10, 7, 30)))
+    def test_command_on_weekday(self, mock_send_email):
         # Assume today is a weekday (e.g., Wednesday)
-        mock_now.return_value = timezone.make_aware(timezone.datetime(2024, 4, 10, 7, 30))
-
         out = StringIO()
         call_command("send_author_list_of_super_siaes_emails", stdout=out)
 
@@ -168,11 +166,9 @@ class TestSendAuthorListOfSuperSiaesEmails(TestCase):
         self.assertEqual(mock_send_email.call_count, 2)
 
     @patch("lemarche.www.tenders.tasks.send_super_siaes_email_to_author")
-    @patch("django.utils.timezone.now")
-    def test_command_on_weekday_dry_run(self, mock_now, mock_send_email):
+    @freeze_time(timezone.make_aware(timezone.datetime(2024, 4, 10, 7, 30)))
+    def test_command_on_weekday_dry_run(self, mock_send_email):
         # Assume today is a weekday (e.g., Wednesday)
-        mock_now.return_value = timezone.make_aware(timezone.datetime(2024, 4, 10, 7, 30))
-
         out = StringIO()
         call_command("send_author_list_of_super_siaes_emails", stdout=out, dry_run=True)
 
@@ -345,12 +341,11 @@ class SiaeInterestReminderEmailCommandTest(TestCase):
         "lemarche.www.tenders.tasks.whitelist_recipient_list",
         return_value=["siae1@example.com", "siae2@example.com", "siae3@example.com"],
     )
-    @patch("django.utils.timezone.now")
-    def test_send_siae_interested_reminder_email_weekday(self, mock_now, _mock_whitelist, mock_send_email):
+    @freeze_time(timezone.make_aware(timezone.datetime(2025, 11, 12, 10, 0)))
+    def test_send_siae_interested_reminder_email_weekday(self, _mock_whitelist, mock_send_email):
         """Test the command on a weekday with TenderSiae that need reminders"""
         # Assume today is Wednesday
-        now = timezone.make_aware(timezone.datetime(2025, 11, 12, 10, 0))
-        mock_now.return_value = now
+        now = timezone.now()
 
         # Create TenderSiae with detail_contact_click_date 2 days ago (should be reminded)
         TenderSiaeFactory(
@@ -407,13 +402,10 @@ class SiaeInterestReminderEmailCommandTest(TestCase):
         "lemarche.www.tenders.tasks.whitelist_recipient_list",
         return_value=["siae1@example.com", "siae2@example.com", "siae3@example.com"],
     )
-    @patch("django.utils.timezone.now")
-    def test_send_siae_interested_reminder_email_weekend(self, mock_now, _mock_whitelist, mock_send_email):
+    @freeze_time(timezone.make_aware(timezone.datetime(2025, 11, 15, 10, 0)))
+    def test_send_siae_interested_reminder_email_weekend(self, _mock_whitelist, mock_send_email):
         """Test the command on a weekend - should not send emails"""
         # Assume today is Saturday
-        now = timezone.make_aware(timezone.datetime(2025, 11, 15, 10, 0))
-        mock_now.return_value = now
-
         out = StringIO()
         call_command("send_siae_interested_reminder_emails", stdout=out)
 
@@ -431,12 +423,11 @@ class SiaeInterestReminderEmailCommandTest(TestCase):
         "lemarche.www.tenders.tasks.whitelist_recipient_list",
         return_value=["siae1@example.com", "siae2@example.com", "siae3@example.com"],
     )
-    @patch("django.utils.timezone.now")
-    def test_send_siae_interested_reminder_email_monday(self, mock_now, _mock_whitelist, mock_send_email):
+    @freeze_time(timezone.make_aware(timezone.datetime(2025, 11, 17, 10, 0)))
+    def test_send_siae_interested_reminder_email_monday(self, _mock_whitelist, mock_send_email):
         """Test the command on Monday - should account for weekend"""
         # Assume today is Monday
-        now = timezone.make_aware(timezone.datetime(2025, 11, 17, 10, 0))
-        mock_now.return_value = now
+        now = timezone.now()
 
         # Create TenderSiae with detail_contact_click_date 4 days + 1 hour ago (Friday, should be reminded on Monday)
         TenderSiaeFactory(
@@ -465,12 +456,11 @@ class SiaeInterestReminderEmailCommandTest(TestCase):
         "lemarche.www.tenders.tasks.whitelist_recipient_list",
         return_value=["siae1@example.com", "siae2@example.com", "siae3@example.com"],
     )
-    @patch("django.utils.timezone.now")
-    def test_send_siae_interested_reminder_email_dry_run(self, mock_now, _mock_whitelist, mock_send_email):
+    @freeze_time(timezone.make_aware(timezone.datetime(2025, 11, 12, 10, 0)))
+    def test_send_siae_interested_reminder_email_dry_run(self, _mock_whitelist, mock_send_email):
         """Test the command with dry-run option - should not send emails"""
         # Assume today is Wednesday
-        now = timezone.make_aware(timezone.datetime(2025, 11, 12, 10, 0))
-        mock_now.return_value = now
+        now = timezone.now()
 
         # Create TenderSiae with detail_contact_click_date 3 days + 1 hour ago
         TenderSiaeFactory(
@@ -500,12 +490,11 @@ class SiaeInterestReminderEmailCommandTest(TestCase):
         "lemarche.www.tenders.tasks.whitelist_recipient_list",
         return_value=["siae1@example.com", "siae2@example.com", "siae3@example.com"],
     )
-    @patch("django.utils.timezone.now")
-    def test_send_siae_interested_reminder_email_with_tender_id(self, mock_now, _mock_whitelist, mock_send_email):
+    @freeze_time(timezone.make_aware(timezone.datetime(2025, 11, 12, 10, 0)))
+    def test_send_siae_interested_reminder_email_with_tender_id(self, _mock_whitelist, mock_send_email):
         """Test the command with --tender-id option"""
         # Assume today is Wednesday
-        now = timezone.make_aware(timezone.datetime(2025, 11, 12, 10, 0))
-        mock_now.return_value = now
+        now = timezone.now()
 
         # Create another tender
         tender2 = TenderFactory(author=self.author, deadline_date=None)
@@ -547,12 +536,11 @@ class SiaeInterestReminderEmailCommandTest(TestCase):
         "lemarche.www.tenders.tasks.whitelist_recipient_list",
         return_value=["siae2@example.com"],
     )
-    @patch("django.utils.timezone.now")
-    def test_send_siae_interested_reminder_email_with_deadline(self, mock_now, _mock_whitelist, mock_send_email):
+    @freeze_time(timezone.make_aware(timezone.datetime(2025, 11, 12, 10, 0)))
+    def test_send_siae_interested_reminder_email_with_deadline(self, _mock_whitelist, mock_send_email):
         """Test that tenders with past deadline are excluded"""
         # Assume today is Wednesday
-        now = timezone.make_aware(timezone.datetime(2025, 11, 12, 10, 0))
-        mock_now.return_value = now
+        now = timezone.now()
 
         # Create tender with past deadline
         tender_past_deadline = TenderFactory(author=self.author, deadline_date=(now - timedelta(days=1)).date())

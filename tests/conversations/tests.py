@@ -4,6 +4,7 @@ from unittest.mock import patch
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.test import TestCase, TransactionTestCase, override_settings
+from freezegun import freeze_time
 
 from lemarche.conversations.constants import ATTRIBUTES_TO_NOT_ANONYMIZE_FOR_INBOUND, ATTRIBUTES_TO_SAVE_FOR_INBOUND
 from lemarche.conversations.models import Conversation, DisabledEmail, TemplateTransactional
@@ -73,10 +74,8 @@ class ConversationQuerysetTest(TestCase):
         self.assertEqual(conversation_queryset.get(id=self.conversation_with_answer.id).answer_count_annotated, 1)
 
 
-@patch("django.utils.timezone.now", lambda: datetime(year=2024, month=1, day=1, tzinfo=UTC))
-@override_settings(
-    INACTIVE_CONVERSATION_TIMEOUT_IN_MONTHS=6,
-)
+@override_settings(INACTIVE_CONVERSATION_TIMEOUT_IN_MONTHS=6)
+@freeze_time("2024-01-01")
 class ConversationAnonymizationTestCase(TestCase):
     """
     Check that conversation are correctly anonymized

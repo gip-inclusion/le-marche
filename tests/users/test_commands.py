@@ -7,6 +7,7 @@ from django.core.management import call_command
 from django.core.validators import validate_email
 from django.db.models import F
 from django.test import TestCase, override_settings
+from freezegun import freeze_time
 
 from lemarche.conversations.models import TemplateTransactional, TemplateTransactionalSendLog
 from lemarche.users.constants import PARTNER_KIND_FACILITATOR
@@ -17,13 +18,10 @@ from tests.siaes.factories import SiaeFactory
 from tests.users.factories import UserFactory
 
 
-# To avoid different results when test will be run in the future, we patch
-# and froze timezone.now used in the command
+# To avoid different results when test will be run in the future, we
+# froze timezone.now used in the command
 # Settings are also overriden to avoid changing settings breaking tests
-@patch(
-    "django.utils.timezone.now",
-    lambda: datetime(year=2024, month=1, day=1, tzinfo=UTC),
-)
+@freeze_time("2024-01-01")
 @override_settings(
     INACTIVE_USER_TIMEOUT_IN_MONTHS=12,
     INACTIVE_USER_WARNING_DELAY_IN_DAYS=7,
