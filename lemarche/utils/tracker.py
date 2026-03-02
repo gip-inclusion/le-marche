@@ -50,10 +50,8 @@ DEFAULT_PAYLOAD = {
 }
 
 
-# @task()
 def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
-    # Don't log in dev
-    if settings.BITOUBI_ENV not in ("dev", "test"):
+    if settings.TRACKER_ENABLED:
         date_created = timezone.now()
         user_id = meta.get("user_id", None)
         if user_id:

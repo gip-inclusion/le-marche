@@ -452,6 +452,6 @@ def update_api_key_last_update(sender, instance, **kwargs):
 
 @receiver(post_save, sender=User)
 def user_post_save(sender, instance, **kwargs):
-    if settings.BITOUBI_ENV == "prod":
+    if settings.TRACKER_ENABLED:
         list_stats_attrs = [field.name for field in StatsUser._meta.fields]
         StatsUser.objects.update_or_create(id=instance.pk, defaults=model_to_dict(instance, fields=list_stats_attrs))
