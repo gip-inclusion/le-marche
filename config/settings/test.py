@@ -20,6 +20,14 @@ LOGGING["loggers"].update(
 # Static files are not compressed in test environment
 COMPRESS_OFFLINE = False
 
+# Database
+# ------------------------------------------------------------------------------
+
+DATABASES["stats"] = DATABASES["default"]
+
+# Emails.
+# ------------------------------------------------------------------------------
+
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # see https://docs.python.org/3/library/platform.html#platform.win32_ver
@@ -51,6 +59,8 @@ CACHES = {
         "LOCATION": "django_cache",
     }
 }
+
+DATABASES["stats"] = DATABASES["default"]
 
 
 # Nexus metabase db
