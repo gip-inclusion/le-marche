@@ -54,6 +54,20 @@ class Tracker(models.Model):
         db_table = "trackers"
 
 
+class StatsUserQuerySet(models.QuerySet):
+    def anonymize_update(self):
+        """Wipe personal data stored in StatsUser"""
+        return self.update(
+            email="",
+            first_name="",
+            last_name="",
+            phone="",
+            company_name="",
+            is_anonymized=True,
+            anonymized_at=timezone.now(),
+        )
+
+
 class StatsUser(models.Model):
     id = models.PositiveIntegerField(
         primary_key=True, auto_created=False, verbose_name="ID app leMarche", db_index=True
@@ -66,6 +80,10 @@ class StatsUser(models.Model):
     company_name = models.CharField(verbose_name="Nom de l'entreprise", max_length=255, blank=True)
     position = models.CharField(verbose_name="Poste", max_length=255, blank=True)
     partner_kind = models.CharField(verbose_name="Type de partenaire", max_length=20, blank=True)
+    is_anonymized = models.BooleanField(verbose_name="Est anonymisé", default=False)
+    anonymized_at = models.DateTimeField(verbose_name="Date d'anonymisation", blank=True, null=True)
+
+    objects = models.Manager.from_queryset(StatsUserQuerySet)()
 
     class Meta:
         # avoid "stats_stats_user"
