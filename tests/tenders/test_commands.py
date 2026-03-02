@@ -7,6 +7,7 @@ from django.core.management import call_command
 from django.db.models import signals
 from django.test import TestCase
 from django.utils import timezone
+from freezegun import freeze_time
 
 from lemarche.siaes import constants as siae_constants
 from lemarche.tenders.models import Tender, TenderSiae
@@ -126,10 +127,9 @@ class TestSendAuthorListOfSuperSiaesEmails(TestCase):
         cls.tender_after.refresh_from_db()
 
     @patch("lemarche.www.tenders.tasks.send_super_siaes_email_to_author")
-    @patch("django.utils.timezone.now")
-    def test_command_on_weekend(self, mock_now, mock_send_email):
+    @freeze_time(timezone.make_aware(timezone.datetime(2024, 4, 7)))
+    def test_command_on_weekend(self, mock_send_email):
         # Assume today is Sunday
-        mock_now.return_value = timezone.make_aware(timezone.datetime(2024, 4, 7))
 
         out = StringIO()
         call_command("send_author_list_of_super_siaes_emails", stdout=out)
@@ -139,11 +139,9 @@ class TestSendAuthorListOfSuperSiaesEmails(TestCase):
         self.assertFalse(mock_send_email.called)
 
     @patch("lemarche.www.tenders.tasks.send_super_siaes_email_to_author")
-    @patch("django.utils.timezone.now")
-    def test_command_on_weekday(self, mock_now, mock_send_email):
+    @freeze_time(timezone.make_aware(timezone.datetime(2024, 4, 10, 7, 30)))
+    def test_command_on_weekday(self, mock_send_email):
         # Assume today is a weekday (e.g., Wednesday)
-        mock_now.return_value = timezone.make_aware(timezone.datetime(2024, 4, 10, 7, 30))
-
         out = StringIO()
         call_command("send_author_list_of_super_siaes_emails", stdout=out)
 
@@ -168,11 +166,9 @@ class TestSendAuthorListOfSuperSiaesEmails(TestCase):
         self.assertEqual(mock_send_email.call_count, 2)
 
     @patch("lemarche.www.tenders.tasks.send_super_siaes_email_to_author")
-    @patch("django.utils.timezone.now")
-    def test_command_on_weekday_dry_run(self, mock_now, mock_send_email):
+    @freeze_time(timezone.make_aware(timezone.datetime(2024, 4, 10, 7, 30)))
+    def test_command_on_weekday_dry_run(self, mock_send_email):
         # Assume today is a weekday (e.g., Wednesday)
-        mock_now.return_value = timezone.make_aware(timezone.datetime(2024, 4, 10, 7, 30))
-
         out = StringIO()
         call_command("send_author_list_of_super_siaes_emails", stdout=out, dry_run=True)
 
