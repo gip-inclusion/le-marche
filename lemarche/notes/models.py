@@ -14,7 +14,7 @@ class Note(models.Model):
         to=settings.AUTH_USER_MODEL,
         verbose_name="Auteur",
         related_name="notes",
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
     )

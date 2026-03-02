@@ -1,3 +1,4 @@
+from lemarche.stats.models import StatsUser
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -44,33 +45,39 @@ class Command(BaseCommand):
         warning_date = expiry_date + relativedelta(days=options["warning_delay"])
 
         try:
-            self.anonymize_old_users(expiry_date=expiry_date, dry_run=options["dry_run"])
+            self.delete_old_users(expiry_date=expiry_date, dry_run=options["dry_run"])
         except DryRunException:
             self.stdout.write("Fin du dry_run d'anonymisation")
 
         self.warn_users_by_email(expiry_date=expiry_date, warning_date=warning_date, dry_run=options["dry_run"])
 
     @transaction.atomic
-    def anonymize_old_users(self, expiry_date: timezone.datetime, dry_run: bool):
-        """Update inactive users since x months and strip them from their personal data.
+    def delete_old_users(self, expiry_date: timezone.datetime, dry_run: bool):
+        """Delete inactive users who have not logged in in x months.
         email is unique and not nullable, therefore it's replaced with the object id."""
 
         qs = User.objects.filter(last_login__lte=expiry_date, is_anonymized=False)
-        users_to_update_count = qs.count()
+        users_to_delete_count = qs.count()
 
-        qs.anonymize_update()
+        # wipe personal data from related StatsUser objects
+        # emails = qs.values_list("email", flat=True)
+        # stats = StatsUser.objects.filter(email__in=emails)
+        # stats.anonymize_update()
+
+        # remove inactive users
+        qs.delete()
 
         # remove anonymized users in Siaes
-        SiaeUser.objects.filter(user__is_anonymized=True).delete()
+        # SiaeUser.objects.filter(user__is_anonymized=True).delete()
 
-        self.stdout.write(f"Utilisateurs anonymisés avec succès ({users_to_update_count} traités)")
+        self.stdout.write(f"Utilisateurs supprimés avec succès ({users_to_delete_count} traités)")
 
         if dry_run:  # cancel transaction
             raise DryRunException
 
     @transaction.atomic
     def warn_users_by_email(self, warning_date: timezone.datetime, expiry_date: timezone.datetime, dry_run: bool):
-        email_template = TemplateTransactional.objects.get(code="USER_ANONYMIZATION_WARNING")
+        email_template = TemplateTransactional.objects.get(code="USER_DELETION_WARNING")
 
         # Users that have already received the mail are excluded
         users_to_warn = User.objects.filter(last_login__lte=warning_date, is_active=True, is_anonymized=False).exclude(
@@ -90,7 +97,7 @@ class Command(BaseCommand):
                 recipient_name=user.full_name,
                 variables={
                     "user_full_name": user.full_name,
-                    "anonymization_date": defaulttags.date(expiry_date),  # natural date
+                    "deletion_date": defaulttags.date(expiry_date),  # natural date
                 },
                 recipient_content_object=user,
             )

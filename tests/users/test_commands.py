@@ -28,7 +28,7 @@ from tests.users.factories import UserFactory
     INACTIVE_USER_TIMEOUT_IN_MONTHS=12,
     INACTIVE_USER_WARNING_DELAY_IN_DAYS=7,
 )
-class UserAnonymizationTestCase(TestCase):
+class UserDeletionTestCase(TestCase):
     def setUp(self):
         frozen_now = datetime(year=2024, month=1, day=1, tzinfo=UTC)
         self.frozen_last_year = frozen_now - relativedelta(years=1)
@@ -91,39 +91,23 @@ class UserAnonymizationTestCase(TestCase):
         anonymized_user.email = "000"
         anonymized_user.save()
 
-    def test_anonymize_command(self):
-        """Test the admin command 'anonymize_old_users'"""
+    def test_delete_command(self):
+        """Test the admin command 'delete_old_users'"""
 
-        call_command("anonymize_old_users", stdout=self.std_out)
+        call_command("delete_old_users", stdout=self.std_out)
 
-        self.assertEqual(User.objects.filter(is_active=False).count(), 2)
+        self.assertEqual(User.objects.count(), 2)
 
-        anonymized_user = User.objects.filter(is_active=False).first()
+        active_user = User.objects.first()
+        self.assertTrue(active_user.last_login > self.frozen_last_year)
 
-        self.assertEqual(anonymized_user.email, f"{anonymized_user.id}@domain.invalid")
-        validate_email(anonymized_user.email)
-
-        self.assertTrue(anonymized_user.is_anonymized)
-
-        self.assertFalse(anonymized_user.first_name)
-        self.assertFalse(anonymized_user.last_name)
-        self.assertFalse(anonymized_user.phone)
-        self.assertFalse(anonymized_user.siaes.all())
-
-        self.assertIsNone(anonymized_user.api_key)
-        self.assertIsNone(anonymized_user.api_key_last_updated)
-
-        self.assertFalse(anonymized_user.has_usable_password())
-        # from UNUSABLE_PASSWORD_SUFFIX_LENGTH it should be 40, but we're pretty close
-        self.assertEqual(len(anonymized_user.password), 37)
-
-        self.assertIn("Utilisateurs anonymisés avec succès", self.std_out.getvalue())
+        self.assertIn("Utilisateurs supprimés avec succès", self.std_out.getvalue())
 
     def test_warn_command(self):
-        """Test the admin command 'anonymize_old_users' to check if users are warned by email
+        """Test the admin command 'delete_old_users' to check if users are warned by email
         before their account is being removed"""
 
-        call_command("anonymize_old_users", stdout=self.std_out)
+        call_command("delete_old_users", stdout=self.std_out)
 
         log_qs = TemplateTransactionalSendLog.objects.all()
         self.assertEqual(
@@ -149,16 +133,16 @@ class UserAnonymizationTestCase(TestCase):
 
         original_qs_count = User.objects.filter(is_active=True).count()
 
-        call_command("anonymize_old_users", dry_run=True, stdout=self.std_out)
+        call_command("delete_old_users", dry_run=True, stdout=self.std_out)
 
         self.assertEqual(original_qs_count, User.objects.filter(is_active=True).count())
 
-        self.assertIn("Utilisateurs anonymisés avec succès (2 traités)", self.std_out.getvalue())
+        self.assertIn("Utilisateurs supprimés avec succès (2 traités)", self.std_out.getvalue())
 
     def test_dryrun_warn_command(self):
         """Ensure that the database is not modified after dryrun and no email have been sent"""
 
-        call_command("anonymize_old_users", dry_run=True, stdout=self.std_out)
+        call_command("delete_old_users", dry_run=True, stdout=self.std_out)
 
         self.assertFalse(TemplateTransactionalSendLog.objects.all())
 

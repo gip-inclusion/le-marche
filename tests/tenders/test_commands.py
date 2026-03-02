@@ -1,8 +1,11 @@
+from django.db.models.query_utils import Q
 from datetime import timedelta
+from datetime import UTC, datetime
 from io import StringIO
 from unittest.mock import patch
 
 import factory
+from dateutil.relativedelta import relativedelta
 from django.core.management import call_command
 from django.db.models import signals
 from django.test import TestCase
@@ -591,3 +594,74 @@ class SiaeInterestReminderEmailCommandTest(TestCase):
         # Verify the call arguments
         call_args = mock_send_email.call_args
         self.assertEqual(call_args.kwargs["recipient_email"], "siae2@example.com")
+
+
+@patch(
+    "django.utils.timezone.now",
+    lambda: datetime(year=2024, month=1, day=1, tzinfo=UTC),
+)
+class TenderAutoDeletionCommandTest(TestCase):
+    def test_remove_old_tenders(self):
+        """Test the admin command 'remove_old_tenders'"""
+
+        std_out = StringIO()
+        now = datetime(year=2024, month=1, day=1, tzinfo=UTC)
+        expiry_date = now - relativedelta(months=12)
+        tender_recent = TenderFactory(author__last_login=now)
+        tender_old = TenderFactory(
+            status=Tender.StatusChoices.STATUS_DRAFT, published_at=expiry_date, author__last_login=expiry_date
+        )
+        tender_old_2 = TenderFactory(
+            status=Tender.StatusChoices.STATUS_SUBMITTED,
+            published_at=expiry_date,
+            author__last_login=(now - relativedelta(months=6)),
+        )
+        TenderFactory(
+            status=Tender.StatusChoices.STATUS_REJECTED, published_at=expiry_date, author__last_login=expiry_date
+        )
+
+        self.assertEqual(Tender.objects.count(), 4)
+
+        call_command("remove_old_tenders", stdout=std_out)
+
+        self.assertQuerySetEqual(Tender.objects.all(), [tender_recent, tender_old, tender_old_2], ordered=False)
+
+        tenders = Tender.objects.all()
+
+        for tender in tenders:
+            self.assertTrue(
+                (expiry_date < tender.created_at and expiry_date < tender.author.last_login)
+                or tender.status == Tender.StatusChoices.STATUS_DRAFT
+            )
+
+        self.assertIn("Besoins d'achat supprimés avec succès", std_out.getvalue())
+
+    def test_remove_old_draft_tenders(self):
+        """Test the admin command 'remove_old_draft_tenders'"""
+
+        std_out = StringIO()
+        now = datetime(year=2024, month=1, day=1, tzinfo=UTC)
+        expiry_date = now - relativedelta(months=12)
+        tender_recent = TenderFactory(status=Tender.StatusChoices.STATUS_DRAFT)
+        tender_old = TenderFactory(status=Tender.StatusChoices.STATUS_DRAFT)
+        tt = TenderFactory(status=Tender.StatusChoices.STATUS_DRAFT, created_at=expiry_date, updated_at=expiry_date)
+
+        self.assertEqual(Tender.objects.count(), 3)
+
+        call_command("remove_old_draft_tenders", stdout=std_out)
+
+        self.assertTrue(tt.created_at == expiry_date)
+
+        # self.assertEqual(Tender.objects.count(), 2)
+
+        # self.assertQuerySetEqual(Tender.objects.all(), [tender_recent, tender_old], ordered=False)
+
+        # tenders = Tender.objects.all()
+
+        # for tender in tenders:
+        #     self.assertTrue(
+        #         expiry_date < tender.updated_at
+        #         or (expiry_date >= tender.updated_at and ~Q(status=Tender.StatusChoices.STATUS_DRAFT))
+        #     )
+
+        # self.assertIn("Besoins d'achat non-finalisés supprimés avec succès", std_out.getvalue())

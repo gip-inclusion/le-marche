@@ -28,6 +28,16 @@ def create_template(apps, schema_editor):
         """,
         },
         {
+            "name": "Avertissement de suppression de compte utilisateur",
+            "code": "USER_DELETION_WARNING",
+            "description": """
+        Bonjour {{ params.user_full_name }}, votre compte va être supprimé le {{ params.deletion_date }}
+         si vous ne vous connectez pas avant.
+        Bonne journée,
+        L'équipe du marché de l'inclusion
+        """,
+        },
+        {
             "name": "Confirmation de l'onboarding",
             "code": "USER_ONBOARDING_CONFIRMED",
             "description": "Vous avez été onboardé, vous pouvez mainteant profiter des toutes les fonctionalités",

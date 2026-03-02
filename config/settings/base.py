@@ -795,6 +795,10 @@ INACTIVE_CONVERSATION_TIMEOUT_IN_MONTHS = env.int("INACTIVE_CONVERSATION_TIMEOUT
 INACTIVE_USER_TIMEOUT_IN_MONTHS = env.int("INACTIVE_USER_TIMEOUT_IN_MONTHS", 3 * 12)
 INACTIVE_USER_WARNING_DELAY_IN_DAYS = env.int("INACTIVE_USER_WARNING_DELAY_IN_DAYS", 7)
 
+# RGPD timeouts
+# ------------------------------------------------------------------------------
+TRACKER_DELETION_TIMEOUT_IN_MONTHS = env.int("TRACKER_DELETION_TIMEOUT_IN_MONTHS", 2 * 12)
+STATS_DELETION_TIMEOUT_IN_MONTHS = env.int("STATS_DELETION_TIMEOUT_IN_MONTHS", 2 * 12)
 
 # Wagtail
 # ------------------------------------------------------------------------------
