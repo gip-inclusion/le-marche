@@ -904,3 +904,8 @@ NEXUS_METABASE_DB_PASSWORD = os.getenv("NEXUS_METABASE_DB_PASSWORD")
 
 NEXUS_API_BASE_URL = os.getenv("NEXUS_API_BASE_URL")
 NEXUS_API_TOKEN = os.getenv("NEXUS_API_TOKEN")
+
+# Stats
+# ------------------------------------------------------------------------------
+
+TRACKER_ENABLED = os.getenv("TRACKER_ENABLED", "False") == "True"
