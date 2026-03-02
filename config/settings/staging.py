@@ -29,6 +29,18 @@ SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", True)
 
 MEDIA_URL = f"https://{S3_STORAGE_ENDPOINT_DOMAIN}/"  # noqa
 
+# Database
+# ------------------------------------------------------------------------------
+
+DATABASES["stats"] = {  # noqa: F405
+    "ENGINE": "django.db.backends.postgresql",
+    "HOST": env.str("STATS_POSTGRESQL_ADDON_HOST", "localhost"),
+    "PORT": env.str("STATS_POSTGRESQL_ADDON_PORT", "5432"),
+    "NAME": env.str("STATS_POSTGRESQL_ADDON_DB", "marchetracker"),
+    "USER": env.str("STATS_POSTGRESQL_ADDON_USER", "itou"),
+    "PASSWORD": env.str("STATS_POSTGRESQL_ADDON_PASSWORD", "password"),
+}
+DATABASE_ROUTERS = ["config.stats_router.StatsRouter"]
 
 # Sentry
 # ------------------------------------------------------------------------------

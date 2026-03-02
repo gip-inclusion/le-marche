@@ -264,16 +264,7 @@ DATABASES = {
         "USER": env.str("POSTGRESQL_ADDON_USER", "user"),
         "PASSWORD": env.str("POSTGRESQL_ADDON_PASSWORD", "password"),
     },
-    "stats": {
-        "ENGINE": "django.db.backends.postgresql",
-        "HOST": env.str("STATS_POSTGRESQL_ADDON_HOST", "localhost"),
-        "PORT": env.str("STATS_POSTGRESQL_ADDON_PORT", "5432"),
-        "NAME": env.str("STATS_POSTGRESQL_ADDON_DB", "marchetracker"),
-        "USER": env.str("STATS_POSTGRESQL_ADDON_USER", "itou"),
-        "PASSWORD": env.str("STATS_POSTGRESQL_ADDON_PASSWORD", "password"),
-    },
 }
-DATABASE_ROUTERS = ["config.stats_router.StatsRouter"]
 
 
 # controls how many objects are updated in a single query
