@@ -222,19 +222,28 @@ class Command(BaseCommand):
         Loop on c1_list and figure out if each siae needs to be created OR already exists (update)
         """
         progress = 0
+        siae_to_update = []
+        siae_to_create = []
         for c1_siae in c1_list:
             progress += 1
             if (progress % 1000) == 0:
                 self.stdout_info(f"{progress}...")
             # if force_siret and c1['siret'] != force_siret:
             #     continue
-            try:
-                c4_siae = Siae.objects.get(c1_id=c1_siae["id"])
-                self.c4_update_siae(c1_siae, c4_siae, dry_run)
-            except Siae.DoesNotExist:
-                self.c4_create_siae(c1_siae, dry_run)
+            if c4_siae := Siae.objects.filter(c1_id=c1_siae["id"]).first():
+                if updated_c4_siae := self.c4_update_siae(c1_siae, c4_siae):
+                    siae_to_update.append(updated_c4_siae)
+            else:
+                if new_siae := self.c4_create_siae(c1_siae):
+                    siae_to_create.append(new_siae)
 
-    def c4_create_siae(self, c1_siae, dry_run):
+        if not dry_run:
+            new_siaes = Siae.objects.bulk_create(siae_to_create)
+            for siae in new_siaes:
+                self.stdout_info(f"New Siae created / {siae.id} / {siae.name} / {siae.siret}")
+            Siae.objects.bulk_update(siae_to_update, fields=UPDATE_FIELDS + UPDATE_FIELDS_IF_EMPTY)
+
+    def c4_create_siae(self, c1_siae):
         """
         Here we create a new Siae with les-emplois data
         """
@@ -250,51 +259,47 @@ class Command(BaseCommand):
         c1_siae["contact_phone"] = c1_siae["phone"]
 
         # create object if brand is empty or not already used
-        if not dry_run:
-            if (
-                "brand" not in c1_siae
-                or c1_siae["brand"] == ""
-                or not Siae.objects.is_live().filter(Q(name=c1_siae["brand"]) | Q(brand=c1_siae["brand"])).exists()
-            ):
-                siae = Siae.objects.create(**c1_siae)
+        if (
+            "brand" not in c1_siae
+            or c1_siae["brand"] == ""
+            or not Siae.objects.is_live().filter(Q(name=c1_siae["brand"]) | Q(brand=c1_siae["brand"])).exists()
+        ):
+            return Siae(**c1_siae)
+        else:
+            logger.error(
+                "Brand name is already used by another live SIAE during creation: %s",
+                c1_siae,
+            )
 
-                self.stdout_info(f"New Siae created / {siae.id} / {siae.name} / {siae.siret}")
-            else:
-                logger.error(
-                    "Brand name is already used by another live SIAE during creation: %s",
-                    c1_siae,
-                )
-
-    def c4_update_siae(self, c1_siae, c4_siae, dry_run):
+    def c4_update_siae(self, c1_siae, c4_siae):
         """
         Here we update an existing Siae with a subset of les-emplois data
         """
-        if not dry_run:
-            # keep only certain fields for update
-            c1_siae_filtered = dict()
-            for key in UPDATE_FIELDS:
-                if key in c1_siae:
-                    c1_siae_filtered[key] = c1_siae[key]
+        # keep only certain fields for update
+        c1_siae_filtered = dict()
+        for key in UPDATE_FIELDS:
+            if key in c1_siae:
+                c1_siae_filtered[key] = c1_siae[key]
 
-            # update fields only if empty
-            for key in UPDATE_FIELDS_IF_EMPTY:
-                if key in c1_siae and not getattr(c4_siae, key, None):
-                    c1_siae_filtered[key] = c1_siae[key]
+        # update fields only if empty
+        for key in UPDATE_FIELDS_IF_EMPTY:
+            if key in c1_siae and not getattr(c4_siae, key, None):
+                c1_siae_filtered[key] = c1_siae[key]
 
-            # update siae only if brand is empty or not already used
-            if (
-                "brand" not in c1_siae_filtered
-                or c1_siae_filtered["brand"] == ""
-                or not Siae.objects.is_live()
-                .exclude(c1_id=c4_siae.c1_id)
-                .filter(Q(name=c1_siae_filtered["brand"]) | Q(brand=c1_siae_filtered["brand"]))
-                .exists()
-            ):
-                Siae.objects.filter(c1_id=c4_siae.c1_id).update(**c1_siae_filtered)  # avoid updated_at change
-            else:
-                logger.error(
-                    "Brand name is already used by another live SIAE during update: %s",
-                    c1_siae,
-                )
-
-            # self.stdout_info(f"Siae updated / {c4_siae.id} / {c4_siae.siret}")
+        # update siae only if brand is empty or not already used
+        if (
+            "brand" not in c1_siae_filtered
+            or c1_siae_filtered["brand"] == ""
+            or not Siae.objects.is_live()
+            .exclude(c1_id=c4_siae.c1_id)
+            .filter(Q(name=c1_siae_filtered["brand"]) | Q(brand=c1_siae_filtered["brand"]))
+            .exists()
+        ):
+            for k, v in c1_siae_filtered.items():
+                setattr(c4_siae, k, v)
+            return c4_siae
+        else:
+            logger.error(
+                "Brand name is already used by another live SIAE during update: %s",
+                c1_siae,
+            )
