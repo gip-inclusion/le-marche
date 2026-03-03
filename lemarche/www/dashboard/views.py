@@ -141,14 +141,17 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
                 .distinct()
             )
             # Build list of (category, value) for non-zero values, sort desc and take top 40
+            purchase_category_slugs = [
+                slugify(purchase_category) or "none" for purchase_category in purchase_categories
+            ]
             categories_with_values = []
-            for purchase_category in purchase_categories:
+            for purchase_category_slug in purchase_category_slugs:
                 categories_with_values.append(
-                    (purchase_category, purchases_stats[f"total_purchases_by_category_{slugify(purchase_category)}"])
+                    (purchase_category_slug, purchases_stats[f"total_purchases_by_category_{purchase_category_slug}"])
                 )
             top_categories = sorted(categories_with_values, key=lambda item: item[1], reverse=True)[:40]
             chart_data_purchases_by_category = {
-                "labels": [label for label, _ in top_categories],
+                "labels": [label if label != "none" else "Non renseigné" for label, _ in top_categories],
                 "dataset": [value for _, value in top_categories],
             }
 
