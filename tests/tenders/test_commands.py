@@ -126,7 +126,9 @@ class TestSendAuthorListOfSuperSiaesEmails(TestCase):
         cls.tender_after.set_siae_found_list()
         cls.tender_after.refresh_from_db()
 
-    @patch("lemarche.www.tenders.tasks.send_super_siaes_email_to_author")
+    @patch(
+        "lemarche.tenders.management.commands.send_author_list_of_super_siaes_emails.send_super_siaes_email_to_author"
+    )
     @freeze_time(timezone.make_aware(timezone.datetime(2024, 4, 7)))
     def test_command_on_weekend(self, mock_send_email):
         # Assume today is Sunday
@@ -138,7 +140,9 @@ class TestSendAuthorListOfSuperSiaesEmails(TestCase):
         self.assertNotIn("Step 1: Find Tender", out.getvalue())
         self.assertFalse(mock_send_email.called)
 
-    @patch("lemarche.www.tenders.tasks.send_super_siaes_email_to_author")
+    @patch(
+        "lemarche.tenders.management.commands.send_author_list_of_super_siaes_emails.send_super_siaes_email_to_author"
+    )
     @freeze_time(timezone.make_aware(timezone.datetime(2024, 4, 10, 7, 30)))
     def test_command_on_weekday(self, mock_send_email):
         # Assume today is a weekday (e.g., Wednesday)
@@ -165,7 +169,9 @@ class TestSendAuthorListOfSuperSiaesEmails(TestCase):
 
         self.assertEqual(mock_send_email.call_count, 2)
 
-    @patch("lemarche.www.tenders.tasks.send_super_siaes_email_to_author")
+    @patch(
+        "lemarche.tenders.management.commands.send_author_list_of_super_siaes_emails.send_super_siaes_email_to_author"
+    )
     @freeze_time(timezone.make_aware(timezone.datetime(2024, 4, 10, 7, 30)))
     def test_command_on_weekday_dry_run(self, mock_send_email):
         # Assume today is a weekday (e.g., Wednesday)
