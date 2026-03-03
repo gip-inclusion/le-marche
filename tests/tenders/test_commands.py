@@ -1,8 +1,9 @@
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from io import StringIO
 from unittest.mock import patch
 
 import factory
+from dateutil.relativedelta import relativedelta
 from django.core.management import call_command
 from django.db.models import signals
 from django.test import TestCase
@@ -585,3 +586,73 @@ class SiaeInterestReminderEmailCommandTest(TestCase):
         # Verify the call arguments
         call_args = mock_send_email.call_args
         self.assertEqual(call_args.kwargs["recipient_email"], "siae2@example.com")
+
+
+@freeze_time(datetime(year=2024, month=1, day=1, tzinfo=UTC))
+class TenderAutoDeletionCommandTest(TestCase):
+    def test_delete_old_tenders(self):
+        """Test the admin command 'delete_old_tenders'"""
+        now = timezone.now()
+        expiry_date = now - relativedelta(months=12)
+
+        # tender was recently updated but author hasn't logged in in a year or more
+        updated_tender_inactive_author = TenderFactory(
+            published_at=expiry_date, updated_at=now, author__last_login=expiry_date
+        )
+
+        # tender was created a year or more ago but author recently logged in
+        old_tender_active_author = TenderFactory(
+            published_at=expiry_date, updated_at=expiry_date, author__last_login=now
+        )
+
+        # tender was created a year or more ago, author hasn't logged in for a year but it's still a draft
+        tender_old_draft = TenderFactory(
+            status=Tender.StatusChoices.STATUS_DRAFT,
+            published_at=expiry_date,
+            updated_at=expiry_date,
+            author__last_login=expiry_date,
+        )
+
+        # tender hasn't been updated in a year and author hasn't logged in in a year
+        TenderFactory(published_at=expiry_date, updated_at=expiry_date, author__last_login=expiry_date)
+
+        std_out = StringIO()
+        call_command("delete_old_tenders", dry_run=True, stdout=std_out)
+        assert Tender.objects.count() == 4
+        assert std_out.getvalue() == "Dry-run: suppression des besoins d'achat inactifs: 1 auraient été supprimés\n"
+
+        std_out = StringIO()
+        call_command("delete_old_tenders", dry_run=False, stdout=std_out)
+        assert Tender.objects.count() == 3
+        assert (
+            std_out.getvalue()
+            == "Suppression des besoins d'achat inactifs: 1 ont été supprimés ({'tenders.Tender': 1})\n"
+        )
+
+        self.assertQuerySetEqual(
+            Tender.objects.all(),
+            [updated_tender_inactive_author, old_tender_active_author, tender_old_draft],
+            ordered=False,
+        )
+
+    def test_delete_old_draft_tenders(self):
+        """Test the admin command 'delete_old_draft_tenders'"""
+        now = datetime(year=2024, month=1, day=1, tzinfo=UTC)
+        expiry_date = now - relativedelta(months=12)
+        tender_recent_draft = TenderFactory(status=Tender.StatusChoices.STATUS_DRAFT)
+        TenderFactory(status=Tender.StatusChoices.STATUS_DRAFT, updated_at=expiry_date)
+
+        std_out = StringIO()
+        call_command("delete_old_draft_tenders", dry_run=True, stdout=std_out)
+        assert Tender.objects.count() == 2
+        assert std_out.getvalue() == "Dry-run: suppression des besoins d'achat inachevés: 1 auraient été supprimés\n"
+
+        std_out = StringIO()
+        call_command("delete_old_draft_tenders", dry_run=False, stdout=std_out)
+        assert Tender.objects.count() == 1
+        assert (
+            std_out.getvalue()
+            == "Suppression des besoins d'achat inachevés: 1 ont été supprimés ({'tenders.Tender': 1})\n"
+        )
+
+        self.assertEqual(Tender.objects.get(), tender_recent_draft)
