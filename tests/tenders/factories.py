@@ -8,9 +8,10 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import PartnerShareTender, QuestionAnswer, Tender, TenderQuestion, TenderSiae
 from tests.siaes.factories import SiaeFactory
 from tests.users.factories import UserFactory
+from tests.utils.factory_boy import AutoNowOverrideMixin
 
 
-class TenderFactory(DjangoModelFactory):
+class TenderFactory(AutoNowOverrideMixin, DjangoModelFactory):
     class Meta:
         model = Tender
         skip_postgeneration_save = True  # Prevents unnecessary save
