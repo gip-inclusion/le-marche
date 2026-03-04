@@ -66,6 +66,7 @@ class StatsUser(models.Model):
     company_name = models.CharField(verbose_name="Nom de l'entreprise", max_length=255, blank=True)
     position = models.CharField(verbose_name="Poste", max_length=255, blank=True)
     partner_kind = models.CharField(verbose_name="Type de partenaire", max_length=20, blank=True)
+    anonymized_at = models.DateTimeField(verbose_name="Date d'anonymisation", null=True, blank=True)
 
     class Meta:
         # avoid "stats_stats_user"
