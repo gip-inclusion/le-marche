@@ -286,6 +286,9 @@ class User(NexusModelMixin, AbstractUser):
     # date_joined, last_login
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
+    pending_deletion_notice_date = models.DateTimeField(
+        verbose_name="Date de notification de suppression de l'utilisateur", null=True, blank=True
+    )
 
     class Meta:
         verbose_name = "Utilisateur"

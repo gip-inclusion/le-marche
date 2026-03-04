@@ -1,14 +1,106 @@
 from io import StringIO
 from unittest.mock import patch
 
+from dateutil.relativedelta import relativedelta
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, override_settings
+from django.utils import timezone
+from freezegun import freeze_time
 
-from lemarche.users.constants import PARTNER_KIND_FACILITATOR
+from lemarche.conversations.models import TemplateTransactional, TemplateTransactionalSendLog
+from lemarche.users.constants import KIND_ADMIN, PARTNER_KIND_FACILITATOR
 from lemarche.users.models import User
 from tests.companies.factories import CompanyFactory
 from tests.conversations.factories import TemplateTransactionalFactory
 from tests.users.factories import UserFactory
+
+
+@freeze_time("2024-01-01")
+@override_settings(
+    INACTIVE_USER_TIMEOUT_IN_MONTHS=12,
+    INACTIVE_USER_WARNING_DELAY_IN_MONTHS=1,
+)
+def test_delete_old_users(db):
+    frozen_now = timezone.now()
+    frozen_last_year = frozen_now - relativedelta(years=1)
+    frozen_warning_date = frozen_last_year + relativedelta(months=1)
+    pending_deletion_notice_date = frozen_now - relativedelta(months=1)
+
+    # not logged in for 'INACTIVE_USER_TIMEOUT_IN_MONTHS' months and received a notice
+    # 'INACTIVE_USER_WARNING_DELAY_IN_MONTHS' months ago
+    user_to_delete = UserFactory(
+        last_login=frozen_last_year, pending_deletion_notice_date=pending_deletion_notice_date
+    )
+
+    # not logged in for 'INACTIVE_USER_TIMEOUT_IN_MONTHS' months and received a notice
+    # less than 'INACTIVE_USER_WARNING_DELAY_IN_MONTHS' months ago
+    warned_user = UserFactory(
+        last_login=frozen_last_year,
+        pending_deletion_notice_date=frozen_now - relativedelta(days=7),
+    )
+
+    # received a notice 'INACTIVE_USER_WARNING_DELAY_IN_MONTHS' months ago and recently logged in
+    active_warned_user = UserFactory(last_login=frozen_now, pending_deletion_notice_date=pending_deletion_notice_date)
+
+    user_to_warn = UserFactory(last_login=frozen_warning_date)
+    active_user = UserFactory(last_login=frozen_now)
+
+    old_admin_to_keep = UserFactory(last_login=frozen_last_year, kind=KIND_ADMIN)
+
+    TemplateTransactional.objects.all().update(is_active=True)
+
+    std_out = StringIO()
+    call_command("delete_old_users", dry_run=True, stdout=std_out)
+    assert User.objects.count() == 6
+    assert std_out.getvalue() == (
+        "Dry-run: reset des utilisateurs: 1 se sont reconnectés depuis la notification\n"
+        "Dry-run: avertissement des utilisateurs: 1 auraient été avertis\n"
+        "Dry-run: suppression des utilisateurs: 1 auraient été supprimés\n"
+    )
+    # check no mail was sent
+    assert TemplateTransactionalSendLog.objects.count() == 0
+
+    std_out = StringIO()
+    call_command("delete_old_users", dry_run=False, stdout=std_out)
+    assert User.objects.count() == 5
+    assert std_out.getvalue() == (
+        "Reset des utilisateurs: 1 se sont reconnectés depuis la notification\n"
+        "Avertissement des utilisateurs: 1 ont été avertis\n"
+        "Suppression des utilisateurs: 1 ont été supprimés ({'users.User': 1})\n"
+    )
+    # check that a mail has been sent
+    assert TemplateTransactionalSendLog.objects.count() == 1
+
+    # user_to_delete was deleted
+    assert not User.objects.filter(id=user_to_delete.id).exists()
+
+    # warned_user, active_user and old_admin_to_keep are unchanged
+    warned_user.refresh_from_db()
+    assert warned_user.pending_deletion_notice_date == frozen_now - relativedelta(days=7)
+    active_user.refresh_from_db()
+    assert active_user.pending_deletion_notice_date is None
+    old_admin_to_keep.refresh_from_db()
+    assert old_admin_to_keep.pending_deletion_notice_date is None
+
+    # deletion warning for active_warned_user was removed
+    active_warned_user.refresh_from_db()
+    assert active_warned_user.pending_deletion_notice_date is None
+
+    # a warning has been sent to user_to_warn
+    user_to_warn.refresh_from_db()
+    assert user_to_warn.pending_deletion_notice_date == frozen_now
+
+    # Called twice to verify that emails are not sent multiple times
+    std_out = StringIO()
+    call_command("delete_old_users", dry_run=False, stdout=std_out)
+    assert User.objects.count() == 5
+    assert std_out.getvalue() == (
+        "Reset des utilisateurs: 0 se sont reconnectés depuis la notification\n"
+        "Avertissement des utilisateurs: 0 ont été avertis\n"
+        "Suppression des utilisateurs: 0 ont été supprimés\n"
+    )
+    # check no new mail was sent
+    assert TemplateTransactionalSendLog.objects.count() == 1
 
 
 class UserBuyerImportTestCase(TestCase):
