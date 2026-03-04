@@ -169,7 +169,8 @@
                  "users_user"."extra_data",
                  "users_user"."have_followed_onboarding",
                  "users_user"."created_at",
-                 "users_user"."updated_at"
+                 "users_user"."updated_at",
+                 "users_user"."pending_deletion_notice_date"
           FROM "users_user"
           WHERE ("users_user"."is_active"
                  AND "users_user"."kind" = %s
