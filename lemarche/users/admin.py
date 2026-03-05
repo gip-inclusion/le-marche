@@ -10,7 +10,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
-from django.template.response import TemplateResponse
 from django.urls import path, reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -138,31 +137,6 @@ class HasApiKeyFilter(admin.SimpleListFilter):
         return queryset
 
 
-class IsAnonymizedFilter(admin.SimpleListFilter):
-    """Custom admin filter to target users who are anonymized"""
-
-    title = "Est anonymisé"
-    parameter_name = "is_anonymized"
-
-    def lookups(self, request, model_admin):
-        return ("Yes", "Oui"), (None, "Non")
-
-    def queryset(self, request, queryset):
-        value = self.value()
-        if value == "Yes":
-            return queryset.filter(is_anonymized=True)
-        return queryset.filter(is_anonymized=False)
-
-    def choices(self, changelist):
-        """Removed the first yield from the base method to only have 2 choices, defaulting too No"""
-        for lookup, title in self.lookup_choices:
-            yield {
-                "selected": self.value() == lookup,
-                "query_string": changelist.get_query_string({self.parameter_name: lookup}),
-                "display": title,
-            }
-
-
 class UserNoteInline(GenericTabularInline):
     model = Note
     fields = ["text", "author", "created_at", "updated_at"]
@@ -236,7 +210,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         HasApiKeyFilter,
         "is_staff",
         "is_superuser",
-        IsAnonymizedFilter,
     ]
     search_fields = ["id", "email", "first_name", "last_name"]
     search_help_text = "Cherche sur les champs : ID, E-mail, Prénom, Nom"
@@ -394,7 +367,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         # https://docs.djangoproject.com/en/5.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_urls
         urls = super().get_urls()
         my_urls = [
-            path("anonymise_users/", self.admin_site.admin_view(self.anonymize_users_view), name="anonymize_users"),
             path(
                 "<int:pk>/onboard_user/",
                 self.admin_site.admin_view(self.onboard_user_view),
@@ -403,33 +375,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             *urls,  # these patterns last, because they can match a lot of urls
         ]
         return my_urls
-
-    def anonymize_users_view(self, request):
-        """Confirmation page after selecting users to anonymize."""
-
-        if request.method == "GET":
-            # Display confirmation page
-            ids = request.GET.getlist("user_id")
-            queryset = self.model.objects.filter(id__in=ids)
-            context = {
-                # Include common variables for rendering the admin template.
-                **self.admin_site.each_context(request),
-                "opts": self.opts,
-                "queryset": queryset,
-            }
-            return TemplateResponse(request, "admin/anonymize_confirmation.html", context)
-
-        if request.method == "POST":
-            # anonymize users
-            ids = request.POST.getlist("user_id")
-            queryset = self.model.objects.filter(id__in=ids)
-
-            queryset.exclude(id=request.user.id).anonymize_update()
-            SiaeUser.objects.filter(user__is_anonymized=True).delete()
-
-            self.message_user(request, "L'anonymisation s'est déroulée avec succès")
-
-            return HttpResponseRedirect(reverse("admin:users_user_changelist"))
 
     def onboard_user_view(self, request, pk):
         user = self.model.objects.get(id=pk)

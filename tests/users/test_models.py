@@ -1,6 +1,4 @@
-from django.contrib.messages import get_messages
 from django.test import TestCase
-from django.urls import reverse
 
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
@@ -156,36 +154,3 @@ class UserModelSaveTest(TestCase):
         user.favorite_lists.first().delete()
         self.assertEqual(user.favorite_lists.count(), 1)
         self.assertEqual(user.favorite_list_count, 1)
-
-
-class UserAdminTestCase(TestCase):
-    def setUp(self):
-        UserFactory(is_staff=False, is_anonymized=False)
-        super_user = UserFactory(is_staff=True, is_superuser=True)
-        self.client.force_login(super_user)
-
-    def test_anonymize_action(self):
-        """Test the anonymize_users action from the admin"""
-
-        users_ids = User.objects.values_list("id", flat=True)
-        data = {
-            "action": "anonymize_users",
-            "_selected_action": users_ids,
-        }
-        # https://docs.djangoproject.com/en/5.1/ref/contrib/admin/#reversing-admin-urls
-        change_url = reverse("admin:users_user_changelist")
-        response = self.client.post(path=change_url, data=data)
-
-        self.assertEqual(response.status_code, 302)
-
-        data_confirm = {"user_id": users_ids}
-
-        # click on confirm after seeing the confirmation page
-        response_confirm = self.client.post(response.url, data=data_confirm)
-        self.assertEqual(response.status_code, 302)
-
-        self.assertTrue(User.objects.filter(is_staff=False).first().is_anonymized)
-        self.assertFalse(User.objects.filter(is_staff=True).first().is_anonymized)
-
-        messages_strings = [str(message) for message in get_messages(response_confirm.wsgi_request)]
-        self.assertIn("L'anonymisation s'est déroulée avec succès", messages_strings)
