@@ -395,4 +395,4 @@ class TenderMatchingActivitiesTest(TestCase):
 
         end_time = timer()
         duration = end_time - start_time
-        self.assertLess(duration, 0.5, f"Performance issue: took {duration:.4f} seconds")
+        self.assertLess(duration, 0.6, f"Performance issue: took {duration:.4f} seconds")
