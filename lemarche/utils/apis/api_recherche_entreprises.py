@@ -34,6 +34,7 @@ class RechercheEntreprisesResponse:
     naf: str
     is_closed: bool
     is_head_office: bool
+    is_ess: bool
     employees: str
     employees_date_reference: date
     ca: str | None
@@ -44,49 +45,50 @@ class RechercheEntreprisesAPIException(Exception):
     pass
 
 
-def recherche_entreprises_get_or_error(siret):
+def fetch_api_recherche_entreprises(siret):
     # Doc : https://recherche-entreprises.api.gouv.fr/docs/
     url = f"{settings.API_RECHERCHE_ENTREPRISES_BASE_URL}/search?q={siret}"
-
     try:
-        response = requests.get(url)
-        response.raise_for_status()
-        response_data = response.json()
-
-        if response_data["total_results"] == 0:
-            raise RechercheEntreprisesAPIException("SIRET not found")
-        elif response_data["total_results"] > 1:
-            raise RechercheEntreprisesAPIException("SIRET found but multiple results")
-        else:
-            # get interesting data
-            data = response_data["results"][0]
-
-            ca = None
-            ca_date_reference = None
-            if "finances" in data and data["finances"]:
-                finances = data["finances"]
-                # Sort the finances data by year in descending order
-                sorted_finances = sorted(finances.items(), key=lambda x: x[0], reverse=True)
-                ca_date_reference = sorted_finances[0][0]
-                ca = sorted_finances[0][1]["ca"]
-
-            if len(data["matching_etablissements"]) != 1:
-                # Did never happen because SIRET is unique, but just in case
-                raise RechercheEntreprisesAPIException("Multiple matching establishments found")
-
-            etablissement = data["matching_etablissements"][0]
-            return RechercheEntreprisesResponse(
-                siret=etablissement["siret"],
-                forme_juridique_code=data["nature_juridique"],
-                date_creation=etablissement["date_creation"],
-                naf=etablissement["activite_principale"],
-                is_closed=etablissement["etat_administratif"] == "F",
-                is_head_office=etablissement["est_siege"],
-                employees=TRANCHES_EFFECTIF_SALARIE_MAPPING.get(etablissement["tranche_effectif_salarie"], ""),
-                employees_date_reference=etablissement["annee_tranche_effectif_salarie"],
-                ca=ca,
-                ca_date_reference=ca_date_reference,
-            )
-
-    except requests.exceptions.HTTPError as e:
+        return requests.get(url).raise_for_status().json()
+    except Exception as e:
         raise RechercheEntreprisesAPIException(f"Error while fetching `{url}`: {e}")
+
+
+def recherche_entreprises_get_or_error(siret):
+    response_data = fetch_api_recherche_entreprises(siret)
+
+    if response_data["total_results"] == 0:
+        raise RechercheEntreprisesAPIException("SIRET not found")
+    elif response_data["total_results"] > 1:
+        raise RechercheEntreprisesAPIException("SIRET found but multiple results")
+    else:
+        # get interesting data
+        data = response_data["results"][0]
+
+        ca = None
+        ca_date_reference = None
+        if "finances" in data and data["finances"]:
+            finances = data["finances"]
+            # Sort the finances data by year in descending order
+            sorted_finances = sorted(finances.items(), key=lambda x: x[0], reverse=True)
+            ca_date_reference = sorted_finances[0][0]
+            ca = sorted_finances[0][1]["ca"]
+
+        if len(data["matching_etablissements"]) != 1:
+            # Did never happen because SIRET is unique, but just in case
+            raise RechercheEntreprisesAPIException("Multiple matching establishments found")
+
+        etablissement = data["matching_etablissements"][0]
+        return RechercheEntreprisesResponse(
+            siret=etablissement["siret"],
+            forme_juridique_code=data["nature_juridique"],
+            date_creation=etablissement["date_creation"],
+            naf=etablissement["activite_principale"],
+            is_closed=etablissement["etat_administratif"] == "F",
+            is_head_office=etablissement["est_siege"],
+            is_ess=data["complements"]["est_ess"],
+            employees=TRANCHES_EFFECTIF_SALARIE_MAPPING.get(etablissement["tranche_effectif_salarie"], ""),
+            employees_date_reference=etablissement["annee_tranche_effectif_salarie"],
+            ca=ca,
+            ca_date_reference=ca_date_reference,
+        )

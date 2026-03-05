@@ -22,6 +22,10 @@ from lemarche.favorites.models import FavoriteList
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae, SiaeESUS
 from lemarche.utils import settings_context_processors
+from lemarche.utils.apis.api_recherche_entreprises import (
+    RechercheEntreprisesAPIException,
+    recherche_entreprises_get_or_error,
+)
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
@@ -368,19 +372,11 @@ class SiaeSiretSearchView(TemplateView):
 
     def is_ess_from_api_entreprise(self, siret: str) -> bool:
         """Check in API entreprise if the siret is found and that it has the 'est_ess' key set to true."""
-        # In fact, est_ess=true have no effect
-        url = f"{settings.API_RECHERCHE_ENTREPRISES_BASE_URL}/search?q={siret}&est_ess=true"
-        response = requests.get(url)
-        response.raise_for_status()
-        response_data = response.json()
-
-        if response_data["total_results"] == 1:
-            retrieved_siae = response_data["results"][0]
-            # as filtering via url is broken, when have to ensure here that est_ess=true is really true
-            if retrieved_siae["complements"]["est_ess"] is True:
-                return True
-
-        return False
+        try:
+            entreprise = recherche_entreprises_get_or_error(siret)
+            return entreprise.is_ess
+        except RechercheEntreprisesAPIException:
+            return False
 
     def find_supplier_by_siret(self, siret: str) -> tuple[str, list[str]]:
         if Siae.objects.filter(siret=siret).exists():
