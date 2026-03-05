@@ -1291,7 +1291,42 @@ class SiaeSiretSearchTestCase(TestCase):
             form = SiaeSiretFilterForm(data={"siret": "442 293 775 00031"})
             self.assertIsNone(form.errors.get("siret"))
 
-    def test_siret_not_found(self):
+    @patch("lemarche.utils.apis.api_recherche_entreprises.fetch_api_recherche_entreprises")
+    def test_siret_not_found(self, mocked_fetch_api):
+        mocked_fetch_api.return_value = {
+            "results": [
+                {
+                    "nom_complet": "SIAE (IAE)",
+                    "nom_raison_sociale": "SIAE",
+                    "activite_principale": "81.21Z",
+                    "date_creation": "2000-01-01",
+                    "date_fermeture": "null",
+                    "etat_administratif": "A",
+                    "nature_juridique": "5710",
+                    "section_activite_principale": "N",
+                    "tranche_effectif_salarie": "32",
+                    "annee_tranche_effectif_salarie": "2022",
+                    "matching_etablissements": [
+                        {
+                            "siret": "44229377500031",
+                            "activite_principale": "81.22Z",
+                            "annee_tranche_effectif_salarie": "2024",
+                            "date_creation": "2023-06-01",
+                            "tranche_effectif_salarie": "32",
+                            "est_siege": False,
+                            "etat_administratif": "A",
+                        }
+                    ],
+                    "finances": {"2023": {"ca": 9726858, "resultat_net": -782299}},
+                    "complements": {"est_ess": False},
+                }
+            ],
+            "total_results": 1,
+            "page": 1,
+            "per_page": 10,
+            "total_pages": 1,
+        }
+
         response = self.client.get(self.url, data={"siret": "44229377500031"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(

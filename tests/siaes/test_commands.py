@@ -437,6 +437,7 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
                         }
                     ],
                     "finances": {"2023": {"ca": 9726858, "resultat_net": -782299}},
+                    "complements": {"est_ess": False},
                 }
             ],
             "total_results": 1,
@@ -445,13 +446,12 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
             "total_pages": 1,
         }
 
-    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
-    def test_update_api_entreprise_fields_dry_run(self, mock_requests_get):
+    @patch("lemarche.utils.apis.api_recherche_entreprises.fetch_api_recherche_entreprises")
+    def test_update_api_entreprise_fields_dry_run(self, mocked_fetch_api):
         """
         Check that the field is not updated in dry run
         """
-        mock_requests_get.return_value.status_code = 200
-        mock_requests_get.return_value.json.return_value = self.mock_return_value
+        mocked_fetch_api.return_value = self.mock_return_value
 
         # Dry run
         out = StringIO()
@@ -468,14 +468,12 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
         self.assertIn(f"Would update SIAE {self.siae.id} with", out.getvalue())
         self.assertIn("Done! Processed 1 siae", out.getvalue())
 
-    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
-    def test_update_api_entreprise_fields_wet_run(self, mock_requests_get):
+    @patch("lemarche.utils.apis.api_recherche_entreprises.fetch_api_recherche_entreprises")
+    def test_update_api_entreprise_fields_wet_run(self, mocked_fetch_api):
         """
         Check that the field is updated correctly in wet run
         """
-
-        mock_requests_get.return_value.status_code = 200
-        mock_requests_get.return_value.json.return_value = self.mock_return_value
+        mocked_fetch_api.return_value = self.mock_return_value
 
         # Wet run
         call_command("update_api_entreprise_fields", wet_run=True, stdout=StringIO())
@@ -492,13 +490,12 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
         self.assertEqual(self.siae.api_entreprise_ca, 9726858)
         self.assertIsNotNone(self.siae.api_entreprise_exercice_last_sync_date)
 
-    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
-    def test_update_api_entreprise_fields_with_siret(self, mock_requests_get):
+    @patch("lemarche.utils.apis.api_recherche_entreprises.fetch_api_recherche_entreprises")
+    def test_update_api_entreprise_fields_with_siret(self, mocked_fetch_api):
         """
         Check that the field is updated correctly with a siret
         """
-        mock_requests_get.return_value.status_code = 200
-        mock_requests_get.return_value.json.return_value = self.mock_return_value
+        mocked_fetch_api.return_value = self.mock_return_value
 
         SiaeFactory(siret="1222222222222")
         self.siae.refresh_from_db()
@@ -506,19 +503,18 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
         out = StringIO()
         call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=out)
 
-        mock_requests_get.assert_called_once()
+        mocked_fetch_api.assert_called_once()
         self.assertIn("Done! Processed 1 siae", out.getvalue())
         self.siae.refresh_from_db()
         self.assertEqual(self.siae.api_entreprise_employees, "250 à 499 salariés")
 
-    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
-    def test_update_api_entreprise_fields_with_no_finance(self, mock_requests_get):
+    @patch("lemarche.utils.apis.api_recherche_entreprises.fetch_api_recherche_entreprises")
+    def test_update_api_entreprise_fields_with_no_finance(self, mocked_fetch_api):
         """
         Check that the field is updated correctly with no finance
         """
-        mock_requests_get.return_value.status_code = 200
         self.mock_return_value["results"][0]["finances"] = None
-        mock_requests_get.return_value.json.return_value = self.mock_return_value
+        mocked_fetch_api.return_value = self.mock_return_value
 
         call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=StringIO())
         self.siae.refresh_from_db()
@@ -526,45 +522,42 @@ class SiaeUpdateApiEntrepriseFieldsCommandTest(TestCase):
         self.assertIsNone(self.siae.api_entreprise_ca)
         self.assertIsNone(self.siae.api_entreprise_exercice_last_sync_date)
 
-    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
-    def test_update_api_entreprise_fields_finance_orders_asc(self, mock_requests_get):
+    @patch("lemarche.utils.apis.api_recherche_entreprises.fetch_api_recherche_entreprises")
+    def test_update_api_entreprise_fields_finance_orders_asc(self, mocked_fetch_api):
         """
         Check that the field is updated correctly with finance orders in ascending order
         """
-        mock_requests_get.return_value.status_code = 200
         self.mock_return_value["results"][0]["finances"] = {
             "2023": {"ca": 9726858, "resultat_net": -782299},
             "2024": {"ca": 12345678, "resultat_net": 505663},
         }
-        mock_requests_get.return_value.json.return_value = self.mock_return_value
+        mocked_fetch_api.return_value = self.mock_return_value
 
         call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=StringIO())
         self.siae.refresh_from_db()
         self.assertEqual(self.siae.api_entreprise_ca, 12345678)
 
-    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
-    def test_update_api_entreprise_fields_finance_orders_desc(self, mock_requests_get):
+    @patch("lemarche.utils.apis.api_recherche_entreprises.fetch_api_recherche_entreprises")
+    def test_update_api_entreprise_fields_finance_orders_desc(self, mocked_fetch_api):
         """
         Check that the field is updated correctly with finance orders in descending order
         """
-        mock_requests_get.return_value.status_code = 200
         self.mock_return_value["results"][0]["finances"] = {
             "2024": {"ca": 12345678, "resultat_net": 505663},
             "2023": {"ca": 9726858, "resultat_net": -782299},
         }
-        mock_requests_get.return_value.json.return_value = self.mock_return_value
+        mocked_fetch_api.return_value = self.mock_return_value
 
         call_command("update_api_entreprise_fields", siret=self.siae.siret, wet_run=True, stdout=StringIO())
         self.siae.refresh_from_db()
         self.assertEqual(self.siae.api_entreprise_ca, 12345678)
 
-    @patch("lemarche.utils.apis.api_recherche_entreprises.requests.get")
-    def test_update_api_entreprise_fields_with_siret_not_found(self, mock_requests_get):
+    @patch("lemarche.utils.apis.api_recherche_entreprises.fetch_api_recherche_entreprises")
+    def test_update_api_entreprise_fields_with_siret_not_found(self, mocked_fetch_api):
         """
         Check that the field is updated correctly with a siret not found
         """
-        mock_requests_get.return_value.status_code = 200
-        mock_requests_get.return_value.json.return_value = {
+        mocked_fetch_api.return_value = {
             "results": [],
             "total_results": 0,
             "page": 1,
