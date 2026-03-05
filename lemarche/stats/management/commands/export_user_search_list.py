@@ -1,7 +1,7 @@
 import csv
 import glob
 import os
-from datetime import date, timedelta
+from datetime import date
 
 import boto3
 from django.conf import settings
@@ -23,8 +23,8 @@ CONTENT_TYPE_MAPPING = {
     "xls": "application/ms-excel",
     "csv": "text/csv",
 }
-FILENAME = f"liste_recherches_{date.today()}"
-FILENAME_PREVIOUS = f"liste_recherches_{date.today() - timedelta(days=1)}"
+FILENAME_PREFIX = "liste_recherches"
+FILENAME = f"{FILENAME_PREFIX}_{date.today()}"
 
 
 def build_file_url(endpoint, bucket_name, file_key):
@@ -179,4 +179,6 @@ class Command(BaseCommand):
         files_to_remove = glob.glob(f"{FILENAME}.*")
         for file_path in files_to_remove:
             os.remove(file_path)
-        bucket.objects.filter(Prefix=f"{settings.STAT_EXPORT_FOLDER_NAME}/{FILENAME_PREVIOUS}").delete()
+        for object in bucket.objects.filter(Prefix=f"{settings.STAT_EXPORT_FOLDER_NAME}/{FILENAME_PREFIX}"):
+            if FILENAME not in object.key:
+                object.delete()
