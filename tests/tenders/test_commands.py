@@ -614,19 +614,30 @@ class TenderAutoDeletionCommandTest(TestCase):
         )
 
         # tender hasn't been updated in a year and author hasn't logged in in a year
-        TenderFactory(published_at=expiry_date, updated_at=expiry_date, author__last_login=expiry_date)
+        TenderFactory(
+            published_at=expiry_date,
+            updated_at=expiry_date,
+            author__last_login=expiry_date,
+        )
+        # tender hasn't been updated in a year and author never logged in
+        TenderFactory(
+            published_at=expiry_date,
+            updated_at=expiry_date,
+            author__last_login=None,
+            author__date_joined=expiry_date,
+        )
 
         std_out = StringIO()
         call_command("delete_old_tenders", dry_run=True, stdout=std_out)
-        assert Tender.objects.count() == 4
-        assert std_out.getvalue() == "Dry-run: suppression des besoins d'achat inactifs: 1 auraient été supprimés\n"
+        assert Tender.objects.count() == 5
+        assert std_out.getvalue() == "Dry-run: suppression des besoins d'achat inactifs: 2 auraient été supprimés\n"
 
         std_out = StringIO()
         call_command("delete_old_tenders", dry_run=False, stdout=std_out)
         assert Tender.objects.count() == 3
         assert (
             std_out.getvalue()
-            == "Suppression des besoins d'achat inactifs: 1 ont été supprimés ({'tenders.Tender': 1})\n"
+            == "Suppression des besoins d'achat inactifs: 2 ont été supprimés ({'tenders.Tender': 2})\n"
         )
 
         self.assertQuerySetEqual(
