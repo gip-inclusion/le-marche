@@ -2,12 +2,13 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from django.db.models.expressions import F
+from django.db.models.expressions import Exists, F, OuterRef, Q
 from django.template import defaulttags
 from django.utils import timezone
 
 from lemarche.conversations.models import TemplateTransactional
 from lemarche.stats.models import StatsUser
+from lemarche.tenders.models import Tender
 from lemarche.users.constants import KIND_ADMIN
 from lemarche.users.models import User
 from lemarche.utils.db import secure_delete
@@ -30,6 +31,12 @@ class Command(BaseCommand):
         self.notify_inactive_users(dry_run=options["dry_run"])
         self.delete_old_users(dry_run=options["dry_run"])
         self.anonymize_stats(dry_run=options["dry_run"])
+
+    def get_users_with_last_action(self, inactive_since):
+        recent_tender = Tender.objects.filter(updated_at__gt=inactive_since, author_id=OuterRef("pk"))
+        return self.user_qs.filter(
+            Q(last_login__lte=inactive_since) | Q(last_login=None, date_joined__lte=inactive_since)
+        ).filter(~Exists(recent_tender))
 
     @transaction.atomic
     def reset_notified_users_with_recent_activity(self, dry_run: bool):
@@ -57,8 +64,9 @@ class Command(BaseCommand):
         warning_date = expiry_date + relativedelta(months=settings.INACTIVE_USER_WARNING_DELAY_IN_MONTHS)
 
         # Users that have already received the mail are excluded
-        users_to_warn = self.user_qs.filter(
-            last_login__lte=warning_date, is_active=True, pending_deletion_notice_date=None
+        users_to_warn = self.get_users_with_last_action(warning_date).filter(
+            is_active=True,
+            pending_deletion_notice_date=None,
         )
 
         if dry_run:
@@ -93,8 +101,7 @@ class Command(BaseCommand):
 
         # retrieve inactive users who haven't logged in a month or more after receiving a warning
         last_month = timezone.now() - relativedelta(months=settings.INACTIVE_USER_WARNING_DELAY_IN_MONTHS)
-        inactive_users_qs = self.user_qs.filter(
-            last_login__lte=expiry_date,
+        inactive_users_qs = self.get_users_with_last_action(expiry_date).filter(
             pending_deletion_notice_date__lte=last_month,
         )
 
