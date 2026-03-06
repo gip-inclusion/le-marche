@@ -1,7 +1,7 @@
 import csv
 import glob
 import os
-from datetime import date, timedelta
+from datetime import date
 
 import boto3
 from django.conf import settings
@@ -24,8 +24,8 @@ CONTENT_TYPE_MAPPING = {
     "csv": "text/csv",
 }
 
-FILENAME = f"liste_structures_{date.today()}"
-FILENAME_PREVIOUS = f"liste_structures_{date.today() - timedelta(days=1)}"
+FILENAME_PREFIX = "liste_structures"
+FILENAME = f"{FILENAME_PREFIX}_{date.today()}"
 
 
 def build_file_url(endpoint, bucket_name, file_key):
@@ -90,10 +90,9 @@ class Command(BaseCommand):
             self.upload_file_to_s3(filename_with_extension)
 
         # Step 4: delete local file(s) & previous S3 file(s)
-        files_to_remove = glob.glob(f"{FILENAME}.*")
-        for file_path in files_to_remove:
-            os.remove(file_path)
-        bucket.objects.filter(Prefix=f"{settings.SIAE_EXPORT_FOLDER_NAME}/{FILENAME_PREVIOUS}").delete()
+        self.stdout_info("-" * 80)
+        self.stdout_info("Step 4: cleanup")
+        self.cleanup()
 
     def upload_file_to_s3(self, filename_with_extension):
         file_extension = filename_with_extension.split(".")[1]
@@ -105,3 +104,11 @@ class Command(BaseCommand):
         )
         s3_file_url = build_file_url(API_CONNECTION_DICT["endpoint_url"], bucket_name, s3_file_key)
         self.stdout.write(f"S3 file url: {s3_file_url}")
+
+    def cleanup(self):
+        files_to_remove = glob.glob(f"{FILENAME}.*")
+        for file_path in files_to_remove:
+            os.remove(file_path)
+        for object in bucket.objects.filter(Prefix=f"{settings.STAT_EXPORT_FOLDER_NAME}/{FILENAME_PREFIX}"):
+            if FILENAME not in object.key:
+                object.delete()
