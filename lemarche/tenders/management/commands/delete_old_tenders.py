@@ -1,6 +1,7 @@
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.db.models.expressions import Q
 from django.utils import timezone
 
 from lemarche.tenders.models import Tender
@@ -20,7 +21,9 @@ class Command(BaseCommand):
         expiry_date = timezone.now() - relativedelta(months=settings.TENDER_DELETION_TIMEOUT_IN_MONTHS)
 
         qs = Tender.objects.exclude(status=Tender.StatusChoices.STATUS_DRAFT).filter(
-            published_at__lte=expiry_date, updated_at__lte=expiry_date, author__last_login__lte=expiry_date
+            Q(author__last_login__lte=expiry_date) | Q(author__last_login=None, author__date_joined__lte=expiry_date),
+            published_at__lte=expiry_date,
+            updated_at__lte=expiry_date,
         )
 
         if options["dry_run"]:
