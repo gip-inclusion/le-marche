@@ -167,10 +167,10 @@
                  "users_user"."dashboard_last_seen_date",
                  "users_user"."tender_list_last_seen_date",
                  "users_user"."extra_data",
-                 "users_user"."is_anonymized",
                  "users_user"."have_followed_onboarding",
                  "users_user"."created_at",
-                 "users_user"."updated_at"
+                 "users_user"."updated_at",
+                 "users_user"."pending_deletion_notice_date"
           FROM "users_user"
           WHERE ("users_user"."is_active"
                  AND "users_user"."kind" = %s
