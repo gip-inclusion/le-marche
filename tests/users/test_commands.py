@@ -12,6 +12,7 @@ from lemarche.users.constants import KIND_ADMIN, PARTNER_KIND_FACILITATOR
 from lemarche.users.models import User
 from tests.companies.factories import CompanyFactory
 from tests.conversations.factories import TemplateTransactionalFactory
+from tests.tenders.factories import TenderFactory
 from tests.users.factories import UserFactory
 
 
@@ -43,15 +44,22 @@ def test_delete_old_users(db):
     active_warned_user = UserFactory(last_login=frozen_now, pending_deletion_notice_date=pending_deletion_notice_date)
 
     user_to_warn = UserFactory(last_login=frozen_warning_date)
-    active_user = UserFactory(last_login=frozen_now)
 
-    old_admin_to_keep = UserFactory(last_login=frozen_last_year, kind=KIND_ADMIN)
+    # active _users
+    UserFactory(last_login=frozen_now)
+    # never logged in but recently created user
+    UserFactory(last_login=None, date_joined=frozen_now)
+    # User with a recently created Tender but no recent login
+    TenderFactory(author__last_login=frozen_last_year)
+
+    # old admin to keep
+    UserFactory(last_login=frozen_last_year, kind=KIND_ADMIN)
 
     TemplateTransactional.objects.all().update(is_active=True)
 
     std_out = StringIO()
     call_command("delete_old_users", dry_run=True, stdout=std_out)
-    assert User.objects.count() == 6
+    assert User.objects.count() == 8
     assert std_out.getvalue() == (
         "Dry-run: reset des utilisateurs: 1 se sont reconnectés depuis la notification\n"
         "Dry-run: avertissement des utilisateurs: 1 auraient été avertis\n"
@@ -62,7 +70,7 @@ def test_delete_old_users(db):
 
     std_out = StringIO()
     call_command("delete_old_users", dry_run=False, stdout=std_out)
-    assert User.objects.count() == 5
+    assert User.objects.count() == 7
     assert std_out.getvalue() == (
         "Reset des utilisateurs: 1 se sont reconnectés depuis la notification\n"
         "Avertissement des utilisateurs: 1 ont été avertis\n"
@@ -77,23 +85,27 @@ def test_delete_old_users(db):
     # warned_user, active_user and old_admin_to_keep are unchanged
     warned_user.refresh_from_db()
     assert warned_user.pending_deletion_notice_date == frozen_now - relativedelta(days=7)
-    active_user.refresh_from_db()
-    assert active_user.pending_deletion_notice_date is None
-    old_admin_to_keep.refresh_from_db()
-    assert old_admin_to_keep.pending_deletion_notice_date is None
-
-    # deletion warning for active_warned_user was removed
-    active_warned_user.refresh_from_db()
-    assert active_warned_user.pending_deletion_notice_date is None
 
     # a warning has been sent to user_to_warn
     user_to_warn.refresh_from_db()
     assert user_to_warn.pending_deletion_notice_date == frozen_now
 
+    # deletion warning for active_warned_user was removed
+    active_warned_user.refresh_from_db()
+    assert active_warned_user.pending_deletion_notice_date is None
+
+    # No other users were warned
+    assert (
+        User.objects.exclude(id__in=[warned_user.pk, user_to_warn.pk])
+        .exclude(pending_deletion_notice_date=None)
+        .exists()
+        is False
+    )
+
     # Called twice to verify that emails are not sent multiple times
     std_out = StringIO()
     call_command("delete_old_users", dry_run=False, stdout=std_out)
-    assert User.objects.count() == 5
+    assert User.objects.count() == 7
     assert std_out.getvalue() == (
         "Reset des utilisateurs: 0 se sont reconnectés depuis la notification\n"
         "Avertissement des utilisateurs: 0 ont été avertis\n"
