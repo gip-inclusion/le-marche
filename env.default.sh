@@ -13,7 +13,6 @@ export POSTGRESQL_ADDON_DB=""
 export SECRET_KEY="coucou"
 export ALLOWED_HOSTS="localhost,127.0.0.1"
 export DJANGO_SETTINGS_MODULE="config.settings.dev"
-export TRACKER_HOST="https://example.com"
 
 # APIs
 export API_EMPLOIS_INCLUSION_TOKEN=""
