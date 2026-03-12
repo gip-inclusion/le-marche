@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import UNUSABLE_PASSWORD_PREFIX
 from django.contrib.auth.models import AbstractUser
@@ -8,15 +7,13 @@ from django.core.validators import MinLengthValidator
 from django.db import models
 from django.db.models import Count, F, Value
 from django.db.models.functions import Concat, Greatest, Lower
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import pre_save
 from django.dispatch import receiver
-from django.forms.models import model_to_dict
 from django.utils import timezone
 from itoutils.django.nexus.models import NexusModelMixin, NexusQuerySetMixin
 from phonenumber_field.modelfields import PhoneNumberField
 
 from lemarche.nexus import sync, tasks
-from lemarche.stats.models import StatsUser
 from lemarche.users import constants as user_constants
 from lemarche.users.tasks import notify_user_onboarded
 from lemarche.utils.data import phone_number_display
@@ -448,10 +445,3 @@ def update_api_key_last_update(sender, instance, **kwargs):
                 instance.api_key_last_updated = timezone.now()
     elif instance.api_key:
         instance.api_key_last_updated = timezone.now()
-
-
-@receiver(post_save, sender=User)
-def user_post_save(sender, instance, **kwargs):
-    if settings.TRACKER_ENABLED:
-        list_stats_attrs = [field.name for field in StatsUser._meta.fields]
-        StatsUser.objects.update_or_create(id=instance.pk, defaults=model_to_dict(instance, fields=list_stats_attrs))
