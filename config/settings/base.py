@@ -407,9 +407,8 @@ SECURE_BROWSER_XSS_FILTER = True
 
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
-# HSTS: force HTTPS for all future visits (1 year).
 # https://docs.djangoproject.com/en/dev/ref/middleware/#http-strict-transport-security
-SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_SECONDS = 30
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
