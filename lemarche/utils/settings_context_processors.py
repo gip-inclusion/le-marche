@@ -44,7 +44,6 @@ def expose_settings(request):
         "API_GOUV_URL": settings.API_GOUV_URL,
         "CONTACT_EMAIL": settings.CONTACT_EMAIL,
         "TEAM_CONTACT_EMAIL": settings.TEAM_CONTACT_EMAIL,
-        "GIP_CONTACT_EMAIL": settings.GIP_CONTACT_EMAIL,
         "EMPLOIS_INCLUSION_HELP_URL": settings.EMPLOIS_INCLUSION_HELP_URL,
         # forms & docs
         "FACILITATOR_SLIDE": settings.FACILITATOR_SLIDE,

@@ -348,7 +348,6 @@ DEFAULT_FROM_NAME = "Le Marché de l'inclusion"
 CONTACT_EMAIL = env("CONTACT_EMAIL", default="contact@example.com")
 TEAM_CONTACT_EMAIL = env("TEAM_CONTACT_EMAIL", default="team.contact@example.com")
 NOTIFY_EMAIL = env("NOTIFY_EMAIL", default="notif@example.com")
-GIP_CONTACT_EMAIL = env("GIP_CONTACT_EMAIL", default="gip.contact@example.com")
 
 # -- Sendinblue (Brevo)
 BREVO_CL_SIGNUP_BUYER_ID = env.int("BREVO_CL_SIGNUP_BUYER_ID", 10)
