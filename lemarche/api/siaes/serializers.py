@@ -53,8 +53,6 @@ class SiaeDetailSerializer(serializers.ModelSerializer):
             "kind",
             "kind_parent",
             "contact_website",
-            "contact_email",
-            "contact_phone",
             "contact_social_website",
             "logo_url",
             "address",
