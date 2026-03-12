@@ -1460,7 +1460,7 @@ class TenderDetailContactClickStatViewTest(TestCase):
             self.tender.tendersiae_set.first().detail_contact_click_date, siae_2_detail_contact_click_date
         )
 
-    def test_update_tendersiae_stats_on_tender_contact_click_with_siae_id(self):
+    def test_uapdate_tendersiae_stats_on_tender_contact_click_with_siae_id(self):
         siae_2 = SiaeFactory(name="ABC Insertion")
         self.siae_user_2.siaes.add(siae_2)
         self.tender.siaes.add(siae_2)
