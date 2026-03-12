@@ -629,7 +629,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrTenderSiaeUUIDParamMixi
     def get_success_url(self, tender_siae_uuid=None):
         success_url = reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
         if tender_siae_uuid:
-            success_url += f"&tender_siae_uuid={tender_siae_uuid}"
+            success_url += f"?tender_siae_uuid={tender_siae_uuid}"
         return success_url
 
     def get_success_message(self):

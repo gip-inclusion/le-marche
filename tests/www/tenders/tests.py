@@ -1499,7 +1499,11 @@ class TenderDetailContactClickStatViewTest(TestCase):
         response = self.client.post(
             f"{self.tender_contact_click_stat_url}?tender_siae_uuid={self.tender.tendersiae_set.first().uuid}",
         )
-        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse("tenders:detail", args=[self.tender.slug])
+            + f"?tender_siae_uuid={self.tender.tendersiae_set.first().uuid}",
+        )
         self.assertEqual(
             self.tender.tendersiae_set.first().detail_contact_click_date, siae_2_detail_contact_click_date
         )
