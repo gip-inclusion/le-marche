@@ -1,3 +1,4 @@
+import datetime
 from io import StringIO
 from unittest.mock import patch
 
@@ -19,28 +20,27 @@ from tests.users.factories import UserFactory
 @freeze_time("2024-01-01")
 @override_settings(
     INACTIVE_USER_TIMEOUT_IN_MONTHS=12,
-    INACTIVE_USER_WARNING_DELAY_IN_MONTHS=1,
 )
 def test_delete_old_users(db):
     frozen_now = timezone.now()
     frozen_last_year = frozen_now - relativedelta(years=1)
-    frozen_warning_date = frozen_last_year + relativedelta(months=1)
-    pending_deletion_notice_date = frozen_now - relativedelta(months=1)
+    frozen_warning_date = frozen_last_year + datetime.timedelta(days=30)
+    pending_deletion_notice_date = frozen_now - datetime.timedelta(days=30)
 
     # not logged in for 'INACTIVE_USER_TIMEOUT_IN_MONTHS' months and received a notice
-    # 'INACTIVE_USER_WARNING_DELAY_IN_MONTHS' months ago
+    # 'INACTIVE_USER_WARNING_DELAY_IN_DAYS' days ago
     user_to_delete = UserFactory(
         last_login=frozen_last_year, pending_deletion_notice_date=pending_deletion_notice_date
     )
 
     # not logged in for 'INACTIVE_USER_TIMEOUT_IN_MONTHS' months and received a notice
-    # less than 'INACTIVE_USER_WARNING_DELAY_IN_MONTHS' months ago
+    # less than 'INACTIVE_USER_WARNING_DELAY_IN_DAYS' days ago
     warned_user = UserFactory(
         last_login=frozen_last_year,
         pending_deletion_notice_date=frozen_now - relativedelta(days=7),
     )
 
-    # received a notice 'INACTIVE_USER_WARNING_DELAY_IN_MONTHS' months ago and recently logged in
+    # received a notice 'INACTIVE_USER_WARNING_DELAY_IN_DAYS' months ago and recently logged in
     active_warned_user = UserFactory(last_login=frozen_now, pending_deletion_notice_date=pending_deletion_notice_date)
 
     user_to_warn = UserFactory(last_login=frozen_warning_date)
