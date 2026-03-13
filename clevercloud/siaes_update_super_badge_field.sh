@@ -19,5 +19,4 @@ fi
 # $APP_HOME is set by default by clever cloud.
 cd $APP_HOME
 
-# Run only on the first Monday of each month
-django-admin update_siae_super_badge_field --day-of-week 0 --day-of-month first
+django-admin update_siae_super_badge_field
