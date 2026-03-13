@@ -406,10 +406,10 @@ SECURE_BROWSER_XSS_FILTER = True
 
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
-# Load the site over HTTPS only.
-# TODO: use a small value for testing, once confirmed that HSTS didn't break anything increase it.
 # https://docs.djangoproject.com/en/dev/ref/middleware/#http-strict-transport-security
 SECURE_HSTS_SECONDS = 30
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", False)
 
