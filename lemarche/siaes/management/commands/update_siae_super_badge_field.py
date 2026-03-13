@@ -1,8 +1,4 @@
-import calendar
-
 from django.conf import settings
-from django.core.management.base import CommandError
-from django.utils import timezone
 from sentry_sdk.crons import monitor
 
 from lemarche.siaes.models import Siae
@@ -19,41 +15,14 @@ class Command(BaseCommand):
     Usage:
     python manage.py update_siae_super_badge_field
     python manage.py update_siae_super_badge_field --id 1
-    python manage.py update_siae_super_badge_field --day-of-week 0 --day-of-month last
     """
 
     def add_arguments(self, parser):
         parser.add_argument("--id", type=int, default=None, help="Indiquer l'ID d'une structure")
-        parser.add_argument(
-            "--day-of-week",
-            dest="day_of_week",
-            type=int,
-            help="Lundi = 0 ; Dimanche = 6",
-        )
-        parser.add_argument(
-            "--day-of-month",
-            dest="day_of_month",
-            type=str,
-            help="'first' for the first weekday of the month ; 'last' for the last weekday of the month",
-        )
 
     @monitor(monitor_slug="update_siae_super_badge_field")
     def handle(self, *args, **options):
         self.stdout_messages_info("Updating Siae super_badge field...")
-
-        if options["day_of_week"] is not None:
-            if options["day_of_week"] != timezone.now().weekday():
-                raise CommandError("Day of week not compatible with day_of_week parameter. Stopping.")
-
-        if options["day_of_month"] is not None:
-            current_year = timezone.now().year
-            current_month = timezone.now().month
-            current_day = timezone.now().day
-            current_month_day_count = calendar.monthrange(year=current_year, month=current_month)[1]
-            if (options["day_of_month"] == "first") and (current_day > 7):
-                raise CommandError("Not the first weekday of the month. Stopping.")
-            elif (options["day_of_month"] == "last") and (current_month_day_count - current_day >= 7):
-                raise CommandError("Not the last weekday of the month. Stopping.")
 
         siae_with_super_badge_count_before = Siae.objects.filter(super_badge=True).count()
 
@@ -63,15 +32,20 @@ class Command(BaseCommand):
             siae_queryset = siae_queryset.filter(id=options["id"])
         self.stdout_messages_info(f"Found {siae_queryset.count()} siaes")
 
+        siaes = list(siae_queryset)
+
         # Step 2: loop on each Siae
         progress = 0
-        for index, siae in enumerate(siae_queryset):
-            # Step 3: update super_badge field
+        for siae in siaes:
+            # Step 3: compute super_badge field
             siae.set_super_badge()
 
             progress += 1
             if (progress % 500) == 0:
                 self.stdout_info(f"{progress}...")
+
+        # Step 4: bulk update
+        Siae.objects.bulk_update(siaes, ["super_badge", "super_badge_last_updated"])
 
         siae_with_super_badge_count_after = Siae.objects.filter(super_badge=True).count()
         msg_success = [

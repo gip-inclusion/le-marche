@@ -1261,15 +1261,12 @@ class Siae(NexusModelMixin, models.Model):
         return get_object_admin_url(self)
 
     def set_super_badge(self):
-        update_fields_list = ["super_badge"]
+        # This method doesn't save the result
         siae_super_badge_current_value = self.super_badge
         self.super_badge = self.super_badge_calculated
 
         if self.super_badge != siae_super_badge_current_value:
             self.super_badge_last_updated = timezone.now()
-            update_fields_list.append("super_badge_last_updated")
-
-        self.save(update_fields=update_fields_list)
 
     def clean(self):
         """
