@@ -28,7 +28,10 @@ class SiaeFilter(django_filters.FilterSet):
         queryset=Network.objects.all(),
     )
     is_active = django_filters.BooleanFilter(label="Convention active (ASP) ou import")
-    updated_at = django_filters.IsoDateTimeFromToRangeFilter(label="Date de dernière mise à jour")
+    updated_at = django_filters.IsoDateTimeFromToRangeFilter(
+        label="Date de dernière mise à jour",
+        field_name="c1_last_sync_date",
+    )
 
     class Meta:
         model = Siae
