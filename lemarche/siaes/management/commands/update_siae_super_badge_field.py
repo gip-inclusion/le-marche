@@ -1,3 +1,5 @@
+from itertools import batched
+
 from django.conf import settings
 from sentry_sdk.crons import monitor
 
@@ -26,26 +28,22 @@ class Command(BaseCommand):
 
         siae_with_super_badge_count_before = Siae.objects.filter(super_badge=True).count()
 
-        # Step 1: build the queryset
         siae_queryset = Siae.objects.all()
         if options["id"]:
             siae_queryset = siae_queryset.filter(id=options["id"])
-        self.stdout_messages_info(f"Found {siae_queryset.count()} siaes")
 
-        siaes = list(siae_queryset)
+        total = siae_queryset.count()
+        self.stdout_messages_info(f"Found {total} siaes")
 
-        # Step 2: loop on each Siae
-        progress = 0
-        for siae in siaes:
-            # Step 3: compute super_badge field
-            siae.set_super_badge()
-
-            progress += 1
-            if (progress % 500) == 0:
-                self.stdout_info(f"{progress}...")
-
-        # Step 4: bulk update
-        Siae.objects.bulk_update(siaes, ["super_badge", "super_badge_last_updated"])
+        batch_count = 0
+        BATCH_SIZE = 1_000
+        for batch in batched(siae_queryset, BATCH_SIZE):
+            siaes = list(batch)
+            for siae in siaes:
+                siae.set_super_badge()
+            Siae.objects.bulk_update(siaes, ["super_badge", "super_badge_last_updated"])
+            batch_count += 1
+            self.stdout_info(f"{min(total, batch_count * BATCH_SIZE)} ...")
 
         siae_with_super_badge_count_after = Siae.objects.filter(super_badge=True).count()
         msg_success = [
