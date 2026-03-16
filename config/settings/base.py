@@ -778,13 +778,11 @@ PARTNER_APPROCH_USER_ID = env.int("PARTNER_APPROCH_USER_ID", 0)
 
 # Privacy timeouts
 # ------------------------------------------------------------------------------
-INACTIVE_CONVERSATION_TIMEOUT_IN_MONTHS = env.int("INACTIVE_CONVERSATION_TIMEOUT_IN_MONTHS", 6)
-
-# Privacy timeouts
-# ------------------------------------------------------------------------------
-INACTIVE_USER_TIMEOUT_IN_MONTHS = env.int("INACTIVE_USER_TIMEOUT_IN_MONTHS", 3 * 12)
-INACTIVE_USER_WARNING_DELAY_IN_DAYS = env.int("INACTIVE_USER_WARNING_DELAY_IN_DAYS", 7)
-
+INACTIVE_CONVERSATION_TIMEOUT_IN_MONTHS = 6
+INACTIVE_USER_TIMEOUT_IN_MONTHS = 3 * 12
+INACTIVE_USER_WARNING_DELAY_IN_DAYS = 30
+TENDER_DELETION_TIMEOUT_IN_MONTHS = 12
+TRACKER_DELETION_TIMEOUT_IN_MONTHS = 12
 
 # Wagtail
 # ------------------------------------------------------------------------------

@@ -102,7 +102,7 @@ class Command(BaseCommand):
 
     def _build_users_queryset(self):
         """Build the queryset for users based on command arguments."""
-        users_qs = User.objects.filter(is_anonymized=False, is_active=True)
+        users_qs = User.objects.filter(is_active=True)
 
         if self.kind_users:
             users_qs = users_qs.filter(kind=self.kind_users)
