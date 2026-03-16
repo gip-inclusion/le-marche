@@ -40,6 +40,8 @@ class SiaeDetailSerializer(serializers.ModelSerializer):
     offers = SiaeOfferSimpleSerializer(many=True)
     client_references = SiaeClientReferenceSimpleSerializer(many=True)
     labels_old = SiaeLabelOldSimpleSerializer(many=True)
+    # We should probably use max(c1_last_sync_date, updated_at) here instead
+    updated_at = serializers.DateTimeField(source="c1_last_sync_date")
 
     class Meta:
         model = Siae

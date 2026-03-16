@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from lemarche.api.utils import generate_random_string
 from lemarche.siaes import constants as siae_constants
@@ -222,6 +223,15 @@ class SiaeDetailApiTest(TestCase):
             {"name": "sector2", "slug": "sector2"},
             response.data["sectors"],
         )
+
+    def test_updated_at(self):
+        api_updated_at = timezone.now().astimezone(timezone.get_current_timezone())
+        self.siae.c1_last_sync_date = api_updated_at
+        self.siae.save()
+
+        url = reverse("api:siae-detail", args=[self.siae.id])
+        response = self.authenticated_client.get(url)
+        self.assertEqual(response.data["updated_at"], api_updated_at.isoformat())
 
 
 class SiaeRetrieveBySlugApiTest(TestCase):
