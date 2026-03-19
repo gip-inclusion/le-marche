@@ -42,10 +42,8 @@ class Command(BaseCommand):
             qs = qs.filter(updated_at__gte=timezone.now() - timedelta(minutes=minutes_since))
 
         for tender in qs:
-            self.stdout_info(f"Tender {tender.id} has {len(tender.attachments)} attachments")
             for attachment in tender.attachments:
                 try:
-                    self.stdout_info(f"Scanning attachment {attachment}")
                     if default_storage.exists(attachment.file.name):
                         attachments_count += 1
                         local_file_path = f"{temp_dir}/{attachment.file.name.split('/')[-1]}"
@@ -81,7 +79,6 @@ class Command(BaseCommand):
                             api_slack.send_message_to_channel("\n".join(msg_error))
 
                 except FileNotFoundError:
-                    self.stdout_error("File not found!")
                     attachments_not_found_count += 1
 
         shutil.rmtree(temp_dir)
