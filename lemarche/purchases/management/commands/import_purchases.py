@@ -1,5 +1,6 @@
 import csv
 import logging
+import pathlib
 from decimal import Decimal, InvalidOperation
 
 from django.core.management.base import CommandError
@@ -50,6 +51,7 @@ class Command(BaseCommand):
             "--company-slug", type=str, required=True, help="Slug of the Company to link purchases to (required)"
         )
 
+    @transaction.atomic
     def handle(self, *args, **options):
         """Main entry point for the command."""
         self._setup_import(options)
@@ -72,7 +74,9 @@ class Command(BaseCommand):
 
     def _setup_import(self, options):
         """Setup import parameters and display initial information."""
-        self.csv_file = options["csv_file"]
+        self.input_csv_file = options["csv_file"]
+        file_path = pathlib.Path(self.input_csv_file)
+        self.output_csv_file = str(file_path.with_stem(file_path.stem + "_output"))
         self.purchase_year = options.get("year") or timezone.now().year
         self.delimiter = options["delimiter"]
         self.encoding = options["encoding"]
@@ -118,17 +122,25 @@ class Command(BaseCommand):
             "Entité acheteuse (optionnelle)",
         ]
 
-        with open(self.csv_file, encoding=self.encoding) as file:
-            reader = csv.DictReader(file, delimiter=self.delimiter)
-            if not reader.fieldnames:
-                raise CommandError("Could not read CSV headers")
+        with open(self.input_csv_file, encoding=self.encoding) as input_file:
+            with open(self.output_csv_file, "w", encoding=self.encoding) as output_file:
+                reader = csv.DictReader(input_file, delimiter=self.delimiter)
+                if not reader.fieldnames:
+                    raise CommandError("Could not read CSV headers")
 
-            self._validate_csv_columns(reader.fieldnames, expected_columns)
-            self.stdout.write(f"Found columns: {list(reader.fieldnames)}")
-            self.stdout.write(f"Importing purchases for year: {self.purchase_year}")
+                out_fieldnames = reader.fieldnames + [
+                    "Structure inclusive",
+                    "Structure Insertion ou Handicap",
+                    "Type de structure",
+                ]
+                writer = csv.DictWriter(output_file, fieldnames=out_fieldnames, delimiter=self.delimiter)
+                writer.writeheader()
 
-            with transaction.atomic():
-                self._process_rows(reader, company)
+                self._validate_csv_columns(reader.fieldnames, expected_columns)
+                self.stdout.write(f"Found columns: {list(reader.fieldnames)}")
+                self.stdout.write(f"Importing purchases for year: {self.purchase_year}")
+
+                self._process_rows(reader, company, writer)
 
         self._display_final_stats()
 
@@ -138,15 +150,41 @@ class Command(BaseCommand):
         if missing_columns:
             raise CommandError(f"Missing required columns: {missing_columns}")
 
-    def _process_rows(self, reader, company):
+    def _process_rows(self, reader, company, writer):
         """Process all rows in the CSV file."""
         for row_num, row in enumerate(reader, start=2):  # Start at 2 because of header for row number in error message
             self.stats["total_rows"] += 1
 
             try:
-                self._process_single_row(row, company)
+                siae = self._process_single_row(row, company)
+                if siae:
+                    row.update(
+                        {
+                            "Structure inclusive": "YES",
+                            "Structure Insertion ou Handicap": "Handicap"
+                            if siae.kind_is_esat_or_ea_or_eatt
+                            else "Insertion",
+                            "Type de structure": siae.kind,
+                        }
+                    )
+                else:
+                    row.update(
+                        {
+                            "Structure inclusive": "NO",
+                            "Structure Insertion ou Handicap": "",
+                            "Type de structure": "",
+                        }
+                    )
             except Exception as e:
                 self._handle_row_error(e, row_num)
+                row.update(
+                    {
+                        "Structure inclusive": "N/A",
+                        "Structure Insertion ou Handicap": "N/A",
+                        "Type de structure": "N/A",
+                    }
+                )
+            writer.writerow(row)
 
     def _process_single_row(self, row, company):
         """Process a single row from the CSV."""
@@ -186,6 +224,8 @@ class Command(BaseCommand):
         # Progress indicator
         if self.stats["imported"] % 100 == 0:
             self.stdout_info(f"Processed {self.stats['imported']} rows...")
+
+        return siae
 
     def _validate_row_data(self, supplier_name, supplier_siret):
         """Validate required fields in a row."""
