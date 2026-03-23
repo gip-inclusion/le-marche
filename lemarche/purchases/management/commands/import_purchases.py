@@ -1,5 +1,6 @@
 import csv
 import logging
+import pathlib
 from decimal import Decimal, InvalidOperation
 
 from django.core.management.base import CommandError
@@ -50,16 +51,17 @@ class Command(BaseCommand):
             "--company-slug", type=str, required=True, help="Slug of the Company to link purchases to (required)"
         )
 
+    @transaction.atomic
     def handle(self, *args, **options):
         """Main entry point for the command."""
         self._setup_import(options)
         self._validate_year(options.get("year") or timezone.now().year)
         company = self._get_company(options["company_slug"])
 
-        stats = self._initialize_stats()
+        self._initialize_stats()
 
         try:
-            self._process_csv_file(company, stats)
+            self._process_csv_file(company)
         except FileNotFoundError:
             raise CommandError(f"CSV file not found: {options['csv_file']}")
         except UnicodeDecodeError:
@@ -72,7 +74,9 @@ class Command(BaseCommand):
 
     def _setup_import(self, options):
         """Setup import parameters and display initial information."""
-        self.csv_file = options["csv_file"]
+        self.input_csv_file = options["csv_file"]
+        file_path = pathlib.Path(self.input_csv_file)
+        self.output_csv_file = str(file_path.with_stem(file_path.stem + "_output"))
         self.purchase_year = options.get("year") or timezone.now().year
         self.delimiter = options["delimiter"]
         self.encoding = options["encoding"]
@@ -99,9 +103,16 @@ class Command(BaseCommand):
 
     def _initialize_stats(self):
         """Initialize statistics dictionary."""
-        return {"total_rows": 0, "imported": 0, "skipped": 0, "errors": 0, "siae_matches": 0, "company_matches": 0}
+        self.stats = {
+            "total_rows": 0,
+            "imported": 0,
+            "skipped": 0,
+            "errors": 0,
+            "siae_matches": 0,
+            "company_matches": 0,
+        }
 
-    def _process_csv_file(self, company, stats):
+    def _process_csv_file(self, company):
         """Process the CSV file and import purchases."""
         expected_columns = [
             "Raison sociale du Fournisseur",
@@ -111,19 +122,27 @@ class Command(BaseCommand):
             "Entité acheteuse (optionnelle)",
         ]
 
-        with open(self.csv_file, encoding=self.encoding) as file:
-            reader = csv.DictReader(file, delimiter=self.delimiter)
-            if not reader.fieldnames:
-                raise CommandError("Could not read CSV headers")
+        with open(self.input_csv_file, encoding=self.encoding) as input_file:
+            with open(self.output_csv_file, "w", encoding=self.encoding) as output_file:
+                reader = csv.DictReader(input_file, delimiter=self.delimiter)
+                if not reader.fieldnames:
+                    raise CommandError("Could not read CSV headers")
 
-            self._validate_csv_columns(reader.fieldnames, expected_columns)
-            self.stdout.write(f"Found columns: {list(reader.fieldnames)}")
-            self.stdout.write(f"Importing purchases for year: {self.purchase_year}")
+                out_fieldnames = reader.fieldnames + [
+                    "Structure inclusive",
+                    "Structure Insertion ou Handicap",
+                    "Type de structure",
+                ]
+                writer = csv.DictWriter(output_file, fieldnames=out_fieldnames, delimiter=self.delimiter)
+                writer.writeheader()
 
-            with transaction.atomic():
-                self._process_rows(reader, company, stats)
+                self._validate_csv_columns(reader.fieldnames, expected_columns)
+                self.stdout.write(f"Found columns: {list(reader.fieldnames)}")
+                self.stdout.write(f"Importing purchases for year: {self.purchase_year}")
 
-        self._display_final_stats(stats)
+                self._process_rows(reader, company, writer)
+
+        self._display_final_stats()
 
     def _validate_csv_columns(self, fieldnames, expected_columns):
         """Validate that all expected columns are present in the CSV."""
@@ -131,17 +150,43 @@ class Command(BaseCommand):
         if missing_columns:
             raise CommandError(f"Missing required columns: {missing_columns}")
 
-    def _process_rows(self, reader, company, stats):
+    def _process_rows(self, reader, company, writer):
         """Process all rows in the CSV file."""
         for row_num, row in enumerate(reader, start=2):  # Start at 2 because of header for row number in error message
-            stats["total_rows"] += 1
+            self.stats["total_rows"] += 1
 
             try:
-                self._process_single_row(row, company, stats)
+                siae = self._process_single_row(row, company)
+                if siae:
+                    row.update(
+                        {
+                            "Structure inclusive": "YES",
+                            "Structure Insertion ou Handicap": "Handicap"
+                            if siae.kind_is_esat_or_ea_or_eatt
+                            else "Insertion",
+                            "Type de structure": siae.kind,
+                        }
+                    )
+                else:
+                    row.update(
+                        {
+                            "Structure inclusive": "NO",
+                            "Structure Insertion ou Handicap": "",
+                            "Type de structure": "",
+                        }
+                    )
             except Exception as e:
-                self._handle_row_error(e, row_num, stats)
+                self._handle_row_error(e, row_num)
+                row.update(
+                    {
+                        "Structure inclusive": "N/A",
+                        "Structure Insertion ou Handicap": "N/A",
+                        "Type de structure": "N/A",
+                    }
+                )
+            writer.writerow(row)
 
-    def _process_single_row(self, row, company, stats):
+    def _process_single_row(self, row, company):
         """Process a single row from the CSV."""
         # Clean and validate data
         supplier_name = row["Raison sociale du Fournisseur"].strip()
@@ -157,7 +202,7 @@ class Command(BaseCommand):
         purchase_amount = self._parse_purchase_amount(purchase_amount_str)
 
         # Find matching SIAE
-        siae = self._find_matching_siae(supplier_siret, stats)
+        siae = self._find_matching_siae(supplier_siret)
 
         # Create purchase object
         purchase_data = {
@@ -174,11 +219,13 @@ class Command(BaseCommand):
         if not self.dry_run:
             Purchase.objects.create(**purchase_data)
 
-        stats["imported"] += 1
+        self.stats["imported"] += 1
 
         # Progress indicator
-        if stats["imported"] % 100 == 0:
-            self.stdout_info(f"Processed {stats['imported']} rows...")
+        if self.stats["imported"] % 100 == 0:
+            self.stdout_info(f"Processed {self.stats['imported']} rows...")
+
+        return siae
 
     def _validate_row_data(self, supplier_name, supplier_siret):
         """Validate required fields in a row."""
@@ -203,12 +250,12 @@ class Command(BaseCommand):
         except (InvalidOperation, ValueError):
             raise ValueError(f"Invalid purchase amount: {purchase_amount_str}")
 
-    def _find_matching_siae(self, supplier_siret, stats):
+    def _find_matching_siae(self, supplier_siret):
         """Find matching SIAE for the given SIRET."""
         siae = None
         try:
             siae = Siae.objects.is_live().get(siret=supplier_siret)
-            stats["siae_matches"] += 1
+            self.stats["siae_matches"] += 1
         except Siae.DoesNotExist:
             pass  # No SIAE found, this is normal
         except Siae.MultipleObjectsReturned:
@@ -217,14 +264,14 @@ class Command(BaseCommand):
             self.stdout_warning(f"Multiple SIAEs found for SIRET: {supplier_siret}. Using first one: {siae.name}")
         return siae
 
-    def _handle_row_error(self, error, row_num, stats):
+    def _handle_row_error(self, error, row_num):
         """Handle errors that occur while processing a row."""
-        stats["errors"] += 1
+        self.stats["errors"] += 1
         error_msg = f"Row {row_num}: {str(error)}"
 
         if self.skip_errors:
             self.stdout_warning(f"Error on row {row_num}: {str(error)}")
-            stats["skipped"] += 1
+            self.stats["skipped"] += 1
         else:
             # In transaction mode, we need to rollback on error
             if not self.dry_run:
@@ -232,23 +279,23 @@ class Command(BaseCommand):
             else:
                 raise CommandError(error_msg)
 
-    def _display_final_stats(self, stats):
+    def _display_final_stats(self):
         """Display final import statistics."""
         self.stdout_messages_info(
             [
                 "\n" + "=" * 50,
                 "IMPORT SUMMARY",
                 "=" * 50,
-                f"Total rows processed: {stats['total_rows']}",
-                f"Successfully imported: {stats['imported']}",
-                f"Skipped due to errors: {stats['skipped']}",
-                f"Errors encountered: {stats['errors']}",
-                f"SIAE matches found: {stats['siae_matches']}",
+                f"Total rows processed: {self.stats['total_rows']}",
+                f"Successfully imported: {self.stats['imported']}",
+                f"Skipped due to errors: {self.stats['skipped']}",
+                f"Errors encountered: {self.stats['errors']}",
+                f"SIAE matches found: {self.stats['siae_matches']}",
             ]
         )
 
-        if stats["imported"] > 0:
-            siae_percentage = (stats["siae_matches"] / stats["imported"]) * 100
+        if self.stats["imported"] > 0:
+            siae_percentage = (self.stats["siae_matches"] / self.stats["imported"]) * 100
             self.stdout_info(f"SIAE match percentage: {siae_percentage:.1f}%")
 
         if self.dry_run:
