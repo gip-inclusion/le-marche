@@ -19,7 +19,9 @@ class InclusivePotentialView(APIView):
 
         data = {
             "sector_name": sector.name,
+            "sector_slug": sector.slug,
             "perimeter_name": perimeter.name if perimeter else None,
+            "perimeter_slug": perimeter.slug if perimeter else None,
             "perimeter_kind": perimeter.kind if perimeter else None,
             "potential_siaes": potential_data.potential_siaes,
             "insertion_siaes": potential_data.insertion_siaes,
