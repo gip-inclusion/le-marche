@@ -343,6 +343,7 @@ class SiaeFilterForm(forms.Form):
         if favorite_list:
             qs = qs.filter(favorite_lists__in=[favorite_list])
 
+<<<<<<< HEAD
         if self.cleaned_data.get("super_badge", None):
             qs = qs.filter(super_badge=True)
 
