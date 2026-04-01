@@ -17,6 +17,25 @@
         </div>
         {% if user.kind == "BUYER" and user.company %}
             {% if unfiltered_qs_count > 0 %}
+                <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w no-print">
+                    <div class="fr-col-12 fr-col-md-auto">
+                        <button onclick="window.print()" class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-file-pdf-line">
+                            Exporter en PDF
+                        </button>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-auto">
+                        <a href="{% url 'dashboard:inclusive_purchase_export' %}?format=csv&{{ request.GET.urlencode }}"
+                           class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-download-line">
+                            Exporter en CSV
+                        </a>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-auto">
+                        <a href="{% url 'dashboard:inclusive_purchase_export' %}?format=excel&{{ request.GET.urlencode }}"
+                           class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-download-line">
+                            Exporter en Excel
+                        </a>
+                    </div>
+                </div>
                 <section class="fr-accordion fr-mb-2w">
                     <h3 class="fr-accordion__title">
                         <button type="button"
@@ -396,6 +415,20 @@
         {% endif %}
     </div>
 {% endblock content %}
+{% block extra_css %}
+    <style>
+        @media print {
+            .no-print,
+            .fr-accordion,
+            .fr-header,
+            .fr-footer,
+            .fr-breadcrumb,
+            nav { display: none !important; }
+            .fr-card { break-inside: avoid; }
+            canvas { max-height: 250px !important; }
+        }
+    </style>
+{% endblock extra_css %}
 {% block extra_js %}
     {% if chart_data_inclusive %}
         <script type="text/javascript"
