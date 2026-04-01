@@ -17,23 +17,34 @@
         </div>
         {% if user.kind == "BUYER" and user.company %}
             {% if unfiltered_qs_count > 0 %}
-                <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w no-print">
-                    <div class="fr-col-12 fr-col-md-auto">
-                        <button onclick="window.print()" class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-file-pdf-line">
-                            Exporter en PDF
-                        </button>
-                    </div>
-                    <div class="fr-col-12 fr-col-md-auto">
-                        <a href="{% url 'dashboard:inclusive_purchase_export' %}?format=csv&{{ request.GET.urlencode }}"
-                           class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-download-line">
-                            Exporter en CSV
-                        </a>
-                    </div>
-                    <div class="fr-col-12 fr-col-md-auto">
-                        <a href="{% url 'dashboard:inclusive_purchase_export' %}?format=excel&{{ request.GET.urlencode }}"
-                           class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-download-line">
-                            Exporter en Excel
-                        </a>
+                <div class="fr-mb-2w no-print" id="export-dropdown-container">
+                    <button class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-download-line"
+                            aria-expanded="false"
+                            aria-controls="export-dropdown"
+                            data-fr-js-collapse-button="true">
+                        Exporter
+                    </button>
+                    <div class="fr-collapse" id="export-dropdown">
+                        <ul style="list-style:none;padding:8px 0;margin:0;border:1px solid #ddd;border-radius:4px;background:#fff;min-width:200px;box-shadow:0 4px 12px rgba(0,0,0,.1);">
+                            <li>
+                                <button onclick="window.print()"
+                                        style="width:100%;text-align:left;background:none;border:none;padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:8px;">
+                                    <span class="fr-icon-file-pdf-line" aria-hidden="true"></span> PDF
+                                </button>
+                            </li>
+                            <li>
+                                <a href="{% url 'dashboard:inclusive_purchase_export' %}?format=csv&{{ request.GET.urlencode }}"
+                                   style="display:flex;align-items:center;gap:8px;padding:10px 16px;text-decoration:none;color:inherit;">
+                                    <span class="fr-icon-download-line" aria-hidden="true"></span> CSV
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'dashboard:inclusive_purchase_export' %}?format=excel&{{ request.GET.urlencode }}"
+                                   style="display:flex;align-items:center;gap:8px;padding:10px 16px;text-decoration:none;color:inherit;">
+                                    <span class="fr-icon-download-line" aria-hidden="true"></span> Excel (.xls)
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
                 <section class="fr-accordion fr-mb-2w">
