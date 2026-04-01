@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Count, ExpressionWrapper, IntegerField, Q, Sum
+from django.db.models import Case, CharField, Count, ExpressionWrapper, F, IntegerField, Q, Sum, Value, When
 from django.db.models.functions import Coalesce, Round
 from django.utils import timezone
 from django.utils.text import slugify
@@ -127,6 +127,110 @@ class PurchaseQuerySet(models.QuerySet):
             )
 
         return self.aggregate(**aggregates)
+
+    def with_size_stats(self):
+        """
+        Purchase amounts and supplier counts grouped by size category.
+
+        TPE: total employees < 10
+        PME: total employees >= 10
+        Non renseigné: insertion count, c2_etp_count and permanent count all null
+
+        Effective insertion = employees_insertion_count ?? round(c2_etp_count)
+        Total employees = effective_insertion + permanent_count (nulls treated as 0)
+        """
+        SIZE_NON_RENSEIGNE = "Non renseigné"
+        SIZE_TPE = "TPE (< 10 salariés)"
+        SIZE_PME = "PME (≥ 10 salariés)"
+
+        qs = (
+            self.filter(siae__isnull=False)
+            .annotate(
+                _eff_insertion=Case(
+                    When(
+                        siae__employees_insertion_count__isnull=False,
+                        then=F("siae__employees_insertion_count"),
+                    ),
+                    When(
+                        siae__c2_etp_count__isnull=False,
+                        then=Round(F("siae__c2_etp_count")),
+                    ),
+                    default=Value(None, output_field=IntegerField()),
+                    output_field=IntegerField(),
+                )
+            )
+            .annotate(
+                _total_employees=Case(
+                    When(
+                        _eff_insertion__isnull=True,
+                        siae__employees_permanent_count__isnull=True,
+                        then=Value(None, output_field=IntegerField()),
+                    ),
+                    default=ExpressionWrapper(
+                        Coalesce(F("_eff_insertion"), Value(0))
+                        + Coalesce(F("siae__employees_permanent_count"), Value(0)),
+                        output_field=IntegerField(),
+                    ),
+                    output_field=IntegerField(),
+                )
+            )
+            .annotate(
+                size_category=Case(
+                    When(_total_employees__isnull=True, then=Value(SIZE_NON_RENSEIGNE)),
+                    When(_total_employees__lt=10, then=Value(SIZE_TPE)),
+                    default=Value(SIZE_PME),
+                    output_field=CharField(),
+                )
+            )
+        )
+
+        return (
+            qs.values("size_category")
+            .annotate(
+                total_amount=ExpressionWrapper(
+                    Coalesce(Round(Sum("purchase_amount"), 0), Value(0)),
+                    output_field=IntegerField(),
+                ),
+                supplier_count=Count("supplier_siret", distinct=True),
+            )
+            .order_by("size_category")
+        )
+
+    def with_legal_form_stats(self):
+        """
+        Purchase amounts and supplier counts grouped by siae legal form.
+        Results ordered by total amount descending.
+        """
+        return (
+            self.filter(siae__isnull=False)
+            .values("siae__legal_form")
+            .annotate(
+                total_amount=ExpressionWrapper(
+                    Coalesce(Round(Sum("purchase_amount"), 0), Value(0)),
+                    output_field=IntegerField(),
+                ),
+                supplier_count=Count("supplier_siret", distinct=True),
+            )
+            .order_by("-total_amount")
+        )
+
+    def with_region_stats(self):
+        """
+        Purchase amounts and supplier counts grouped by siae region.
+        Results ordered by total amount descending.
+        """
+        return (
+            self.filter(siae__isnull=False)
+            .values("siae__region")
+            .annotate(
+                total_amount=ExpressionWrapper(
+                    Coalesce(Round(Sum("purchase_amount"), 0), Value(0)),
+                    output_field=IntegerField(),
+                ),
+                supplier_count=Count("supplier_siret", distinct=True),
+            )
+            .order_by("-total_amount")
+        )
 
 
 class Purchase(models.Model):
