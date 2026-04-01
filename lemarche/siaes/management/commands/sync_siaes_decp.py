@@ -12,6 +12,8 @@ Usage:
 
 from datetime import timedelta
 
+import time
+
 import requests
 from django.conf import settings
 from django.utils import timezone
@@ -23,6 +25,7 @@ from lemarche.utils.commands import BaseCommand
 
 DECP_API_URL = "https://tabular-api.data.gouv.fr/api/resources/22847056-61df-452d-837d-8b8ceadbfc52/data/"
 DECP_API_TIMEOUT = 10  # secondes
+DECP_API_SLEEP_BETWEEN_REQUESTS = 0.05  # 50ms → max ~20 req/s, bien en dessous de la limite de 100 req/s
 BATCH_SIZE = getattr(settings, "BATCH_SIZE_BULK_UPDATE", 100)
 
 
@@ -96,6 +99,8 @@ class Command(BaseCommand):
             except requests.exceptions.RequestException as e:
                 self.stdout_error(f"Erreur SIRET {siae.siret} : {e}")
                 error_count += 1
+
+            time.sleep(DECP_API_SLEEP_BETWEEN_REQUESTS)
 
             if i % 100 == 0:
                 self.stdout_info(f"{i}/{total}...")
