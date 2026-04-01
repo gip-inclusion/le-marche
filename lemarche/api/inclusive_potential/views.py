@@ -15,12 +15,14 @@ class InclusivePotentialView(APIView):
         sector = serializer.validated_data.get("sector")
         perimeter = serializer.validated_data.get("perimeter")
         budget = serializer.validated_data.get("budget")
-        potential_data, analysis_data = get_inclusive_potential_data(sector, perimeter, budget)
+        presta_types = list(serializer.validated_data.get("presta_type", []))
+        potential_data, analysis_data = get_inclusive_potential_data(sector, perimeter, budget, presta_types)
 
         data = {
             "sector_name": sector.name,
             "perimeter_name": perimeter.name if perimeter else None,
             "perimeter_kind": perimeter.kind if perimeter else None,
+            "presta_types": presta_types,
             "potential_siaes": potential_data.potential_siaes,
             "insertion_siaes": potential_data.insertion_siaes,
             "handicap_siaes": potential_data.handicap_siaes,

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from lemarche.api.inclusive_potential.constants import PRESTA_TYPE_CHOICES
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 
@@ -28,4 +29,9 @@ class InclusivePotentialQuerySerializer(serializers.Serializer):
         error_messages={
             "min_value": "Le budget doit être un nombre positif.",
         },
+    )
+    presta_type = serializers.MultipleChoiceField(
+        choices=PRESTA_TYPE_CHOICES,
+        required=False,
+        allow_empty=True,
     )

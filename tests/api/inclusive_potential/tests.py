@@ -2,6 +2,11 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 
+from lemarche.api.inclusive_potential.constants import (
+    PRESTA_TYPE_FABRICATION_BIENS,
+    PRESTA_TYPE_MISE_A_DISPOSITION,
+    PRESTA_TYPE_PRESTATIONS_SERVICES,
+)
 from lemarche.perimeters.models import Perimeter
 from lemarche.siaes.constants import KIND_HANDICAP_LIST, KIND_INSERTION_LIST
 from tests.perimeters.factories import PerimeterFactory
@@ -185,3 +190,68 @@ class InclusivePotentialViewTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["potential_siaes"], 0)
         self.assertEqual(response.data["recommendation"]["title"], "Aucun potentiel inclusif identifié")
+
+    def test_presta_type_invalid(self):
+        """Test with an invalid presta_type value"""
+        response = self.authenticated_client.get(
+            self.url, {"sector": self.sector.slug, "presta_type": "type-invalide"}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_presta_type_not_provided_returns_all_siaes(self):
+        """Without presta_type filter, all siaes are returned (existing behaviour unchanged)"""
+        response = self.authenticated_client.get(self.url, {"sector": self.sector.slug})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["potential_siaes"], 3)
+        self.assertEqual(response.data["presta_types"], [])
+
+    def test_presta_type_mise_a_disposition_filters_correctly(self):
+        """Selecting 'Mise à disposition de personnel' returns only AI, ETTI, EATT"""
+        # siae_2 has kind=KIND_INSERTION_LIST[1] which is "AI"
+        response = self.authenticated_client.get(
+            self.url, {"sector": self.sector.slug, "presta_type": PRESTA_TYPE_MISE_A_DISPOSITION}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(PRESTA_TYPE_MISE_A_DISPOSITION, response.data["presta_types"])
+        # Only siae_2 (AI) matches — siae_1 is EI, siae_3 is EA
+        self.assertEqual(response.data["potential_siaes"], 1)
+
+    def test_presta_type_prestations_services_filters_correctly(self):
+        """Selecting 'Prestations de services' returns only EI, ACI, EA, ESAT, SEP"""
+        # siae_1 (EI) and siae_3 (EA) match
+        response = self.authenticated_client.get(
+            self.url, {"sector": self.sector.slug, "presta_type": PRESTA_TYPE_PRESTATIONS_SERVICES}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(PRESTA_TYPE_PRESTATIONS_SERVICES, response.data["presta_types"])
+        self.assertEqual(response.data["potential_siaes"], 2)
+
+    def test_presta_type_multiple_selection_aggregates(self):
+        """Selecting multiple presta_types aggregates the corresponding structures"""
+        response = self.authenticated_client.get(
+            self.url,
+            [
+                ("sector", self.sector.slug),
+                ("presta_type", PRESTA_TYPE_MISE_A_DISPOSITION),
+                ("presta_type", PRESTA_TYPE_PRESTATIONS_SERVICES),
+            ],
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["potential_siaes"], 3)
+        self.assertIn(PRESTA_TYPE_MISE_A_DISPOSITION, response.data["presta_types"])
+        self.assertIn(PRESTA_TYPE_PRESTATIONS_SERVICES, response.data["presta_types"])
+
+    def test_presta_type_fabrication_biens_same_kinds_as_prestations_services(self):
+        """'Fabrication et commercialisation de biens' maps to the same kinds as 'Prestations de services'"""
+        response = self.authenticated_client.get(
+            self.url, {"sector": self.sector.slug, "presta_type": PRESTA_TYPE_FABRICATION_BIENS}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(PRESTA_TYPE_FABRICATION_BIENS, response.data["presta_types"])
+        self.assertEqual(response.data["potential_siaes"], 2)
