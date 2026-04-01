@@ -30,6 +30,7 @@ class InclusivePotentialViewTests(TestCase):
             c2_etp_count=20,
             employees_insertion_count=15,  # will be ignored by the calculation because use c2_etp_count instead
             employees_permanent_count=9,
+            has_won_contract_last_3_years=True,
         )
         siae_3 = SiaeFactory(kind=KIND_HANDICAP_LIST[0], employees_insertion_count=10, employees_permanent_count=7)
 
@@ -89,6 +90,7 @@ class InclusivePotentialViewTests(TestCase):
         self.assertEqual(response.data["handicap_siaes"], 1)
         self.assertEqual(response.data["local_siaes"], 1)
         self.assertEqual(response.data["siaes_with_super_badge"], 1)
+        self.assertEqual(response.data["siaes_with_won_contract"], 1)
         self.assertEqual(response.data["employees_insertion_average"], 13.33)
         self.assertEqual(response.data["employees_permanent_average"], 5.33)
 

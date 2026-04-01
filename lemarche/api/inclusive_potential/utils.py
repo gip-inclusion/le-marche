@@ -18,6 +18,7 @@ class PotentialData:
     handicap_siaes: int
     local_siaes: int
     siaes_with_super_badge: int
+    siaes_with_won_contract: int
     employees_insertion_average: int
     employees_permanent_average: int
 
@@ -75,6 +76,7 @@ def get_inclusive_potential_data(
     handicap_siaes = 0
     local_siaes = 0
     siaes_with_super_badge = 0
+    siaes_with_won_contract = 0
     employees_insertion_count = 0
     employees_permanent_count = 0
     for siae in siaes:
@@ -90,6 +92,7 @@ def get_inclusive_potential_data(
             local_siaes += 1
 
         siaes_with_super_badge += 1 if siae.super_badge else 0
+        siaes_with_won_contract += 1 if siae.has_won_contract_last_3_years else 0
 
         employees_permanent_count += siae.employees_permanent_count or 0
 
@@ -104,6 +107,7 @@ def get_inclusive_potential_data(
             handicap_siaes=handicap_siaes,
             local_siaes=local_siaes,
             siaes_with_super_badge=siaes_with_super_badge,
+            siaes_with_won_contract=siaes_with_won_contract,
             employees_insertion_average=round(employees_insertion_count / siaes_count, 2) if siaes_count else 0,
             employees_permanent_average=round(employees_permanent_count / siaes_count, 2) if siaes_count else 0,
         ),

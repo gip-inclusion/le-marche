@@ -835,6 +835,14 @@ class Siae(NexusModelMixin, models.Model):
         "Date de dernière synchronisation (API Entreprise /exercices)", blank=True, null=True
     )
 
+    # DECP (Données Essentielles de la Commande Publique)
+    has_won_contract_last_3_years = models.BooleanField(
+        "A remporté un marché public ces 3 dernières années (DECP)", default=False
+    )
+    decp_last_sync_date = models.DateTimeField(
+        "Date de dernière synchronisation (DECP)", blank=True, null=True
+    )
+
     c1_id = models.IntegerField(blank=True, null=True)
     c4_id_old = models.IntegerField(blank=True, null=True)
     c1_last_sync_date = models.DateTimeField(blank=True, null=True)

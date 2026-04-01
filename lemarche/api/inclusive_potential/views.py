@@ -30,6 +30,7 @@ class InclusivePotentialView(APIView):
             "handicap_siaes": potential_data.handicap_siaes,
             "local_siaes": potential_data.local_siaes,
             "siaes_with_super_badge": potential_data.siaes_with_super_badge,
+            "siaes_with_won_contract": potential_data.siaes_with_won_contract,
             "employees_insertion_average": potential_data.employees_insertion_average,
             "employees_permanent_average": potential_data.employees_permanent_average,
         }
