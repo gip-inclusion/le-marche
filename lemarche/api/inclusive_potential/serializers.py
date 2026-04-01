@@ -29,3 +29,14 @@ class InclusivePotentialQuerySerializer(serializers.Serializer):
             "min_value": "Le budget doit être un nombre positif.",
         },
     )
+    france_entiere = serializers.BooleanField(
+        required=False,
+        default=False,
+    )
+
+    def validate(self, data):
+        if data.get("france_entiere") and data.get("perimeter"):
+            raise serializers.ValidationError(
+                "Les paramètres 'france_entiere' et 'perimeter' sont mutuellement exclusifs."
+            )
+        return data

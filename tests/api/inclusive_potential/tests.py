@@ -1,3 +1,4 @@
+from django.contrib.gis.geos import Point
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
@@ -185,3 +186,77 @@ class InclusivePotentialViewTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["potential_siaes"], 0)
         self.assertEqual(response.data["recommendation"]["title"], "Aucun potentiel inclusif identifié")
+
+    def test_with_city_perimeter(self):
+        """Test with a city (commune) perimeter — should return structures able to intervene in that city"""
+        # Create a city in department 75 — existing siaes have activities located in department 75
+        perimeter_city = PerimeterFactory(
+            name="Paris 1er",
+            kind=Perimeter.KIND_CITY,
+            insee_code="75001",
+            department_code="75",
+            region_code="11",
+            coords=Point(2.3488, 48.8534),
+        )
+
+        response = self.authenticated_client.get(
+            self.url, {"sector": self.sector.slug, "perimeter": perimeter_city.slug}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["perimeter_kind"], Perimeter.KIND_CITY)
+        # All 3 siaes have activities in department 75, which covers the city
+        self.assertEqual(response.data["potential_siaes"], 3)
+        self.assertFalse(response.data["france_entiere"])
+
+    def test_france_entiere(self):
+        """Test france_entiere=true — only structures with national intervention capacity"""
+        specific_sector = SectorFactory(group=self.sector.group)
+
+        # 2 SIAEs with national coverage
+        siaes_country = SiaeFactory.create_batch(2)
+        for siae in siaes_country:
+            SiaeActivityFactory(siae=siae, sector=specific_sector, with_country_perimeter=True)
+
+        # 1 SIAE with zone-based coverage only
+        siae_zones = SiaeFactory()
+        activity_zones = SiaeActivityFactory(siae=siae_zones, sector=specific_sector, with_zones_perimeter=True)
+        activity_zones.locations.set([self.perimeter_department])
+
+        response = self.authenticated_client.get(
+            self.url, {"sector": specific_sector.slug, "france_entiere": "true"}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data["france_entiere"])
+        self.assertIsNone(response.data["perimeter_name"])
+        # Only the 2 national coverage SIAEs should be returned
+        self.assertEqual(response.data["potential_siaes"], 2)
+
+    def test_all_france(self):
+        """Test without perimeter — returns all structures in France regardless of their coverage zone"""
+        specific_sector = SectorFactory(group=self.sector.group)
+
+        siae_country = SiaeFactory()
+        SiaeActivityFactory(siae=siae_country, sector=specific_sector, with_country_perimeter=True)
+
+        siae_zones = SiaeFactory()
+        activity_zones = SiaeActivityFactory(siae=siae_zones, sector=specific_sector, with_zones_perimeter=True)
+        activity_zones.locations.set([self.perimeter_department])
+
+        response = self.authenticated_client.get(self.url, {"sector": specific_sector.slug})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data["france_entiere"])
+        self.assertIsNone(response.data["perimeter_name"])
+        # Both structures should be returned regardless of their coverage
+        self.assertEqual(response.data["potential_siaes"], 2)
+
+    def test_france_entiere_and_perimeter_mutually_exclusive(self):
+        """Test that france_entiere and perimeter cannot be used together"""
+        response = self.authenticated_client.get(
+            self.url,
+            {"sector": self.sector.slug, "france_entiere": "true", "perimeter": self.perimeter_department.slug},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
