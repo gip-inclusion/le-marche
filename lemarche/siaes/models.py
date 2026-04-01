@@ -379,7 +379,7 @@ class SiaeQuerySet(NexusQuerySetMixin, models.QuerySet):
 
         return qs
 
-    def filter_with_potential_through_activities(self, sector, perimeter=None):
+    def filter_with_potential_through_activities(self, sector, perimeter=None, france_entiere=False):
         """
         Filter Siaes with sector and perimeter:
         - first we filter the Siae that are live
@@ -389,7 +389,7 @@ class SiaeQuerySet(NexusQuerySetMixin, models.QuerySet):
 
         # Subquery to filter SiaeActivity by sector and perimeter
         siae_activity_subquery = (
-            SiaeActivity.objects.filter_for_potential_through_activities(sector, perimeter)
+            SiaeActivity.objects.filter_for_potential_through_activities(sector, perimeter, france_entiere=france_entiere)
             .filter(siae=OuterRef("pk"))
             .values("pk")
         )
@@ -1600,12 +1600,17 @@ class SiaeActivityQuerySet(models.QuerySet):
 
         return qs
 
-    def filter_for_potential_through_activities(self, sector, perimeter=None):
+    def filter_for_potential_through_activities(self, sector, perimeter=None, france_entiere=False):
         """
-        Filter SiaeActivity with a sector and a perimeter if provided
+        Filter SiaeActivity with a sector and a perimeter if provided.
+        - france_entiere=True: only structures with national intervention capacity (GEO_RANGE_COUNTRY)
+        - perimeter provided: structures able to intervene on the given perimeter
+        - neither: all structures in the sector (toutes les structures en France)
         """
         qs = self.prefetch_related("sectors").filter_sectors([sector])
-        if perimeter:
+        if france_entiere:
+            qs = qs.with_country_geo_range()
+        elif perimeter:
             qs = qs.prefetch_related("locations").geo_range_in_perimeter_list([perimeter], include_country_area=True)
 
         return qs
