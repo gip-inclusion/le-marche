@@ -9,7 +9,7 @@ from django_filters.views import FilterView
 from content_manager.models import ContentPage, Tag
 from lemarche.cms.models import ArticleList
 from lemarche.purchases.models import Purchase
-from lemarche.siaes.constants import KIND_HANDICAP_LIST, KIND_INSERTION_LIST, LEGAL_FORM_CHOICES
+from lemarche.siaes.constants import KIND_HANDICAP_LIST, KIND_INSERTION_LIST
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
@@ -189,53 +189,6 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
                 "dataset": [purchases_stats[key] for key in qpv_zrr_keys if purchases_stats[key] > 0],
             }
 
-            # --- Taille de structure ---
-            SIZE_ORDER = ["TPE (< 10 salariés)", "PME (≥ 10 salariés)", "Non renseigné"]
-            size_rows = {row["size_category"]: row for row in self.filterset.qs.with_size_stats()}
-            chart_data_size = {
-                "labels": SIZE_ORDER,
-                "amounts": [size_rows.get(cat, {}).get("total_amount", 0) for cat in SIZE_ORDER],
-                "supplier_counts": [size_rows.get(cat, {}).get("supplier_count", 0) for cat in SIZE_ORDER],
-            }
-
-            # --- Statut juridique ---
-            legal_form_label_map = dict(LEGAL_FORM_CHOICES)
-            legal_form_rows = list(self.filterset.qs.with_legal_form_stats())
-            TOP_N = 10
-            top_rows = legal_form_rows[:TOP_N]
-            other_rows = legal_form_rows[TOP_N:]
-            lf_labels = [
-                legal_form_label_map.get(r["siae__legal_form"], r["siae__legal_form"] or "Non renseigné")
-                for r in top_rows
-            ]
-            lf_amounts = [r["total_amount"] for r in top_rows]
-            lf_supplier_counts = [r["supplier_count"] for r in top_rows]
-            if other_rows:
-                lf_labels.append("Autres")
-                lf_amounts.append(sum(r["total_amount"] for r in other_rows))
-                lf_supplier_counts.append(sum(r["supplier_count"] for r in other_rows))
-            chart_data_legal_form = {
-                "labels": lf_labels,
-                "amounts": lf_amounts,
-                "supplier_counts": lf_supplier_counts,
-            }
-
-            # --- Cartographie régionale ---
-            region_rows = list(self.filterset.qs.with_region_stats())
-            total_inclusive = purchases_stats["total_inclusive_amount_annotated"]
-            region_table_rows = []
-            for r in region_rows:
-                label = r["siae__region"] or "Non renseigné"
-                amount = r["total_amount"]
-                pct = round(amount * 100 / total_inclusive, 1) if total_inclusive else 0
-                region_table_rows.append((label, amount, pct, r["supplier_count"]))
-            chart_data_region = {
-                "labels": [row[0] for row in region_table_rows],
-                "amounts": [row[1] for row in region_table_rows],
-                "supplier_counts": [row[3] for row in region_table_rows],
-                "rows": region_table_rows,
-            }
-
             context.update(
                 {
                     "total_purchases": purchases_stats["total_amount_annotated"],
@@ -262,9 +215,6 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
                     "chart_data_purchases_by_category": chart_data_purchases_by_category,
                     "chart_data_purchases_by_buying_entity": chart_data_purchases_by_buying_entity,
                     "chart_data_qpv_zrr": chart_data_qpv_zrr,
-                    "chart_data_size": chart_data_size,
-                    "chart_data_legal_form": chart_data_legal_form,
-                    "chart_data_region": chart_data_region,
                 }
             )
         return context
