@@ -1,4 +1,4 @@
-{% load static %}
+{% load static humanize %}
 <div class="fr-card fr-card--horizontal fr-card--horizontal-tier {% if siae.super_badge %}super-badge-card{% endif %}">
     <div class="fr-card__body">
         <div class="fr-card__content">
@@ -149,6 +149,46 @@
                         </div>
                     {% endif %}
                 </div>
+                {% with markets=siae.public_markets.all %}
+                {% if markets %}
+                <hr />
+                <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+                    <div class="fr-col-12">
+                        <div>
+                            <img src="{% static 'vendor/theme-inclusion/images/ico-bicro-marche-contrat.svg' %}"
+                                 alt=""
+                                 height="32" />
+                        </div>
+                        <div>
+                            <h2>Derniers marchés publics remportés</h2>
+                            <div class="fr-table fr-table--no-caption">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Acheteur</th>
+                                            <th>Objet</th>
+                                            <th>Montant</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for market in markets %}
+                                        <tr>
+                                            <td>{{ market.buyer_name|default:"Non renseigné" }}</td>
+                                            <td title="{{ market.market_object }}">{{ market.market_object|truncatechars:80 }}</td>
+                                            <td>{% if market.amount %}{{ market.amount|floatformat:0|intcomma }} €{% else %}Non renseigné{% endif %}</td>
+                                            <td>{% if market.award_date %}{{ market.award_date|date:"d/m/Y" }}{% endif %}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p class="fr-text--xs fr-mt-1w">Source : données essentielles de la commande publique (<a href="https://www.data.gouv.fr/datasets/donnees-essentielles-de-la-commande-publique-consolidees-format-tabulaire" target="_blank" rel="noopener">data.gouv.fr</a>)</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endwith %}
                 <hr />
                 <div class="fr-grid-row fr-mb-4v">
                     <div class="fr-col-sm-12">

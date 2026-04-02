@@ -262,7 +262,7 @@ class SiaeDetailView(FormMixin, DetailView):
         """
         If the user is authenticated, annotate with favorite info
         """
-        qs = super().get_queryset()
+        qs = super().get_queryset().prefetch_related("public_markets")
         if self.request.user.is_authenticated:
             qs = qs.with_in_user_favorite_list_stats(self.request.user)
         return qs
