@@ -196,7 +196,7 @@ class SiaeFilterForm(forms.Form):
     favorite_list = forms.ModelChoiceField(
         queryset=FavoriteList.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
     )
-    local = forms.CharField(required=False, widget=forms.HiddenInput())
+    local = forms.BooleanField(required=False, widget=forms.HiddenInput())
 
     def __init__(self, advanced_search=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -343,14 +343,11 @@ class SiaeFilterForm(forms.Form):
         if favorite_list:
             qs = qs.filter(favorite_lists__in=[favorite_list])
 
-        super_badge = self.cleaned_data.get("super_badge", None)
-        if super_badge in (True, "True"):
+        if self.cleaned_data.get("super_badge", None):
             qs = qs.filter(super_badge=True)
 
-        local = self.cleaned_data.get("local", None)
-        if local in (True, "True", "true", "1"):
-            perimeters = self.cleaned_data.get("perimeters", None)
-            if perimeters:
+        if self.cleaned_data.get("local"):
+            if perimeters := self.cleaned_data.get("perimeters", None):
                 qs = qs.with_is_local(perimeters[0]).filter(is_local=True)
 
         # avoid duplicates
