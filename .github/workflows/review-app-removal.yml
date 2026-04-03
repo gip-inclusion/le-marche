@@ -12,13 +12,17 @@ env:
   CLEVER_CLI: clever-tools-latest_linux/clever
   CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
   CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
-  REVIEW_APPS_ORGANIZATION_NAME: ${{ secrets.CLEVER_REVIEW_APPS_ORG }}
+  CLEVER_ORG_ID: ${{ secrets.CLEVER_REVIEW_APPS_ORG }}
   BRANCH: ${{ github.head_ref }}
+
 
 jobs:
   delete:
     runs-on: ubuntu-latest
-    if: github.event.label.name == 'recette-jetable' || contains( github.event.pull_request.labels.*.name, 'recette-jetable')
+    if: >
+      (github.event.action == 'unlabeled' && github.event.label.name == 'recette-jetable')
+      || (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'recette-jetable'))
+    permissions: {}
 
     steps:
     - name: 📥 Checkout to the PR branch
@@ -26,7 +30,7 @@ jobs:
 
     - name: 🏷 Set review app name
       run:
-        echo "REVIEW_APP_NAME=`echo \"c4-review-$BRANCH\" | sed -r 's/[-;\\/._]+/-/g'`" >> $GITHUB_ENV
+        echo "REVIEW_APP_NAME=`echo \"c4-review-$BRANCH\" | sed -r 's/[^[:alnum:]-]+/-/g' | head -c 63 | tr '[:upper:]' '[:lower:]'`" >> $GITHUB_ENV
 
     - name: 🏷 Set database addon name
       run:
@@ -36,8 +40,14 @@ jobs:
       run: |
         curl $CLEVER_TOOLS_DOWNLOAD_URL > $CLEVER_TAR_FILE
         tar -xvf $CLEVER_TAR_FILE
+        echo "Clever CLI version: $($CLEVER_CLI version)"
         $CLEVER_CLI login --token $CLEVER_TOKEN --secret $CLEVER_SECRET
-        $CLEVER_CLI link $REVIEW_APP_NAME --org $REVIEW_APPS_ORGANIZATION_NAME
+        $CLEVER_CLI link $REVIEW_APP_NAME --org $CLEVER_ORG_ID
+
+    - name: 💂 Install Python
+      uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
+      with:
+        enable-cache: true
 
     - name: 🗑 Delete the review app
       run: |
@@ -45,4 +55,4 @@ jobs:
 
     - name: 🗑 Delete the review app database
       run: |
-        $CLEVER_CLI addon delete $REVIEW_APP_DB_NAME --org $REVIEW_APPS_ORGANIZATION_NAME --yes
+        $CLEVER_CLI addon delete $REVIEW_APP_DB_NAME --org $CLEVER_ORG_ID --yes
