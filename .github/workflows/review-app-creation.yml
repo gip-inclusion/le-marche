@@ -9,22 +9,23 @@ on:
   pull_request:
     types: [ labeled, synchronize ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}-${{ github.event.pull_request.number || github.sha }}
+
 env:
   CLEVER_TOOLS_DOWNLOAD_URL: https://clever-tools.clever-cloud.com/releases/latest/clever-tools-latest_linux.tar.gz
   CLEVER_TAR_FILE: clever-tools-latest_linux.tar.gz
   CLEVER_CLI: clever-tools-latest_linux/clever
   CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
   CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
-  REVIEW_APPS_ORGANIZATION_NAME: ${{ secrets.CLEVER_REVIEW_APPS_ORG }}
-  CONFIGURATION_ADDON: ${{ secrets.CLEVER_REVIEW_APPS_CONFIGURATION_ADDON }}
-  S3_ADDON: ${{ secrets.CLEVER_REVIEW_APPS_S3_ADDON }}
+  CLEVER_ORG_ID: ${{ secrets.CLEVER_REVIEW_APPS_ORG }}
   BRANCH: ${{ github.head_ref }}
-  PYTHON_VERSION: "3.13"
-
 
 jobs:
   create:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     if: github.event.action == 'labeled' && github.event.label.name == 'recette-jetable'
 
     steps:
@@ -39,51 +40,64 @@ jobs:
     # Environment variables
     - name: 🏷 Set review app name
       run:
-        echo "REVIEW_APP_NAME=`echo \"c4-review-$BRANCH\" | sed -r 's/[-;\\/._]+/-/g'`" >> $GITHUB_ENV
+        # The review name can be used as a subdomain for some service (URL, S3, etc)
+        # so we limit to the first 63 characters as it's the maximum length of a
+        # domain label (part of domain name separated by dot).
+        # https://datatracker.ietf.org/doc/html/rfc1035#section-2.3.4
+        # The review name is also used as bucket name for S3 which has to be lowercase
+        # https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-bucket-naming-rules.html
+        echo "REVIEW_APP_NAME=`echo \"c4-review-$BRANCH\" | sed -r 's/[^[:alnum:]-]+/-/g' | head -c 63 | tr '[:upper:]' '[:lower:]'`" >> $GITHUB_ENV
 
     - name: 🏷 Set database addon name
       run:
         echo "REVIEW_APP_DB_NAME=`echo $REVIEW_APP_NAME | sed -r 's/-/_/g'`" >> $GITHUB_ENV
 
     - name: 🏷 Set deploy url
-      run: |
-        echo "DEPLOY_URL=`echo \"$REVIEW_APP_NAME.cleverapps.io\"`" >> $GITHUB_ENV
-        echo "ALLOWED_HOSTS=`echo \"$REVIEW_APP_NAME.cleverapps.io\"`" >> $GITHUB_ENV
+      run:
+        echo "DEPLOY_URL=`echo \"${REVIEW_APP_NAME}.cleverapps.io\"`" >> $GITHUB_ENV
     # End of environment variables
 
     - name: 🧫 Create a review app on Clever Cloud
       run: |
         curl $CLEVER_TOOLS_DOWNLOAD_URL > $CLEVER_TAR_FILE
         tar -xvf $CLEVER_TAR_FILE
+        echo "Clever CLI version: $($CLEVER_CLI version)"
         $CLEVER_CLI login --token $CLEVER_TOKEN --secret $CLEVER_SECRET
-        # Create a new application on Clever Cloud.
-        # -t: application type (Python).
-        # --org: organization name.
-        # --region: server location ("par" means Paris).
-        # --alias: custom application name, used to find it with the CLI.
-        $CLEVER_CLI create $REVIEW_APP_NAME -t python --org $REVIEW_APPS_ORGANIZATION_NAME --region par --alias $REVIEW_APP_NAME
-        # Force Python version through env, because its default is not accurate and environment variables
-        # have precedence over configuration addons
-        $CLEVER_CLI env set CC_PYTHON_VERSION ${{ env.PYTHON_VERSION }} --alias $REVIEW_APP_NAME
+        $CLEVER_CLI create $REVIEW_APP_NAME -t python --org $CLEVER_ORG_ID --region par --alias $REVIEW_APP_NAME
         $CLEVER_CLI domain add $DEPLOY_URL --alias $REVIEW_APP_NAME
 
     - name: 🗃 Create database addon
       run: |
-        $CLEVER_CLI addon create postgresql-addon $REVIEW_APP_DB_NAME --org $REVIEW_APPS_ORGANIZATION_NAME --plan xxs_sml --yes
+        $CLEVER_CLI addon create postgresql-addon $REVIEW_APP_DB_NAME --org $CLEVER_ORG_ID --plan xxs_sml --yes --addon-version 17 --option direct-host-only=true
         $CLEVER_CLI service link-addon $REVIEW_APP_DB_NAME
 
-    - name: 🤝 Link S3 addon
+    - name: 🤝 Link addons & add environment variables
       run: |
-        $CLEVER_CLI service link-addon $S3_ADDON
+        $CLEVER_CLI env set DEPLOY_URL $DEPLOY_URL
+        $CLEVER_CLI service link-addon c4-s3
+        $CLEVER_CLI service link-addon c4-review-config
+        # CC_PYTHON_VERSION=3 is set by default when creating the app
+        # but we want to use the one from c4-review-config
+        $CLEVER_CLI env rm CC_PYTHON_VERSION
 
-    - name: 🗺 Add environment variables to the review app
-      run: |
-        $CLEVER_CLI service link-addon $CONFIGURATION_ADDON
-        $CLEVER_CLI env import-vars REVIEW_APP_DB_NAME
-        $CLEVER_CLI env import-vars DEPLOY_URL
+    - name: 💂 Install Python
+      uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v5
+      with:
+        python-version: "3.13"
 
     - name: 🚀 Deploy to Clever Cloud
-      run: $CLEVER_CLI deploy --branch $BRANCH --force
+      timeout-minutes: 15
+      run: |
+        until $CLEVER_CLI env | grep --quiet POSTGRESQL_ADDON_DIRECT_PORT
+        do
+          echo "Waiting for POSTGRESQL_ADDON_DIRECT_HOST/PORT env variables to be available"
+          sleep 1
+        done
+        scripts/clever-deploy --clever-cli "$CLEVER_CLI" --branch "$BRANCH" --app-alias "$REVIEW_APP_NAME"
+
+    - name: ⏭ Skip fixtures
+      run:
+        $CLEVER_CLI env set SKIP_FIXTURES true
 
     - name: 🍻 Add link to pull request
       run: gh pr comment ${{ github.event.pull_request.number }} --body "🥁 La recette jetable est prête ! [👉 Je veux tester cette PR !](https://${{ env.DEPLOY_URL }})"
@@ -92,6 +106,7 @@ jobs:
 
   redeploy:
     runs-on: ubuntu-latest
+    permissions: {}
     # A push event targets a new deployment.
     if: github.event.action == 'synchronize' && contains( github.event.pull_request.labels.*.name, 'recette-jetable')
 
@@ -106,18 +121,21 @@ jobs:
 
     - name: 🏷 Set review app name
       run:
-        echo "REVIEW_APP_NAME=`echo \"c4-review-$BRANCH\" | sed -r 's/[-;\\/._]+/-/g'`" >> $GITHUB_ENV
+        echo "REVIEW_APP_NAME=`echo \"c4-review-$BRANCH\" | sed -r 's/[^[:alnum:]-]+/-/g' | head -c 63 | tr '[:upper:]' '[:lower:]'`" >> $GITHUB_ENV
 
     - name: 🤝 Find the application on Clever Cloud
       run: |
         curl $CLEVER_TOOLS_DOWNLOAD_URL > $CLEVER_TAR_FILE
         tar -xvf $CLEVER_TAR_FILE
+        echo "Clever CLI version: $($CLEVER_CLI version)"
         $CLEVER_CLI login --token $CLEVER_TOKEN --secret $CLEVER_SECRET
-        $CLEVER_CLI link $REVIEW_APP_NAME --org $REVIEW_APPS_ORGANIZATION_NAME
+        $CLEVER_CLI link $REVIEW_APP_NAME --org $CLEVER_ORG_ID
 
-    - name: ⏭ Skip fixtures
-      run:
-        $CLEVER_CLI env set SKIP_FIXTURES true
+    - name: 💂 Install Python
+      uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v5
+      with:
+        python-version: "3.13"
 
     - name: 🚀 Deploy to Clever Cloud
-      run: $CLEVER_CLI deploy --branch $BRANCH --force
+      timeout-minutes: 15
+      run: scripts/clever-deploy --clever-cli "$CLEVER_CLI" --branch "$BRANCH" --app-alias "$REVIEW_APP_NAME"
