@@ -16,7 +16,9 @@ class InclusivePotentialView(APIView):
         perimeter = serializer.validated_data.get("perimeter")
         budget = serializer.validated_data.get("budget")
         france_entiere = serializer.validated_data.get("france_entiere", False)
-        potential_data, analysis_data = get_inclusive_potential_data(sector, perimeter, budget, france_entiere=france_entiere)
+        potential_data, analysis_data = get_inclusive_potential_data(
+            sector, perimeter, budget, france_entiere=france_entiere
+        )
 
         data = {
             "sector_name": sector.name,

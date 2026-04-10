@@ -10,9 +10,8 @@ Usage:
     python manage.py sync_siaes_decp --limit 100   # limiter pour tester
 """
 
-from datetime import timedelta
-
 import time
+from datetime import timedelta
 
 import requests
 from django.conf import settings
@@ -75,11 +74,13 @@ class Command(BaseCommand):
         siaes = list(siaes_qs)
         total = len(siaes)
 
-        self.stdout_messages_info([
-            "Synchronisation DECP...",
-            f"Date limite : {date_limit}",
-            f"{total} SIAEs à traiter",
-        ])
+        self.stdout_messages_info(
+            [
+                "Synchronisation DECP...",
+                f"Date limite : {date_limit}",
+                f"{total} SIAEs à traiter",
+            ]
+        )
 
         siaes_to_update = []
         success_count = 0

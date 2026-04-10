@@ -225,9 +225,7 @@ class InclusivePotentialViewTests(TestCase):
         activity_zones = SiaeActivityFactory(siae=siae_zones, sector=specific_sector, with_zones_perimeter=True)
         activity_zones.locations.set([self.perimeter_department])
 
-        response = self.authenticated_client.get(
-            self.url, {"sector": specific_sector.slug, "france_entiere": "true"}
-        )
+        response = self.authenticated_client.get(self.url, {"sector": specific_sector.slug, "france_entiere": "true"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(response.data["france_entiere"])
