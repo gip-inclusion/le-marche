@@ -389,7 +389,9 @@ class SiaeQuerySet(NexusQuerySetMixin, models.QuerySet):
 
         # Subquery to filter SiaeActivity by sector and perimeter
         siae_activity_subquery = (
-            SiaeActivity.objects.filter_for_potential_through_activities(sector, perimeter, france_entiere=france_entiere)
+            SiaeActivity.objects.filter_for_potential_through_activities(
+                sector, perimeter, france_entiere=france_entiere
+            )
             .filter(siae=OuterRef("pk"))
             .values("pk")
         )
@@ -839,9 +841,7 @@ class Siae(NexusModelMixin, models.Model):
     has_won_contract_last_3_years = models.BooleanField(
         "A remporté un marché public ces 3 dernières années (DECP)", default=False
     )
-    decp_last_sync_date = models.DateTimeField(
-        "Date de dernière synchronisation (DECP)", blank=True, null=True
-    )
+    decp_last_sync_date = models.DateTimeField("Date de dernière synchronisation (DECP)", blank=True, null=True)
 
     c1_id = models.IntegerField(blank=True, null=True)
     c4_id_old = models.IntegerField(blank=True, null=True)
