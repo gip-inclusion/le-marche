@@ -109,11 +109,13 @@ class Command(BaseCommand):
         siaes = list(siaes_qs)
         total = len(siaes)
 
-        self.stdout_messages_info([
-            "Synchronisation des détails DECP...",
-            f"Date limite : {date_limit}",
-            f"{total} SIAEs à traiter",
-        ])
+        self.stdout_messages_info(
+            [
+                "Synchronisation des détails DECP...",
+                f"Date limite : {date_limit}",
+                f"{total} SIAEs à traiter",
+            ]
+        )
 
         success_count = 0
         created_count = 0

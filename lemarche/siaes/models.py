@@ -1776,9 +1776,7 @@ class SiaePublicMarket(models.Model):
     market_uid = models.CharField(verbose_name="Identifiant du marché (uid DECP)", max_length=255)
     buyer_name = models.CharField(verbose_name="Acheteur", max_length=500, blank=True)
     market_object = models.TextField(verbose_name="Objet du marché", blank=True)
-    amount = models.DecimalField(
-        verbose_name="Montant", max_digits=14, decimal_places=2, null=True, blank=True
-    )
+    amount = models.DecimalField(verbose_name="Montant", max_digits=14, decimal_places=2, null=True, blank=True)
     award_date = models.DateField(verbose_name="Date d'attribution", null=True, blank=True)
     source_date_type = models.CharField(
         verbose_name="Source de la date",
