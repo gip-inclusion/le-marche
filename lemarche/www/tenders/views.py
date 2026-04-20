@@ -12,8 +12,8 @@ from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.db.models import OuterRef, Prefetch, Subquery
 from django.forms import formset_factory
-from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect
+from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
@@ -55,6 +55,7 @@ from lemarche.www.tenders.forms import (
     TenderCreateStepConfirmationForm,
     TenderCreateStepContactForm,
     TenderCreateStepDetailForm,
+    SiaeNudgeFieldForm,
     TenderCreateStepGeneralForm,
     TenderCreateStepSurveyForm,
     TenderDetailGetParams,
@@ -492,6 +493,24 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
             )
 
             if user.kind == User.KIND_SIAE:
+                # Nudge module: show once every 30 days if siae data is incomplete/stale
+                from lemarche.siaes.utils import get_nudge_fields
+
+                nudge_siae = user.siaes.first()
+                if nudge_siae and nudge_siae.should_show_nudge():
+                    nudge_fields = get_nudge_fields(nudge_siae)
+                    context["show_nudge"] = True
+                    context["nudge_siae"] = nudge_siae
+                    context["nudge_fields"] = nudge_fields
+                    context["nudge_initial_form"] = SiaeNudgeFieldForm(
+                        initial={
+                            "siae_slug": nudge_siae.slug,
+                            "field_name": nudge_fields[0]["field"] if nudge_fields else "",
+                            "step_index": 0,
+                            "total_steps": len(nudge_fields),
+                        }
+                    )
+
                 # Interested Siae count
                 interested_count = TenderSiae.objects.filter(
                     tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False
@@ -1151,3 +1170,110 @@ class TenderReminderView(TenderAuthorOrAdminRequiredMixin, SuccessMessageMixin, 
         )
 
         return super().form_valid(form)
+
+
+class TenderSiaeNudgeDismissView(LoginRequiredMixin, View):
+    """
+    HTMX endpoint: record that the supplier dismissed the nudge module.
+    Sets nudge_last_seen_at to now() — suppresses the modal for 30 days.
+    """
+
+    def post(self, request, *args, **kwargs):
+        siae_slug = request.POST.get("siae_slug", "")
+        if not siae_slug or siae_slug not in request.user.siaes.values_list("slug", flat=True):
+            return HttpResponseForbidden()
+        Siae.objects.filter(slug=siae_slug).update(nudge_last_seen_at=timezone.now())
+        return HttpResponse("")
+
+
+class TenderSiaeNudgeUpdateView(LoginRequiredMixin, View):
+    """
+    HTMX endpoint: save one nudge field, return the next step fragment.
+    """
+
+    ALLOWED_INLINE_FIELDS = {
+        "contact_email",
+        "ca",
+        "employees_insertion_count",
+        "employees_permanent_count",
+    }
+
+    def post(self, request, *args, **kwargs):
+        from lemarche.siaes.utils import get_nudge_fields
+
+        siae_slug = request.POST.get("siae_slug", "")
+        if not siae_slug or siae_slug not in request.user.siaes.values_list("slug", flat=True):
+            return HttpResponseForbidden()
+
+        siae = get_object_or_404(Siae, slug=siae_slug)
+        form = SiaeNudgeFieldForm(request.POST)
+
+        if not form.is_valid():
+            nudge_fields = get_nudge_fields(siae)
+            step_index = int(request.POST.get("step_index", 0))
+            field_data = nudge_fields[step_index] if step_index < len(nudge_fields) else None
+            return render(
+                request,
+                "tenders/includes/siae_nudge_step.html",
+                {
+                    "siae": siae,
+                    "field": field_data,
+                    "form": form,
+                    "step_index": step_index,
+                    "total_steps": len(nudge_fields),
+                    "tender_slug": kwargs.get("slug"),
+                },
+            )
+
+        field_name = form.cleaned_data["field_name"]
+        field_value = form.cleaned_data["field_value"]
+        step_index = form.cleaned_data["step_index"]
+        total_steps = form.cleaned_data["total_steps"]
+
+        if field_name in self.ALLOWED_INLINE_FIELDS:
+            value_to_save = field_value if field_value != "" else None
+            Siae.objects.filter(slug=siae_slug).update(**{field_name: value_to_save})
+
+        nudge_fields = get_nudge_fields(siae)
+        next_index = step_index + 1
+        is_last = next_index >= total_steps
+
+        if is_last:
+            siae.nudge_last_seen_at = timezone.now()
+            siae.save(update_fields=["nudge_last_seen_at"])
+            return render(
+                request,
+                "tenders/includes/siae_nudge_step.html",
+                {
+                    "siae": siae,
+                    "field": None,
+                    "form": None,
+                    "step_index": next_index,
+                    "total_steps": total_steps,
+                    "tender_slug": kwargs.get("slug"),
+                    "is_confirmation": True,
+                },
+            )
+
+        next_field = nudge_fields[next_index] if next_index < len(nudge_fields) else None
+        next_form = SiaeNudgeFieldForm(
+            initial={
+                "siae_slug": siae_slug,
+                "field_name": next_field["field"] if next_field else "",
+                "step_index": next_index,
+                "total_steps": total_steps,
+            }
+        )
+        return render(
+            request,
+            "tenders/includes/siae_nudge_step.html",
+            {
+                "siae": siae,
+                "field": next_field,
+                "form": next_form,
+                "step_index": next_index,
+                "total_steps": total_steps,
+                "tender_slug": kwargs.get("slug"),
+                "is_confirmation": False,
+            },
+        )

@@ -1,0 +1,64 @@
+{% load i18n %}
+{% if is_confirmation %}
+<div class="fr-alert fr-alert--success fr-mt-2w" role="status">
+    <p class="fr-alert__title">Merci ! Vos informations ont été mises à jour.</p>
+</div>
+{% elif field %}
+<form hx-post="{% url 'tenders:nudge-update-field' tender_slug %}"
+      hx-target="#nudge-step-container"
+      hx-swap="innerHTML">
+    {% csrf_token %}
+    <input type="hidden" name="siae_slug" value="{{ siae.slug }}">
+    <input type="hidden" name="field_name" value="{{ field.field }}">
+    <input type="hidden" name="step_index" value="{{ step_index }}">
+    <input type="hidden" name="total_steps" value="{{ total_steps }}">
+
+    <p class="fr-text--sm fr-mb-1w fr-hint-text">Étape {{ step_index|add:1 }} / {{ total_steps }}</p>
+
+    {% if field.inline %}
+        <div class="fr-input-group {% if form.field_value.errors %}fr-input-group--error{% endif %}">
+            <label class="fr-label" for="nudge_field_value">
+                {{ field.label }}
+            </label>
+            {% if field.type == "email" %}
+                <input class="fr-input {% if form.field_value.errors %}fr-input--error{% endif %}"
+                       type="email"
+                       id="nudge_field_value"
+                       name="field_value"
+                       value="{{ field.value }}">
+            {% else %}
+                <input class="fr-input {% if form.field_value.errors %}fr-input--error{% endif %}"
+                       type="number"
+                       min="0"
+                       id="nudge_field_value"
+                       name="field_value"
+                       value="{{ field.value }}">
+            {% endif %}
+            {% if form.field_value.errors %}
+                <p class="fr-error-text">{{ form.field_value.errors|join:" " }}</p>
+            {% endif %}
+        </div>
+        {% if step_index|add:1 == total_steps %}
+            <button type="submit" class="fr-btn fr-mt-2w">Valider</button>
+        {% else %}
+            <button type="submit" class="fr-btn fr-mt-2w">Suivant</button>
+        {% endif %}
+    {% else %}
+        <p class="fr-mb-2w">
+            <strong>{{ field.label }}</strong> — cette information n'est pas encore renseignée.
+        </p>
+        <a href="{% url 'dashboard_siaes:siae_edit_info' siae.slug %}"
+           class="fr-btn fr-btn--secondary fr-mt-1w"
+           target="_blank">
+            Compléter dans mon tableau de bord
+        </a>
+        <div class="fr-mt-2w">
+            {% if step_index|add:1 == total_steps %}
+                <button type="submit" name="field_value" value="" class="fr-btn fr-btn--sm">Valider</button>
+            {% else %}
+                <button type="submit" name="field_value" value="" class="fr-btn fr-btn--sm">Suivant</button>
+            {% endif %}
+        </div>
+    {% endif %}
+</form>
+{% endif %}
