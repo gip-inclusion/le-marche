@@ -75,6 +75,7 @@ class SiaeFilterForm(forms.Form):
         "legal_form",
         "employees",
         "labels",
+        "super_badge",
     ]
 
     sectors = GroupedModelMultipleChoiceField(
@@ -168,6 +169,12 @@ class SiaeFilterForm(forms.Form):
         widget=CustomSelectMultiple(),
     )
 
+    super_badge = forms.ChoiceField(
+        label="Super prestataire inclusif",
+        choices=[("", ""), ("True", "Oui")],
+        required=False,
+    )
+
     company_client_reference = forms.CharField(
         label="Indiquez le nom de votre entreprise",
         required=False,
@@ -189,6 +196,7 @@ class SiaeFilterForm(forms.Form):
     favorite_list = forms.ModelChoiceField(
         queryset=FavoriteList.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
     )
+    local = forms.BooleanField(required=False, widget=forms.HiddenInput())
 
     def __init__(self, advanced_search=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -334,6 +342,13 @@ class SiaeFilterForm(forms.Form):
         favorite_list = self.cleaned_data.get("favorite_list", None)
         if favorite_list:
             qs = qs.filter(favorite_lists__in=[favorite_list])
+
+        if self.cleaned_data.get("super_badge", None):
+            qs = qs.filter(super_badge=True)
+
+        if self.cleaned_data.get("local"):
+            if perimeters := self.cleaned_data.get("perimeters", None):
+                qs = qs.with_is_local(perimeters[0]).filter(is_local=True)
 
         # avoid duplicates
         qs = qs.distinct()
