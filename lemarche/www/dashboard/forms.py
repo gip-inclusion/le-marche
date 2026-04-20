@@ -1,6 +1,8 @@
 from django import forms
+from django.forms import formset_factory
 
 from lemarche.conversations.models import DisabledEmail, EmailGroup
+from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.users.models import User
 from lemarche.utils.emails import update_contact_email_blacklisted
@@ -74,3 +76,67 @@ class DisabledEmailEditForm(forms.Form):
         DisabledEmail.objects.exclude(pk__in=[de.pk for de in disabled_emails]).delete()
 
         update_contact_email_blacklisted(self.user.email, disabled_emails_marketing)
+
+
+class PurchaseProjectForm(forms.Form):
+    titre = forms.CharField(
+        label="Titre du projet d'achat",
+        max_length=255,
+        widget=forms.TextInput(attrs={"class": "fr-input", "placeholder": "Ex : Prestations de nettoyage"}),
+    )
+    description = forms.CharField(
+        label="Description (optionnelle)",
+        required=False,
+        widget=forms.Textarea(attrs={"class": "fr-input", "rows": 2, "placeholder": "Décrivez brièvement le besoin"}),
+    )
+    secteur = forms.ModelChoiceField(
+        label="Secteur d'achat",
+        queryset=Sector.objects.form_filter_queryset(),
+        to_field_name="slug",
+        empty_label="Sélectionnez un secteur",
+        widget=forms.Select(attrs={"class": "fr-select"}),
+    )
+    montant = forms.IntegerField(
+        label="Montant estimatif (€)",
+        required=False,
+        min_value=0,
+        widget=forms.NumberInput(attrs={"class": "fr-input", "placeholder": "Ex : 80000"}),
+    )
+    perimeter_slug = forms.CharField(
+        label="Périmètre géographique",
+        required=False,
+        widget=forms.HiddenInput(),
+    )
+    france_entiere = forms.BooleanField(
+        label="Toute la France (structures à couverture nationale)",
+        required=False,
+        widget=forms.CheckboxInput(attrs={"class": "fr-checkbox-group__input"}),
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        perimeter_slug = cleaned_data.get("perimeter_slug")
+        france_entiere = cleaned_data.get("france_entiere")
+
+        if france_entiere and perimeter_slug:
+            raise forms.ValidationError(
+                "Veuillez sélectionner soit un périmètre géographique, soit \"Toute la France\", pas les deux."
+            )
+        if not france_entiere and not perimeter_slug:
+            raise forms.ValidationError(
+                "Le périmètre géographique est obligatoire. Sélectionnez une zone ou choisissez \"Toute la France\"."
+            )
+
+        if perimeter_slug:
+            try:
+                Perimeter.objects.get(slug=perimeter_slug)
+            except Perimeter.DoesNotExist:
+                self.add_error(
+                    "perimeter_slug",
+                    f"Le périmètre géographique '{perimeter_slug}' n'est pas reconnu.",
+                )
+
+        return cleaned_data
+
+
+PurchaseProjectFormSet = formset_factory(PurchaseProjectForm, extra=0)

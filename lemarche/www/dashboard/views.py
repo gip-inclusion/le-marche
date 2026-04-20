@@ -1,20 +1,32 @@
+import logging
+
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpResponse
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.text import slugify
+from django.views import View
 from django.views.generic import DetailView, FormView, UpdateView
 from django_filters.views import FilterView
 
 from content_manager.models import ContentPage, Tag
+from lemarche.api.inclusive_potential.utils import get_inclusive_potential_data
 from lemarche.cms.models import ArticleList
+from lemarche.perimeters.models import Perimeter
 from lemarche.purchases.models import Purchase
+from lemarche.sectors.models import Sector
 from lemarche.siaes.constants import KIND_HANDICAP_LIST, KIND_INSERTION_LIST, LEGAL_FORM_CHOICES
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.www.dashboard.filters import PurchaseFilterSet
-from lemarche.www.dashboard.forms import DisabledEmailEditForm, ProfileEditForm
+from lemarche.www.dashboard.forms import DisabledEmailEditForm, ProfileEditForm, PurchaseProjectFormSet
+
+
+logger = logging.getLogger(__name__)
 
 
 SLUG_RESSOURCES_CAT_SIAES = "solutions"
@@ -294,3 +306,129 @@ class DisabledEmailEditView(LoginRequiredMixin, SuccessMessageMixin, FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+
+
+def _analyze_purchase_project(titre: str, sector: Sector, perimeter: Perimeter | None, budget: int | None) -> dict:
+    """Run the inclusive potential analysis for a single purchase project."""
+    try:
+        potential_data, analysis_data = get_inclusive_potential_data(sector, perimeter, budget)
+    except Exception:
+        logger.exception("Erreur lors de l'analyse du potentiel inclusif pour '%s'", titre)
+        return {
+            "titre": titre,
+            "error": "Une erreur technique s'est produite lors de l'analyse. Veuillez réessayer.",
+        }
+
+    result = {
+        "titre": titre,
+        "secteur_name": sector.name,
+        "perimeter_name": perimeter.name if perimeter else "Toute la France",
+        "montant": budget,
+        "potential_siaes": potential_data.potential_siaes,
+        "insertion_siaes": potential_data.insertion_siaes,
+        "handicap_siaes": potential_data.handicap_siaes,
+        "local_siaes": potential_data.local_siaes,
+        "siaes_with_super_badge": potential_data.siaes_with_super_badge,
+        "employees_insertion_average": potential_data.employees_insertion_average,
+        "employees_permanent_average": potential_data.employees_permanent_average,
+        "ca_average": None,
+        "eco_dependency": None,
+        "recommendation_title": None,
+        "recommendation_response": None,
+        "error": None,
+    }
+
+    if budget and "recommendation" in analysis_data:
+        result["ca_average"] = analysis_data.get("ca_average")
+        result["eco_dependency"] = analysis_data.get("eco_dependency")
+        recommendation = analysis_data["recommendation"]
+        result["recommendation_title"] = recommendation.get("title")
+        result["recommendation_response"] = recommendation.get("response")
+
+    return result
+
+
+class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
+    template_name = "dashboard/inclusive_potential_analysis.html"
+
+    def _get_context(self, formset=None, results=None, mode="manual"):
+        return {
+            "sectors": list(Sector.objects.form_filter_queryset()),
+            "formset": formset or PurchaseProjectFormSet(prefix="form"),
+            "results": results,
+            "mode": mode,
+        }
+
+    def get(self, request):
+        return render(request, self.template_name, self._get_context())
+
+    def post(self, request):
+        mode = request.POST.get("mode", "manual")
+        if mode == "excel":
+            # Excel import — implemented in Phase 4 (US2)
+            return render(request, self.template_name, self._get_context(mode="excel"))
+        return self._handle_manual_form(request)
+
+    def _handle_manual_form(self, request):
+        formset = PurchaseProjectFormSet(request.POST, prefix="form")
+        if not formset.is_valid():
+            return render(
+                request,
+                self.template_name,
+                self._get_context(formset=formset, mode="manual"),
+            )
+
+        results = []
+        for form in formset:
+            if not form.cleaned_data:
+                continue
+            titre = form.cleaned_data["titre"]
+            sector = form.cleaned_data["secteur"]
+            montant = form.cleaned_data.get("montant")
+            perimeter_slug = form.cleaned_data.get("perimeter_slug")
+            france_entiere = form.cleaned_data.get("france_entiere", False)
+
+            perimeter = None
+            if perimeter_slug and not france_entiere:
+                try:
+                    perimeter = Perimeter.objects.get(slug=perimeter_slug)
+                except Perimeter.DoesNotExist:
+                    results.append({"titre": titre, "error": f"Périmètre '{perimeter_slug}' introuvable."})
+                    continue
+
+            result = _analyze_purchase_project(titre, sector, perimeter, montant)
+            results.append(result)
+
+        return render(
+            request,
+            self.template_name,
+            self._get_context(formset=formset, results=results, mode="manual"),
+        )
+
+
+@login_required
+def inclusive_potential_excel_template(request):
+    """Generate and return a pre-formatted Excel template for batch import."""
+    import io
+
+    import openpyxl
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Projets d'achat"
+
+    headers = ["titre", "description", "secteur", "montant", "perimetre_geographique"]
+    ws.append(headers)
+    ws.append(["Prestations de nettoyage", "Nettoyage de bureaux", "nettoyage", 80000, "paris"])
+    ws.append(["Fourniture de textiles professionnels", "Vêtements de travail pour agents", "textile", 45000, "ile-de-france"])
+
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+
+    response = HttpResponse(
+        buffer.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response["Content-Disposition"] = 'attachment; filename="modele_analyse_potentiel_inclusif.xlsx"'
+    return response
