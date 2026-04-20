@@ -997,6 +997,15 @@ class Siae(NexusModelMixin, models.Model):
     def is_live(self) -> bool:
         return self.is_active and not self.is_delisted
 
+    def should_show_nudge(self) -> bool:
+        from datetime import timedelta
+
+        from lemarche.siaes.utils import get_nudge_fields
+
+        if self.nudge_last_seen_at and self.nudge_last_seen_at >= timezone.now() - timedelta(days=30):
+            return False
+        return len(get_nudge_fields(self)) > 0
+
     @property
     def kind_is_esat_or_ea_or_eatt(self) -> bool:
         return self.kind in [siae_constants.KIND_ESAT, siae_constants.KIND_EA, siae_constants.KIND_EATT]
