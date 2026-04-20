@@ -893,6 +893,10 @@ class Siae(NexusModelMixin, models.Model):
 
     history = HistoricalRecords()
 
+    nudge_last_seen_at = models.DateTimeField(
+        verbose_name="Date du dernier nudge de mise à jour de fiche", blank=True, null=True
+    )
+
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
 
