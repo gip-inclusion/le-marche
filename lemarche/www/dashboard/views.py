@@ -323,7 +323,7 @@ def _analyze_purchase_project(titre: str, sector: Sector, perimeter: Perimeter |
         "titre": titre,
         "secteur_name": sector.name,
         "perimeter_name": perimeter.name if perimeter else "Toute la France",
-        "montant": budget,
+        "montant": f"{budget:,}".replace(",", " ") if budget else None,
         "potential_siaes": potential_data.potential_siaes,
         "insertion_siaes": potential_data.insertion_siaes,
         "handicap_siaes": potential_data.handicap_siaes,

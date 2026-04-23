@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load static process_dict dsfr_tags humanize %}
+{% load static process_dict dsfr_tags %}
 
 {% block page_title %}Analyser le potentiel inclusif d'une programmation achat{{ block.super }}{% endblock page_title %}
 
@@ -356,7 +356,7 @@
                                         <td>{{ result.titre }}</td>
                                         <td>{{ result.secteur_name }}</td>
                                         <td>{{ result.perimeter_name }}</td>
-                                        <td>{% if result.montant %}{{ result.montant|intcomma }} €{% else %}—{% endif %}</td>
+                                        <td>{% if result.montant %}{{ result.montant }} €{% else %}—{% endif %}</td>
                                         <td><strong>{{ result.potential_siaes }}</strong></td>
                                         <td>{{ result.insertion_siaes }}</td>
                                         <td>{{ result.handicap_siaes }}</td>
