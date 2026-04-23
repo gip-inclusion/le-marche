@@ -84,6 +84,15 @@
         border-radius: 0 0 8px 8px;
         padding: 1.5rem;
     }
+    .ipa-group-row {
+        cursor: pointer;
+        background: #f0f0fb;
+        user-select: none;
+    }
+    .ipa-group-row:hover { background: #e3e3fd; }
+    .ipa-group-row td { font-weight: 600; padding: 0.75rem 1rem !important; }
+    .ipa-group-chevron { float: right; color: #000091; font-size: 0.85rem; }
+    .ipa-detail-row td { padding-left: 2rem !important; background: #fafafe; }
 </style>
 
 <div class="fr-container fr-py-4w">
@@ -149,57 +158,50 @@
             <span class="fr-icon-building-line" aria-hidden="true"></span>
             Par secteur d'achat
         </h2>
-        <div class="fr-accordions-group fr-mb-5w">
-            {% for sector_name, sector_data in results_by_sector.items %}
-            <section class="fr-accordion">
-                <h3 class="fr-accordion__title">
-                    <button class="fr-accordion__btn" aria-expanded="false"
-                            aria-controls="acc-sector-{{ forloop.counter }}">
-                        <span style="flex:1; text-align:left;">
-                            <strong>{{ sector_name }}</strong>
-                            <span class="fr-ml-2w" style="font-weight:400; color:#666;">
+        <div style="overflow-x:auto;" class="fr-mb-5w">
+            <table class="fr-table fr-table--sm" aria-label="Analyse par secteur d'achat">
+                <thead><tr>
+                    <th>Titre du projet</th>
+                    <th>Périmètre</th>
+                    <th>Montant</th>
+                    <th>Structures potentielles</th>
+                    <th>Insertion</th>
+                    <th>Handicap</th>
+                    <th>Recommandation</th>
+                </tr></thead>
+                {% for sector_name, sector_data in results_by_sector.items %}
+                <tbody x-data="{ open: false }">
+                    <tr class="ipa-group-row" @click="open = !open">
+                        <td colspan="7">
+                            {{ sector_name }}
+                            <span style="font-weight:400; color:#555; margin-left:1rem;">
                                 {{ sector_data.project_count }} projet{{ sector_data.project_count|pluralize }}
-                                &nbsp;·&nbsp; <strong>{{ sector_data.total_structures }}</strong> structure{{ sector_data.total_structures|pluralize }} potentielle{{ sector_data.total_structures|pluralize }}
+                                &nbsp;·&nbsp; <strong>{{ sector_data.total_structures }}</strong>
+                                structure{{ sector_data.total_structures|pluralize }} potentielle{{ sector_data.total_structures|pluralize }}
                                 {% if sector_data.total_montant %}&nbsp;·&nbsp; {{ sector_data.total_montant }} €{% endif %}
                             </span>
-                        </span>
-                    </button>
-                </h3>
-                <div class="fr-collapse" id="acc-sector-{{ forloop.counter }}">
-                    <div style="overflow-x:auto; padding: 1rem 0;">
-                        <table class="fr-table fr-table--sm"
-                               aria-label="Projets du secteur {{ sector_name }}">
-                            <thead><tr>
-                                <th>Titre</th>
-                                <th>Périmètre</th>
-                                <th>Montant</th>
-                                <th>Structures</th>
-                                <th>Insertion</th>
-                                <th>Handicap</th>
-                                <th>Recommandation</th>
-                            </tr></thead>
-                            <tbody>
-                            {% for r in sector_data.projects %}
-                                <tr {% if r.error %}style="background:#fff5f5;"{% endif %}>
-                                    <td>{{ r.titre }}</td>
-                                    {% if r.error %}
-                                    <td colspan="6" style="color:#ce0500;">{{ r.error }}</td>
-                                    {% else %}
-                                    <td>{{ r.perimeter_name }}</td>
-                                    <td>{% if r.montant %}{{ r.montant }} €{% else %}—{% endif %}</td>
-                                    <td><strong>{{ r.potential_siaes }}</strong></td>
-                                    <td>{{ r.insertion_siaes }}</td>
-                                    <td>{{ r.handicap_siaes }}</td>
-                                    <td>{{ r.recommendation_title|default:"—" }}</td>
-                                    {% endif %}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-            {% endfor %}
+                            <span class="ipa-group-chevron" x-text="open ? '▲' : '▼'"></span>
+                        </td>
+                    </tr>
+                    {% for r in sector_data.projects %}
+                    <tr class="ipa-detail-row" x-show="open" x-cloak
+                        {% if r.error %}style="background:#fff5f5;"{% endif %}>
+                        <td>{{ r.titre }}</td>
+                        {% if r.error %}
+                        <td colspan="6" style="color:#ce0500;">{{ r.error }}</td>
+                        {% else %}
+                        <td>{{ r.perimeter_name }}</td>
+                        <td>{% if r.montant %}{{ r.montant }} €{% else %}—{% endif %}</td>
+                        <td><strong>{{ r.potential_siaes }}</strong></td>
+                        <td>{{ r.insertion_siaes }}</td>
+                        <td>{{ r.handicap_siaes }}</td>
+                        <td>{{ r.recommendation_title|default:"—" }}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                {% endfor %}
+            </table>
         </div>
 
         {# Agrégat par périmètre #}
@@ -207,57 +209,50 @@
             <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
             Par périmètre géographique
         </h2>
-        <div class="fr-accordions-group fr-mb-5w">
-            {% for perimeter_name, perimeter_data in results_by_perimeter.items %}
-            <section class="fr-accordion">
-                <h3 class="fr-accordion__title">
-                    <button class="fr-accordion__btn" aria-expanded="false"
-                            aria-controls="acc-perim-{{ forloop.counter }}">
-                        <span style="flex:1; text-align:left;">
-                            <strong>{{ perimeter_name }}</strong>
-                            <span class="fr-ml-2w" style="font-weight:400; color:#666;">
+        <div style="overflow-x:auto;" class="fr-mb-5w">
+            <table class="fr-table fr-table--sm" aria-label="Analyse par périmètre géographique">
+                <thead><tr>
+                    <th>Titre du projet</th>
+                    <th>Secteur</th>
+                    <th>Montant</th>
+                    <th>Structures potentielles</th>
+                    <th>Insertion</th>
+                    <th>Handicap</th>
+                    <th>Recommandation</th>
+                </tr></thead>
+                {% for perimeter_name, perimeter_data in results_by_perimeter.items %}
+                <tbody x-data="{ open: false }">
+                    <tr class="ipa-group-row" @click="open = !open">
+                        <td colspan="7">
+                            {{ perimeter_name }}
+                            <span style="font-weight:400; color:#555; margin-left:1rem;">
                                 {{ perimeter_data.project_count }} projet{{ perimeter_data.project_count|pluralize }}
-                                &nbsp;·&nbsp; <strong>{{ perimeter_data.total_structures }}</strong> structure{{ perimeter_data.total_structures|pluralize }} potentielle{{ perimeter_data.total_structures|pluralize }}
+                                &nbsp;·&nbsp; <strong>{{ perimeter_data.total_structures }}</strong>
+                                structure{{ perimeter_data.total_structures|pluralize }} potentielle{{ perimeter_data.total_structures|pluralize }}
                                 {% if perimeter_data.total_montant %}&nbsp;·&nbsp; {{ perimeter_data.total_montant }} €{% endif %}
                             </span>
-                        </span>
-                    </button>
-                </h3>
-                <div class="fr-collapse" id="acc-perim-{{ forloop.counter }}">
-                    <div style="overflow-x:auto; padding: 1rem 0;">
-                        <table class="fr-table fr-table--sm"
-                               aria-label="Projets du périmètre {{ perimeter_name }}">
-                            <thead><tr>
-                                <th>Titre</th>
-                                <th>Secteur</th>
-                                <th>Montant</th>
-                                <th>Structures</th>
-                                <th>Insertion</th>
-                                <th>Handicap</th>
-                                <th>Recommandation</th>
-                            </tr></thead>
-                            <tbody>
-                            {% for r in perimeter_data.projects %}
-                                <tr {% if r.error %}style="background:#fff5f5;"{% endif %}>
-                                    <td>{{ r.titre }}</td>
-                                    {% if r.error %}
-                                    <td colspan="6" style="color:#ce0500;">{{ r.error }}</td>
-                                    {% else %}
-                                    <td>{{ r.secteur_name }}</td>
-                                    <td>{% if r.montant %}{{ r.montant }} €{% else %}—{% endif %}</td>
-                                    <td><strong>{{ r.potential_siaes }}</strong></td>
-                                    <td>{{ r.insertion_siaes }}</td>
-                                    <td>{{ r.handicap_siaes }}</td>
-                                    <td>{{ r.recommendation_title|default:"—" }}</td>
-                                    {% endif %}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-            {% endfor %}
+                            <span class="ipa-group-chevron" x-text="open ? '▲' : '▼'"></span>
+                        </td>
+                    </tr>
+                    {% for r in perimeter_data.projects %}
+                    <tr class="ipa-detail-row" x-show="open" x-cloak
+                        {% if r.error %}style="background:#fff5f5;"{% endif %}>
+                        <td>{{ r.titre }}</td>
+                        {% if r.error %}
+                        <td colspan="6" style="color:#ce0500;">{{ r.error }}</td>
+                        {% else %}
+                        <td>{{ r.secteur_name }}</td>
+                        <td>{% if r.montant %}{{ r.montant }} €{% else %}—{% endif %}</td>
+                        <td><strong>{{ r.potential_siaes }}</strong></td>
+                        <td>{{ r.insertion_siaes }}</td>
+                        <td>{{ r.handicap_siaes }}</td>
+                        <td>{{ r.recommendation_title|default:"—" }}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                {% endfor %}
+            </table>
         </div>
 
     {# ══ Résultats manuels : cartes détaillées ══ #}
