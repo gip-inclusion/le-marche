@@ -51,17 +51,5 @@ fix:
 clean:
 	rm -r __pycache__/
 
-
-# Deployment
-# =============================================================================
-.PHONY: deploy_prod test
-
-deploy_prod: scripts/deploy_prod.sh
-	./scripts/deploy_prod.sh
-
 test:
 	$(ENV_SHELL_PREFIX) pytest --numprocesses=logical --create-db
-
-
-
-
