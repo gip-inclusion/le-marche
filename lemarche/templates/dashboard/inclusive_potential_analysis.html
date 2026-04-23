@@ -110,9 +110,9 @@
             <div class="fr-callout">
                 <p class="fr-callout__text">
                     Pour chaque projet d'achat, renseignez au minimum le <strong>titre</strong>, le
-                    <strong>secteur d'achat</strong>, un <strong>périmètre géographique</strong> et le
-                    <strong>montant estimatif</strong> (pour obtenir une recommandation). Vous pouvez saisir
-                    plusieurs projets.
+                    <strong>catégorie achat</strong>, un <strong>périmètre géographique</strong> et le
+                    <strong>montant estimatif</strong>. Vous pouvez saisir
+                    plusieurs projets d'achat.
                 </p>
             </div>
             {% endif %}
@@ -133,7 +133,7 @@
         <div class="fr-alert fr-alert--success fr-mb-3w">
             <p>
                 <strong>Analyse terminée !</strong>
-                {{ results|length }} projet{{ results|length|pluralize }} analysé{{ results|length|pluralize }} avec succès.
+                {{ results|length }} projet d'achat{{ results|length|pluralize }} analysé{{ results|length|pluralize }} avec succès.
                 {% if import_errors %}
                     <br><small>{{ import_errors|length }} ligne{{ import_errors|length|pluralize }} ignorée{{ import_errors|length|pluralize }} (voir détail ci-dessous).</small>
                 {% endif %}
@@ -156,12 +156,12 @@
         {# Agrégat par secteur #}
         <h2 class="fr-h4 fr-mb-2w">
             <span class="fr-icon-building-line" aria-hidden="true"></span>
-            Par secteur d'achat
+            Par catégorie achat
         </h2>
         <div style="overflow-x:auto;" class="fr-mb-5w">
-            <table class="fr-table fr-table--sm" aria-label="Analyse par secteur d'achat">
+            <table class="fr-table fr-table--sm" aria-label="Analyse par catégorie achat">
                 <thead><tr>
-                    <th>Titre du projet</th>
+                    <th>Titre du projet d'achat</th>
                     <th>Périmètre</th>
                     <th>Montant</th>
                     <th>Structures potentielles</th>
@@ -175,7 +175,7 @@
                         <td colspan="7">
                             {{ sector_name }}
                             <span style="font-weight:400; color:#555; margin-left:1rem;">
-                                {{ sector_data.project_count }} projet{{ sector_data.project_count|pluralize }}
+                                {{ sector_data.project_count }} projet d'achat{{ sector_data.project_count|pluralize }}
                                 &nbsp;·&nbsp; <strong>{{ sector_data.total_structures }}</strong>
                                 structure{{ sector_data.total_structures|pluralize }} potentielle{{ sector_data.total_structures|pluralize }}
                                 {% if sector_data.total_montant %}&nbsp;·&nbsp; {{ sector_data.total_montant }} €{% endif %}
@@ -212,8 +212,8 @@
         <div style="overflow-x:auto;" class="fr-mb-5w">
             <table class="fr-table fr-table--sm" aria-label="Analyse par périmètre géographique">
                 <thead><tr>
-                    <th>Titre du projet</th>
-                    <th>Secteur</th>
+                    <th>Titre du projet d'achat</th>
+                    <th>Catégorie achat</th>
                     <th>Montant</th>
                     <th>Structures potentielles</th>
                     <th>Insertion</th>
@@ -226,7 +226,7 @@
                         <td colspan="7">
                             {{ perimeter_name }}
                             <span style="font-weight:400; color:#555; margin-left:1rem;">
-                                {{ perimeter_data.project_count }} projet{{ perimeter_data.project_count|pluralize }}
+                                {{ perimeter_data.project_count }} projet d'achat{{ perimeter_data.project_count|pluralize }}
                                 &nbsp;·&nbsp; <strong>{{ perimeter_data.total_structures }}</strong>
                                 structure{{ perimeter_data.total_structures|pluralize }} potentielle{{ perimeter_data.total_structures|pluralize }}
                                 {% if perimeter_data.total_montant %}&nbsp;·&nbsp; {{ perimeter_data.total_montant }} €{% endif %}
@@ -517,13 +517,13 @@
 
                             <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle fr-mb-1w">
                                 <div class="fr-col">
-                                    <strong x-text="'Projet ' + (index + 1)"></strong>
+                                    <strong x-text="'Projet d\'achat ' + (index + 1)"></strong>
                                 </div>
                                 <div class="fr-col-auto" x-show="projects.length > 1">
                                     <button type="button"
                                             class="fr-btn fr-btn--tertiary fr-btn--sm fr-icon-delete-line"
                                             @click="removeProject(project.id)"
-                                            :aria-label="'Supprimer le projet ' + (index + 1)">
+                                            :aria-label="'Supprimer le projet d\'achat ' + (index + 1)">
                                         Supprimer
                                     </button>
                                 </div>
@@ -551,14 +551,14 @@
                                 <div class="fr-col-12 fr-col-md-6">
                                     <div class="fr-select-group">
                                         <label :for="'id_form-' + index + '-secteur'" class="fr-label">
-                                            Secteur d'achat
+                                            Catégorie achat
                                             <span class="fr-badge fr-badge--sm fr-badge--error">Obligatoire</span>
                                         </label>
                                         <select :id="'id_form-' + index + '-secteur'"
                                                 :name="'form-' + index + '-secteur'"
                                                 class="fr-select"
                                                 required>
-                                            <option value="">Sélectionnez un secteur</option>
+                                            <option value="">Sélectionnez une catégorie</option>
                                             {% regroup sectors by group.name as sector_groups %}
                                             {% for group in sector_groups %}
                                                 <optgroup label="{{ group.grouper }}">
@@ -576,16 +576,16 @@
                                     <div class="fr-input-group">
                                         <label :for="'id_form-' + index + '-montant'" class="fr-label">
                                             Montant estimatif (€)
-                                            <span class="fr-hint-text">
-                                                Recommandé pour obtenir une recommandation achat inclusif
-                                            </span>
+                                            <span class="fr-badge fr-badge--sm fr-badge--error">Obligatoire</span>
                                         </label>
                                         <input :id="'id_form-' + index + '-montant'"
                                                :name="'form-' + index + '-montant'"
                                                type="number"
                                                min="0"
+                                               step="1"
                                                class="fr-input"
-                                               placeholder="Ex : 80000">
+                                               placeholder="Ex : 80000"
+                                               required>
                                     </div>
                                 </div>
 
@@ -644,7 +644,7 @@
                     <button type="button"
                             class="fr-btn fr-btn--secondary fr-icon-add-line"
                             @click="addProject()">
-                        Ajouter un projet
+                        Ajouter un projet d'achat
                     </button>
                 </div>
                 <div class="fr-col-auto">
@@ -676,9 +676,9 @@
                     <h2 class="fr-h5">Analyser le potentiel inclusif de l'ensemble de votre programmation achat</h2>
                     <p>
                         Importez votre programmation achat au format Excel pour analyser simultanément
-                        des dizaines ou centaines de projets. Les résultats seront agrégés par
-                        <strong>secteur d'achat</strong> et par <strong>périmètre géographique</strong>,
-                        avec le détail de chaque projet accessible en un clic.
+                        des dizaines ou centaines de projets d'achat. Les résultats seront agrégés par
+                        <strong>catégorie achat</strong> et par <strong>périmètre géographique</strong>,
+                        avec le détail de chaque projet d'achat accessible en un clic.
                     </p>
                     <div class="fr-callout fr-mb-3w">
                         <p class="fr-callout__text">
@@ -686,7 +686,7 @@
                             <strong>titre</strong> (obligatoire),
                             <strong>secteur</strong> (slug obligatoire — voir onglet « Secteurs disponibles » du modèle),
                             <strong>perimetre_geographique</strong> (slug obligatoire ou <code>france_entiere</code>),
-                            <strong>montant</strong> (recommandé, en €),
+                            <strong>montant</strong> (obligatoire, en €),
                             <strong>description</strong> (optionnelle).
                         </p>
                     </div>

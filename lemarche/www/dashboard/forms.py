@@ -90,15 +90,15 @@ class PurchaseProjectForm(forms.Form):
         widget=forms.Textarea(attrs={"class": "fr-input", "rows": 2, "placeholder": "Décrivez brièvement le besoin"}),
     )
     secteur = forms.ModelChoiceField(
-        label="Secteur d'achat",
+        label="Catégorie achat",
         queryset=Sector.objects.form_filter_queryset(),
         to_field_name="slug",
-        empty_label="Sélectionnez un secteur",
+        empty_label="Sélectionnez une catégorie",
         widget=forms.Select(attrs={"class": "fr-select"}),
     )
     montant = forms.IntegerField(
         label="Montant estimatif (€)",
-        required=False,
+        required=True,
         min_value=0,
         widget=forms.NumberInput(attrs={"class": "fr-input", "placeholder": "Ex : 80000"}),
     )
