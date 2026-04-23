@@ -381,6 +381,7 @@ def _parse_excel_projects(file) -> list[dict]:
 
     projects = []
     for row_num, row in enumerate(data_rows, start=2):
+
         def cell(name):
             idx = col.get(name)
             return str(row[idx]).strip() if idx is not None and row[idx] is not None else ""
@@ -537,17 +538,13 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
             row_num = project["row"]
 
             if not titre or not secteur_slug or not perimetre:
-                import_errors.append(
-                    f"Ligne {row_num} : titre, secteur et périmètre géographique sont obligatoires."
-                )
+                import_errors.append(f"Ligne {row_num} : titre, secteur et périmètre géographique sont obligatoires.")
                 continue
 
             try:
                 sector = Sector.objects.get(slug=secteur_slug)
             except Sector.DoesNotExist:
-                import_errors.append(
-                    f"Ligne {row_num} — « {titre} » : secteur « {secteur_slug} » introuvable."
-                )
+                import_errors.append(f"Ligne {row_num} — « {titre} » : secteur « {secteur_slug} » introuvable.")
                 continue
 
             perimeter = None
@@ -555,9 +552,7 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
                 try:
                     perimeter = Perimeter.objects.get(slug=perimetre)
                 except Perimeter.DoesNotExist:
-                    import_errors.append(
-                        f"Ligne {row_num} — « {titre} » : périmètre « {perimetre} » introuvable."
-                    )
+                    import_errors.append(f"Ligne {row_num} — « {titre} » : périmètre « {perimetre} » introuvable.")
                     continue
 
             result = _analyze_purchase_project(titre, sector, perimeter, montant)
