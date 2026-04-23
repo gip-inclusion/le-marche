@@ -9,6 +9,81 @@
 {% endblock breadcrumb %}
 
 {% block content %}
+<style>
+    [x-cloak] { display: none !important; }
+
+    .ipa-spinner {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #e3e3fd;
+        border-top-color: #000091;
+        border-radius: 50%;
+        animation: ipa-spin 0.9s linear infinite;
+        margin: 0 auto 1.5rem;
+    }
+    @keyframes ipa-spin { to { transform: rotate(360deg); } }
+
+    .ipa-metric-card {
+        background: #f6f6f6;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        text-align: center;
+    }
+    .ipa-metric-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #161616;
+        line-height: 1.1;
+    }
+    .ipa-metric-value--accent { color: #000091; }
+    .ipa-metric-label {
+        font-size: 0.8rem;
+        color: #666;
+        margin-top: 0.25rem;
+    }
+    .ipa-section-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #161616;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e3e3fd;
+    }
+    .ipa-section-title [class^="fr-icon-"],
+    .ipa-section-title [class*=" fr-icon-"] {
+        color: #000091;
+        font-size: 1.2rem;
+    }
+    .ipa-recommendation {
+        background: linear-gradient(135deg, #f0f0fb 0%, #e8f5e9 100%);
+        border-left: 4px solid #18753c;
+        border-radius: 0 8px 8px 0;
+        padding: 1rem 1.5rem;
+    }
+    .ipa-recommendation-title {
+        font-weight: 700;
+        color: #18753c;
+        margin-bottom: 0.25rem;
+    }
+    .ipa-project-header {
+        background: #000091;
+        color: #fff;
+        border-radius: 8px 8px 0 0;
+        padding: 1rem 1.5rem;
+    }
+    .ipa-project-header h3 { color: #fff; margin: 0 0 0.25rem 0; font-size: 1.1rem; }
+    .ipa-project-meta { font-size: 0.85rem; opacity: 0.85; }
+    .ipa-project-body {
+        border: 2px solid #e3e3fd;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        padding: 1.5rem;
+    }
+</style>
+
 <div class="fr-container fr-py-4w">
 
     {# ── Introduction ── #}
@@ -39,72 +114,150 @@
     <div class="fr-mb-3w">
         <a href="{% url 'dashboard:inclusive_potential_analysis' %}"
            class="fr-btn fr-btn--secondary fr-icon-arrow-go-back-line fr-btn--icon-left">
-            Nouvelle analyse
+            Lancer une nouvelle analyse
         </a>
     </div>
 
     {% if results %}
-        <div class="fr-alert fr-alert--success fr-mb-3w">
-            <p>{{ results|length }} projet{{ results|length|pluralize }} analysé{{ results|length|pluralize }} avec succès.</p>
+        <div class="fr-alert fr-alert--success fr-mb-4w">
+            <p>
+                <strong>Analyse terminée !</strong>
+                {{ results|length }} projet{{ results|length|pluralize }} analysé{{ results|length|pluralize }} avec succès.
+            </p>
         </div>
-        <div class="fr-table fr-table--no-caption" style="overflow-x: auto;">
-            <table>
-                <caption>Résultats de l'analyse du potentiel inclusif</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">Titre</th>
-                        <th scope="col">Secteur</th>
-                        <th scope="col">Périmètre</th>
-                        <th scope="col">Montant (€)</th>
-                        <th scope="col">Structures potentielles</th>
-                        <th scope="col">Dont insertion</th>
-                        <th scope="col">Dont handicap</th>
-                        <th scope="col">Dont locales</th>
-                        <th scope="col">Super prestataires</th>
-                        <th scope="col">ETP insertion moy.</th>
-                        <th scope="col">ETP permanents moy.</th>
-                        <th scope="col">Dép. éco. (%)</th>
-                        <th scope="col">Recommandation</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for result in results %}
-                        <tr>
-                            {% if result.error %}
-                                <td>{{ result.titre }}</td>
-                                <td colspan="12" class="fr-text--error">
-                                    <span class="fr-icon-warning-fill" aria-hidden="true"></span>
-                                    {{ result.error }}
-                                </td>
-                            {% else %}
-                                <td>{{ result.titre }}</td>
-                                <td>{{ result.secteur_name }}</td>
-                                <td>{{ result.perimeter_name }}</td>
-                                <td>{% if result.montant %}{{ result.montant }} €{% else %}—{% endif %}</td>
-                                <td><strong>{{ result.potential_siaes }}</strong></td>
-                                <td>{{ result.insertion_siaes }}</td>
-                                <td>{{ result.handicap_siaes }}</td>
-                                <td>{{ result.local_siaes }}</td>
-                                <td>{{ result.siaes_with_super_badge }}</td>
-                                <td>{{ result.employees_insertion_average }}</td>
-                                <td>{{ result.employees_permanent_average }}</td>
-                                <td>{% if result.eco_dependency is not None %}{{ result.eco_dependency }} %{% else %}—{% endif %}</td>
-                                <td>
-                                    {% if result.recommendation_title %}
-                                        <strong>{{ result.recommendation_title }}</strong>
-                                        {% if result.recommendation_response %}
-                                            <br><small>{{ result.recommendation_response }}</small>
-                                        {% endif %}
-                                    {% else %}
-                                        —
-                                    {% endif %}
-                                </td>
-                            {% endif %}
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+
+        {% for result in results %}
+        <div class="fr-mb-4w">
+            <div class="ipa-project-header">
+                <h3>{{ result.titre }}</h3>
+                <p class="ipa-project-meta">
+                    <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
+                    {{ result.secteur_name }} &nbsp;·&nbsp; {{ result.perimeter_name }}
+                    {% if result.montant %}&nbsp;·&nbsp; {{ result.montant }} €{% endif %}
+                </p>
+            </div>
+
+            <div class="ipa-project-body">
+
+                {% if result.error %}
+                <div class="fr-alert fr-alert--error">
+                    <p>{{ result.error }}</p>
+                </div>
+
+                {% else %}
+
+                {# Section 1 — Structures potentielles #}
+                <div class="fr-mb-3w">
+                    <p class="ipa-section-title">
+                        <span class="fr-icon-building-line" aria-hidden="true"></span>
+                        Structures potentielles
+                    </p>
+                    <div class="fr-grid-row fr-grid-row--gutters">
+                        <div class="fr-col-6 fr-col-md-2">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value ipa-metric-value--accent">{{ result.potential_siaes }}</div>
+                                <div class="ipa-metric-label">Total</div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-2">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">{{ result.insertion_siaes }}</div>
+                                <div class="ipa-metric-label">Insertion</div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-2">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">{{ result.handicap_siaes }}</div>
+                                <div class="ipa-metric-label">Handicap</div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-2">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">{{ result.local_siaes }}</div>
+                                <div class="ipa-metric-label">Locales</div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-2">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">{{ result.siaes_with_super_badge }}</div>
+                                <div class="ipa-metric-label">Super prestataires</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# Section 2 — Effectifs #}
+                <div class="fr-mb-3w">
+                    <p class="ipa-section-title">
+                        <span class="fr-icon-group-line" aria-hidden="true"></span>
+                        Effectifs moyens
+                    </p>
+                    <div class="fr-grid-row fr-grid-row--gutters">
+                        <div class="fr-col-6 fr-col-md-3">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">{{ result.employees_insertion_average }}</div>
+                                <div class="ipa-metric-label">ETP insertion</div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-3">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">{{ result.employees_permanent_average }}</div>
+                                <div class="ipa-metric-label">ETP permanents</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# Section 3 — Analyse économique (si montant fourni) #}
+                {% if result.eco_dependency is not None or result.ca_average %}
+                <div class="fr-mb-3w">
+                    <p class="ipa-section-title">
+                        <span class="fr-icon-money-euro-circle-line" aria-hidden="true"></span>
+                        Analyse économique
+                    </p>
+                    <div class="fr-grid-row fr-grid-row--gutters">
+                        {% if result.eco_dependency is not None %}
+                        <div class="fr-col-6 fr-col-md-3">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">{{ result.eco_dependency }} %</div>
+                                <div class="ipa-metric-label">Dépendance économique</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if result.ca_average %}
+                        <div class="fr-col-6 fr-col-md-3">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">{{ result.ca_average }} €</div>
+                                <div class="ipa-metric-label">CA moyen</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {# Section 4 — Recommandation #}
+                {% if result.recommendation_title %}
+                <div>
+                    <p class="ipa-section-title">
+                        <span class="fr-icon-lightbulb-line" aria-hidden="true"></span>
+                        Recommandation
+                    </p>
+                    <div class="ipa-recommendation">
+                        <p class="ipa-recommendation-title">{{ result.recommendation_title }}</p>
+                        {% if result.recommendation_response %}
+                        <p style="margin: 0; color: #3a3a3a;">{{ result.recommendation_response }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% endif %}{# end if result.error #}
+
+            </div>{# /ipa-project-body #}
+        </div>{# /fr-mb-4w #}
+        {% endfor %}
+
     {% else %}
         <div class="fr-alert fr-alert--warning">
             <p>Aucun résultat à afficher. Vérifiez que vos projets d'achat sont correctement renseignés.</p>
@@ -114,210 +267,234 @@
     {% else %}
 
     {# ── Formulaire de saisie ── #}
-    <form method="post" action="" id="manual-form"
-          x-data="{
-              projects: [{ id: 0, france_entiere: false }],
-              nextId: 1,
-              submitting: false,
-              addProject() {
-                  this.projects.push({ id: this.nextId++, france_entiere: false });
-                  this.$nextTick(() => this.syncTotalForms());
-              },
-              removeProject(projectId) {
-                  if (this.projects.length <= 1) return;
-                  this.projects = this.projects.filter(p => p.id !== projectId);
-                  this.$nextTick(() => this.syncTotalForms());
-              },
-              syncTotalForms() {
-                  const el = document.getElementById('id_form-TOTAL_FORMS');
-                  if (el) el.value = this.projects.length;
-              },
-              initPerimeterAC(projectId) {
-                  this.$nextTick(() => {
-                      if (typeof PerimeterAutocomplete !== 'undefined') {
-                          const ac = new PerimeterAutocomplete(
-                              'perimeter-container-' + projectId,
-                              'id_form_perimeter_slug_' + projectId
-                          );
-                          ac.init();
-                      }
-                  });
-              }
-          }"
-          x-init="syncTotalForms()"
-          @submit="submitting = true">
-        {% csrf_token %}
-        <input type="hidden" name="mode" value="manual">
+    <div x-data="{
+             projects: [{ id: 0, france_entiere: false }],
+             nextId: 1,
+             submitting: false,
+             addProject() {
+                 this.projects.push({ id: this.nextId++, france_entiere: false });
+                 this.$nextTick(() => this.syncTotalForms());
+             },
+             removeProject(projectId) {
+                 if (this.projects.length <= 1) return;
+                 this.projects = this.projects.filter(p => p.id !== projectId);
+                 this.$nextTick(() => this.syncTotalForms());
+             },
+             syncTotalForms() {
+                 const el = document.getElementById('id_form-TOTAL_FORMS');
+                 if (el) el.value = this.projects.length;
+             },
+             initPerimeterAC(projectId) {
+                 this.$nextTick(() => {
+                     if (typeof PerimeterAutocomplete !== 'undefined') {
+                         const ac = new PerimeterAutocomplete(
+                             'perimeter-container-' + projectId,
+                             'id_form_perimeter_slug_' + projectId
+                         );
+                         ac.init();
+                     }
+                 });
+             }
+         }"
+         x-init="syncTotalForms()">
 
-        {{ formset.management_form }}
+        {# Écran de chargement (visible pendant l'envoi) #}
+        <div x-show="submitting"
+             x-cloak
+             style="text-align: center; padding: 3rem 1rem;">
+            <div class="ipa-spinner"></div>
+            <p class="fr-text--lead" style="font-weight: 600; color: #000091;">
+                Analyse du potentiel inclusif en cours…
+            </p>
+            <p style="color: #666;">
+                Nous interrogeons notre base de données pour identifier les structures inclusives
+                correspondant à vos projets d'achat.
+            </p>
+        </div>
 
-        {# Erreurs globales du formset #}
-        {% if formset.non_form_errors %}
-            <div class="fr-alert fr-alert--error fr-mb-2w">
-                {% for error in formset.non_form_errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
+        {# Formulaire (masqué pendant l'envoi) #}
+        <form method="post" action="" id="manual-form"
+              x-show="!submitting"
+              @submit="submitting = true">
+            {% csrf_token %}
+            <input type="hidden" name="mode" value="manual">
 
-        {# Erreurs par formulaire après soumission #}
-        {% if formset.forms %}
-            {% for form in formset.forms %}
-                {% if form.errors %}
-                    <div class="fr-alert fr-alert--error fr-mb-2w">
-                        <p><strong>Projet {{ forloop.counter }}</strong></p>
-                        {% for field, errors in form.errors.items %}
-                            {% for error in errors %}
-                                <p>{{ error }}</p>
+            {{ formset.management_form }}
+
+            {% if formset.non_form_errors %}
+                <div class="fr-alert fr-alert--error fr-mb-2w">
+                    {% for error in formset.non_form_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if formset.forms %}
+                {% for form in formset.forms %}
+                    {% if form.errors %}
+                        <div class="fr-alert fr-alert--error fr-mb-2w">
+                            <p><strong>Projet {{ forloop.counter }}</strong></p>
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
                             {% endfor %}
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-
-        {# Lignes de projets gérées par Alpine.js #}
-        <template x-for="(project, index) in projects" :key="project.id">
-            <div class="fr-card fr-mb-3w"
-                 x-init="initPerimeterAC(project.id)">
-                <div class="fr-card__body">
-                    <div class="fr-card__content">
-
-                        <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle fr-mb-1w">
-                            <div class="fr-col">
-                                <strong x-text="'Projet ' + (index + 1)"></strong>
-                            </div>
-                            <div class="fr-col-auto" x-show="projects.length > 1">
-                                <button type="button"
-                                        class="fr-btn fr-btn--tertiary fr-btn--sm fr-icon-delete-line"
-                                        @click="removeProject(project.id)"
-                                        :aria-label="'Supprimer le projet ' + (index + 1)">
-                                    Supprimer
-                                </button>
-                            </div>
                         </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
 
-                        <div class="fr-grid-row fr-grid-row--gutters">
+            <template x-for="(project, index) in projects" :key="project.id">
+                <div class="fr-card fr-mb-3w"
+                     x-init="initPerimeterAC(project.id)">
+                    <div class="fr-card__body">
+                        <div class="fr-card__content">
 
-                            {# Titre #}
-                            <div class="fr-col-12 fr-col-md-6">
-                                <div class="fr-input-group">
-                                    <label :for="'id_form-' + index + '-titre'" class="fr-label">
-                                        Titre du projet d'achat <span class="fr-badge fr-badge--sm fr-badge--error">Obligatoire</span>
-                                    </label>
-                                    <input :id="'id_form-' + index + '-titre'"
-                                           :name="'form-' + index + '-titre'"
-                                           type="text"
-                                           class="fr-input"
-                                           placeholder="Ex : Prestations de nettoyage"
-                                           required>
+                            <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle fr-mb-1w">
+                                <div class="fr-col">
+                                    <strong x-text="'Projet ' + (index + 1)"></strong>
+                                </div>
+                                <div class="fr-col-auto" x-show="projects.length > 1">
+                                    <button type="button"
+                                            class="fr-btn fr-btn--tertiary fr-btn--sm fr-icon-delete-line"
+                                            @click="removeProject(project.id)"
+                                            :aria-label="'Supprimer le projet ' + (index + 1)">
+                                        Supprimer
+                                    </button>
                                 </div>
                             </div>
 
-                            {# Secteur #}
-                            <div class="fr-col-12 fr-col-md-6">
-                                <div class="fr-select-group">
-                                    <label :for="'id_form-' + index + '-secteur'" class="fr-label">
-                                        Secteur d'achat <span class="fr-badge fr-badge--sm fr-badge--error">Obligatoire</span>
-                                    </label>
-                                    <select :id="'id_form-' + index + '-secteur'"
-                                            :name="'form-' + index + '-secteur'"
-                                            class="fr-select"
-                                            required>
-                                        <option value="">Sélectionnez un secteur</option>
-                                        {% regroup sectors by group.name as sector_groups %}
-                                        {% for group in sector_groups %}
-                                            <optgroup label="{{ group.grouper }}">
-                                                {% for sector in group.list %}
-                                                    <option value="{{ sector.slug }}">{{ sector.name }}</option>
-                                                {% endfor %}
-                                            </optgroup>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
+                            <div class="fr-grid-row fr-grid-row--gutters">
 
-                            {# Montant #}
-                            <div class="fr-col-12 fr-col-md-4">
-                                <div class="fr-input-group">
-                                    <label :for="'id_form-' + index + '-montant'" class="fr-label">
-                                        Montant estimatif (€)
-                                        <span class="fr-hint-text">Recommandé pour obtenir une recommandation achat inclusif</span>
-                                    </label>
-                                    <input :id="'id_form-' + index + '-montant'"
-                                           :name="'form-' + index + '-montant'"
-                                           type="number"
-                                           min="0"
-                                           class="fr-input"
-                                           placeholder="Ex : 80000">
+                                {# Titre #}
+                                <div class="fr-col-12 fr-col-md-6">
+                                    <div class="fr-input-group">
+                                        <label :for="'id_form-' + index + '-titre'" class="fr-label">
+                                            Titre du projet d'achat
+                                            <span class="fr-badge fr-badge--sm fr-badge--error">Obligatoire</span>
+                                        </label>
+                                        <input :id="'id_form-' + index + '-titre'"
+                                               :name="'form-' + index + '-titre'"
+                                               type="text"
+                                               class="fr-input"
+                                               placeholder="Ex : Prestations de nettoyage"
+                                               required>
+                                    </div>
                                 </div>
-                            </div>
 
-                            {# Périmètre géographique #}
-                            <div class="fr-col-12 fr-col-md-8">
-                                <div class="fr-input-group" x-show="!project.france_entiere">
-                                    <label :for="'perimeter-container-' + project.id + '_name'" class="fr-label">
-                                        Périmètre géographique <span class="fr-badge fr-badge--sm fr-badge--error">Obligatoire</span>
-                                        <span class="fr-hint-text">Région, département ou commune</span>
-                                    </label>
-                                    <input :id="'id_form_perimeter_slug_' + project.id"
-                                           :name="'form-' + index + '-perimeter_slug'"
-                                           type="hidden"
-                                           value="">
-                                    <div :id="'perimeter-container-' + project.id"
-                                         data-input-value=""></div>
+                                {# Secteur #}
+                                <div class="fr-col-12 fr-col-md-6">
+                                    <div class="fr-select-group">
+                                        <label :for="'id_form-' + index + '-secteur'" class="fr-label">
+                                            Secteur d'achat
+                                            <span class="fr-badge fr-badge--sm fr-badge--error">Obligatoire</span>
+                                        </label>
+                                        <select :id="'id_form-' + index + '-secteur'"
+                                                :name="'form-' + index + '-secteur'"
+                                                class="fr-select"
+                                                required>
+                                            <option value="">Sélectionnez un secteur</option>
+                                            {% regroup sectors by group.name as sector_groups %}
+                                            {% for group in sector_groups %}
+                                                <optgroup label="{{ group.grouper }}">
+                                                    {% for sector in group.list %}
+                                                        <option value="{{ sector.slug }}">{{ sector.name }}</option>
+                                                    {% endfor %}
+                                                </optgroup>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="fr-checkbox-group fr-mt-2w">
-                                    <input :id="'id_form-' + index + '-france_entiere'"
-                                           :name="'form-' + index + '-france_entiere'"
-                                           type="checkbox"
-                                           class="fr-checkbox-group__input"
-                                           x-model="project.france_entiere">
-                                    <label class="fr-label" :for="'id_form-' + index + '-france_entiere'">
-                                        Toute la France (structures à couverture nationale)
-                                    </label>
-                                </div>
-                            </div>
 
-                            {# Description #}
-                            <div class="fr-col-12">
-                                <div class="fr-input-group">
-                                    <label :for="'id_form-' + index + '-description'" class="fr-label">
-                                        Description (optionnelle)
-                                    </label>
-                                    <textarea :id="'id_form-' + index + '-description'"
-                                              :name="'form-' + index + '-description'"
-                                              rows="2"
-                                              class="fr-input"
-                                              placeholder="Décrivez brièvement le besoin"></textarea>
+                                {# Montant #}
+                                <div class="fr-col-12 fr-col-md-6">
+                                    <div class="fr-input-group">
+                                        <label :for="'id_form-' + index + '-montant'" class="fr-label">
+                                            Montant estimatif (€)
+                                            <span class="fr-hint-text">
+                                                Recommandé pour obtenir une recommandation achat inclusif
+                                            </span>
+                                        </label>
+                                        <input :id="'id_form-' + index + '-montant'"
+                                               :name="'form-' + index + '-montant'"
+                                               type="number"
+                                               min="0"
+                                               class="fr-input"
+                                               placeholder="Ex : 80000">
+                                    </div>
                                 </div>
-                            </div>
 
+                                {# Périmètre géographique #}
+                                <div class="fr-col-12 fr-col-md-6">
+                                    <div x-show="!project.france_entiere">
+                                        <div class="fr-input-group">
+                                            <label :for="'perimeter-container-' + project.id + '_name'"
+                                                   class="fr-label">
+                                                Périmètre géographique
+                                                <span class="fr-badge fr-badge--sm fr-badge--error">Obligatoire</span>
+                                                <span class="fr-hint-text">Région, département ou commune</span>
+                                            </label>
+                                            <input :id="'id_form_perimeter_slug_' + project.id"
+                                                   :name="'form-' + index + '-perimeter_slug'"
+                                                   type="hidden"
+                                                   value="">
+                                            <div :id="'perimeter-container-' + project.id"
+                                                 data-input-value=""></div>
+                                        </div>
+                                    </div>
+                                    <div class="fr-checkbox-group fr-mt-1w">
+                                        <input :id="'id_form-' + index + '-france_entiere'"
+                                               :name="'form-' + index + '-france_entiere'"
+                                               type="checkbox"
+                                               class="fr-checkbox-group__input"
+                                               x-model="project.france_entiere">
+                                        <label class="fr-label" :for="'id_form-' + index + '-france_entiere'">
+                                            Toute la France
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {# Description #}
+                                <div class="fr-col-12">
+                                    <div class="fr-input-group">
+                                        <label :for="'id_form-' + index + '-description'" class="fr-label">
+                                            Description (optionnelle)
+                                        </label>
+                                        <textarea :id="'id_form-' + index + '-description'"
+                                                  :name="'form-' + index + '-description'"
+                                                  rows="2"
+                                                  class="fr-input"
+                                                  placeholder="Décrivez brièvement le besoin"></textarea>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </template>
+            </template>
 
-        <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
-            <div class="fr-col-auto">
-                <button type="button"
-                        class="fr-btn fr-btn--secondary fr-icon-add-line"
-                        @click="addProject()">
-                    Ajouter un projet
-                </button>
+            <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+                <div class="fr-col-auto">
+                    <button type="button"
+                            class="fr-btn fr-btn--secondary fr-icon-add-line"
+                            @click="addProject()">
+                        Ajouter un projet
+                    </button>
+                </div>
+                <div class="fr-col-auto">
+                    <button type="submit"
+                            class="fr-btn"
+                            :disabled="submitting"
+                            x-text="submitting ? 'Analyse en cours…' : 'Lancer l\'analyse'">
+                        Lancer l'analyse
+                    </button>
+                </div>
             </div>
-            <div class="fr-col-auto">
-                <button type="submit"
-                        class="fr-btn"
-                        :disabled="submitting"
-                        x-text="submitting ? 'Analyse en cours…' : 'Lancer l\'analyse'">
-                    Lancer l'analyse
-                </button>
-            </div>
-        </div>
 
-    </form>
+        </form>
+    </div>{# /x-data #}
+
     {% endif %}
 
 </div>
