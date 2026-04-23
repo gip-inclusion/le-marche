@@ -167,8 +167,8 @@
                 </h3>
                 <div class="fr-collapse" id="acc-sector-{{ forloop.counter }}">
                     <div style="overflow-x:auto; padding: 1rem 0;">
-                        <table class="fr-table fr-table--no-caption fr-table--sm">
-                            <caption>Projets du secteur {{ sector_name }}</caption>
+                        <table class="fr-table fr-table--sm"
+                               aria-label="Projets du secteur {{ sector_name }}">
                             <thead><tr>
                                 <th>Titre</th>
                                 <th>Périmètre</th>
@@ -225,8 +225,8 @@
                 </h3>
                 <div class="fr-collapse" id="acc-perim-{{ forloop.counter }}">
                     <div style="overflow-x:auto; padding: 1rem 0;">
-                        <table class="fr-table fr-table--no-caption fr-table--sm">
-                            <caption>Projets du périmètre {{ perimeter_name }}</caption>
+                        <table class="fr-table fr-table--sm"
+                               aria-label="Projets du périmètre {{ perimeter_name }}">
                             <thead><tr>
                                 <th>Titre</th>
                                 <th>Secteur</th>
