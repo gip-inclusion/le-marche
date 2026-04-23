@@ -587,27 +587,51 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
 
 @login_required
 def inclusive_potential_excel_template(request):
-    """Generate and return a pre-formatted Excel template for batch import."""
+    """Generate and return a pre-formatted Excel template for batch import.
+
+    Sheet 1 — Projets d'achat : 2 example rows using real sector slugs from the DB.
+    Sheet 2 — Secteurs disponibles : full list of valid sector slugs + names.
+    """
     import io
 
     import openpyxl
 
     wb = openpyxl.Workbook()
+
+    # Feuille 1 : modèle à remplir
     ws = wb.active
     ws.title = "Projets d'achat"
 
-    headers = ["titre", "description", "secteur", "montant", "perimetre_geographique"]
-    ws.append(headers)
-    ws.append(["Prestations de nettoyage", "Nettoyage de bureaux", "nettoyage", 80000, "paris"])
-    ws.append(
-        [
-            "Fourniture de textiles professionnels",
-            "Vêtements de travail pour agents",
-            "textile",
-            45000,
-            "ile-de-france",
-        ]
-    )
+    ws.append(["titre", "description", "secteur", "montant", "perimetre_geographique"])
+
+    # Use real sector slugs so the examples work out of the box.
+    example_sectors = list(Sector.objects.form_filter_queryset().values_list("slug", "name")[:2])
+    if example_sectors:
+        ws.append(
+            [
+                f"Prestations de {example_sectors[0][1][:40]}",
+                "Description optionnelle",
+                example_sectors[0][0],
+                80000,
+                "paris",
+            ]
+        )
+    if len(example_sectors) > 1:
+        ws.append(
+            [
+                f"Prestations de {example_sectors[1][1][:40]}",
+                "",
+                example_sectors[1][0],
+                45000,
+                "france_entiere",
+            ]
+        )
+
+    # Feuille 2 : référentiel des slugs secteurs
+    ws2 = wb.create_sheet("Secteurs disponibles")
+    ws2.append(["slug (valeur à saisir dans la colonne secteur)", "Nom du secteur"])
+    for slug, name in Sector.objects.form_filter_queryset().values_list("slug", "name"):
+        ws2.append([slug, name])
 
     buffer = io.BytesIO()
     wb.save(buffer)
