@@ -121,12 +121,147 @@
     </div>
 
     {% if results %}
-        <div class="fr-alert fr-alert--success fr-mb-4w">
+        <div class="fr-alert fr-alert--success fr-mb-3w">
             <p>
                 <strong>Analyse terminée !</strong>
                 {{ results|length }} projet{{ results|length|pluralize }} analysé{{ results|length|pluralize }} avec succès.
+                {% if import_errors %}
+                    <br><small>{{ import_errors|length }} ligne{{ import_errors|length|pluralize }} ignorée{{ import_errors|length|pluralize }} (voir détail ci-dessous).</small>
+                {% endif %}
             </p>
         </div>
+
+        {# Erreurs partielles d'import #}
+        {% if import_errors %}
+        <div class="fr-alert fr-alert--warning fr-mb-3w">
+            <p><strong>Lignes ignorées lors de l'import :</strong></p>
+            <ul>
+                {% for err in import_errors %}<li>{{ err }}</li>{% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+    {# ══ Résultats Excel : vue agrégée ══ #}
+    {% if mode == "excel" %}
+
+        {# Agrégat par secteur #}
+        <h2 class="fr-h4 fr-mb-2w">
+            <span class="fr-icon-building-line" aria-hidden="true"></span>
+            Par secteur d'achat
+        </h2>
+        <div class="fr-accordions-group fr-mb-5w">
+            {% for sector_name, sector_data in results_by_sector.items %}
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button class="fr-accordion__btn" aria-expanded="false"
+                            aria-controls="acc-sector-{{ forloop.counter }}">
+                        <span style="flex:1; text-align:left;">
+                            <strong>{{ sector_name }}</strong>
+                            <span class="fr-ml-2w" style="font-weight:400; color:#666;">
+                                {{ sector_data.project_count }} projet{{ sector_data.project_count|pluralize }}
+                                &nbsp;·&nbsp; <strong>{{ sector_data.total_structures }}</strong> structure{{ sector_data.total_structures|pluralize }} potentielle{{ sector_data.total_structures|pluralize }}
+                                {% if sector_data.total_montant %}&nbsp;·&nbsp; {{ sector_data.total_montant }} €{% endif %}
+                            </span>
+                        </span>
+                    </button>
+                </h3>
+                <div class="fr-collapse" id="acc-sector-{{ forloop.counter }}">
+                    <div style="overflow-x:auto; padding: 1rem 0;">
+                        <table class="fr-table fr-table--no-caption fr-table--sm">
+                            <caption>Projets du secteur {{ sector_name }}</caption>
+                            <thead><tr>
+                                <th>Titre</th>
+                                <th>Périmètre</th>
+                                <th>Montant</th>
+                                <th>Structures</th>
+                                <th>Insertion</th>
+                                <th>Handicap</th>
+                                <th>Recommandation</th>
+                            </tr></thead>
+                            <tbody>
+                            {% for r in sector_data.projects %}
+                                <tr {% if r.error %}style="background:#fff5f5;"{% endif %}>
+                                    <td>{{ r.titre }}</td>
+                                    {% if r.error %}
+                                    <td colspan="6" style="color:#ce0500;">{{ r.error }}</td>
+                                    {% else %}
+                                    <td>{{ r.perimeter_name }}</td>
+                                    <td>{% if r.montant %}{{ r.montant }} €{% else %}—{% endif %}</td>
+                                    <td><strong>{{ r.potential_siaes }}</strong></td>
+                                    <td>{{ r.insertion_siaes }}</td>
+                                    <td>{{ r.handicap_siaes }}</td>
+                                    <td>{{ r.recommendation_title|default:"—" }}</td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            {% endfor %}
+        </div>
+
+        {# Agrégat par périmètre #}
+        <h2 class="fr-h4 fr-mb-2w">
+            <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
+            Par périmètre géographique
+        </h2>
+        <div class="fr-accordions-group fr-mb-5w">
+            {% for perimeter_name, perimeter_data in results_by_perimeter.items %}
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button class="fr-accordion__btn" aria-expanded="false"
+                            aria-controls="acc-perim-{{ forloop.counter }}">
+                        <span style="flex:1; text-align:left;">
+                            <strong>{{ perimeter_name }}</strong>
+                            <span class="fr-ml-2w" style="font-weight:400; color:#666;">
+                                {{ perimeter_data.project_count }} projet{{ perimeter_data.project_count|pluralize }}
+                                &nbsp;·&nbsp; <strong>{{ perimeter_data.total_structures }}</strong> structure{{ perimeter_data.total_structures|pluralize }} potentielle{{ perimeter_data.total_structures|pluralize }}
+                                {% if perimeter_data.total_montant %}&nbsp;·&nbsp; {{ perimeter_data.total_montant }} €{% endif %}
+                            </span>
+                        </span>
+                    </button>
+                </h3>
+                <div class="fr-collapse" id="acc-perim-{{ forloop.counter }}">
+                    <div style="overflow-x:auto; padding: 1rem 0;">
+                        <table class="fr-table fr-table--no-caption fr-table--sm">
+                            <caption>Projets du périmètre {{ perimeter_name }}</caption>
+                            <thead><tr>
+                                <th>Titre</th>
+                                <th>Secteur</th>
+                                <th>Montant</th>
+                                <th>Structures</th>
+                                <th>Insertion</th>
+                                <th>Handicap</th>
+                                <th>Recommandation</th>
+                            </tr></thead>
+                            <tbody>
+                            {% for r in perimeter_data.projects %}
+                                <tr {% if r.error %}style="background:#fff5f5;"{% endif %}>
+                                    <td>{{ r.titre }}</td>
+                                    {% if r.error %}
+                                    <td colspan="6" style="color:#ce0500;">{{ r.error }}</td>
+                                    {% else %}
+                                    <td>{{ r.secteur_name }}</td>
+                                    <td>{% if r.montant %}{{ r.montant }} €{% else %}—{% endif %}</td>
+                                    <td><strong>{{ r.potential_siaes }}</strong></td>
+                                    <td>{{ r.insertion_siaes }}</td>
+                                    <td>{{ r.handicap_siaes }}</td>
+                                    <td>{{ r.recommendation_title|default:"—" }}</td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            {% endfor %}
+        </div>
+
+    {# ══ Résultats manuels : cartes détaillées ══ #}
+    {% else %}
 
         {% for result in results %}
         <div class="fr-mb-4w">
@@ -260,11 +395,13 @@
         </div>{# /fr-mb-4w #}
         {% endfor %}
 
+    {% endif %}{# end if mode == "excel" ... else #}
+
     {% else %}
         <div class="fr-alert fr-alert--warning">
             <p>Aucun résultat à afficher. Vérifiez que vos projets d'achat sont correctement renseignés.</p>
         </div>
-    {% endif %}
+    {% endif %}{# end if results #}
 
     {% else %}
 
@@ -497,6 +634,63 @@
         </div>{# /contenu formulaire #}
 
     </form>
+
+    {# ── Import Excel ── #}
+    <div class="fr-mt-4w" style="border-top: 2px solid #e3e3fd; padding-top: 2rem;">
+        <h2 class="fr-h5 fr-mb-1w">
+            <span class="ri-file-excel-2-line" aria-hidden="true"></span>
+            Analyser via un fichier Excel
+        </h2>
+        <p class="fr-text--sm fr-mb-2w" style="color:#666;">
+            Importez une programmation achat complète au format .xlsx.
+            <a href="{% url 'dashboard:inclusive_potential_analysis_template' %}"
+               class="fr-link fr-icon-download-line fr-link--icon-left">
+                Télécharger le modèle
+            </a>
+        </p>
+
+        {# Erreurs d'import (si le fichier a été rejeté) #}
+        {% if import_errors %}
+        <div class="fr-alert fr-alert--error fr-mb-2w">
+            <p><strong>Erreur lors de l'import :</strong></p>
+            <ul>
+                {% for err in import_errors %}<li>{{ err }}</li>{% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post" action="" enctype="multipart/form-data"
+              id="excel-form"
+              x-data="{ submitting: false }"
+              @submit.prevent="submitting = true; setTimeout(() => document.getElementById('excel-form').submit(), 3000)">
+            {% csrf_token %}
+            <input type="hidden" name="mode" value="excel">
+
+            {# Écran de chargement #}
+            <div x-show="submitting" x-cloak style="text-align:center; padding:2rem 1rem;">
+                <div class="ipa-spinner"></div>
+                <p class="fr-text--lead" style="font-weight:600; color:#000091;">
+                    Analyse du potentiel inclusif en cours…
+                </p>
+                <p style="color:#666;">Nous analysons vos projets d'achat, veuillez patienter.</p>
+            </div>
+
+            <div x-show="!submitting">
+                <div class="fr-upload-group fr-mb-2w">
+                    <label class="fr-label" for="excel-file">
+                        Fichier Excel (.xlsx)
+                        <span class="fr-hint-text">Colonnes requises : titre, secteur, perimetre_geographique. Montant recommandé.</span>
+                    </label>
+                    <input class="fr-upload" type="file" id="excel-file"
+                           name="excel_file" accept=".xlsx" required>
+                </div>
+                <button type="submit" class="fr-btn fr-icon-upload-line fr-btn--icon-left"
+                        :disabled="submitting">
+                    Lancer l'analyse
+                </button>
+            </div>
+        </form>
+    </div>
 
     {% endif %}
 
