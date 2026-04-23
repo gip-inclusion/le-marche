@@ -93,7 +93,8 @@
                           });
                       }
                   }"
-                  x-init="syncTotalForms()">
+                  x-init="syncTotalForms()"
+                  @submit="submitting = true">
                 {% csrf_token %}
                 <input type="hidden" name="mode" value="manual">
 
@@ -259,8 +260,7 @@
                     <div class="fr-col-auto">
                         <button type="submit"
                                 class="fr-btn"
-                                :disabled="submitting"
-                                @click="submitting = true">
+                                :disabled="submitting">
                             <span x-show="!submitting">Lancer l'analyse</span>
                             <span x-show="submitting">Analyse en cours…</span>
                         </button>
