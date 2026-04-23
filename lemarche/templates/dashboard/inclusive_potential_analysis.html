@@ -208,30 +208,30 @@
                     </div>
                 </div>
 
-                {# Section 3 — Analyse économique (si montant fourni) #}
-                {% if result.eco_dependency is not None or result.ca_average %}
+                {# Section 3 — Analyse économique (affichée dès qu'un montant est fourni) #}
+                {% if result.montant %}
                 <div class="fr-mb-3w">
                     <p class="ipa-section-title">
                         <span class="fr-icon-money-euro-circle-line" aria-hidden="true"></span>
                         Analyse économique
                     </p>
                     <div class="fr-grid-row fr-grid-row--gutters">
-                        {% if result.eco_dependency is not None %}
                         <div class="fr-col-6 fr-col-md-3">
                             <div class="ipa-metric-card">
-                                <div class="ipa-metric-value">{{ result.eco_dependency }} %</div>
+                                <div class="ipa-metric-value">
+                                    {% if result.eco_dependency is not None %}{{ result.eco_dependency }} %{% else %}—{% endif %}
+                                </div>
                                 <div class="ipa-metric-label">Dépendance économique</div>
                             </div>
                         </div>
-                        {% endif %}
-                        {% if result.ca_average %}
                         <div class="fr-col-6 fr-col-md-3">
                             <div class="ipa-metric-card">
-                                <div class="ipa-metric-value">{{ result.ca_average }} €</div>
-                                <div class="ipa-metric-label">CA moyen</div>
+                                <div class="ipa-metric-value">
+                                    {% if result.ca_average %}{{ result.ca_average }} €{% else %}—{% endif %}
+                                </div>
+                                <div class="ipa-metric-label">CA moyen des structures</div>
                             </div>
                         </div>
-                        {% endif %}
                     </div>
                 </div>
                 {% endif %}
