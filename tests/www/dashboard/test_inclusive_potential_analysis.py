@@ -196,9 +196,8 @@ class InclusivePotentialAnalysisManualFormTest(TestCase):
         self.assertEqual(response.status_code, 200)
         # Either form-level error or result-level error
         formset_has_error = any(f.errors for f in response.context["formset"].forms)
-        result_has_error = (
-            response.context["results"] is not None
-            and any(r.get("error") for r in response.context["results"])
+        result_has_error = response.context["results"] is not None and any(
+            r.get("error") for r in response.context["results"]
         )
         self.assertTrue(formset_has_error or result_has_error)
 
