@@ -6,6 +6,68 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2025.6.0](https://github.com/gip-inclusion/le-marche/compare/v2025.5.0...v2025.6.0) (2026-04-23)
+
+
+### Features
+
+* Add old history cleanup ([97a61bf](https://github.com/gip-inclusion/le-marche/commit/97a61bfc868475328a11700c4cd5b159fa48906e))
+* **admin:** Possibilité de valider ou rejeter par lot les demandes de rattachement ([#1846](https://github.com/gip-inclusion/le-marche/issues/1846)) ([4d87ad6](https://github.com/gip-inclusion/le-marche/commit/4d87ad66e3adf398a45363c52fa08ec6088c64ab))
+* AJout d'un export à la commande d'import des achats inclusifs ([#1970](https://github.com/gip-inclusion/le-marche/issues/1970)) ([e0fb022](https://github.com/gip-inclusion/le-marche/commit/e0fb022390d6e5c47f04414f03507b32ea39204f))
+* Ajout d'un script de suivit des utilisateurs - RGPD ([#2021](https://github.com/gip-inclusion/le-marche/issues/2021)) ([ee4b43e](https://github.com/gip-inclusion/le-marche/commit/ee4b43e20e3a73ee8f27bf0bc5f044a324f9dc74))
+* Ajout d'une popup pour proposer aux acheteurs d'inviter leurs collègues  ([#1862](https://github.com/gip-inclusion/le-marche/issues/1862)) ([19e2dd1](https://github.com/gip-inclusion/le-marche/commit/19e2dd19e5dc946c5387e9f8cfd981cac0a41883))
+* Ajout du numéro de téléphone sur la notification des nouveaux inscrlts ([#1863](https://github.com/gip-inclusion/le-marche/issues/1863)) ([4e5cf10](https://github.com/gip-inclusion/le-marche/commit/4e5cf107b4dcc601f11a90c33d57782ab678b03a))
+* ajout du sondage Acheteur sur la page d'accueil ([#1841](https://github.com/gip-inclusion/le-marche/issues/1841)) ([33278b0](https://github.com/gip-inclusion/le-marche/commit/33278b0b4aa1ca466d84038530096ef8a4b3fab3))
+* Clean matomo urls even for anymimous users ([8fc9dad](https://github.com/gip-inclusion/le-marche/commit/8fc9dadf1446138245ed86032dbbc13b9600d0b5))
+* Clear old session ([264e4ed](https://github.com/gip-inclusion/le-marche/commit/264e4ed1331dace3cb73dc44708a2d2ce23c4d6b))
+* **dashboard:** add size, legal form and region breakdowns to inclusive purchase stats ([#1987](https://github.com/gip-inclusion/le-marche/issues/1987)) ([b12113d](https://github.com/gip-inclusion/le-marche/commit/b12113df509816c5d2d46b037c4d1e3cff951ebe))
+* **Dépôt de besoin:** suppression du secteur d'activité dans le formulaire de publication d'un besoin ([#1853](https://github.com/gip-inclusion/le-marche/issues/1853)) ([a442c94](https://github.com/gip-inclusion/le-marche/commit/a442c94e5080de3e9765be1653ecd799fe225bf0))
+* Lancer les tâche de syncho nexus en asynchrone ([#1907](https://github.com/gip-inclusion/le-marche/issues/1907)) ([ece3293](https://github.com/gip-inclusion/le-marche/commit/ece3293a1b49880b3d471e46736f0f9f83debb71))
+* Les liens vers les dépôts de besoin renvoi directement vers la page “Prestataire intéressé” ([#1845](https://github.com/gip-inclusion/le-marche/issues/1845)) ([1cce3da](https://github.com/gip-inclusion/le-marche/commit/1cce3da37342744ff518ef66aca8bcef2398b20f))
+* masquer les slugs des urls envoyées à Matomo ([#1801](https://github.com/gip-inclusion/le-marche/issues/1801)) ([56d58db](https://github.com/gip-inclusion/le-marche/commit/56d58db9d787a87d9b182978c1af975bb7560f7d))
+* Mise à jour de itoutils et amélioration de la synchronisation nexus ([#1905](https://github.com/gip-inclusion/le-marche/issues/1905)) ([04e2815](https://github.com/gip-inclusion/le-marche/commit/04e2815baaaa6a5b60a8223dfafdaec018878915))
+* Mise à jour des données envoyées à Nexus ([#1848](https://github.com/gip-inclusion/le-marche/issues/1848)) ([1f5edd8](https://github.com/gip-inclusion/le-marche/commit/1f5edd80a170ff44708b5a8c026ba138070bae4d))
+* Mise en place de la synchronisation des utilisateurs avec Nexus ([#1893](https://github.com/gip-inclusion/le-marche/issues/1893)) ([416d937](https://github.com/gip-inclusion/le-marche/commit/416d937b147fa4546265338a030dc2cec85c74ea))
+* Modification de la page partenaires.html ([#1906](https://github.com/gip-inclusion/le-marche/issues/1906)) ([71ed724](https://github.com/gip-inclusion/le-marche/commit/71ed724b9b22acf5fde7aad7c3a55886af87cbb9))
+* Notification de l'équipe par Slack pour les nouveaux inscrits de type structure ([#1860](https://github.com/gip-inclusion/le-marche/issues/1860)) ([a0c0c6d](https://github.com/gip-inclusion/le-marche/commit/a0c0c6d9e1772c51afa9292edfe60ba95e3f824f))
+* **Part achat inclusif:** Ajout de la répartition QPV/ZRR ([#1929](https://github.com/gip-inclusion/le-marche/issues/1929)) ([0df5013](https://github.com/gip-inclusion/le-marche/commit/0df50130335db47abd372cc39925ecbb17a3826c))
+* Politique de suppression automatique des données ([#1931](https://github.com/gip-inclusion/le-marche/issues/1931)) ([18219f8](https://github.com/gip-inclusion/le-marche/commit/18219f8e0877f4c96aba918985892453aa9ad3d2))
+* Ré-agencement les logo des références clients sur la fiche commerciale ([#1865](https://github.com/gip-inclusion/le-marche/issues/1865)) ([4b5c164](https://github.com/gip-inclusion/le-marche/commit/4b5c164df794071c35cc299830ea120013b02f49))
+* Refonte de la page d'inscription ([#1847](https://github.com/gip-inclusion/le-marche/issues/1847)) ([a70d716](https://github.com/gip-inclusion/le-marche/commit/a70d7164ec9d75d8888018128c719c95da0fac90))
+* rendre les indicateurs du potentiel inclusif cliquables ([#1985](https://github.com/gip-inclusion/le-marche/issues/1985)) ([5d5144b](https://github.com/gip-inclusion/le-marche/commit/5d5144b185f81549ef390e6d8cb1e0889785d6e4))
+* Suppression des données personnelles de l'api des SIAEs ([#1954](https://github.com/gip-inclusion/le-marche/issues/1954)) ([8639628](https://github.com/gip-inclusion/le-marche/commit/8639628caa1aeda54a2d290384009aad582e853b))
+* Suppression des sondages NPS Acheteurs et Structures ([#1859](https://github.com/gip-inclusion/le-marche/issues/1859)) ([0c374f8](https://github.com/gip-inclusion/le-marche/commit/0c374f862df6c75285ddeb012f4d5450896811e0))
+* suppression du sondage Acheteur sur la page d'accueil ([#1854](https://github.com/gip-inclusion/le-marche/issues/1854)) ([50f8ae4](https://github.com/gip-inclusion/le-marche/commit/50f8ae4de46ad1b9ebee44b96496173ff7c501c8))
+* Sync users to Nexus stats database  ([#1838](https://github.com/gip-inclusion/le-marche/issues/1838)) ([a019768](https://github.com/gip-inclusion/le-marche/commit/a01976854f968f9cc693802a13fc2b513cf767dc))
+* Utilisation de la date de synchro avec les emplois comme date de dernière modification dans l'API structures ([#1960](https://github.com/gip-inclusion/le-marche/issues/1960)) ([fad8065](https://github.com/gip-inclusion/le-marche/commit/fad80658f0115154fa923571d53bc0d566a9dce0))
+
+
+### Bug Fixes
+
+* Add missing config for botocore ([d104774](https://github.com/gip-inclusion/le-marche/commit/d104774a227a9f20874352dafb308ca18ea87964))
+* Correction d'un autre bug dans les graphiques d'achat inclusifs ([#1935](https://github.com/gip-inclusion/le-marche/issues/1935)) ([6251b11](https://github.com/gip-inclusion/le-marche/commit/6251b115b21216ab56aa21bcba8907d95d54dd89))
+* Correction de la redirection suite à la demande de contact d'un besoin d'achat ([#1952](https://github.com/gip-inclusion/le-marche/issues/1952)) ([364d8be](https://github.com/gip-inclusion/le-marche/commit/364d8be3e86d0246e2bcae86e7a112494d83ace5))
+* Correction des paramètres dans le mail Top 5 prestataires ([#1861](https://github.com/gip-inclusion/le-marche/issues/1861)) ([063721e](https://github.com/gip-inclusion/le-marche/commit/063721e8fd59e53a6b304173910e0dccbd37fc8d))
+* Correction du bug sur le bouton réinistialisé ([#1842](https://github.com/gip-inclusion/le-marche/issues/1842)) ([b729835](https://github.com/gip-inclusion/le-marche/commit/b7298355cdc46ea780b6c8c84b77a5f325ea8db0))
+* correction du lien de menu Analyser votre potentiel ([#1830](https://github.com/gip-inclusion/le-marche/issues/1830)) ([cdc355d](https://github.com/gip-inclusion/le-marche/commit/cdc355dcc92ba9ffdd10ad88fc1d1e985d7e8cc9))
+* Correction du TDB part achat inclusif ([#1930](https://github.com/gip-inclusion/le-marche/issues/1930)) ([98c9c02](https://github.com/gip-inclusion/le-marche/commit/98c9c02babb085d6a0bae11354604c6dc9bd5f55))
+* Correction et remonté de la liste des référénces clients ([#1844](https://github.com/gip-inclusion/le-marche/issues/1844)) ([b67198b](https://github.com/gip-inclusion/le-marche/commit/b67198b11d00d544ff30ea96ef13b077aff6bd94))
+* **Dépôt de besoin:** Affichage des questions même quand l'autheur veut rester anonyme ([#1829](https://github.com/gip-inclusion/le-marche/issues/1829)) ([6e6bd6e](https://github.com/gip-inclusion/le-marche/commit/6e6bd6e9b4601410b1dc7db1e9f0ce9ac5a81870))
+* **Fiche structure:** Réduction du nombre de requête à la base de données et amélioration de l'affichage des activités ([#1832](https://github.com/gip-inclusion/le-marche/issues/1832)) ([17d9f21](https://github.com/gip-inclusion/le-marche/commit/17d9f2123e6ad31350870026856ceaed69275f89))
+* Fix and test matomo context processor ([c180658](https://github.com/gip-inclusion/le-marche/commit/c180658a6bc313b05cbdbb9251e64e26e502e9ed))
+* Fix boto config again ([29121f0](https://github.com/gip-inclusion/le-marche/commit/29121f07c76ad42f56b3640991d098d725a0689f))
+* Fix Matomo ([#1816](https://github.com/gip-inclusion/le-marche/issues/1816)) ([e451de8](https://github.com/gip-inclusion/le-marche/commit/e451de81257f87a16a801b955a132f5930b5da8a))
+* Fix nexus full sync task name ([#1916](https://github.com/gip-inclusion/le-marche/issues/1916)) ([dbef9ae](https://github.com/gip-inclusion/le-marche/commit/dbef9ae88f7643a357526f222b4e3e154ffe6a27))
+* Fix s3 config following boto3 update ([df91e2e](https://github.com/gip-inclusion/le-marche/commit/df91e2e856213869079a5e13730e5e47568d7840))
+* harden HSTS to 1 year with includeSubDomains and preload ([#1951](https://github.com/gip-inclusion/le-marche/issues/1951)) ([0498bd0](https://github.com/gip-inclusion/le-marche/commit/0498bd0bac2f6ecf124ba6bee686ac48c3975a73))
+* **Import utilisateur en lot:** Éviter que des erreurs Brevo roolback des utilisateurs ([#1851](https://github.com/gip-inclusion/le-marche/issues/1851)) ([334a19a](https://github.com/gip-inclusion/le-marche/commit/334a19afdad13cfda4e33dde4c9e0c103d30dcc6))
+* **Inbound parsing:** Correction rapide pour éviter les erreurs en cas de collisions ([#1837](https://github.com/gip-inclusion/le-marche/issues/1837)) ([d759551](https://github.com/gip-inclusion/le-marche/commit/d75955102f0b1def77afd743177344631224671d))
+* Ne plus envoyer de rappel quand le dépôt de besoin est clôturé  ([#1850](https://github.com/gip-inclusion/le-marche/issues/1850)) ([6f6ad68](https://github.com/gip-inclusion/le-marche/commit/6f6ad68ccbdaa19e727edb51a90242f5ea0466c1))
+* **Part d'achat inclusive:** prendre uniquement les achats inclusifs pour les histogrammes de catégories et d'entité acheteuse. ([#1836](https://github.com/gip-inclusion/le-marche/issues/1836)) ([62808ef](https://github.com/gip-inclusion/le-marche/commit/62808ef2469526fdd3f721fe0478943aca3c023c))
+* Remove old slack integration ([3decc05](https://github.com/gip-inclusion/le-marche/commit/3decc0541b9c04840ffafb6c023ce258017e1a15))
+* Suppression de la clé Django par défaut ([#1849](https://github.com/gip-inclusion/le-marche/issues/1849)) ([f63f3f7](https://github.com/gip-inclusion/le-marche/commit/f63f3f79360914affca2bac9e767db329e3761f8))
+* Update command arguments in cron sh script ([c2c786d](https://github.com/gip-inclusion/le-marche/commit/c2c786dc1e438ae1ea781b9d68a973703ac57315))
+
 ## [2025.5.0](https://github.com/gip-inclusion/le-marche/compare/v2025.4.0...v2025.5.0) (2025-10-01)
 
 
