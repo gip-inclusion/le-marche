@@ -267,38 +267,40 @@
     {% else %}
 
     {# ── Formulaire de saisie ── #}
-    <div x-data="{
-             projects: [{ id: 0, france_entiere: false }],
-             nextId: 1,
-             submitting: false,
-             addProject() {
-                 this.projects.push({ id: this.nextId++, france_entiere: false });
-                 this.$nextTick(() => this.syncTotalForms());
-             },
-             removeProject(projectId) {
-                 if (this.projects.length <= 1) return;
-                 this.projects = this.projects.filter(p => p.id !== projectId);
-                 this.$nextTick(() => this.syncTotalForms());
-             },
-             syncTotalForms() {
-                 const el = document.getElementById('id_form-TOTAL_FORMS');
-                 if (el) el.value = this.projects.length;
-             },
-             initPerimeterAC(projectId) {
-                 this.$nextTick(() => {
-                     if (typeof PerimeterAutocomplete !== 'undefined') {
-                         const ac = new PerimeterAutocomplete(
-                             'perimeter-container-' + projectId,
-                             'id_form_perimeter_slug_' + projectId
-                         );
-                         ac.init();
-                     }
-                 });
-             }
-         }"
-         x-init="syncTotalForms()">
+    <form method="post" action="" id="manual-form"
+          x-data="{
+              projects: [{ id: 0, france_entiere: false }],
+              nextId: 1,
+              submitting: false,
+              addProject() {
+                  this.projects.push({ id: this.nextId++, france_entiere: false });
+                  this.$nextTick(() => this.syncTotalForms());
+              },
+              removeProject(projectId) {
+                  if (this.projects.length <= 1) return;
+                  this.projects = this.projects.filter(p => p.id !== projectId);
+                  this.$nextTick(() => this.syncTotalForms());
+              },
+              syncTotalForms() {
+                  const el = document.getElementById('id_form-TOTAL_FORMS');
+                  if (el) el.value = this.projects.length;
+              },
+              initPerimeterAC(projectId) {
+                  this.$nextTick(() => {
+                      if (typeof PerimeterAutocomplete !== 'undefined') {
+                          const ac = new PerimeterAutocomplete(
+                              'perimeter-container-' + projectId,
+                              'id_form_perimeter_slug_' + projectId
+                          );
+                          ac.init();
+                      }
+                  });
+              }
+          }"
+          x-init="syncTotalForms()"
+          @submit.prevent="submitting = true; setTimeout(() => document.getElementById('manual-form').submit(), 3000)">
 
-        {# Écran de chargement (visible pendant l'envoi) #}
+        {# Écran de chargement (visible pendant l'envoi, caché par x-cloak avant Alpine) #}
         <div x-show="submitting"
              x-cloak
              style="text-align: center; padding: 3rem 1rem;">
@@ -312,10 +314,8 @@
             </p>
         </div>
 
-        {# Formulaire (masqué pendant l'envoi) #}
-        <form method="post" action="" id="manual-form"
-              x-show="!submitting"
-              @submit="submitting = true">
+        {# Contenu du formulaire (masqué pendant l'envoi) #}
+        <div x-show="!submitting">
             {% csrf_token %}
             <input type="hidden" name="mode" value="manual">
 
@@ -492,8 +492,9 @@
                 </div>
             </div>
 
-        </form>
-    </div>{# /x-data #}
+        </div>{# /contenu formulaire #}
+
+    </form>
 
     {% endif %}
 
