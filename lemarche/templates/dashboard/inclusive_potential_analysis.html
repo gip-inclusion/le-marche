@@ -405,7 +405,38 @@
 
     {% else %}
 
-    {# ── Formulaire de saisie ── #}
+    {# ── Onglets de saisie ── #}
+    <div class="fr-tabs">
+        <ul class="fr-tabs__list" role="tablist" aria-label="Mode de saisie">
+            <li role="presentation">
+                <button class="fr-tabs__tab"
+                        tabindex="{% if mode == 'excel' %}-1{% else %}0{% endif %}"
+                        role="tab"
+                        aria-selected="{% if mode == 'excel' %}false{% else %}true{% endif %}"
+                        aria-controls="tab-manual-panel"
+                        id="tab-manual">
+                    Saisir mes projets d'achat
+                </button>
+            </li>
+            <li role="presentation">
+                <button class="fr-tabs__tab"
+                        tabindex="{% if mode == 'excel' %}0{% else %}-1{% endif %}"
+                        role="tab"
+                        aria-selected="{% if mode == 'excel' %}true{% else %}false{% endif %}"
+                        aria-controls="tab-excel-panel"
+                        id="tab-excel">
+                    Importer ma programmation achat
+                </button>
+            </li>
+        </ul>
+
+        {# ── Onglet 1 : Saisie manuelle ── #}
+        <div id="tab-manual-panel"
+             class="fr-tabs__panel{% if mode != 'excel' %} fr-tabs__panel--selected{% endif %}"
+             role="tabpanel"
+             aria-labelledby="tab-manual"
+             tabindex="0">
+
     <form method="post" action="" id="manual-form"
           x-data="{
               projects: [{ id: 0, france_entiere: false }],
@@ -635,62 +666,93 @@
 
     </form>
 
-    {# ── Import Excel ── #}
-    <div class="fr-mt-4w" style="border-top: 2px solid #e3e3fd; padding-top: 2rem;">
-        <h2 class="fr-h5 fr-mb-1w">
-            <span class="ri-file-excel-2-line" aria-hidden="true"></span>
-            Analyser via un fichier Excel
-        </h2>
-        <p class="fr-text--sm fr-mb-2w" style="color:#666;">
-            Importez une programmation achat complète au format .xlsx.
-            <a href="{% url 'dashboard:inclusive_potential_analysis_template' %}"
-               class="fr-link fr-icon-download-line fr-link--icon-left">
-                Télécharger le modèle
-            </a>
-        </p>
+        </div>{# /tab-manual-panel #}
 
-        {# Erreurs d'import (si le fichier a été rejeté) #}
-        {% if import_errors %}
-        <div class="fr-alert fr-alert--error fr-mb-2w">
-            <p><strong>Erreur lors de l'import :</strong></p>
-            <ul>
-                {% for err in import_errors %}<li>{{ err }}</li>{% endfor %}
-            </ul>
-        </div>
-        {% endif %}
+        {# ── Onglet 2 : Import Excel ── #}
+        <div id="tab-excel-panel"
+             class="fr-tabs__panel{% if mode == 'excel' %} fr-tabs__panel--selected{% endif %}"
+             role="tabpanel"
+             aria-labelledby="tab-excel"
+             tabindex="0">
 
-        <form method="post" action="" enctype="multipart/form-data"
-              id="excel-form"
-              x-data="{ submitting: false }"
-              @submit.prevent="submitting = true; setTimeout(() => document.getElementById('excel-form').submit(), 3000)">
-            {% csrf_token %}
-            <input type="hidden" name="mode" value="excel">
-
-            {# Écran de chargement #}
-            <div x-show="submitting" x-cloak style="text-align:center; padding:2rem 1rem;">
-                <div class="ipa-spinner"></div>
-                <p class="fr-text--lead" style="font-weight:600; color:#000091;">
-                    Analyse du potentiel inclusif en cours…
-                </p>
-                <p style="color:#666;">Nous analysons vos projets d'achat, veuillez patienter.</p>
-            </div>
-
-            <div x-show="!submitting">
-                <div class="fr-upload-group fr-mb-2w">
-                    <label class="fr-label" for="excel-file">
-                        Fichier Excel (.xlsx)
-                        <span class="fr-hint-text">Colonnes requises : titre, secteur, perimetre_geographique. Montant recommandé.</span>
-                    </label>
-                    <input class="fr-upload" type="file" id="excel-file"
-                           name="excel_file" accept=".xlsx" required>
+            {# Intro #}
+            <div class="fr-grid-row fr-mb-4w">
+                <div class="fr-col-12 fr-col-lg-10">
+                    <h2 class="fr-h5">Analyser le potentiel inclusif de l'ensemble de votre programmation achat</h2>
+                    <p>
+                        Importez votre programmation achat au format Excel pour analyser simultanément
+                        des dizaines ou centaines de projets. Les résultats seront agrégés par
+                        <strong>secteur d'achat</strong> et par <strong>périmètre géographique</strong>,
+                        avec le détail de chaque projet accessible en un clic.
+                    </p>
+                    <div class="fr-callout fr-mb-3w">
+                        <p class="fr-callout__text">
+                            Votre fichier Excel doit contenir les colonnes suivantes :
+                            <strong>titre</strong> (obligatoire),
+                            <strong>secteur</strong> (slug obligatoire — voir onglet « Secteurs disponibles » du modèle),
+                            <strong>perimetre_geographique</strong> (slug obligatoire ou <code>france_entiere</code>),
+                            <strong>montant</strong> (recommandé, en €),
+                            <strong>description</strong> (optionnelle).
+                        </p>
+                    </div>
+                    <a href="{% url 'dashboard:inclusive_potential_analysis_template' %}"
+                       class="fr-btn fr-btn--secondary fr-icon-download-line fr-btn--icon-left fr-mb-3w">
+                        Télécharger le modèle Excel
+                    </a>
                 </div>
-                <button type="submit" class="fr-btn fr-icon-upload-line fr-btn--icon-left"
-                        :disabled="submitting">
-                    Lancer l'analyse
-                </button>
             </div>
-        </form>
-    </div>
+
+            {# Erreurs d'import #}
+            {% if import_errors %}
+            <div class="fr-alert fr-alert--error fr-mb-3w">
+                <p><strong>Erreur lors de l'import :</strong></p>
+                <ul>
+                    {% for err in import_errors %}<li>{{ err }}</li>{% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {# Formulaire d'upload #}
+            <form method="post" action="" enctype="multipart/form-data"
+                  id="excel-form"
+                  x-data="{ submitting: false }"
+                  @submit.prevent="submitting = true; setTimeout(() => document.getElementById('excel-form').submit(), 3000)">
+                {% csrf_token %}
+                <input type="hidden" name="mode" value="excel">
+
+                <div x-show="submitting" x-cloak style="text-align:center; padding:2rem 1rem;">
+                    <div class="ipa-spinner"></div>
+                    <p class="fr-text--lead" style="font-weight:600; color:#000091;">
+                        Analyse du potentiel inclusif en cours…
+                    </p>
+                    <p style="color:#666;">
+                        Nous analysons l'ensemble de vos projets d'achat, veuillez patienter.
+                    </p>
+                </div>
+
+                <div x-show="!submitting">
+                    <div class="fr-upload-group fr-mb-3w">
+                        <label class="fr-label" for="excel-file">
+                            Fichier Excel (.xlsx)
+                            <span class="fr-hint-text">
+                                Taille maximale recommandée : quelques centaines de lignes.
+                                Formats acceptés : .xlsx uniquement.
+                            </span>
+                        </label>
+                        <input class="fr-upload" type="file" id="excel-file"
+                               name="excel_file" accept=".xlsx" required>
+                    </div>
+                    <button type="submit"
+                            class="fr-btn fr-icon-upload-line fr-btn--icon-left"
+                            :disabled="submitting">
+                        Lancer l'analyse
+                    </button>
+                </div>
+            </form>
+
+        </div>{# /tab-excel-panel #}
+
+    </div>{# /fr-tabs #}
 
     {% endif %}
 
