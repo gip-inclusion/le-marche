@@ -93,6 +93,37 @@
     .ipa-group-row td { font-weight: 600; padding: 0.75rem 1rem !important; }
     .ipa-group-chevron { float: right; color: #000091; font-size: 0.85rem; }
     .ipa-detail-row td { padding-left: 2rem !important; background: #fafafe; }
+
+    .ipa-tip {
+        display: inline-block;
+        position: relative;
+        cursor: help;
+        color: #666;
+        font-size: 0.8rem;
+        vertical-align: middle;
+        margin-left: 0.2rem;
+        line-height: 1;
+    }
+    .ipa-tip::after {
+        content: attr(data-tip);
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1e1e1e;
+        color: #fff;
+        padding: 0.5rem 0.75rem;
+        border-radius: 4px;
+        font-size: 0.78rem;
+        font-weight: 400;
+        width: 260px;
+        white-space: normal;
+        line-height: 1.5;
+        z-index: 200;
+        display: none;
+        pointer-events: none;
+    }
+    .ipa-tip:hover::after { display: block; }
 </style>
 
 <div class="fr-container fr-py-4w">
@@ -288,31 +319,46 @@
                         <div class="fr-col-6 fr-col-md-2">
                             <div class="ipa-metric-card">
                                 <div class="ipa-metric-value ipa-metric-value--accent">{{ result.potential_siaes }}</div>
-                                <div class="ipa-metric-label">Total</div>
+                                <div class="ipa-metric-label">
+                                    Total
+                                    <span class="ipa-tip" data-tip="Nombre total de structures inclusives identifiées sur ce secteur et ce périmètre qui pourraient répondre à votre besoin.">ⓘ</span>
+                                </div>
                             </div>
                         </div>
                         <div class="fr-col-6 fr-col-md-2">
                             <div class="ipa-metric-card">
                                 <div class="ipa-metric-value">{{ result.insertion_siaes }}</div>
-                                <div class="ipa-metric-label">Insertion</div>
+                                <div class="ipa-metric-label">
+                                    Insertion
+                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles appartenant au secteur de l'insertion par l'activité économique (EI, AI, ETTI, EITI, ACI).">ⓘ</span>
+                                </div>
                             </div>
                         </div>
                         <div class="fr-col-6 fr-col-md-2">
                             <div class="ipa-metric-card">
                                 <div class="ipa-metric-value">{{ result.handicap_siaes }}</div>
-                                <div class="ipa-metric-label">Handicap</div>
+                                <div class="ipa-metric-label">
+                                    Handicap
+                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles du secteur adapté et protégé (EA, ESAT).">ⓘ</span>
+                                </div>
                             </div>
                         </div>
                         <div class="fr-col-6 fr-col-md-2">
                             <div class="ipa-metric-card">
                                 <div class="ipa-metric-value">{{ result.local_siaes }}</div>
-                                <div class="ipa-metric-label">Locales</div>
+                                <div class="ipa-metric-label">
+                                    Locales
+                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles dont le siège est implanté dans le périmètre géographique indiqué.">ⓘ</span>
+                                </div>
                             </div>
                         </div>
                         <div class="fr-col-6 fr-col-md-2">
                             <div class="ipa-metric-card">
                                 <div class="ipa-metric-value">{{ result.siaes_with_super_badge }}</div>
-                                <div class="ipa-metric-label">Super prestataires</div>
+                                <div class="ipa-metric-label">
+                                    Super prestataires
+                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles labellisées « Super prestataire » par le Marché de l'Inclusion.">ⓘ</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -328,13 +374,19 @@
                         <div class="fr-col-6 fr-col-md-3">
                             <div class="ipa-metric-card">
                                 <div class="ipa-metric-value">{{ result.employees_insertion_average }}</div>
-                                <div class="ipa-metric-label">ETP insertion</div>
+                                <div class="ipa-metric-label">
+                                    ETP insertion
+                                    <span class="ipa-tip" data-tip="Nombre moyen d'équivalents temps plein en parcours d'insertion dans les structures potentielles.">ⓘ</span>
+                                </div>
                             </div>
                         </div>
                         <div class="fr-col-6 fr-col-md-3">
                             <div class="ipa-metric-card">
                                 <div class="ipa-metric-value">{{ result.employees_permanent_average }}</div>
-                                <div class="ipa-metric-label">ETP permanents</div>
+                                <div class="ipa-metric-label">
+                                    ETP permanents
+                                    <span class="ipa-tip" data-tip="Nombre moyen d'équivalents temps plein permanents (encadrants, accompagnateurs) dans les structures potentielles.">ⓘ</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -353,7 +405,10 @@
                                 <div class="ipa-metric-value">
                                     {% if result.eco_dependency is not None %}{{ result.eco_dependency }} %{% else %}—{% endif %}
                                 </div>
-                                <div class="ipa-metric-label">Dépendance économique</div>
+                                <div class="ipa-metric-label">
+                                    Dépendance économique
+                                    <span class="ipa-tip" data-tip="Part que représente votre marché dans le CA moyen des structures potentielles. Au-delà de 30 %, le risque de dépendance économique est considéré comme élevé.">ⓘ</span>
+                                </div>
                             </div>
                         </div>
                         <div class="fr-col-6 fr-col-md-3">
@@ -361,7 +416,10 @@
                                 <div class="ipa-metric-value">
                                     {% if result.ca_average %}{{ result.ca_average }} €{% else %}—{% endif %}
                                 </div>
-                                <div class="ipa-metric-label">CA moyen des structures</div>
+                                <div class="ipa-metric-label">
+                                    CA moyen des structures
+                                    <span class="ipa-tip" data-tip="Chiffre d'affaires moyen des structures potentielles, qui permet d'estimer leur capacité à absorber votre commande.">ⓘ</span>
+                                </div>
                             </div>
                         </div>
                     </div>
