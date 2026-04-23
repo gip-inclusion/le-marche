@@ -87,7 +87,9 @@ class PurchaseProjectForm(forms.Form):
     description = forms.CharField(
         label="Description (optionnelle)",
         required=False,
-        widget=forms.Textarea(attrs={"class": "fr-input", "rows": 2, "placeholder": "Décrivez brièvement le besoin"}),
+        widget=forms.Textarea(
+            attrs={"class": "fr-input", "rows": 2, "placeholder": "Décrivez brièvement le besoin"}
+        ),
     )
     secteur = forms.ModelChoiceField(
         label="Secteur d'achat",
@@ -124,7 +126,8 @@ class PurchaseProjectForm(forms.Form):
             )
         if not france_entiere and not perimeter_slug:
             raise forms.ValidationError(
-                "Le périmètre géographique est obligatoire. Sélectionnez une zone ou choisissez \"Toute la France\"."
+                "Le périmètre géographique est obligatoire. Sélectionnez une zone ou choisissez "
+                '"Toute la France".'
             )
 
         if perimeter_slug:

@@ -77,7 +77,9 @@ class InclusivePotentialAnalysisManualFormTest(TestCase):
         self.client.force_login(self.user)
         return self.client.post(self.url, data)
 
-    def _valid_formset_data(self, titre="Nettoyage de locaux", montant=80000, sector_slug=None, perimeter_slug="paris"):
+    def _valid_formset_data(
+        self, titre="Nettoyage de locaux", montant=80000, sector_slug=None, perimeter_slug="paris"
+    ):
         sector_slug = sector_slug or self.sector.slug
         return {
             "mode": "manual",

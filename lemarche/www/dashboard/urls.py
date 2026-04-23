@@ -18,7 +18,11 @@ urlpatterns = [
     path("notifications/", DisabledEmailEditView.as_view(), name="notifications_edit"),
     path("part-achat-inclusif/", InclusivePurchaseStatsDashboardView.as_view(), name="inclusive_purchase_stats"),
     path("analyse-potentiel-inclusif/", InclusivePotentialAnalysisView.as_view(), name="inclusive_potential_analysis"),
-    path("analyse-potentiel-inclusif/modele-excel/", inclusive_potential_excel_template, name="inclusive_potential_analysis_template"),
+    path(
+        "analyse-potentiel-inclusif/modele-excel/",
+        inclusive_potential_excel_template,
+        name="inclusive_potential_analysis_template",
+    ),
     # FavoriteList
     # see dashboard_favorites/urls.py
     # Network

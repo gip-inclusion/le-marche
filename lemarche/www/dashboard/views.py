@@ -420,7 +420,15 @@ def inclusive_potential_excel_template(request):
     headers = ["titre", "description", "secteur", "montant", "perimetre_geographique"]
     ws.append(headers)
     ws.append(["Prestations de nettoyage", "Nettoyage de bureaux", "nettoyage", 80000, "paris"])
-    ws.append(["Fourniture de textiles professionnels", "Vêtements de travail pour agents", "textile", 45000, "ile-de-france"])
+    ws.append(
+        [
+            "Fourniture de textiles professionnels",
+            "Vêtements de travail pour agents",
+            "textile",
+            45000,
+            "ile-de-france",
+        ]
+    )
 
     buffer = io.BytesIO()
     wb.save(buffer)
