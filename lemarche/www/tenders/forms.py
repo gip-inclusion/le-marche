@@ -499,6 +499,40 @@ class TenderReminderForm(forms.Form):
     reminder_message = forms.CharField(widget=forms.Textarea, label="Message")
 
 
+class TenderBuyerEmailForm(forms.Form):
+    subject = forms.CharField(label="Objet de l'email", max_length=255)
+    message = forms.CharField(label="Contenu du message", widget=forms.Textarea)
+    ao_url = forms.URLField(label="URL de l'appel d'offres", required=False)
+    attachment = forms.FileField(label="Document joint", required=False)
+    siae_ids = forms.ModelMultipleChoiceField(
+        queryset=Siae.objects.all(),
+        widget=forms.MultipleHiddenInput,
+        error_messages={"required": "Veuillez sélectionner au moins un prestataire."},
+    )
+
+    def clean_attachment(self):
+        attachment = self.cleaned_data.get("attachment")
+        if not attachment:
+            return attachment
+
+        allowed_types = [
+            "application/pdf",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        ]
+        if attachment.content_type not in allowed_types or not attachment.name.endswith(
+            (".pdf", ".doc", ".docx", ".xls", ".xlsx")
+        ):
+            raise forms.ValidationError("Format de fichier non autorisé. Formats acceptés : PDF, DOC, DOCX, XLS, XLSX")
+
+        if attachment.size > 10 * 1024 * 1024:
+            raise forms.ValidationError("La taille du fichier ne doit pas dépasser 10 Mo")
+
+        return attachment
+
+
 class SiaeNudgeFieldForm(forms.Form):
     """Single-field form for the contextual nudge module on tender detail page."""
 

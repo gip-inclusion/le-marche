@@ -1,4 +1,5 @@
 import csv
+import logging
 import os
 from datetime import timedelta
 
@@ -7,7 +8,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.files.storage import FileSystemStorage
+from django.core.files.storage import FileSystemStorage, default_storage
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.db.models import OuterRef, Prefetch, Subquery
@@ -21,6 +22,7 @@ from django.views.generic import DetailView, ListView, UpdateView, View
 from django.views.generic.edit import FormMixin, FormView
 from formtools.wizard.views import SessionWizardView
 
+from lemarche.conversations.models import TemplateTransactional
 from lemarche.siaes.models import Siae, SiaeClientReference
 from lemarche.siaes.tasks import send_reminder_email_to_siae
 from lemarche.tenders import constants as tender_constants
@@ -51,11 +53,12 @@ from lemarche.utils.mixins import (
 from lemarche.utils.urls import get_domain_url
 from lemarche.www.siaes.forms import SiaeFilterForm
 from lemarche.www.tenders.forms import (
+    SiaeNudgeFieldForm,
     SiaeSelectFieldsForm,
+    TenderBuyerEmailForm,
     TenderCreateStepConfirmationForm,
     TenderCreateStepContactForm,
     TenderCreateStepDetailForm,
-    SiaeNudgeFieldForm,
     TenderCreateStepGeneralForm,
     TenderCreateStepSurveyForm,
     TenderDetailGetParams,
@@ -69,6 +72,9 @@ from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
     send_siae_interested_email_to_author,
 )
 from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user, update_or_create_questions_list
+
+
+logger = logging.getLogger(__name__)
 
 
 class TenderCreateMultiStepView(SessionWizardView):
@@ -1277,3 +1283,79 @@ class TenderSiaeNudgeUpdateView(LoginRequiredMixin, View):
                 "is_confirmation": False,
             },
         )
+
+
+class TenderSiaeBuyerEmailView(TenderAuthorOrAdminRequiredMixin, View):
+    http_method_names = ["post"]
+
+    def post(self, request, slug):
+        tender = get_object_or_404(Tender, slug=slug)
+        form = TenderBuyerEmailForm(data=request.POST, files=request.FILES)
+
+        if not form.is_valid():
+            messages.error(request, "Le formulaire contient des erreurs. Veuillez vérifier les champs.")
+            return redirect("tenders:detail-siae-list", slug=slug)
+
+        selected_siaes = form.cleaned_data["siae_ids"]
+        subject = form.cleaned_data["subject"]
+        message_content = form.cleaned_data["message"]
+        ao_url = form.cleaned_data.get("ao_url", "") or ""
+        attachment = form.cleaned_data.get("attachment")
+
+        document_url = ""
+        if attachment:
+            file_path = f"tender-ao-emails/{tender.pk}/{attachment.name}"
+            saved_path = default_storage.save(file_path, attachment)
+            document_url = default_storage.url(saved_path)
+
+        try:
+            email_template = TemplateTransactional.objects.get(code="TENDERS_BUYER_AO_EMAIL")
+        except TemplateTransactional.DoesNotExist:
+            logger.error("TemplateTransactional TENDERS_BUYER_AO_EMAIL introuvable")
+            messages.error(request, "L'envoi a échoué. Veuillez réessayer.")
+            return redirect("tenders:detail-siae-list", slug=slug)
+
+        sent_count = 0
+        skipped_count = 0
+
+        for siae in selected_siaes:
+            if not siae.contact_email:
+                skipped_count += 1
+                continue
+            variables = {
+                "SUPPLIER_NAME": siae.name_display,
+                "MESSAGE_CONTENT": message_content,
+                "AO_URL": ao_url,
+                "AO_DOCUMENT_URL": document_url,
+                "BUYER_FIRST_NAME": request.user.first_name,
+                "BUYER_LAST_NAME": request.user.last_name,
+                "BUYER_EMAIL": request.user.email,
+            }
+            try:
+                email_template.send_transactional_email(
+                    subject=subject,
+                    recipient_email=siae.contact_email,
+                    recipient_name=siae.contact_full_name,
+                    variables=variables,
+                )
+                sent_count += 1
+            except Exception:
+                # Ne pas bloquer les autres envois si un seul échoue
+                logger.exception("Erreur envoi email AO à %s (siae %s)", siae.contact_email, siae.pk)
+                skipped_count += 1
+
+        if sent_count == 0:
+            messages.error(request, "L'envoi a échoué. Veuillez réessayer.")
+        elif skipped_count > 0:
+            messages.warning(
+                request,
+                f"Votre appel d'offres a été envoyé à {sent_count} prestataire(s). "
+                f"{skipped_count} prestataire(s) n'ont pas pu être contacté(s) (email manquant ou erreur d'envoi).",
+            )
+        else:
+            messages.success(
+                request,
+                f"Votre appel d'offres a bien été envoyé à {sent_count} prestataire(s) sélectionné(s).",
+            )
+
+        return redirect("tenders:detail-siae-list", slug=slug)

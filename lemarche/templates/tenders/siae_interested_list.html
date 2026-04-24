@@ -47,7 +47,7 @@
                 </div>
             </div>
             {% block htmx %}
-                <div id="tenderSiaeList">
+                <div id="tenderSiaeList" x-data="{ selectedIds: [] }">
                     <div class="fr-grid-row fr-grid-row--gutters fr-mb-8v">
                         <div class="fr-col-12">
                             <div class="fr-tabs">
@@ -151,6 +151,17 @@
                                                     Exporter
                                                   </button>
                                                 </li>
+                                                <li>
+                                                  <button type="button"
+                                                          class="fr-btn fr-btn--icon-left fr-icon-mail-fill"
+                                                          data-fr-opened="false"
+                                                          aria-controls="fr-modal-send-ao"
+                                                          :disabled="selectedIds.length === 0"
+                                                          :class="selectedIds.length === 0 ? 'fr-btn--secondary' : ''">
+                                                    Envoyer un appel d'offres
+                                                    <span x-show="selectedIds.length > 0" x-text="'(' + selectedIds.length + ')'"></span>
+                                                  </button>
+                                                </li>
                                             </ul>
                                             <dialog aria-labelledby="fr-modal-reminder-title" role="dialog" id="fr-modal-reminder"
                                                   class="fr-modal">
@@ -235,6 +246,99 @@
                                                         <li>
                                                           <button class="fr-btn fr-btn--secondary"
                                                                   aria-controls="fr-modal-download">Retour
+                                                          </button>
+                                                        </li>
+                                                      </ul>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </dialog>
+                                          <dialog aria-labelledby="fr-modal-send-ao-title"
+                                                  role="dialog"
+                                                  id="fr-modal-send-ao"
+                                                  class="fr-modal">
+                                            <div class="fr-container fr-container--fluid fr-container-md">
+                                              <div class="fr-grid-row fr-grid-row--center">
+                                                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                                                  <div class="fr-modal__body">
+                                                    <div class="fr-modal__header">
+                                                      <button class="fr-btn--close fr-btn"
+                                                              title="Fermer la fenêtre"
+                                                              aria-controls="fr-modal-send-ao">Fermer
+                                                      </button>
+                                                    </div>
+                                                    <div class="fr-modal__content">
+                                                      <h1 id="fr-modal-send-ao-title" class="fr-modal__title">
+                                                        Envoyer un appel d'offres
+                                                      </h1>
+                                                      <p>Votre message sera envoyé aux prestataires sélectionnés.</p>
+                                                      <form method="post"
+                                                            id="send-ao-form"
+                                                            enctype="multipart/form-data"
+                                                            action="{% url 'tenders:send-ao' slug=tender.slug %}">
+                                                        {% csrf_token %}
+                                                        <template x-for="id in selectedIds" :key="id">
+                                                          <input type="hidden" name="siae_ids" :value="id">
+                                                        </template>
+                                                        <div class="fr-input-group fr-mb-4v">
+                                                          <label class="fr-label" for="ao-subject">
+                                                            Objet de l'email <span class="fr-hint-text">Obligatoire</span>
+                                                          </label>
+                                                          <input class="fr-input"
+                                                                 type="text"
+                                                                 id="ao-subject"
+                                                                 name="subject"
+                                                                 required
+                                                                 maxlength="255">
+                                                        </div>
+                                                        <div class="fr-input-group fr-mb-4v">
+                                                          <label class="fr-label" for="ao-message">
+                                                            Contenu du message <span class="fr-hint-text">Obligatoire</span>
+                                                          </label>
+                                                          <textarea class="fr-input"
+                                                                    id="ao-message"
+                                                                    name="message"
+                                                                    rows="6"
+                                                                    required></textarea>
+                                                        </div>
+                                                        <div class="fr-input-group fr-mb-4v">
+                                                          <label class="fr-label" for="ao-url">
+                                                            URL de l'appel d'offres
+                                                            <span class="fr-hint-text">Facultatif — lien vers dossier ou plateforme</span>
+                                                          </label>
+                                                          <input class="fr-input"
+                                                                 type="url"
+                                                                 id="ao-url"
+                                                                 name="ao_url"
+                                                                 placeholder="https://...">
+                                                        </div>
+                                                        <div class="fr-upload-group fr-mb-4v">
+                                                          <label class="fr-label" for="ao-attachment">
+                                                            Document joint
+                                                            <span class="fr-hint-text">Facultatif — PDF, DOC, DOCX, XLS, XLSX — 10 Mo max</span>
+                                                          </label>
+                                                          <input class="fr-upload"
+                                                                 type="file"
+                                                                 id="ao-attachment"
+                                                                 name="attachment"
+                                                                 accept=".pdf,.doc,.docx,.xls,.xlsx">
+                                                        </div>
+                                                      </form>
+                                                    </div>
+                                                    <div class="fr-modal__footer">
+                                                      <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg">
+                                                        <li>
+                                                          <button class="fr-btn"
+                                                                  type="submit"
+                                                                  form="send-ao-form">
+                                                            Envoyer l'appel d'offres
+                                                          </button>
+                                                        </li>
+                                                        <li>
+                                                          <button class="fr-btn fr-btn--secondary"
+                                                                  aria-controls="fr-modal-send-ao">Retour
                                                           </button>
                                                         </li>
                                                       </ul>

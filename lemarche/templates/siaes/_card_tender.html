@@ -4,6 +4,13 @@
         <div class="fr-card__content">
             <div class="fr-card__desc" x-data="{ showQuestions: false, showNotInterested: false }">
                 <div class="fr-grid-row">
+                    <div class="fr-col-auto fr-mr-2v" style="display:flex;align-items:flex-start;padding-top:4px;">
+                        <input type="checkbox"
+                               id="select-siae-{{ siae.pk }}"
+                               :value="{{ siae.pk }}"
+                               x-model="selectedIds"
+                               aria-label="Sélectionner {{ siae.name_display }}">
+                    </div>
                     <div class="fr-col-auto">
                         {% if siae.logo_url %}
                             <img src="{{ siae.logo_url }}" width="50" alt="Logo de {{ siae.name }}" />
