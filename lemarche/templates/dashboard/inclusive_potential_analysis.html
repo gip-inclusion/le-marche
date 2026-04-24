@@ -1,0 +1,827 @@
+{% extends "layouts/base.html" %}
+{% load static process_dict dsfr_tags fr_number %}
+
+{% block page_title %}Analyser le potentiel inclusif d'une programmation achat{{ block.super }}{% endblock page_title %}
+
+{% block breadcrumb %}
+    {% process_dict root_dir=HOME_PAGE_PATH current="Analyse du potentiel inclusif" as breadcrumb_data %}
+    {% dsfr_breadcrumb breadcrumb_data %}
+{% endblock breadcrumb %}
+
+{% block content %}
+<style>
+    [x-cloak] { display: none !important; }
+
+    .ipa-spinner {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #e3e3fd;
+        border-top-color: #000091;
+        border-radius: 50%;
+        animation: ipa-spin 0.9s linear infinite;
+        margin: 0 auto 1.5rem;
+    }
+    @keyframes ipa-spin { to { transform: rotate(360deg); } }
+
+    .ipa-metric-card {
+        background: #f6f6f6;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        text-align: center;
+    }
+    .ipa-metric-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #161616;
+        line-height: 1.1;
+    }
+    .ipa-metric-value--accent { color: #000091; }
+    .ipa-metric-label {
+        font-size: 0.8rem;
+        color: #666;
+        margin-top: 0.25rem;
+    }
+    .ipa-section-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #161616;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e3e3fd;
+    }
+    .ipa-section-title [class^="fr-icon-"],
+    .ipa-section-title [class*=" fr-icon-"],
+    .ipa-section-title [class^="ri-"],
+    .ipa-section-title [class*=" ri-"] {
+        color: #000091;
+        font-size: 1.2rem;
+    }
+    .ipa-recommendation {
+        background: linear-gradient(135deg, #f0f0fb 0%, #e8f5e9 100%);
+        border-left: 4px solid #18753c;
+        border-radius: 0 8px 8px 0;
+        padding: 1rem 1.5rem;
+    }
+    .ipa-recommendation-title {
+        font-weight: 700;
+        color: #18753c;
+        margin-bottom: 0.25rem;
+    }
+    .ipa-project-header {
+        background: #000091;
+        color: #fff;
+        border-radius: 8px 8px 0 0;
+        padding: 1rem 1.5rem;
+    }
+    .ipa-project-header h3 { color: #fff; margin: 0 0 0.25rem 0; font-size: 1.1rem; }
+    .ipa-project-meta { font-size: 0.85rem; opacity: 0.85; }
+    .ipa-project-body {
+        border: 2px solid #e3e3fd;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        padding: 1.5rem;
+    }
+    .ipa-group-row {
+        cursor: pointer;
+        background: #f0f0fb;
+        user-select: none;
+    }
+    .ipa-group-row:hover { background: #e3e3fd; }
+    .ipa-group-row td { font-weight: 600; padding: 0.75rem 1rem !important; }
+    .ipa-group-chevron { float: right; color: #000091; font-size: 0.85rem; }
+    .ipa-detail-row td { padding-left: 2rem !important; background: #fafafe; }
+
+    .ipa-metric-card { overflow: visible; }
+    .ipa-tip {
+        display: inline-block;
+        position: relative;
+        cursor: help;
+        color: #000091;
+        font-size: 0.9rem;
+        vertical-align: middle;
+        margin-left: 0.25rem;
+        line-height: 1;
+    }
+    .ipa-tip::after {
+        content: attr(data-tip);
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1e1e1e;
+        color: #fff;
+        padding: 0.5rem 0.75rem;
+        border-radius: 4px;
+        font-size: 0.78rem;
+        font-weight: 400;
+        width: 260px;
+        white-space: normal;
+        line-height: 1.5;
+        z-index: 1000;
+        display: none;
+        pointer-events: none;
+        text-align: left;
+    }
+    .ipa-tip:hover::after { display: block; }
+    .ipa-metric-label { overflow: visible; position: relative; }
+</style>
+
+<div class="fr-container fr-py-4w">
+
+    {# ── Introduction ── #}
+    <div class="fr-grid-row fr-mb-4w">
+        <div class="fr-col-12 fr-col-lg-10">
+            <h1>Analyser le potentiel inclusif d'une programmation achat</h1>
+            <p class="fr-text--lead">
+                Cet outil vous permet d'évaluer le potentiel inclusif de vos projets d'achat en identifiant le nombre
+                de structures d'insertion et de handicap susceptibles de répondre à votre besoin, et en vous proposant
+                une recommandation d'achat inclusif adaptée.
+            </p>
+            {% if results is None %}
+            <div class="fr-callout">
+                <p class="fr-callout__text">
+                    Pour chaque projet d'achat, renseignez au minimum le <strong>titre</strong>, le
+                    <strong>catégorie achat</strong>, un <strong>périmètre géographique</strong> et le
+                    <strong>montant estimatif</strong>. Vous pouvez saisir
+                    plusieurs projets d'achat.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if results is not None %}
+
+    {# ── Résultats ── #}
+    <div class="fr-mb-3w">
+        <a href="{% url 'dashboard:inclusive_potential_analysis' %}"
+           class="fr-btn fr-btn--secondary fr-icon-arrow-go-back-line fr-btn--icon-left">
+            Lancer une nouvelle analyse
+        </a>
+    </div>
+
+    {% if results %}
+        <div class="fr-alert fr-alert--success fr-mb-3w">
+            <p>
+                <strong>Analyse terminée !</strong>
+                {{ results|length }} projet d'achat{{ results|length|pluralize }} analysé{{ results|length|pluralize }} avec succès.
+                {% if import_errors %}
+                    <br><small>{{ import_errors|length }} ligne{{ import_errors|length|pluralize }} ignorée{{ import_errors|length|pluralize }} (voir détail ci-dessous).</small>
+                {% endif %}
+            </p>
+        </div>
+
+        {# Erreurs partielles d'import #}
+        {% if import_errors %}
+        <div class="fr-alert fr-alert--warning fr-mb-3w">
+            <p><strong>Lignes ignorées lors de l'import :</strong></p>
+            <ul>
+                {% for err in import_errors %}<li>{{ err }}</li>{% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+    {# ══ Résultats Excel : vue agrégée ══ #}
+    {% if mode == "excel" %}
+
+        {# Agrégat par secteur #}
+        <h2 class="fr-h4 fr-mb-2w">
+            <span class="fr-icon-building-line" aria-hidden="true"></span>
+            Par catégorie achat
+        </h2>
+        <div style="overflow-x:auto;" class="fr-mb-5w">
+            <table class="fr-table fr-table--sm" aria-label="Analyse par catégorie achat">
+                <thead><tr>
+                    <th>Titre du projet d'achat</th>
+                    <th>Périmètre</th>
+                    <th>Montant</th>
+                    <th>Structures potentielles</th>
+                    <th>Insertion</th>
+                    <th>Handicap</th>
+                    <th>Recommandation</th>
+                </tr></thead>
+                {% for sector_name, sector_data in results_by_sector.items %}
+                <tbody x-data="{ open: false }">
+                    <tr class="ipa-group-row" @click="open = !open">
+                        <td colspan="7">
+                            {{ sector_name }}
+                            <span style="font-weight:400; color:#555; margin-left:1rem;">
+                                {{ sector_data.project_count }} projet d'achat{{ sector_data.project_count|pluralize }}
+                                &nbsp;·&nbsp; <strong>{{ sector_data.total_structures }}</strong>
+                                structure{{ sector_data.total_structures|pluralize }} potentielle{{ sector_data.total_structures|pluralize }}
+                                {% if sector_data.total_montant %}&nbsp;·&nbsp; {{ sector_data.total_montant|fr_number }} €{% endif %}
+                            </span>
+                            <span class="ipa-group-chevron" x-text="open ? '▲' : '▼'"></span>
+                        </td>
+                    </tr>
+                    {% for r in sector_data.projects %}
+                    <tr class="ipa-detail-row" x-show="open" x-cloak
+                        {% if r.error %}style="background:#fff5f5;"{% endif %}>
+                        <td>{{ r.titre }}</td>
+                        {% if r.error %}
+                        <td colspan="6" style="color:#ce0500;">{{ r.error }}</td>
+                        {% else %}
+                        <td>{{ r.perimeter_name }}</td>
+                        <td>{% if r.montant %}{{ r.montant|fr_number }} €{% else %}—{% endif %}</td>
+                        <td><strong>{{ r.potential_siaes }}</strong></td>
+                        <td>{{ r.insertion_siaes }}</td>
+                        <td>{{ r.handicap_siaes }}</td>
+                        <td>{{ r.recommendation_title|default:"—" }}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+
+        {# Agrégat par périmètre #}
+        <h2 class="fr-h4 fr-mb-2w">
+            <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
+            Par périmètre géographique
+        </h2>
+        <div style="overflow-x:auto;" class="fr-mb-5w">
+            <table class="fr-table fr-table--sm" aria-label="Analyse par périmètre géographique">
+                <thead><tr>
+                    <th>Titre du projet d'achat</th>
+                    <th>Catégorie achat</th>
+                    <th>Montant</th>
+                    <th>Structures potentielles</th>
+                    <th>Insertion</th>
+                    <th>Handicap</th>
+                    <th>Recommandation</th>
+                </tr></thead>
+                {% for perimeter_name, perimeter_data in results_by_perimeter.items %}
+                <tbody x-data="{ open: false }">
+                    <tr class="ipa-group-row" @click="open = !open">
+                        <td colspan="7">
+                            {{ perimeter_name }}
+                            <span style="font-weight:400; color:#555; margin-left:1rem;">
+                                {{ perimeter_data.project_count }} projet d'achat{{ perimeter_data.project_count|pluralize }}
+                                &nbsp;·&nbsp; <strong>{{ perimeter_data.total_structures }}</strong>
+                                structure{{ perimeter_data.total_structures|pluralize }} potentielle{{ perimeter_data.total_structures|pluralize }}
+                                {% if perimeter_data.total_montant %}&nbsp;·&nbsp; {{ perimeter_data.total_montant|fr_number }} €{% endif %}
+                            </span>
+                            <span class="ipa-group-chevron" x-text="open ? '▲' : '▼'"></span>
+                        </td>
+                    </tr>
+                    {% for r in perimeter_data.projects %}
+                    <tr class="ipa-detail-row" x-show="open" x-cloak
+                        {% if r.error %}style="background:#fff5f5;"{% endif %}>
+                        <td>{{ r.titre }}</td>
+                        {% if r.error %}
+                        <td colspan="6" style="color:#ce0500;">{{ r.error }}</td>
+                        {% else %}
+                        <td>{{ r.secteur_name }}</td>
+                        <td>{% if r.montant %}{{ r.montant|fr_number }} €{% else %}—{% endif %}</td>
+                        <td><strong>{{ r.potential_siaes }}</strong></td>
+                        <td>{{ r.insertion_siaes }}</td>
+                        <td>{{ r.handicap_siaes }}</td>
+                        <td>{{ r.recommendation_title|default:"—" }}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+
+    {# ══ Résultats manuels : cartes détaillées ══ #}
+    {% else %}
+
+        {% for result in results %}
+        <div class="fr-mb-4w">
+            <div class="ipa-project-header">
+                <h3>{{ result.titre }}</h3>
+                <p class="ipa-project-meta">
+                    <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
+                    {{ result.secteur_name }} &nbsp;·&nbsp; {{ result.perimeter_name }}
+                    {% if result.montant %}&nbsp;·&nbsp; {{ result.montant|fr_number }} €{% endif %}
+                </p>
+            </div>
+
+            <div class="ipa-project-body">
+
+                {% if result.error %}
+                <div class="fr-alert fr-alert--error">
+                    <p>{{ result.error }}</p>
+                </div>
+
+                {% else %}
+
+                {# Section 1 — Structures potentielles #}
+                <div class="fr-mb-3w">
+                    <p class="ipa-section-title">
+                        <span class="fr-icon-building-line" aria-hidden="true"></span>
+                        Structures potentielles
+                    </p>
+                    <div class="fr-grid-row fr-grid-row--gutters">
+                        <div class="fr-col-6 fr-col-md-2">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value ipa-metric-value--accent">{{ result.potential_siaes }}</div>
+                                <div class="ipa-metric-label">
+                                    Total
+                                    <span class="ipa-tip" data-tip="Nombre total de structures inclusives identifiées sur ce secteur et ce périmètre qui pourraient répondre à votre besoin."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-2">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">{{ result.insertion_siaes }}</div>
+                                <div class="ipa-metric-label">
+                                    Insertion
+                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles appartenant au secteur de l'insertion par l'activité économique (EI, AI, ETTI, EITI, ACI)."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-2">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">{{ result.handicap_siaes }}</div>
+                                <div class="ipa-metric-label">
+                                    Handicap
+                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles du secteur adapté et protégé (EA, ESAT)."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-2">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">{{ result.local_siaes }}</div>
+                                <div class="ipa-metric-label">
+                                    Locales
+                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles dont le siège est implanté dans le périmètre géographique indiqué."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-2">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">{{ result.siaes_with_super_badge }}</div>
+                                <div class="ipa-metric-label">
+                                    Super prestataires
+                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles labellisées « Super prestataire » par le Marché de l'Inclusion."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# Section 2 — Effectifs #}
+                <div class="fr-mb-3w">
+                    <p class="ipa-section-title">
+                        <span class="fr-icon-group-line" aria-hidden="true"></span>
+                        Effectifs moyens
+                    </p>
+                    <div class="fr-grid-row fr-grid-row--gutters">
+                        <div class="fr-col-6 fr-col-md-3">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">{{ result.employees_insertion_average }}</div>
+                                <div class="ipa-metric-label">
+                                    ETP insertion
+                                    <span class="ipa-tip" data-tip="Nombre moyen d'équivalents temps plein en parcours d'insertion dans les structures potentielles."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-3">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">{{ result.employees_permanent_average }}</div>
+                                <div class="ipa-metric-label">
+                                    ETP permanents
+                                    <span class="ipa-tip" data-tip="Nombre moyen d'équivalents temps plein permanents (encadrants, accompagnateurs) dans les structures potentielles."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# Section 3 — Analyse économique (affichée dès qu'un montant est fourni) #}
+                {% if result.montant %}
+                <div class="fr-mb-3w">
+                    <p class="ipa-section-title">
+                        <span class="ri-bar-chart-2-line" aria-hidden="true"></span>
+                        Analyse économique
+                    </p>
+                    <div class="fr-grid-row fr-grid-row--gutters">
+                        <div class="fr-col-6 fr-col-md-3">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">
+                                    {% if result.eco_dependency is not None %}{{ result.eco_dependency }} %{% else %}—{% endif %}
+                                </div>
+                                <div class="ipa-metric-label">
+                                    Dépendance économique
+                                    <span class="ipa-tip" data-tip="Part que représente votre marché dans le CA moyen des structures potentielles. Au-delà de 30 %, le risque de dépendance économique est considéré comme élevé."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-3">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">
+                                    {% if result.ca_average %}{{ result.ca_average|fr_number }} €{% else %}—{% endif %}
+                                </div>
+                                <div class="ipa-metric-label">
+                                    CA moyen des structures
+                                    <span class="ipa-tip" data-tip="Chiffre d'affaires moyen des structures potentielles, qui permet d'estimer leur capacité à absorber votre commande."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {# Section 4 — Recommandation #}
+                {% if result.recommendation_title %}
+                <div>
+                    <p class="ipa-section-title">
+                        <span class="fr-icon-lightbulb-line" aria-hidden="true"></span>
+                        Recommandation
+                    </p>
+                    <div class="ipa-recommendation">
+                        <p class="ipa-recommendation-title">{{ result.recommendation_title }}</p>
+                        {% if result.recommendation_response %}
+                        <p style="margin: 0; color: #3a3a3a;">{{ result.recommendation_response }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% endif %}{# end if result.error #}
+
+            </div>{# /ipa-project-body #}
+        </div>{# /fr-mb-4w #}
+        {% endfor %}
+
+    {% endif %}{# end if mode == "excel" ... else #}
+
+    {% else %}
+        <div class="fr-alert fr-alert--warning">
+            <p>Aucun résultat à afficher. Vérifiez que vos projets d'achat sont correctement renseignés.</p>
+        </div>
+    {% endif %}{# end if results #}
+
+    {% else %}
+
+    {# ── Onglets de saisie ── #}
+    <div class="fr-tabs">
+        <ul class="fr-tabs__list" role="tablist" aria-label="Mode de saisie">
+            <li role="presentation">
+                <button class="fr-tabs__tab"
+                        tabindex="{% if mode == 'excel' %}-1{% else %}0{% endif %}"
+                        role="tab"
+                        aria-selected="{% if mode == 'excel' %}false{% else %}true{% endif %}"
+                        aria-controls="tab-manual-panel"
+                        id="tab-manual">
+                    Saisir mes projets d'achat
+                </button>
+            </li>
+            <li role="presentation">
+                <button class="fr-tabs__tab"
+                        tabindex="{% if mode == 'excel' %}0{% else %}-1{% endif %}"
+                        role="tab"
+                        aria-selected="{% if mode == 'excel' %}true{% else %}false{% endif %}"
+                        aria-controls="tab-excel-panel"
+                        id="tab-excel">
+                    Importer ma programmation achat
+                </button>
+            </li>
+        </ul>
+
+        {# ── Onglet 1 : Saisie manuelle ── #}
+        <div id="tab-manual-panel"
+             class="fr-tabs__panel{% if mode != 'excel' %} fr-tabs__panel--selected{% endif %}"
+             role="tabpanel"
+             aria-labelledby="tab-manual"
+             tabindex="0">
+
+    <form method="post" action="" id="manual-form"
+          x-data="{
+              projects: [{ id: 0, france_entiere: false, montant: '' }],
+              nextId: 1,
+              submitting: false,
+              addProject() {
+                  this.projects.push({ id: this.nextId++, france_entiere: false, montant: '' });
+                  this.$nextTick(() => this.syncTotalForms());
+              },
+              removeProject(projectId) {
+                  if (this.projects.length <= 1) return;
+                  this.projects = this.projects.filter(p => p.id !== projectId);
+                  this.$nextTick(() => this.syncTotalForms());
+              },
+              syncTotalForms() {
+                  const el = document.getElementById('id_form-TOTAL_FORMS');
+                  if (el) el.value = this.projects.length;
+              },
+              initPerimeterAC(projectId) {
+                  this.$nextTick(() => {
+                      if (typeof PerimeterAutocomplete !== 'undefined') {
+                          const ac = new PerimeterAutocomplete(
+                              'perimeter-container-' + projectId,
+                              'id_form_perimeter_slug_' + projectId
+                          );
+                          ac.init();
+                      }
+                  });
+              }
+          }"
+          x-init="syncTotalForms()"
+          @submit.prevent="submitting = true; setTimeout(() => document.getElementById('manual-form').submit(), 3000)">
+
+        {# Écran de chargement (visible pendant l'envoi, caché par x-cloak avant Alpine) #}
+        <div x-show="submitting"
+             x-cloak
+             style="text-align: center; padding: 3rem 1rem;">
+            <div class="ipa-spinner"></div>
+            <p class="fr-text--lead" style="font-weight: 600; color: #000091;">
+                Analyse du potentiel inclusif en cours…
+            </p>
+            <p style="color: #666;">
+                Nous interrogeons notre base de données pour identifier les structures inclusives
+                correspondant à vos projets d'achat.
+            </p>
+        </div>
+
+        {# Contenu du formulaire (masqué pendant l'envoi) #}
+        <div x-show="!submitting">
+            {% csrf_token %}
+            <input type="hidden" name="mode" value="manual">
+
+            {{ formset.management_form }}
+
+            {% if formset.non_form_errors %}
+                <div class="fr-alert fr-alert--error fr-mb-2w">
+                    {% for error in formset.non_form_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if formset.forms %}
+                {% for form in formset.forms %}
+                    {% if form.errors %}
+                        <div class="fr-alert fr-alert--error fr-mb-2w">
+                            <p><strong>Projet {{ forloop.counter }}</strong></p>
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+            <template x-for="(project, index) in projects" :key="project.id">
+                <div class="fr-card fr-mb-3w"
+                     x-init="initPerimeterAC(project.id)">
+                    <div class="fr-card__body">
+                        <div class="fr-card__content">
+
+                            <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle fr-mb-1w">
+                                <div class="fr-col">
+                                    <strong x-text="'Projet d\'achat ' + (index + 1)"></strong>
+                                </div>
+                                <div class="fr-col-auto" x-show="projects.length > 1">
+                                    <button type="button"
+                                            class="fr-btn fr-btn--tertiary fr-btn--sm fr-icon-delete-line"
+                                            @click="removeProject(project.id)"
+                                            :aria-label="'Supprimer le projet d\'achat ' + (index + 1)">
+                                        Supprimer
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="fr-grid-row fr-grid-row--gutters">
+
+                                {# Titre #}
+                                <div class="fr-col-12 fr-col-md-6">
+                                    <div class="fr-input-group">
+                                        <label :for="'id_form-' + index + '-titre'" class="fr-label">
+                                            Titre du projet d'achat
+                                            <span class="fr-badge fr-badge--sm fr-badge--error">Obligatoire</span>
+                                        </label>
+                                        <input :id="'id_form-' + index + '-titre'"
+                                               :name="'form-' + index + '-titre'"
+                                               type="text"
+                                               class="fr-input"
+                                               placeholder="Ex : Prestations de nettoyage"
+                                               required>
+                                    </div>
+                                </div>
+
+                                {# Secteur #}
+                                <div class="fr-col-12 fr-col-md-6">
+                                    <div class="fr-select-group">
+                                        <label :for="'id_form-' + index + '-secteur'" class="fr-label">
+                                            Catégorie achat
+                                            <span class="fr-badge fr-badge--sm fr-badge--error">Obligatoire</span>
+                                        </label>
+                                        <select :id="'id_form-' + index + '-secteur'"
+                                                :name="'form-' + index + '-secteur'"
+                                                class="fr-select"
+                                                required>
+                                            <option value="">Sélectionnez une catégorie</option>
+                                            {% regroup sectors by group.name as sector_groups %}
+                                            {% for group in sector_groups %}
+                                                <optgroup label="{{ group.grouper }}">
+                                                    {% for sector in group.list %}
+                                                        <option value="{{ sector.slug }}">{{ sector.name }}</option>
+                                                    {% endfor %}
+                                                </optgroup>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {# Montant #}
+                                <div class="fr-col-12 fr-col-md-6">
+                                    <div class="fr-input-group">
+                                        <label :for="'id_form-' + index + '-montant'" class="fr-label">
+                                            Montant estimatif (€)
+                                            <span class="fr-hint-text">Facultatif — requis pour obtenir une recommandation achat</span>
+                                        </label>
+                                        <input type="text"
+                                               class="fr-input"
+                                               placeholder="Ex : 80 000"
+                                               inputmode="numeric"
+                                               @input="
+                                                   let raw = $event.target.value.replace(/[^\d]/g, '');
+                                                   project.montant = raw;
+                                                   $event.target.value = raw === '' ? '' : raw.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                                               ">
+                                        <input type="hidden"
+                                               :id="'id_form-' + index + '-montant'"
+                                               :name="'form-' + index + '-montant'"
+                                               :value="project.montant">
+                                    </div>
+                                </div>
+
+                                {# Périmètre géographique #}
+                                <div class="fr-col-12 fr-col-md-6">
+                                    <div x-show="!project.france_entiere">
+                                        <div class="fr-input-group">
+                                            <label :for="'perimeter-container-' + project.id + '_name'"
+                                                   class="fr-label">
+                                                Périmètre géographique
+                                                <span class="fr-badge fr-badge--sm fr-badge--error">Obligatoire</span>
+                                                <span class="fr-hint-text">Région, département ou commune</span>
+                                            </label>
+                                            <input :id="'id_form_perimeter_slug_' + project.id"
+                                                   :name="'form-' + index + '-perimeter_slug'"
+                                                   type="hidden"
+                                                   value="">
+                                            <div :id="'perimeter-container-' + project.id"
+                                                 data-input-value=""></div>
+                                        </div>
+                                    </div>
+                                    <div class="fr-checkbox-group fr-mt-1w">
+                                        <input :id="'id_form-' + index + '-france_entiere'"
+                                               :name="'form-' + index + '-france_entiere'"
+                                               type="checkbox"
+                                               class="fr-checkbox-group__input"
+                                               x-model="project.france_entiere">
+                                        <label class="fr-label" :for="'id_form-' + index + '-france_entiere'">
+                                            Toute la France
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {# Description #}
+                                <div class="fr-col-12">
+                                    <div class="fr-input-group">
+                                        <label :for="'id_form-' + index + '-description'" class="fr-label">
+                                            Description (optionnelle)
+                                        </label>
+                                        <textarea :id="'id_form-' + index + '-description'"
+                                                  :name="'form-' + index + '-description'"
+                                                  rows="2"
+                                                  class="fr-input"
+                                                  placeholder="Décrivez brièvement le besoin"></textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+                <div class="fr-col-auto">
+                    <button type="button"
+                            class="fr-btn fr-btn--secondary fr-icon-add-line"
+                            @click="addProject()">
+                        Ajouter un projet d'achat
+                    </button>
+                </div>
+                <div class="fr-col-auto">
+                    <button type="submit"
+                            class="fr-btn"
+                            :disabled="submitting"
+                            x-text="submitting ? 'Analyse en cours…' : 'Lancer l\'analyse'">
+                        Lancer l'analyse
+                    </button>
+                </div>
+            </div>
+
+        </div>{# /contenu formulaire #}
+
+    </form>
+
+        </div>{# /tab-manual-panel #}
+
+        {# ── Onglet 2 : Import Excel ── #}
+        <div id="tab-excel-panel"
+             class="fr-tabs__panel{% if mode == 'excel' %} fr-tabs__panel--selected{% endif %}"
+             role="tabpanel"
+             aria-labelledby="tab-excel"
+             tabindex="0">
+
+            {# Intro #}
+            <div class="fr-grid-row fr-mb-4w">
+                <div class="fr-col-12 fr-col-lg-10">
+                    <h2 class="fr-h5">Analyser le potentiel inclusif de l'ensemble de votre programmation achat</h2>
+                    <p>
+                        Importez votre programmation achat au format Excel pour analyser simultanément
+                        des dizaines ou centaines de projets d'achat. Les résultats seront agrégés par
+                        <strong>catégorie achat</strong> et par <strong>périmètre géographique</strong>,
+                        avec le détail de chaque projet d'achat accessible en un clic.
+                    </p>
+                    <div class="fr-callout fr-mb-3w">
+                        <p class="fr-callout__text">
+                            Votre fichier Excel doit contenir les colonnes suivantes :
+                            <strong>titre</strong> (obligatoire),
+                            <strong>secteur</strong> (slug obligatoire — voir onglet « Secteurs disponibles » du modèle),
+                            <strong>perimetre_geographique</strong> (slug obligatoire ou <code>france_entiere</code>),
+                            <strong>montant</strong> (obligatoire, en €),
+                            <strong>description</strong> (optionnelle).
+                        </p>
+                    </div>
+                    <a href="{% url 'dashboard:inclusive_potential_analysis_template' %}"
+                       class="fr-btn fr-btn--secondary fr-icon-download-line fr-btn--icon-left fr-mb-3w">
+                        Télécharger le modèle Excel
+                    </a>
+                </div>
+            </div>
+
+            {# Erreurs d'import #}
+            {% if import_errors %}
+            <div class="fr-alert fr-alert--error fr-mb-3w">
+                <p><strong>Erreur lors de l'import :</strong></p>
+                <ul>
+                    {% for err in import_errors %}<li>{{ err }}</li>{% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {# Formulaire d'upload #}
+            <form method="post" action="" enctype="multipart/form-data"
+                  id="excel-form"
+                  x-data="{ submitting: false }"
+                  @submit.prevent="submitting = true; setTimeout(() => document.getElementById('excel-form').submit(), 3000)">
+                {% csrf_token %}
+                <input type="hidden" name="mode" value="excel">
+
+                <div x-show="submitting" x-cloak style="text-align:center; padding:2rem 1rem;">
+                    <div class="ipa-spinner"></div>
+                    <p class="fr-text--lead" style="font-weight:600; color:#000091;">
+                        Analyse du potentiel inclusif en cours…
+                    </p>
+                    <p style="color:#666;">
+                        Nous analysons l'ensemble de vos projets d'achat, veuillez patienter.
+                    </p>
+                </div>
+
+                <div x-show="!submitting">
+                    <div class="fr-upload-group fr-mb-3w">
+                        <label class="fr-label" for="excel-file">
+                            Fichier Excel (.xlsx)
+                            <span class="fr-hint-text">
+                                Taille maximale recommandée : quelques centaines de lignes.
+                                Formats acceptés : .xlsx uniquement.
+                            </span>
+                        </label>
+                        <input class="fr-upload" type="file" id="excel-file"
+                               name="excel_file" accept=".xlsx" required>
+                    </div>
+                    <button type="submit"
+                            class="fr-btn fr-icon-upload-line fr-btn--icon-left"
+                            :disabled="submitting">
+                        Lancer l'analyse
+                    </button>
+                </div>
+            </form>
+
+        </div>{# /tab-excel-panel #}
+
+    </div>{# /fr-tabs #}
+
+    {% endif %}
+
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+    {% if results is None %}
+        <script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
+    {% endif %}
+{% endblock extra_js %}

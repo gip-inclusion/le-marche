@@ -1,20 +1,34 @@
+import io
+import logging
+
+import openpyxl
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpResponse
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.text import slugify
+from django.views import View
 from django.views.generic import DetailView, FormView, UpdateView
 from django_filters.views import FilterView
 
 from content_manager.models import ContentPage, Tag
+from lemarche.api.inclusive_potential.utils import get_inclusive_potential_data
 from lemarche.cms.models import ArticleList
+from lemarche.perimeters.models import Perimeter
 from lemarche.purchases.models import Purchase
+from lemarche.sectors.models import Sector
 from lemarche.siaes.constants import KIND_HANDICAP_LIST, KIND_INSERTION_LIST, LEGAL_FORM_CHOICES
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.www.dashboard.filters import PurchaseFilterSet
-from lemarche.www.dashboard.forms import DisabledEmailEditForm, ProfileEditForm
+from lemarche.www.dashboard.forms import DisabledEmailEditForm, ProfileEditForm, PurchaseProjectFormSet
+
+
+logger = logging.getLogger(__name__)
 
 
 SLUG_RESSOURCES_CAT_SIAES = "solutions"
@@ -294,3 +308,329 @@ class DisabledEmailEditView(LoginRequiredMixin, SuccessMessageMixin, FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+
+
+def _analyze_purchase_project(titre: str, sector: Sector, perimeter: Perimeter | None, budget: int | None) -> dict:
+    """Run the inclusive potential analysis for a single purchase project."""
+    try:
+        potential_data, analysis_data = get_inclusive_potential_data(sector, perimeter, budget)
+    except Exception:
+        logger.exception("Erreur lors de l'analyse du potentiel inclusif pour '%s'", titre)
+        return {
+            "titre": titre,
+            "error": "Une erreur technique s'est produite lors de l'analyse. Veuillez réessayer.",
+        }
+
+    result = {
+        "titre": titre,
+        "secteur_name": sector.name,
+        "perimeter_name": perimeter.name if perimeter else "Toute la France",
+        "montant": f"{budget:,}".replace(",", " ") if budget else None,
+        "potential_siaes": potential_data.potential_siaes,
+        "insertion_siaes": potential_data.insertion_siaes,
+        "handicap_siaes": potential_data.handicap_siaes,
+        "local_siaes": potential_data.local_siaes,
+        "siaes_with_super_badge": potential_data.siaes_with_super_badge,
+        "employees_insertion_average": potential_data.employees_insertion_average,
+        "employees_permanent_average": potential_data.employees_permanent_average,
+        "ca_average": None,
+        "eco_dependency": None,
+        "recommendation_title": None,
+        "recommendation_response": None,
+        "error": None,
+    }
+
+    if budget and "recommendation" in analysis_data:
+        result["ca_average"] = analysis_data.get("ca_average")
+        result["eco_dependency"] = analysis_data.get("eco_dependency")
+        recommendation = analysis_data["recommendation"]
+        result["recommendation_title"] = recommendation.get("title")
+        result["recommendation_response"] = recommendation.get("response")
+
+    return result
+
+
+def _parse_excel_projects(file) -> list[dict]:
+    """Parse an uploaded Excel file into a list of raw project dicts.
+    Raises ValueError with a user-friendly message on validation failure.
+    """
+
+    try:
+        wb = openpyxl.load_workbook(file, read_only=True, data_only=True)
+    except Exception:
+        raise ValueError("Le fichier n'est pas un fichier Excel valide (.xlsx).")
+
+    ws = wb.active
+    rows = list(ws.iter_rows(values_only=True))
+
+    if not rows:
+        raise ValueError("Le fichier est vide.")
+
+    headers = [str(h).strip().lower() if h else "" for h in rows[0]]
+    required = {"titre", "secteur", "perimetre_geographique"}
+    missing = required - set(headers)
+    if missing:
+        raise ValueError(f"Colonnes obligatoires manquantes : {', '.join(sorted(missing))}.")
+
+    col = {h: i for i, h in enumerate(headers)}
+    data_rows = [r for r in rows[1:] if any(r)]
+
+    if not data_rows:
+        raise ValueError("Le fichier ne contient aucune ligne de données.")
+
+    projects = []
+    for row_num, row in enumerate(data_rows, start=2):
+
+        def cell(name):
+            idx = col.get(name)
+            return str(row[idx]).strip() if idx is not None and row[idx] is not None else ""
+
+        montant = None
+        if col.get("montant") is not None and row[col["montant"]] is not None:
+            try:
+                montant = int(float(str(row[col["montant"]])))
+            except (ValueError, TypeError):
+                montant = None
+
+        projects.append(
+            {
+                "row": row_num,
+                "titre": cell("titre"),
+                "description": cell("description"),
+                "secteur_slug": cell("secteur"),
+                "perimetre": cell("perimetre_geographique"),
+                "montant": montant,
+            }
+        )
+
+    return projects
+
+
+def _aggregate_results(results: list[dict]) -> tuple[dict, dict]:
+    """Aggregate valid results by sector name and by perimeter name.
+    Returns (by_sector, by_perimeter) — each value is a dict with projects + stats.
+    """
+    by_sector: dict = {}
+    by_perimeter: dict = {}
+
+    for result in results:
+        if result.get("error"):
+            continue
+
+        for key, group in [
+            (result["secteur_name"], by_sector),
+            (result["perimeter_name"], by_perimeter),
+        ]:
+            if key not in group:
+                group[key] = {"projects": [], "total_structures": 0, "total_montant": 0, "project_count": 0}
+
+            entry = group[key]
+            entry["projects"].append(result)
+            entry["total_structures"] += result["potential_siaes"]
+            entry["project_count"] += 1
+            if result.get("montant"):
+                try:
+                    entry["total_montant"] += int(result["montant"].replace(" ", "").replace(" ", ""))
+                except (ValueError, AttributeError):
+                    pass
+
+    sort_key = lambda x: x[1]["total_structures"]  # noqa: E731
+    by_sector = dict(sorted(by_sector.items(), key=sort_key, reverse=True))
+    by_perimeter = dict(sorted(by_perimeter.items(), key=sort_key, reverse=True))
+
+    return by_sector, by_perimeter
+
+
+class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
+    template_name = "dashboard/inclusive_potential_analysis.html"
+
+    def _get_context(
+        self,
+        formset=None,
+        results=None,
+        results_by_sector=None,
+        results_by_perimeter=None,
+        import_errors=None,
+        mode="manual",
+    ):
+        return {
+            "sectors": list(Sector.objects.form_filter_queryset()),
+            "formset": formset or PurchaseProjectFormSet(prefix="form"),
+            "results": results,
+            "results_by_sector": results_by_sector,
+            "results_by_perimeter": results_by_perimeter,
+            "import_errors": import_errors,
+            "mode": mode,
+        }
+
+    def get(self, request):
+        return render(request, self.template_name, self._get_context())
+
+    def post(self, request):
+        mode = request.POST.get("mode", "manual")
+        if mode == "excel":
+            return self._handle_excel_import(request)
+        return self._handle_manual_form(request)
+
+    def _handle_manual_form(self, request):
+        formset = PurchaseProjectFormSet(request.POST, prefix="form")
+        if not formset.is_valid():
+            return render(
+                request,
+                self.template_name,
+                self._get_context(formset=formset, mode="manual"),
+            )
+
+        results = []
+        for form in formset:
+            if not form.cleaned_data:
+                continue
+            titre = form.cleaned_data["titre"]
+            sector = form.cleaned_data["secteur"]
+            montant = form.cleaned_data.get("montant")
+            perimeter_slug = form.cleaned_data.get("perimeter_slug")
+            france_entiere = form.cleaned_data.get("france_entiere", False)
+
+            perimeter = None
+            if perimeter_slug and not france_entiere:
+                try:
+                    perimeter = Perimeter.objects.get(slug=perimeter_slug)
+                except Perimeter.DoesNotExist:
+                    results.append({"titre": titre, "error": f"Périmètre '{perimeter_slug}' introuvable."})
+                    continue
+
+            result = _analyze_purchase_project(titre, sector, perimeter, montant)
+            results.append(result)
+
+        return render(
+            request,
+            self.template_name,
+            self._get_context(formset=formset, results=results, mode="manual"),
+        )
+
+    def _handle_excel_import(self, request):
+        excel_file = request.FILES.get("excel_file")
+        if not excel_file:
+            return render(
+                request,
+                self.template_name,
+                self._get_context(import_errors=["Aucun fichier sélectionné."], mode="excel"),
+            )
+
+        try:
+            projects = _parse_excel_projects(excel_file)
+        except ValueError as e:
+            return render(
+                request,
+                self.template_name,
+                self._get_context(import_errors=[str(e)], mode="excel"),
+            )
+
+        results = []
+        import_errors = []
+
+        for project in projects:
+            titre = project["titre"]
+            secteur_slug = project["secteur_slug"]
+            perimetre = project["perimetre"]
+            montant = project["montant"]
+            row_num = project["row"]
+
+            if not titre or not secteur_slug or not perimetre:
+                import_errors.append(f"Ligne {row_num} : titre, secteur et périmètre géographique sont obligatoires.")
+                continue
+
+            try:
+                sector = Sector.objects.get(slug=secteur_slug)
+            except Sector.DoesNotExist:
+                import_errors.append(f"Ligne {row_num} — « {titre} » : secteur « {secteur_slug} » introuvable.")
+                continue
+
+            perimeter = None
+            if perimetre.lower() != "france_entiere":
+                try:
+                    perimeter = Perimeter.objects.get(slug=perimetre)
+                except Perimeter.DoesNotExist:
+                    import_errors.append(f"Ligne {row_num} — « {titre} » : périmètre « {perimetre} » introuvable.")
+                    continue
+
+            result = _analyze_purchase_project(titre, sector, perimeter, montant)
+            results.append(result)
+
+        if not results:
+            return render(
+                request,
+                self.template_name,
+                self._get_context(import_errors=import_errors or ["Aucun projet analysable trouvé."], mode="excel"),
+            )
+
+        by_sector, by_perimeter = _aggregate_results(results)
+
+        return render(
+            request,
+            self.template_name,
+            self._get_context(
+                results=results,
+                results_by_sector=by_sector,
+                results_by_perimeter=by_perimeter,
+                import_errors=import_errors or None,
+                mode="excel",
+            ),
+        )
+
+
+@login_required
+def inclusive_potential_excel_template(request):
+    """Generate and return a pre-formatted Excel template for batch import.
+
+    Sheet 1 — Projets d'achat : 2 example rows using real sector slugs from the DB.
+    Sheet 2 — Secteurs disponibles : full list of valid sector slugs + names.
+    """
+
+    wb = openpyxl.Workbook()
+
+    # Feuille 1 : modèle à remplir
+    ws = wb.active
+    ws.title = "Projets d'achat"
+
+    ws.append(["titre", "description", "secteur", "montant", "perimetre_geographique"])
+
+    # Use real sector slugs so the examples work out of the box.
+    example_sectors = list(Sector.objects.form_filter_queryset().values_list("slug", "name")[:2])
+    if example_sectors:
+        ws.append(
+            [
+                f"Prestations de {example_sectors[0][1][:40]}",
+                "Description optionnelle",
+                example_sectors[0][0],
+                80000,
+                "paris",
+            ]
+        )
+    if len(example_sectors) > 1:
+        ws.append(
+            [
+                f"Prestations de {example_sectors[1][1][:40]}",
+                "",
+                example_sectors[1][0],
+                45000,
+                "france_entiere",
+            ]
+        )
+
+    # Feuille 2 : référentiel des slugs secteurs
+    ws2 = wb.create_sheet("Secteurs disponibles")
+    ws2.append(["slug (valeur à saisir dans la colonne secteur)", "Nom du secteur"])
+    for slug, name in Sector.objects.form_filter_queryset().values_list("slug", "name"):
+        ws2.append([slug, name])
+
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+
+    response = HttpResponse(
+        buffer.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response["Content-Disposition"] = 'attachment; filename="modele_analyse_potentiel_inclusif.xlsx"'
+    return response
