@@ -497,3 +497,84 @@ class TenderReminderForm(forms.Form):
     """Form used to send reminders to users"""
 
     reminder_message = forms.CharField(widget=forms.Textarea, label="Message")
+
+
+class TenderBuyerEmailForm(forms.Form):
+    subject = forms.CharField(label="Objet de l'email", max_length=255)
+    message = forms.CharField(label="Contenu du message", widget=forms.Textarea)
+    ao_url = forms.URLField(label="URL de l'appel d'offres", required=False)
+    attachment = forms.FileField(label="Document joint", required=False)
+    siae_ids = forms.ModelMultipleChoiceField(
+        queryset=Siae.objects.all(),
+        widget=forms.MultipleHiddenInput,
+        error_messages={"required": "Veuillez sélectionner au moins un prestataire."},
+    )
+
+    def clean_attachment(self):
+        attachment = self.cleaned_data.get("attachment")
+        if not attachment:
+            return attachment
+
+        allowed_types = [
+            "application/pdf",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        ]
+        if attachment.content_type not in allowed_types or not attachment.name.endswith(
+            (".pdf", ".doc", ".docx", ".xls", ".xlsx")
+        ):
+            raise forms.ValidationError("Format de fichier non autorisé. Formats acceptés : PDF, DOC, DOCX, XLS, XLSX")
+
+        if attachment.size > 10 * 1024 * 1024:
+            raise forms.ValidationError("La taille du fichier ne doit pas dépasser 10 Mo")
+
+        return attachment
+
+
+class SiaeNudgeFieldForm(forms.Form):
+    """Single-field form for the contextual nudge module on tender detail page."""
+
+    INLINE_FIELD_VALIDATORS = {
+        "contact_email": "email",
+        "ca": "positive_integer",
+        "employees_insertion_count": "positive_integer",
+        "employees_permanent_count": "positive_integer",
+    }
+
+    siae_slug = forms.CharField(widget=forms.HiddenInput())
+    field_name = forms.CharField(widget=forms.HiddenInput())
+    field_value = forms.CharField(required=False)
+    step_index = forms.IntegerField(widget=forms.HiddenInput(), min_value=0)
+    total_steps = forms.IntegerField(widget=forms.HiddenInput(), min_value=1)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        field_name = cleaned_data.get("field_name")
+        field_value = cleaned_data.get("field_value", "").strip()
+
+        if field_name not in self.INLINE_FIELD_VALIDATORS:
+            return cleaned_data
+
+        validator_type = self.INLINE_FIELD_VALIDATORS[field_name]
+
+        if validator_type == "email":
+            if field_value:
+                email_field = forms.EmailField()
+                try:
+                    cleaned_data["field_value"] = email_field.clean(field_value)
+                except forms.ValidationError:
+                    self.add_error("field_value", "Veuillez saisir une adresse e-mail valide.")
+        elif validator_type == "positive_integer":
+            if field_value:
+                try:
+                    int_value = int(field_value)
+                    if int_value < 0:
+                        self.add_error("field_value", "La valeur doit être un nombre positif.")
+                    else:
+                        cleaned_data["field_value"] = int_value
+                except (ValueError, TypeError):
+                    self.add_error("field_value", "Veuillez saisir un nombre entier positif.")
+
+        return cleaned_data

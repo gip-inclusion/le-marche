@@ -10,9 +10,12 @@ from lemarche.www.tenders.views import (
     TenderDetailView,
     TenderListView,
     TenderReminderView,
+    TenderSiaeBuyerEmailView,
     TenderSiaeHideView,
     TenderSiaeInterestedDownloadView,
     TenderSiaeListView,
+    TenderSiaeNudgeDismissView,
+    TenderSiaeNudgeUpdateView,
 )
 
 
@@ -56,4 +59,7 @@ urlpatterns = [
         TenderDetailSiaeSurveyTransactionedView.as_view(),
         name="detail-siae-survey-transactioned",
     ),
+    path("<str:slug>/prestataires/envoyer-ao", TenderSiaeBuyerEmailView.as_view(), name="send-ao"),
+    path("<str:slug>/nudge/dismiss/", TenderSiaeNudgeDismissView.as_view(), name="nudge-dismiss"),
+    path("<str:slug>/nudge/update-field/", TenderSiaeNudgeUpdateView.as_view(), name="nudge-update-field"),
 ]

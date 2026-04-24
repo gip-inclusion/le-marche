@@ -1,0 +1,53 @@
+{% load dsfr_tags %}
+<div id="nudge-modal-container">
+    <dialog id="siae-nudge-modal"
+            role="dialog"
+            class="fr-modal"
+            aria-labelledby="siae-nudge-modal-title"
+            aria-modal="true">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                            <form method="post"
+                                  action="{% url 'tenders:nudge-dismiss' tender.slug %}"
+                                  hx-post="{% url 'tenders:nudge-dismiss' tender.slug %}"
+                                  hx-target="#nudge-modal-container"
+                                  hx-swap="outerHTML">
+                                {% csrf_token %}
+                                <input type="hidden" name="siae_slug" value="{{ siae.slug }}">
+                                <button class="fr-btn--close fr-btn"
+                                        type="submit"
+                                        title="Fermer">Fermer</button>
+                            </form>
+                        </div>
+                        <div class="fr-modal__content">
+                            <h3 id="siae-nudge-modal-title" class="fr-modal__title fr-icon-edit-line fr-icon--sm">
+                                Vos informations sont-elles à jour ?
+                            </h3>
+                            <p class="fr-text--sm fr-mb-2w">
+                                1 minute pour vérifier et garder votre fiche à jour.
+                            </p>
+                            <div id="nudge-step-container">
+                                {% include "tenders/includes/siae_nudge_step.html" with siae=siae field=nudge_fields.0 form=nudge_initial_form step_index=0 total_steps=nudge_fields|length tender_slug=tender.slug is_confirmation=False %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
+    <script>
+        (function () {
+            var modal = document.getElementById('siae-nudge-modal');
+            if (modal && window.dsfr) {
+                window.addEventListener('load', function () {
+                    dsfr(modal).modal.disclose();
+                });
+            } else if (modal) {
+                modal.setAttribute('open', '');
+            }
+        })();
+    </script>
+</div>

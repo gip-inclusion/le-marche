@@ -1,4 +1,5 @@
 import csv
+import logging
 import os
 from datetime import timedelta
 
@@ -7,13 +8,13 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.files.storage import FileSystemStorage
+from django.core.files.storage import FileSystemStorage, default_storage
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.db.models import OuterRef, Prefetch, Subquery
 from django.forms import formset_factory
-from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect
+from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
@@ -21,6 +22,7 @@ from django.views.generic import DetailView, ListView, UpdateView, View
 from django.views.generic.edit import FormMixin, FormView
 from formtools.wizard.views import SessionWizardView
 
+from lemarche.conversations.models import TemplateTransactional
 from lemarche.siaes.models import Siae, SiaeClientReference
 from lemarche.siaes.tasks import send_reminder_email_to_siae
 from lemarche.tenders import constants as tender_constants
@@ -51,7 +53,9 @@ from lemarche.utils.mixins import (
 from lemarche.utils.urls import get_domain_url
 from lemarche.www.siaes.forms import SiaeFilterForm
 from lemarche.www.tenders.forms import (
+    SiaeNudgeFieldForm,
     SiaeSelectFieldsForm,
+    TenderBuyerEmailForm,
     TenderCreateStepConfirmationForm,
     TenderCreateStepContactForm,
     TenderCreateStepDetailForm,
@@ -68,6 +72,9 @@ from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
     send_siae_interested_email_to_author,
 )
 from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user, update_or_create_questions_list
+
+
+logger = logging.getLogger(__name__)
 
 
 class TenderCreateMultiStepView(SessionWizardView):
@@ -492,6 +499,24 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
             )
 
             if user.kind == User.KIND_SIAE:
+                # Nudge module: show once every 30 days if siae data is incomplete/stale
+                from lemarche.siaes.utils import get_nudge_fields
+
+                nudge_siae = user.siaes.first()
+                if nudge_siae and nudge_siae.should_show_nudge():
+                    nudge_fields = get_nudge_fields(nudge_siae)
+                    context["show_nudge"] = True
+                    context["nudge_siae"] = nudge_siae
+                    context["nudge_fields"] = nudge_fields
+                    context["nudge_initial_form"] = SiaeNudgeFieldForm(
+                        initial={
+                            "siae_slug": nudge_siae.slug,
+                            "field_name": nudge_fields[0]["field"] if nudge_fields else "",
+                            "step_index": 0,
+                            "total_steps": len(nudge_fields),
+                        }
+                    )
+
                 # Interested Siae count
                 interested_count = TenderSiae.objects.filter(
                     tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False
@@ -1151,3 +1176,186 @@ class TenderReminderView(TenderAuthorOrAdminRequiredMixin, SuccessMessageMixin, 
         )
 
         return super().form_valid(form)
+
+
+class TenderSiaeNudgeDismissView(LoginRequiredMixin, View):
+    """
+    HTMX endpoint: record that the supplier dismissed the nudge module.
+    Sets nudge_last_seen_at to now() — suppresses the modal for 30 days.
+    """
+
+    def post(self, request, *args, **kwargs):
+        siae_slug = request.POST.get("siae_slug", "")
+        if not siae_slug or siae_slug not in request.user.siaes.values_list("slug", flat=True):
+            return HttpResponseForbidden()
+        Siae.objects.filter(slug=siae_slug).update(nudge_last_seen_at=timezone.now())
+        return HttpResponse("")
+
+
+class TenderSiaeNudgeUpdateView(LoginRequiredMixin, View):
+    """
+    HTMX endpoint: save one nudge field, return the next step fragment.
+    """
+
+    ALLOWED_INLINE_FIELDS = {
+        "contact_email",
+        "ca",
+        "employees_insertion_count",
+        "employees_permanent_count",
+    }
+
+    def post(self, request, *args, **kwargs):
+        from lemarche.siaes.utils import get_nudge_fields
+
+        siae_slug = request.POST.get("siae_slug", "")
+        if not siae_slug or siae_slug not in request.user.siaes.values_list("slug", flat=True):
+            return HttpResponseForbidden()
+
+        siae = get_object_or_404(Siae, slug=siae_slug)
+        form = SiaeNudgeFieldForm(request.POST)
+
+        if not form.is_valid():
+            nudge_fields = get_nudge_fields(siae)
+            step_index = int(request.POST.get("step_index", 0))
+            field_data = nudge_fields[step_index] if step_index < len(nudge_fields) else None
+            return render(
+                request,
+                "tenders/includes/siae_nudge_step.html",
+                {
+                    "siae": siae,
+                    "field": field_data,
+                    "form": form,
+                    "step_index": step_index,
+                    "total_steps": len(nudge_fields),
+                    "tender_slug": kwargs.get("slug"),
+                },
+            )
+
+        field_name = form.cleaned_data["field_name"]
+        field_value = form.cleaned_data["field_value"]
+        step_index = form.cleaned_data["step_index"]
+        total_steps = form.cleaned_data["total_steps"]
+
+        if field_name in self.ALLOWED_INLINE_FIELDS:
+            value_to_save = field_value if field_value != "" else None
+            Siae.objects.filter(slug=siae_slug).update(**{field_name: value_to_save})
+
+        nudge_fields = get_nudge_fields(siae)
+        next_index = step_index + 1
+        is_last = next_index >= total_steps
+
+        if is_last:
+            siae.nudge_last_seen_at = timezone.now()
+            siae.save(update_fields=["nudge_last_seen_at"])
+            return render(
+                request,
+                "tenders/includes/siae_nudge_step.html",
+                {
+                    "siae": siae,
+                    "field": None,
+                    "form": None,
+                    "step_index": next_index,
+                    "total_steps": total_steps,
+                    "tender_slug": kwargs.get("slug"),
+                    "is_confirmation": True,
+                },
+            )
+
+        next_field = nudge_fields[next_index] if next_index < len(nudge_fields) else None
+        next_form = SiaeNudgeFieldForm(
+            initial={
+                "siae_slug": siae_slug,
+                "field_name": next_field["field"] if next_field else "",
+                "step_index": next_index,
+                "total_steps": total_steps,
+            }
+        )
+        return render(
+            request,
+            "tenders/includes/siae_nudge_step.html",
+            {
+                "siae": siae,
+                "field": next_field,
+                "form": next_form,
+                "step_index": next_index,
+                "total_steps": total_steps,
+                "tender_slug": kwargs.get("slug"),
+                "is_confirmation": False,
+            },
+        )
+
+
+class TenderSiaeBuyerEmailView(TenderAuthorOrAdminRequiredMixin, View):
+    http_method_names = ["post"]
+
+    def post(self, request, slug):
+        tender = get_object_or_404(Tender, slug=slug)
+        form = TenderBuyerEmailForm(data=request.POST, files=request.FILES)
+
+        if not form.is_valid():
+            messages.error(request, "Le formulaire contient des erreurs. Veuillez vérifier les champs.")
+            return redirect("tenders:detail-siae-list", slug=slug)
+
+        selected_siaes = form.cleaned_data["siae_ids"]
+        subject = form.cleaned_data["subject"]
+        message_content = form.cleaned_data["message"]
+        ao_url = form.cleaned_data.get("ao_url", "") or ""
+        attachment = form.cleaned_data.get("attachment")
+
+        document_url = ""
+        if attachment:
+            file_path = f"tender-ao-emails/{tender.pk}/{attachment.name}"
+            saved_path = default_storage.save(file_path, attachment)
+            document_url = default_storage.url(saved_path)
+
+        try:
+            email_template = TemplateTransactional.objects.get(code="TENDERS_BUYER_AO_EMAIL")
+        except TemplateTransactional.DoesNotExist:
+            logger.error("TemplateTransactional TENDERS_BUYER_AO_EMAIL introuvable")
+            messages.error(request, "L'envoi a échoué. Veuillez réessayer.")
+            return redirect("tenders:detail-siae-list", slug=slug)
+
+        sent_count = 0
+        skipped_count = 0
+
+        for siae in selected_siaes:
+            if not siae.contact_email:
+                skipped_count += 1
+                continue
+            variables = {
+                "SUPPLIER_NAME": siae.name_display,
+                "MESSAGE_CONTENT": message_content,
+                "AO_URL": ao_url,
+                "AO_DOCUMENT_URL": document_url,
+                "BUYER_FIRST_NAME": request.user.first_name,
+                "BUYER_LAST_NAME": request.user.last_name,
+                "BUYER_EMAIL": request.user.email,
+            }
+            try:
+                email_template.send_transactional_email(
+                    subject=subject,
+                    recipient_email=siae.contact_email,
+                    recipient_name=siae.contact_full_name,
+                    variables=variables,
+                )
+                sent_count += 1
+            except Exception:
+                # Ne pas bloquer les autres envois si un seul échoue
+                logger.exception("Erreur envoi email AO à %s (siae %s)", siae.contact_email, siae.pk)
+                skipped_count += 1
+
+        if sent_count == 0:
+            messages.error(request, "L'envoi a échoué. Veuillez réessayer.")
+        elif skipped_count > 0:
+            messages.warning(
+                request,
+                f"Votre appel d'offres a été envoyé à {sent_count} prestataire(s). "
+                f"{skipped_count} prestataire(s) n'ont pas pu être contacté(s) (email manquant ou erreur d'envoi).",
+            )
+        else:
+            messages.success(
+                request,
+                f"Votre appel d'offres a bien été envoyé à {sent_count} prestataire(s) sélectionné(s).",
+            )
+
+        return redirect("tenders:detail-siae-list", slug=slug)

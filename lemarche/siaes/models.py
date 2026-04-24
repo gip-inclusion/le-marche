@@ -893,6 +893,10 @@ class Siae(NexusModelMixin, models.Model):
 
     history = HistoricalRecords()
 
+    nudge_last_seen_at = models.DateTimeField(
+        verbose_name="Date du dernier nudge de mise à jour de fiche", blank=True, null=True
+    )
+
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
 
@@ -992,6 +996,15 @@ class Siae(NexusModelMixin, models.Model):
     @property
     def is_live(self) -> bool:
         return self.is_active and not self.is_delisted
+
+    def should_show_nudge(self) -> bool:
+        from datetime import timedelta
+
+        from lemarche.siaes.utils import get_nudge_fields
+
+        if self.nudge_last_seen_at and self.nudge_last_seen_at >= timezone.now() - timedelta(days=30):
+            return False
+        return len(get_nudge_fields(self)) > 0
 
     @property
     def kind_is_esat_or_ea_or_eatt(self) -> bool:
