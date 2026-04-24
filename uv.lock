@@ -2023,14 +2023,14 @@ wheels = [
 
 [[package]]
 name = "wagtail-modeladmin"
-version = "2.2.0"
+version = "2.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "wagtail" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/44/72/e687aa58e21708655ceaa731586803031385be82eea0876e4268665e8dc4/wagtail_modeladmin-2.2.0.tar.gz", hash = "sha256:41e12f9a79f8c1595fce73bd6b51007422f258089564f9df8e09a82246a8e133", size = 140057, upload-time = "2025-04-25T12:17:26.925Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/11/c3/5d31ddc6e15d4254670cdccbdffa808784c81266c040d604bd1a86563884/wagtail_modeladmin-2.3.0.tar.gz", hash = "sha256:65336077a9bf1b01d6a4af621f9542beb1fda696d2ec6f8d5d807ed49a84c31b", size = 141067, upload-time = "2026-04-19T09:46:37.782Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0b/29/0f5f4e7ce521836092ad878d032410dd7563e1ac2b06af0deb9e19032ef0/wagtail_modeladmin-2.2.0-py3-none-any.whl", hash = "sha256:60ea08b128761b5b6a1cbfe3c8ab828fba13e41ff3d7563a0b8c62c8fe36c4ce", size = 265632, upload-time = "2025-04-25T12:17:25.538Z" },
+    { url = "https://files.pythonhosted.org/packages/a9/76/ca040a98906e8ba95bc8cb2a6935bb13f4b383ec67d3d55d941885927566/wagtail_modeladmin-2.3.0-py3-none-any.whl", hash = "sha256:ff6633ba102a94fd7ace9a0501d7ca290b815fb0485d132d112b5e0289de41ff", size = 265703, upload-time = "2026-04-19T09:46:36.365Z" },
 ]
 
 [[package]]
