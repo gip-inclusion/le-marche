@@ -75,8 +75,6 @@
                  "siaes_siae"."api_entreprise_ca",
                  "siaes_siae"."api_entreprise_ca_date_fin_exercice",
                  "siaes_siae"."api_entreprise_exercice_last_sync_date",
-                 "siaes_siae"."has_won_contract_last_3_years",
-                 "siaes_siae"."decp_last_sync_date",
                  "siaes_siae"."c1_id",
                  "siaes_siae"."c4_id_old",
                  "siaes_siae"."c1_last_sync_date",
