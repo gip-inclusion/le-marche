@@ -1,5 +1,7 @@
+import io
 import logging
 
+import openpyxl
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -352,9 +354,6 @@ def _parse_excel_projects(file) -> list[dict]:
     """Parse an uploaded Excel file into a list of raw project dicts.
     Raises ValueError with a user-friendly message on validation failure.
     """
-    import io
-
-    import openpyxl
 
     try:
         wb = openpyxl.load_workbook(file, read_only=True, data_only=True)
@@ -587,9 +586,6 @@ def inclusive_potential_excel_template(request):
     Sheet 1 — Projets d'achat : 2 example rows using real sector slugs from the DB.
     Sheet 2 — Secteurs disponibles : full list of valid sector slugs + names.
     """
-    import io
-
-    import openpyxl
 
     wb = openpyxl.Workbook()
 

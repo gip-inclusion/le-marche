@@ -1,5 +1,7 @@
-from unittest.mock import patch, MagicMock
+import io
+from unittest.mock import patch
 
+import openpyxl
 from django.test import TestCase
 from django.urls import reverse
 
@@ -223,8 +225,6 @@ class InclusivePotentialExcelTemplateTest(TestCase):
         self.assertIn("modele_analyse_potentiel_inclusif.xlsx", response["Content-Disposition"])
 
     def test_downloaded_file_has_correct_columns(self):
-        import io
-        import openpyxl
 
         self.client.force_login(self.user)
         response = self.client.get(self.url)
