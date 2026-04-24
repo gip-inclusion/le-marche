@@ -98,9 +98,9 @@ class PurchaseProjectForm(forms.Form):
     )
     montant = forms.IntegerField(
         label="Montant estimatif (€)",
-        required=True,
+        required=False,
         min_value=0,
-        widget=forms.NumberInput(attrs={"class": "fr-input", "placeholder": "Ex : 80000"}),
+        widget=forms.NumberInput(attrs={"class": "fr-input", "placeholder": "Ex : 80 000"}),
     )
     perimeter_slug = forms.CharField(
         label="Périmètre géographique",

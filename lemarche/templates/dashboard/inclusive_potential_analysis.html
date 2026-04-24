@@ -637,13 +637,12 @@
                                     <div class="fr-input-group">
                                         <label :for="'id_form-' + index + '-montant'" class="fr-label">
                                             Montant estimatif (€)
-                                            <span class="fr-badge fr-badge--sm fr-badge--error">Obligatoire</span>
+                                            <span class="fr-hint-text">Facultatif — requis pour obtenir une recommandation achat</span>
                                         </label>
                                         <input type="text"
                                                class="fr-input"
                                                placeholder="Ex : 80 000"
                                                inputmode="numeric"
-                                               required
                                                @input="
                                                    let raw = $event.target.value.replace(/[^\d]/g, '');
                                                    project.montant = raw;
