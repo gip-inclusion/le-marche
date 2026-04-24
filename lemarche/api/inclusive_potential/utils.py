@@ -83,7 +83,7 @@ def get_inclusive_potential_data(
         siaes_count += 1
         if siae.kind in KIND_INSERTION_LIST:
             insertion_siaes += 1
-            employees_insertion_count += siae.c2_etp_count or 0
+            employees_insertion_count += siae.c2_etp_count or siae.employees_insertion_count or 0
         elif siae.kind in KIND_HANDICAP_LIST:
             handicap_siaes += 1
             employees_insertion_count += siae.employees_insertion_count or 0

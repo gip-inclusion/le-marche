@@ -28,7 +28,7 @@ class InclusivePotentialViewTests(TestCase):
             ca=1000000,
             api_entreprise_ca=500000,
             c2_etp_count=20,
-            employees_insertion_count=15,  # will be ignored by the calculation because use c2_etp_count instead
+            employees_insertion_count=15,  # ignored because c2_etp_count is present (c2 takes priority)
             employees_permanent_count=9,
             has_won_contract_last_3_years=True,
         )
@@ -260,3 +260,19 @@ class InclusivePotentialViewTests(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_employees_insertion_average_fallback_to_insertion_count(self):
+        """Test that employees_insertion_count is used when c2_etp_count is absent for insertion structures"""
+        specific_sector = SectorFactory(group=self.sector.group)
+
+        siae_no_c2 = SiaeFactory(kind=KIND_INSERTION_LIST[0], c2_etp_count=None, employees_insertion_count=10)
+        activity = SiaeActivityFactory(siae=siae_no_c2, sector=specific_sector, with_zones_perimeter=True)
+        activity.locations.set([self.perimeter_department])
+
+        response = self.authenticated_client.get(
+            self.url, {"sector": specific_sector.slug, "perimeter": self.perimeter_department.slug}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["potential_siaes"], 1)
+        self.assertEqual(response.data["employees_insertion_average"], 10.0)
