@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load static process_dict dsfr_tags %}
+{% load static process_dict dsfr_tags fr_number %}
 
 {% block page_title %}Analyser le potentiel inclusif d'une programmation achat{{ block.super }}{% endblock page_title %}
 
@@ -212,7 +212,7 @@
                                 {{ sector_data.project_count }} projet d'achat{{ sector_data.project_count|pluralize }}
                                 &nbsp;·&nbsp; <strong>{{ sector_data.total_structures }}</strong>
                                 structure{{ sector_data.total_structures|pluralize }} potentielle{{ sector_data.total_structures|pluralize }}
-                                {% if sector_data.total_montant %}&nbsp;·&nbsp; {{ sector_data.total_montant }} €{% endif %}
+                                {% if sector_data.total_montant %}&nbsp;·&nbsp; {{ sector_data.total_montant|fr_number }} €{% endif %}
                             </span>
                             <span class="ipa-group-chevron" x-text="open ? '▲' : '▼'"></span>
                         </td>
@@ -225,7 +225,7 @@
                         <td colspan="6" style="color:#ce0500;">{{ r.error }}</td>
                         {% else %}
                         <td>{{ r.perimeter_name }}</td>
-                        <td>{% if r.montant %}{{ r.montant }} €{% else %}—{% endif %}</td>
+                        <td>{% if r.montant %}{{ r.montant|fr_number }} €{% else %}—{% endif %}</td>
                         <td><strong>{{ r.potential_siaes }}</strong></td>
                         <td>{{ r.insertion_siaes }}</td>
                         <td>{{ r.handicap_siaes }}</td>
@@ -263,7 +263,7 @@
                                 {{ perimeter_data.project_count }} projet d'achat{{ perimeter_data.project_count|pluralize }}
                                 &nbsp;·&nbsp; <strong>{{ perimeter_data.total_structures }}</strong>
                                 structure{{ perimeter_data.total_structures|pluralize }} potentielle{{ perimeter_data.total_structures|pluralize }}
-                                {% if perimeter_data.total_montant %}&nbsp;·&nbsp; {{ perimeter_data.total_montant }} €{% endif %}
+                                {% if perimeter_data.total_montant %}&nbsp;·&nbsp; {{ perimeter_data.total_montant|fr_number }} €{% endif %}
                             </span>
                             <span class="ipa-group-chevron" x-text="open ? '▲' : '▼'"></span>
                         </td>
@@ -276,7 +276,7 @@
                         <td colspan="6" style="color:#ce0500;">{{ r.error }}</td>
                         {% else %}
                         <td>{{ r.secteur_name }}</td>
-                        <td>{% if r.montant %}{{ r.montant }} €{% else %}—{% endif %}</td>
+                        <td>{% if r.montant %}{{ r.montant|fr_number }} €{% else %}—{% endif %}</td>
                         <td><strong>{{ r.potential_siaes }}</strong></td>
                         <td>{{ r.insertion_siaes }}</td>
                         <td>{{ r.handicap_siaes }}</td>
@@ -299,7 +299,7 @@
                 <p class="ipa-project-meta">
                     <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
                     {{ result.secteur_name }} &nbsp;·&nbsp; {{ result.perimeter_name }}
-                    {% if result.montant %}&nbsp;·&nbsp; {{ result.montant }} €{% endif %}
+                    {% if result.montant %}&nbsp;·&nbsp; {{ result.montant|fr_number }} €{% endif %}
                 </p>
             </div>
 
@@ -417,7 +417,7 @@
                         <div class="fr-col-6 fr-col-md-3">
                             <div class="ipa-metric-card">
                                 <div class="ipa-metric-value">
-                                    {% if result.ca_average %}{{ result.ca_average }} €{% else %}—{% endif %}
+                                    {% if result.ca_average %}{{ result.ca_average|fr_number }} €{% else %}—{% endif %}
                                 </div>
                                 <div class="ipa-metric-label">
                                     CA moyen des structures
@@ -495,11 +495,11 @@
 
     <form method="post" action="" id="manual-form"
           x-data="{
-              projects: [{ id: 0, france_entiere: false }],
+              projects: [{ id: 0, france_entiere: false, montant: '' }],
               nextId: 1,
               submitting: false,
               addProject() {
-                  this.projects.push({ id: this.nextId++, france_entiere: false });
+                  this.projects.push({ id: this.nextId++, france_entiere: false, montant: '' });
                   this.$nextTick(() => this.syncTotalForms());
               },
               removeProject(projectId) {
@@ -639,14 +639,20 @@
                                             Montant estimatif (€)
                                             <span class="fr-badge fr-badge--sm fr-badge--error">Obligatoire</span>
                                         </label>
-                                        <input :id="'id_form-' + index + '-montant'"
-                                               :name="'form-' + index + '-montant'"
-                                               type="number"
-                                               min="0"
-                                               step="1"
+                                        <input type="text"
                                                class="fr-input"
-                                               placeholder="Ex : 80000"
-                                               required>
+                                               placeholder="Ex : 80 000"
+                                               inputmode="numeric"
+                                               required
+                                               @input="
+                                                   let raw = $event.target.value.replace(/[^\d]/g, '');
+                                                   project.montant = raw;
+                                                   $event.target.value = raw === '' ? '' : raw.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                                               ">
+                                        <input type="hidden"
+                                               :id="'id_form-' + index + '-montant'"
+                                               :name="'form-' + index + '-montant'"
+                                               :value="project.montant">
                                     </div>
                                 </div>
 
