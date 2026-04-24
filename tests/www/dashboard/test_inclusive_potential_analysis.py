@@ -21,6 +21,7 @@ MOCK_POTENTIAL_DATA = PotentialData(
     handicap_siaes=5,
     local_siaes=8,
     siaes_with_super_badge=2,
+    siaes_with_won_contract=3,
     employees_insertion_average=12.5,
     employees_permanent_average=8.0,
 )
@@ -108,6 +109,22 @@ class InclusivePotentialAnalysisManualFormTest(TestCase):
         self.assertIsNone(results[0]["error"])
         self.assertEqual(results[0]["potential_siaes"], 15)
         self.assertEqual(results[0]["recommendation_title"], "Réservation totale")
+
+    @patch("lemarche.www.dashboard.views.get_inclusive_potential_data")
+    def test_result_includes_won_contract_and_search_urls(self, mock_analysis):
+        mock_analysis.return_value = (MOCK_POTENTIAL_DATA, MOCK_ANALYSIS_DATA)
+        response = self._post_manual(self._valid_formset_data())
+        self.assertEqual(response.status_code, 200)
+        result = response.context["results"][0]
+        self.assertEqual(result["siaes_with_won_contract"], 3)
+        search_urls = result["search_urls"]
+        self.assertIn("sectors=", search_urls["all"])
+        self.assertIn("perimeters=paris", search_urls["all"])
+        self.assertIn("kind=", search_urls["insertion"])
+        self.assertIn("kind=", search_urls["handicap"])
+        self.assertIn("local=True", search_urls["local"])
+        self.assertIn("super_badge=True", search_urls["super_badge"])
+        self.assertIn("has_won_contract=True", search_urls["won_contract"])
 
     @patch("lemarche.www.dashboard.views.get_inclusive_potential_data")
     def test_valid_form_without_montant_returns_results_without_recommendation(self, mock_analysis):

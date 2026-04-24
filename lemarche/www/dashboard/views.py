@@ -1,5 +1,6 @@
 import io
 import logging
+from urllib.parse import urlencode
 
 import openpyxl
 from django.contrib.auth.decorators import login_required
@@ -310,6 +311,26 @@ class DisabledEmailEditView(LoginRequiredMixin, SuccessMessageMixin, FormView):
         return super().form_valid(form)
 
 
+def _build_search_urls(sector: Sector, perimeter: Perimeter | None) -> dict:
+    """Build search URLs for each indicator, pointing to the Marché search page."""
+    base_params = [("sectors", sector.slug)]
+    if perimeter:
+        base_params.append(("perimeters", perimeter.slug))
+
+    def url(extra_params=None):
+        params = base_params + (extra_params or [])
+        return f"/prestataires/?{urlencode(params)}"
+
+    return {
+        "all": url(),
+        "insertion": url([("kind", k) for k in KIND_INSERTION_LIST]),
+        "handicap": url([("kind", k) for k in KIND_HANDICAP_LIST]),
+        "local": url([("local", "True")]),
+        "super_badge": url([("super_badge", "True")]),
+        "won_contract": url([("has_won_contract", "True")]),
+    }
+
+
 def _analyze_purchase_project(titre: str, sector: Sector, perimeter: Perimeter | None, budget: int | None) -> dict:
     """Run the inclusive potential analysis for a single purchase project."""
     try:
@@ -321,6 +342,7 @@ def _analyze_purchase_project(titre: str, sector: Sector, perimeter: Perimeter |
             "error": "Une erreur technique s'est produite lors de l'analyse. Veuillez réessayer.",
         }
 
+    search_urls = _build_search_urls(sector, perimeter)
     result = {
         "titre": titre,
         "secteur_name": sector.name,
@@ -331,12 +353,14 @@ def _analyze_purchase_project(titre: str, sector: Sector, perimeter: Perimeter |
         "handicap_siaes": potential_data.handicap_siaes,
         "local_siaes": potential_data.local_siaes,
         "siaes_with_super_badge": potential_data.siaes_with_super_badge,
+        "siaes_with_won_contract": potential_data.siaes_with_won_contract,
         "employees_insertion_average": potential_data.employees_insertion_average,
         "employees_permanent_average": potential_data.employees_permanent_average,
         "ca_average": None,
         "eco_dependency": None,
         "recommendation_title": None,
         "recommendation_response": None,
+        "search_urls": search_urls,
         "error": None,
     }
 

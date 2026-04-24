@@ -175,6 +175,8 @@ class SiaeFilterForm(forms.Form):
         required=False,
     )
 
+    has_won_contract = forms.BooleanField(required=False, widget=forms.HiddenInput())
+
     company_client_reference = forms.CharField(
         label="Indiquez le nom de votre entreprise",
         required=False,
@@ -345,6 +347,9 @@ class SiaeFilterForm(forms.Form):
 
         if self.cleaned_data.get("super_badge", None):
             qs = qs.filter(super_badge=True)
+
+        if self.cleaned_data.get("has_won_contract"):
+            qs = qs.filter(has_won_contract_last_3_years=True)
 
         if self.cleaned_data.get("local"):
             if perimeters := self.cleaned_data.get("perimeters", None):

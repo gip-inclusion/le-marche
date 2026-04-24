@@ -36,6 +36,17 @@
         line-height: 1.1;
     }
     .ipa-metric-value--accent { color: #000091; }
+    .ipa-metric-link {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        transition: opacity 0.15s;
+    }
+    .ipa-metric-link:hover .ipa-metric-value {
+        text-decoration: underline;
+        color: #000091;
+        opacity: 0.85;
+    }
     .ipa-metric-label {
         font-size: 0.8rem;
         color: #666;
@@ -321,7 +332,9 @@
                     <div class="fr-grid-row fr-grid-row--gutters">
                         <div class="fr-col-6 fr-col-md-2">
                             <div class="ipa-metric-card">
-                                <div class="ipa-metric-value ipa-metric-value--accent">{{ result.potential_siaes }}</div>
+                                <a href="{{ result.search_urls.all }}" target="_blank" rel="noopener" class="ipa-metric-link">
+                                    <div class="ipa-metric-value ipa-metric-value--accent">{{ result.potential_siaes }}</div>
+                                </a>
                                 <div class="ipa-metric-label">
                                     Total
                                     <span class="ipa-tip" data-tip="Nombre total de structures inclusives identifiées sur ce secteur et ce périmètre qui pourraient répondre à votre besoin."><i class="ri-information-line" aria-hidden="true"></i></span>
@@ -330,7 +343,9 @@
                         </div>
                         <div class="fr-col-6 fr-col-md-2">
                             <div class="ipa-metric-card">
-                                <div class="ipa-metric-value">{{ result.insertion_siaes }}</div>
+                                <a href="{{ result.search_urls.insertion }}" target="_blank" rel="noopener" class="ipa-metric-link">
+                                    <div class="ipa-metric-value">{{ result.insertion_siaes }}</div>
+                                </a>
                                 <div class="ipa-metric-label">
                                     Insertion
                                     <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles appartenant au secteur de l'insertion par l'activité économique (EI, AI, ETTI, EITI, ACI)."><i class="ri-information-line" aria-hidden="true"></i></span>
@@ -339,7 +354,9 @@
                         </div>
                         <div class="fr-col-6 fr-col-md-2">
                             <div class="ipa-metric-card">
-                                <div class="ipa-metric-value">{{ result.handicap_siaes }}</div>
+                                <a href="{{ result.search_urls.handicap }}" target="_blank" rel="noopener" class="ipa-metric-link">
+                                    <div class="ipa-metric-value">{{ result.handicap_siaes }}</div>
+                                </a>
                                 <div class="ipa-metric-label">
                                     Handicap
                                     <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles du secteur adapté et protégé (EA, ESAT)."><i class="ri-information-line" aria-hidden="true"></i></span>
@@ -348,7 +365,9 @@
                         </div>
                         <div class="fr-col-6 fr-col-md-2">
                             <div class="ipa-metric-card">
-                                <div class="ipa-metric-value">{{ result.local_siaes }}</div>
+                                <a href="{{ result.search_urls.local }}" target="_blank" rel="noopener" class="ipa-metric-link">
+                                    <div class="ipa-metric-value">{{ result.local_siaes }}</div>
+                                </a>
                                 <div class="ipa-metric-label">
                                     Locales
                                     <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles dont le siège est implanté dans le périmètre géographique indiqué."><i class="ri-information-line" aria-hidden="true"></i></span>
@@ -357,10 +376,23 @@
                         </div>
                         <div class="fr-col-6 fr-col-md-2">
                             <div class="ipa-metric-card">
-                                <div class="ipa-metric-value">{{ result.siaes_with_super_badge }}</div>
+                                <a href="{{ result.search_urls.super_badge }}" target="_blank" rel="noopener" class="ipa-metric-link">
+                                    <div class="ipa-metric-value">{{ result.siaes_with_super_badge }}</div>
+                                </a>
                                 <div class="ipa-metric-label">
                                     Super prestataires
                                     <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles labellisées « Super prestataire » par le Marché de l'Inclusion."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-2">
+                            <div class="ipa-metric-card">
+                                <a href="{{ result.search_urls.won_contract }}" target="_blank" rel="noopener" class="ipa-metric-link">
+                                    <div class="ipa-metric-value">{{ result.siaes_with_won_contract }}</div>
+                                </a>
+                                <div class="ipa-metric-label">
+                                    Marchés publics remportés
+                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles ayant déjà remporté au moins un marché public au cours des 3 dernières années (source DECP)."><i class="ri-information-line" aria-hidden="true"></i></span>
                                 </div>
                             </div>
                         </div>
