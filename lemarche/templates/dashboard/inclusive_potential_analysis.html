@@ -40,12 +40,10 @@
         display: block;
         text-decoration: none;
         color: inherit;
-        transition: opacity 0.15s;
     }
-    .ipa-metric-link:hover .ipa-metric-value {
-        text-decoration: underline;
-        color: #000091;
-        opacity: 0.85;
+    .ipa-metric-card:has(a:hover) {
+        background: #ececec;
+        transition: background 0.15s;
     }
     .ipa-metric-label {
         font-size: 0.8rem;
@@ -180,20 +178,10 @@
                 <strong>Analyse terminée !</strong>
                 {{ results|length }} projet d'achat{{ results|length|pluralize }} analysé{{ results|length|pluralize }} avec succès.
                 {% if import_errors %}
-                    <br><small>{{ import_errors|length }} ligne{{ import_errors|length|pluralize }} ignorée{{ import_errors|length|pluralize }} (voir détail ci-dessous).</small>
+                    <br><small>{{ import_errors|length }} ligne{{ import_errors|length|pluralize }} ignorée{{ import_errors|length|pluralize }}.</small>
                 {% endif %}
             </p>
         </div>
-
-        {# Erreurs partielles d'import #}
-        {% if import_errors %}
-        <div class="fr-alert fr-alert--warning fr-mb-3w">
-            <p><strong>Lignes ignorées lors de l'import :</strong></p>
-            <ul>
-                {% for err in import_errors %}<li>{{ err }}</li>{% endfor %}
-            </ul>
-        </div>
-        {% endif %}
 
     {# ══ Résultats Excel : vue agrégée ══ #}
     {% if mode == "excel" %}
