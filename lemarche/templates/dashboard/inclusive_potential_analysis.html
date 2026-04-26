@@ -12,6 +12,7 @@
 <style>
     [x-cloak] { display: none !important; }
 
+    /* Spinner (formulaire) */
     .ipa-spinner {
         width: 48px;
         height: 48px;
@@ -23,127 +24,114 @@
     }
     @keyframes ipa-spin { to { transform: rotate(360deg); } }
 
-    .ipa-metric-card {
+    /* KPI bandeau */
+    .ipa-kpi-card {
         background: #f6f6f6;
         border-radius: 8px;
         padding: 1rem 1.25rem;
         text-align: center;
+        border-top: 3px solid #e3e3fd;
     }
-    .ipa-metric-value {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #161616;
-        line-height: 1.1;
+    .ipa-kpi-card--success { border-top-color: #18753c; }
+    .ipa-kpi-card--warning { border-top-color: #b34000; }
+    .ipa-kpi-value { font-size: 2rem; font-weight: 700; color: #000091; line-height: 1.1; }
+    .ipa-kpi-card--success .ipa-kpi-value { color: #18753c; }
+    .ipa-kpi-card--warning .ipa-kpi-value { color: #b34000; }
+    .ipa-kpi-label { font-size: 0.8rem; color: #666; margin-top: 0.25rem; }
+
+    /* Vue switcher */
+    .ipa-view-switcher { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .ipa-view-btn {
+        background: #f6f6f6;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+        color: #3a3a3a;
+        transition: background 0.15s, border-color 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
     }
-    .ipa-metric-value--accent { color: #000091; }
-    .ipa-metric-link,
-    .ipa-metric-link:hover,
-    .ipa-metric-link:focus,
-    .ipa-metric-link:visited {
-        display: block;
-        text-decoration: none;
-        color: inherit;
-        background-image: none;
-    }
-    .ipa-metric-link::before,
-    .ipa-metric-link::after {
-        display: none !important;
-    }
-    .ipa-metric-card:has(a:hover) {
-        background: #ececec;
-        transition: background 0.15s;
-    }
-    .ipa-metric-label {
+    .ipa-view-btn:hover { background: #e3e3fd; border-color: #000091; }
+    .ipa-view-btn--active { background: #000091; color: white; border-color: #000091; }
+
+    /* Filtres tags */
+    .ipa-filter-bar { border: 1px solid #e3e3fd; border-radius: 8px; padding: 1rem; background: #fafafe; }
+    .ipa-filter-row { display: flex; align-items: flex-start; gap: 0.5rem; flex-wrap: wrap; }
+    .ipa-filter-label { font-size: 0.875rem; font-weight: 600; color: #3a3a3a; white-space: nowrap; padding-top: 0.3rem; min-width: 90px; }
+    .ipa-filter-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .ipa-tag {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        padding: 0.2rem 0.7rem;
         font-size: 0.8rem;
-        color: #666;
-        margin-top: 0.25rem;
+        cursor: pointer;
+        color: #3a3a3a;
+        transition: background 0.1s, border-color 0.1s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        line-height: 1.6;
     }
-    .ipa-section-title {
+    .ipa-tag:hover { background: #e3e3fd; border-color: #000091; }
+    .ipa-tag--active { background: #e3e3fd; border-color: #000091; color: #000091; font-weight: 600; }
+    .ipa-tag--more { background: #f0f0fb; border-style: dashed; font-size: 0.75rem; }
+    .ipa-tag-close { font-weight: 700; font-size: 1rem; line-height: 1; opacity: 0.7; }
+
+    /* Tableau */
+    .ipa-table-container { overflow-x: auto; border-radius: 4px; }
+    .ipa-table { min-width: 900px; }
+    .ipa-table thead th { white-space: nowrap; vertical-align: bottom; background: #f6f6f6; }
+    .ipa-table thead th.sortable { cursor: pointer; user-select: none; }
+    .ipa-table thead th.sortable:hover { background: #e3e3fd; }
+    .ipa-col-title {
+        position: sticky;
+        left: 0;
+        background: white;
+        z-index: 2;
+        box-shadow: 2px 0 4px rgba(0,0,0,0.06);
+    }
+    .ipa-table thead .ipa-col-title { background: #f6f6f6; }
+    .ipa-table tr:hover td.ipa-col-title { background: #f6f6f6; }
+    .ipa-sort-icon { opacity: 0.35; font-size: 0.8rem; margin-left: 0.2rem; }
+    .ipa-sort-icon--active { opacity: 1; color: #000091; }
+
+    /* Badge recommandation */
+    .ipa-reco {
+        display: inline-block;
+        font-size: 0.72rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 170px;
+        vertical-align: middle;
+    }
+    .ipa-reco--green { background: #b8fec9; color: #18753c; font-weight: 600; }
+    .ipa-reco--blue { background: #e3e3fd; color: #000091; }
+    .ipa-reco--grey { background: #eeeeee; color: #666; }
+    .ipa-reco--none { color: #aaa; }
+
+    /* Vue groupée */
+    .ipa-group-hd {
+        background: #f0f0fb;
+        border: 1px solid #e3e3fd;
+        border-radius: 6px;
+        padding: 0.75rem 1rem;
+        cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        font-size: 1rem;
-        font-weight: 600;
-        color: #161616;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #e3e3fd;
-    }
-    .ipa-section-title [class^="fr-icon-"],
-    .ipa-section-title [class*=" fr-icon-"],
-    .ipa-section-title [class^="ri-"],
-    .ipa-section-title [class*=" ri-"] {
-        color: #000091;
-        font-size: 1.2rem;
-    }
-    .ipa-recommendation {
-        background: linear-gradient(135deg, #f0f0fb 0%, #e8f5e9 100%);
-        border-left: 4px solid #18753c;
-        border-radius: 0 8px 8px 0;
-        padding: 1rem 1.5rem;
-    }
-    .ipa-recommendation-title {
-        font-weight: 700;
-        color: #18753c;
-        margin-bottom: 0.25rem;
-    }
-    .ipa-project-header {
-        background: #000091;
-        color: #fff;
-        border-radius: 8px 8px 0 0;
-        padding: 1rem 1.5rem;
-    }
-    .ipa-project-header h3 { color: #fff; margin: 0 0 0.25rem 0; font-size: 1.1rem; }
-    .ipa-project-meta { font-size: 0.85rem; opacity: 0.85; }
-    .ipa-project-body {
-        border: 2px solid #e3e3fd;
-        border-top: none;
-        border-radius: 0 0 8px 8px;
-        padding: 1.5rem;
-    }
-    .ipa-group-row {
-        cursor: pointer;
-        background: #f0f0fb;
+        gap: 1rem;
         user-select: none;
     }
-    .ipa-group-row:hover { background: #e3e3fd; }
-    .ipa-group-row td { font-weight: 600; padding: 0.75rem 1rem !important; }
-    .ipa-group-chevron { float: right; color: #000091; font-size: 0.85rem; }
-    .ipa-detail-row td { padding-left: 2rem !important; background: #fafafe; }
-
-    .ipa-metric-card { overflow: visible; }
-    .ipa-tip {
-        display: inline-block;
-        position: relative;
-        cursor: help;
-        color: #000091;
-        font-size: 0.9rem;
-        vertical-align: middle;
-        margin-left: 0.25rem;
-        line-height: 1;
-    }
-    .ipa-tip::after {
-        content: attr(data-tip);
-        position: absolute;
-        top: calc(100% + 8px);
-        left: 50%;
-        transform: translateX(-50%);
-        background: #1e1e1e;
-        color: #fff;
-        padding: 0.5rem 0.75rem;
-        border-radius: 4px;
-        font-size: 0.78rem;
-        font-weight: 400;
-        width: 260px;
-        white-space: normal;
-        line-height: 1.5;
-        z-index: 1000;
-        display: none;
-        pointer-events: none;
-        text-align: left;
-    }
-    .ipa-tip:hover::after { display: block; }
-    .ipa-metric-label { overflow: visible; position: relative; }
+    .ipa-group-hd:hover { background: #e3e3fd; }
+    .ipa-group-hd__name { font-weight: 700; flex: 1; }
+    .ipa-group-hd__meta { font-size: 0.875rem; color: #555; }
+    .ipa-group-hd__chevron { color: #000091; margin-left: auto; }
 </style>
 
 <div class="fr-container fr-py-4w">
@@ -172,320 +160,370 @@
 
     {% if results is not None %}
 
-    {# ── Résultats ── #}
-    <div class="fr-mb-3w">
+    {# ── Bouton nouvelle analyse + export ── #}
+    <div class="fr-mb-3w" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
         <a href="{% url 'dashboard:inclusive_potential_analysis' %}"
            class="fr-btn fr-btn--secondary fr-icon-arrow-go-back-line fr-btn--icon-left">
             Lancer une nouvelle analyse
         </a>
+        {% if mode == "excel" and results %}
+        <a href="{% url 'dashboard:inclusive_potential_analysis_export' %}"
+           class="fr-btn fr-btn--secondary fr-icon-download-line fr-btn--icon-left">
+            Exporter en Excel
+        </a>
+        {% endif %}
     </div>
 
     {% if results %}
+
+        {# ── Alerte succès ── #}
         <div class="fr-alert fr-alert--success fr-mb-3w">
             <p>
                 <strong>Analyse terminée !</strong>
-                {{ results|length }} projet d'achat{{ results|length|pluralize }} analysé{{ results|length|pluralize }} avec succès.
+                {{ results|length }} projet{{ results|length|pluralize }} analysé{{ results|length|pluralize }} avec succès.
                 {% if import_errors %}
                     <br><small>{{ import_errors|length }} ligne{{ import_errors|length|pluralize }} ignorée{{ import_errors|length|pluralize }}.</small>
                 {% endif %}
             </p>
         </div>
 
-    {# ══ Résultats Excel : vue agrégée ══ #}
-    {% if mode == "excel" %}
-
-        {# Agrégat par secteur #}
-        <h2 class="fr-h4 fr-mb-2w">
-            <span class="fr-icon-building-line" aria-hidden="true"></span>
-            Par catégorie achat
-        </h2>
-        <div style="overflow-x:auto;" class="fr-mb-5w">
-            <table class="fr-table fr-table--sm" aria-label="Analyse par catégorie achat">
-                <thead><tr>
-                    <th>Titre du projet d'achat</th>
-                    <th>Périmètre</th>
-                    <th>Montant</th>
-                    <th>Structures potentielles</th>
-                    <th>Insertion</th>
-                    <th>Handicap</th>
-                    <th>Recommandation</th>
-                </tr></thead>
-                {% for sector_name, sector_data in results_by_sector.items %}
-                <tbody x-data="{ open: false }">
-                    <tr class="ipa-group-row" @click="open = !open">
-                        <td colspan="7">
-                            {{ sector_name }}
-                            <span style="font-weight:400; color:#555; margin-left:1rem;">
-                                {{ sector_data.project_count }} projet d'achat{{ sector_data.project_count|pluralize }}
-                                &nbsp;·&nbsp; <strong>{{ sector_data.total_structures }}</strong>
-                                structure{{ sector_data.total_structures|pluralize }} potentielle{{ sector_data.total_structures|pluralize }}
-                                {% if sector_data.total_montant %}&nbsp;·&nbsp; {{ sector_data.total_montant|fr_number }} €{% endif %}
-                            </span>
-                            <span class="ipa-group-chevron" x-text="open ? '▲' : '▼'"></span>
-                        </td>
-                    </tr>
-                    {% for r in sector_data.projects %}
-                    <tr class="ipa-detail-row" x-show="open" x-cloak
-                        {% if r.error %}style="background:#fff5f5;"{% endif %}>
-                        <td>{{ r.titre }}</td>
-                        {% if r.error %}
-                        <td colspan="6" style="color:#ce0500;">{{ r.error }}</td>
-                        {% else %}
-                        <td>{{ r.perimeter_name }}</td>
-                        <td>{% if r.montant %}{{ r.montant|fr_number }} €{% else %}—{% endif %}</td>
-                        <td><strong>{{ r.potential_siaes }}</strong></td>
-                        <td>{{ r.insertion_siaes }}</td>
-                        <td>{{ r.handicap_siaes }}</td>
-                        <td>{{ r.recommendation_title|default:"—" }}</td>
-                        {% endif %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                {% endfor %}
-            </table>
+        {# ── Erreurs d'import ── #}
+        {% if import_errors %}
+        <div class="fr-alert fr-alert--warning fr-mb-3w">
+            <p><strong>Lignes ignorées lors de l'import :</strong></p>
+            <ul>{% for err in import_errors %}<li>{{ err }}</li>{% endfor %}</ul>
         </div>
+        {% endif %}
 
-        {# Agrégat par périmètre #}
-        <h2 class="fr-h4 fr-mb-2w">
-            <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
-            Par périmètre géographique
-        </h2>
-        <div style="overflow-x:auto;" class="fr-mb-5w">
-            <table class="fr-table fr-table--sm" aria-label="Analyse par périmètre géographique">
-                <thead><tr>
-                    <th>Titre du projet d'achat</th>
-                    <th>Catégorie achat</th>
-                    <th>Montant</th>
-                    <th>Structures potentielles</th>
-                    <th>Insertion</th>
-                    <th>Handicap</th>
-                    <th>Recommandation</th>
-                </tr></thead>
-                {% for perimeter_name, perimeter_data in results_by_perimeter.items %}
-                <tbody x-data="{ open: false }">
-                    <tr class="ipa-group-row" @click="open = !open">
-                        <td colspan="7">
-                            {{ perimeter_name }}
-                            <span style="font-weight:400; color:#555; margin-left:1rem;">
-                                {{ perimeter_data.project_count }} projet d'achat{{ perimeter_data.project_count|pluralize }}
-                                &nbsp;·&nbsp; <strong>{{ perimeter_data.total_structures }}</strong>
-                                structure{{ perimeter_data.total_structures|pluralize }} potentielle{{ perimeter_data.total_structures|pluralize }}
-                                {% if perimeter_data.total_montant %}&nbsp;·&nbsp; {{ perimeter_data.total_montant|fr_number }} €{% endif %}
-                            </span>
-                            <span class="ipa-group-chevron" x-text="open ? '▲' : '▼'"></span>
-                        </td>
-                    </tr>
-                    {% for r in perimeter_data.projects %}
-                    <tr class="ipa-detail-row" x-show="open" x-cloak
-                        {% if r.error %}style="background:#fff5f5;"{% endif %}>
-                        <td>{{ r.titre }}</td>
-                        {% if r.error %}
-                        <td colspan="6" style="color:#ce0500;">{{ r.error }}</td>
-                        {% else %}
-                        <td>{{ r.secteur_name }}</td>
-                        <td>{% if r.montant %}{{ r.montant|fr_number }} €{% else %}—{% endif %}</td>
-                        <td><strong>{{ r.potential_siaes }}</strong></td>
-                        <td>{{ r.insertion_siaes }}</td>
-                        <td>{{ r.handicap_siaes }}</td>
-                        <td>{{ r.recommendation_title|default:"—" }}</td>
-                        {% endif %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                {% endfor %}
-            </table>
-        </div>
+        {# ── Données JSON pour Alpine.js ── #}
+        {{ results|json_script:"ipa-results-data" }}
 
-    {# ══ Résultats manuels : cartes détaillées ══ #}
-    {% else %}
+        {# ── Composant principal ── #}
+        <div x-data="ipaResults()" x-cloak>
 
-        {% for result in results %}
-        <div class="fr-mb-4w">
-            <div class="ipa-project-header">
-                <h3>{{ result.titre }}</h3>
-                <p class="ipa-project-meta">
-                    <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
-                    {{ result.secteur_name }} &nbsp;·&nbsp; {{ result.perimeter_name }}
-                    {% if result.montant %}&nbsp;·&nbsp; {{ result.montant|fr_number }} €{% endif %}
-                </p>
+            {# KPI bandeau #}
+            <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+                <div class="fr-col-6 fr-col-md-3">
+                    <div class="ipa-kpi-card">
+                        <div class="ipa-kpi-value" x-text="kpis.count"></div>
+                        <div class="ipa-kpi-label">Projets analysés</div>
+                    </div>
+                </div>
+                <div class="fr-col-6 fr-col-md-3">
+                    <div class="ipa-kpi-card">
+                        <div class="ipa-kpi-value" x-text="kpis.avgPotential"></div>
+                        <div class="ipa-kpi-label">Structures moy. / projet</div>
+                    </div>
+                </div>
+                <div class="fr-col-6 fr-col-md-3">
+                    <div class="ipa-kpi-card ipa-kpi-card--success">
+                        <div class="ipa-kpi-value" x-text="kpis.fortPotentiel"></div>
+                        <div class="ipa-kpi-label">Réservation totale possible</div>
+                    </div>
+                </div>
+                <div class="fr-col-6 fr-col-md-3">
+                    <div class="ipa-kpi-card ipa-kpi-card--warning">
+                        <div class="ipa-kpi-value" x-text="kpis.sansPotentiel"></div>
+                        <div class="ipa-kpi-label">Sans potentiel inclusif</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="ipa-project-body">
+            {# Vue switcher #}
+            <div class="ipa-view-switcher fr-mb-2w">
+                <button type="button" class="ipa-view-btn"
+                        :class="{ 'ipa-view-btn--active': view === 'flat' }"
+                        @click="view = 'flat'">
+                    <span class="fr-icon-list-unordered" aria-hidden="true"></span>
+                    Tous les projets
+                </button>
+                <button type="button" class="ipa-view-btn"
+                        :class="{ 'ipa-view-btn--active': view === 'by_sector' }"
+                        @click="view = 'by_sector'">
+                    <span class="fr-icon-building-line" aria-hidden="true"></span>
+                    Par catégorie achat
+                </button>
+                <button type="button" class="ipa-view-btn"
+                        :class="{ 'ipa-view-btn--active': view === 'by_perimeter' }"
+                        @click="view = 'by_perimeter'">
+                    <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
+                    Par périmètre
+                </button>
+            </div>
 
-                {% if result.error %}
-                <div class="fr-alert fr-alert--error">
-                    <p>{{ result.error }}</p>
+            {# Filtres tags #}
+            <div class="ipa-filter-bar fr-mb-3w">
+                <div class="ipa-filter-row">
+                    <span class="ipa-filter-label">Catégorie :</span>
+                    <div class="ipa-filter-tags">
+                        <template x-for="s in (showMoreSectors ? uniqueSectors : uniqueSectors.slice(0, 6))" :key="s">
+                            <button type="button" class="ipa-tag"
+                                    :class="{ 'ipa-tag--active': activeSectors.includes(s) }"
+                                    @click="toggleFilter('sector', s)">
+                                <span x-text="s"></span>
+                                <span x-show="activeSectors.includes(s)" class="ipa-tag-close" aria-hidden="true">×</span>
+                            </button>
+                        </template>
+                        <button type="button" x-show="uniqueSectors.length > 6"
+                                class="ipa-tag ipa-tag--more"
+                                @click="showMoreSectors = !showMoreSectors">
+                            <span x-text="showMoreSectors ? '▲ moins' : '▼ ' + (uniqueSectors.length - 6) + ' autres'"></span>
+                        </button>
+                    </div>
                 </div>
+                <div class="ipa-filter-row fr-mt-1w">
+                    <span class="ipa-filter-label">Périmètre :</span>
+                    <div class="ipa-filter-tags">
+                        <template x-for="p in (showMorePerimeters ? uniquePerimeters : uniquePerimeters.slice(0, 6))" :key="p">
+                            <button type="button" class="ipa-tag"
+                                    :class="{ 'ipa-tag--active': activePerimeters.includes(p) }"
+                                    @click="toggleFilter('perimeter', p)">
+                                <span x-text="p"></span>
+                                <span x-show="activePerimeters.includes(p)" class="ipa-tag-close" aria-hidden="true">×</span>
+                            </button>
+                        </template>
+                        <button type="button" x-show="uniquePerimeters.length > 6"
+                                class="ipa-tag ipa-tag--more"
+                                @click="showMorePerimeters = !showMorePerimeters">
+                            <span x-text="showMorePerimeters ? '▲ moins' : '▼ ' + (uniquePerimeters.length - 6) + ' autres'"></span>
+                        </button>
+                    </div>
+                </div>
+                <div x-show="activeSectors.length > 0 || activePerimeters.length > 0"
+                     class="fr-mt-1w"
+                     style="display:flex; align-items:center; gap:1rem;">
+                    <button type="button"
+                            @click="activeSectors = []; activePerimeters = []"
+                            class="fr-btn fr-btn--tertiary fr-btn--sm">
+                        Réinitialiser les filtres
+                    </button>
+                    <span style="font-size:0.85rem; color:#666;"
+                          x-text="filteredProjects.length + ' projet' + (filteredProjects.length > 1 ? 's' : '') + ' affiché' + (filteredProjects.length > 1 ? 's' : '')">
+                    </span>
+                </div>
+            </div>
 
-                {% else %}
-
-                {# Section 1 — Structures potentielles #}
-                <div class="fr-mb-3w">
-                    <p class="ipa-section-title">
-                        <span class="fr-icon-building-line" aria-hidden="true"></span>
-                        Structures potentielles
-                    </p>
-                    <div class="fr-grid-row fr-grid-row--gutters">
-                        <div class="fr-col-6 fr-col-md-2">
-                            <div class="ipa-metric-card">
-                                <a href="{{ result.search_urls.all }}" target="_blank" rel="noopener" class="ipa-metric-link">
-                                    <div class="ipa-metric-value ipa-metric-value--accent">{{ result.potential_siaes }}</div>
-                                </a>
-                                <div class="ipa-metric-label">
-                                    Total
-                                    <span class="ipa-tip" data-tip="Nombre total de structures inclusives identifiées sur ce secteur et ce périmètre qui pourraient répondre à votre besoin."><i class="ri-information-line" aria-hidden="true"></i></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="fr-col-6 fr-col-md-2">
-                            <div class="ipa-metric-card">
-                                <a href="{{ result.search_urls.insertion }}" target="_blank" rel="noopener" class="ipa-metric-link">
-                                    <div class="ipa-metric-value">{{ result.insertion_siaes }}</div>
-                                </a>
-                                <div class="ipa-metric-label">
+            {# ══ Vue plate ══ #}
+            <div x-show="view === 'flat'">
+                <div class="ipa-table-container">
+                    <table class="fr-table fr-table--sm ipa-table">
+                        <caption class="fr-sr-only">Projets d'achat — potentiel inclusif</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col" class="ipa-col-title sortable" @click="toggleSort('titre')">
+                                    Titre
+                                    <span class="ipa-sort-icon"
+                                          :class="{ 'ipa-sort-icon--active': sort.col === 'titre' }"
+                                          x-text="sortIcon('titre')"></span>
+                                </th>
+                                <th scope="col" class="sortable" @click="toggleSort('secteur_name')">
+                                    Catégorie
+                                    <span class="ipa-sort-icon"
+                                          :class="{ 'ipa-sort-icon--active': sort.col === 'secteur_name' }"
+                                          x-text="sortIcon('secteur_name')"></span>
+                                </th>
+                                <th scope="col" class="sortable" @click="toggleSort('perimeter_name')">
+                                    Périmètre
+                                    <span class="ipa-sort-icon"
+                                          :class="{ 'ipa-sort-icon--active': sort.col === 'perimeter_name' }"
+                                          x-text="sortIcon('perimeter_name')"></span>
+                                </th>
+                                <th scope="col" class="sortable" @click="toggleSort('montant_num')" style="text-align:right;">
+                                    Montant
+                                    <span class="ipa-sort-icon"
+                                          :class="{ 'ipa-sort-icon--active': sort.col === 'montant_num' }"
+                                          x-text="sortIcon('montant_num')"></span>
+                                </th>
+                                <th scope="col" class="sortable" @click="toggleSort('potential_siaes')" style="text-align:right;">
+                                    Structures
+                                    <span class="ipa-sort-icon"
+                                          :class="{ 'ipa-sort-icon--active': sort.col === 'potential_siaes' }"
+                                          x-text="sortIcon('potential_siaes')"></span>
+                                </th>
+                                <th scope="col" class="sortable" @click="toggleSort('insertion_siaes')" style="text-align:right;">
                                     Insertion
-                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles appartenant au secteur de l'insertion par l'activité économique (EI, AI, ETTI, EITI, ACI)."><i class="ri-information-line" aria-hidden="true"></i></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="fr-col-6 fr-col-md-2">
-                            <div class="ipa-metric-card">
-                                <a href="{{ result.search_urls.handicap }}" target="_blank" rel="noopener" class="ipa-metric-link">
-                                    <div class="ipa-metric-value">{{ result.handicap_siaes }}</div>
-                                </a>
-                                <div class="ipa-metric-label">
+                                    <span class="ipa-sort-icon"
+                                          :class="{ 'ipa-sort-icon--active': sort.col === 'insertion_siaes' }"
+                                          x-text="sortIcon('insertion_siaes')"></span>
+                                </th>
+                                <th scope="col" class="sortable" @click="toggleSort('handicap_siaes')" style="text-align:right;">
                                     Handicap
-                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles du secteur adapté et protégé (EA, ESAT)."><i class="ri-information-line" aria-hidden="true"></i></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="fr-col-6 fr-col-md-2">
-                            <div class="ipa-metric-card">
-                                <a href="{{ result.search_urls.local }}" target="_blank" rel="noopener" class="ipa-metric-link">
-                                    <div class="ipa-metric-value">{{ result.local_siaes }}</div>
-                                </a>
-                                <div class="ipa-metric-label">
+                                    <span class="ipa-sort-icon"
+                                          :class="{ 'ipa-sort-icon--active': sort.col === 'handicap_siaes' }"
+                                          x-text="sortIcon('handicap_siaes')"></span>
+                                </th>
+                                <th scope="col" class="sortable" @click="toggleSort('local_siaes')" style="text-align:right;">
                                     Locales
-                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles dont le siège est implanté dans le périmètre géographique indiqué."><i class="ri-information-line" aria-hidden="true"></i></span>
-                                </div>
-                            </div>
+                                    <span class="ipa-sort-icon"
+                                          :class="{ 'ipa-sort-icon--active': sort.col === 'local_siaes' }"
+                                          x-text="sortIcon('local_siaes')"></span>
+                                </th>
+                                <th scope="col" class="sortable" @click="toggleSort('siaes_with_super_badge')" style="text-align:right;">
+                                    Super prest.
+                                    <span class="ipa-sort-icon"
+                                          :class="{ 'ipa-sort-icon--active': sort.col === 'siaes_with_super_badge' }"
+                                          x-text="sortIcon('siaes_with_super_badge')"></span>
+                                </th>
+                                <th scope="col" class="sortable" @click="toggleSort('siaes_with_won_contract')" style="text-align:right;">
+                                    Marchés rem.
+                                    <span class="ipa-sort-icon"
+                                          :class="{ 'ipa-sort-icon--active': sort.col === 'siaes_with_won_contract' }"
+                                          x-text="sortIcon('siaes_with_won_contract')"></span>
+                                </th>
+                                <th scope="col" class="sortable" @click="toggleSort('eco_dependency')" style="text-align:right;">
+                                    Dép. éco.
+                                    <span class="ipa-sort-icon"
+                                          :class="{ 'ipa-sort-icon--active': sort.col === 'eco_dependency' }"
+                                          x-text="sortIcon('eco_dependency')"></span>
+                                </th>
+                                <th scope="col" style="min-width:160px;">Recommandation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-if="sortedProjects.length === 0">
+                                <tr>
+                                    <td colspan="12" style="text-align:center; color:#666; padding:2rem;">
+                                        Aucun projet ne correspond aux filtres sélectionnés.
+                                    </td>
+                                </tr>
+                            </template>
+                            <template x-for="p in sortedProjects" :key="p.titre + '||' + p.secteur_name + '||' + p.perimeter_name">
+                                <tr>
+                                    <td class="ipa-col-title">
+                                        <a :href="p.search_urls.all" target="_blank" rel="noopener"
+                                           style="font-weight:600; max-width:200px; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
+                                           :title="p.titre"
+                                           x-text="p.titre"></a>
+                                    </td>
+                                    <td x-text="p.secteur_name"></td>
+                                    <td x-text="p.perimeter_name"></td>
+                                    <td style="text-align:right; white-space:nowrap;">
+                                        <span x-text="p.montant ? p.montant + ' €' : '—'"></span>
+                                    </td>
+                                    <td style="text-align:right; font-weight:700; color:#000091;">
+                                        <a :href="p.search_urls.all" target="_blank" rel="noopener"
+                                           style="color:inherit;"
+                                           x-text="p.potential_siaes"></a>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        <a :href="p.search_urls.insertion" target="_blank" rel="noopener" x-text="p.insertion_siaes"></a>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        <a :href="p.search_urls.handicap" target="_blank" rel="noopener" x-text="p.handicap_siaes"></a>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        <a :href="p.search_urls.local" target="_blank" rel="noopener" x-text="p.local_siaes"></a>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        <a :href="p.search_urls.super_badge" target="_blank" rel="noopener" x-text="p.siaes_with_super_badge"></a>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        <a :href="p.search_urls.won_contract" target="_blank" rel="noopener" x-text="p.siaes_with_won_contract"></a>
+                                    </td>
+                                    <td style="text-align:right;"
+                                        :style="p.eco_dependency !== null && p.eco_dependency > 30 ? 'color:#ce0500; font-weight:700;' : ''">
+                                        <span x-text="p.eco_dependency !== null ? p.eco_dependency + ' %' : '—'"></span>
+                                    </td>
+                                    <td>
+                                        <span class="ipa-reco"
+                                              :class="recoClass(p.recommendation_title)"
+                                              :title="p.recommendation_title || ''"
+                                              x-text="p.recommendation_title || '—'"></span>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {# ══ Vues groupées ══ #}
+            <div x-show="view === 'by_sector' || view === 'by_perimeter'">
+                <template x-for="group in (view === 'by_sector' ? groupedBySector : groupedByPerimeter)" :key="group.name">
+                    <div class="fr-mb-2w">
+                        <div class="ipa-group-hd" @click="toggleGroup(group.name)">
+                            <span class="ipa-group-hd__name" x-text="group.name"></span>
+                            <span class="ipa-group-hd__meta">
+                                <span x-text="group.projects.length + ' projet' + (group.projects.length > 1 ? 's' : '')"></span>
+                                &nbsp;·&nbsp;
+                                <strong x-text="group.total + ' structure' + (group.total > 1 ? 's' : '') + ' potentielle' + (group.total > 1 ? 's' : '')"></strong>
+                            </span>
+                            <span class="ipa-group-hd__chevron" x-text="expandedGroups[group.name] ? '▲' : '▼'"></span>
                         </div>
-                        <div class="fr-col-6 fr-col-md-2">
-                            <div class="ipa-metric-card">
-                                <a href="{{ result.search_urls.super_badge }}" target="_blank" rel="noopener" class="ipa-metric-link">
-                                    <div class="ipa-metric-value">{{ result.siaes_with_super_badge }}</div>
-                                </a>
-                                <div class="ipa-metric-label">
-                                    Super prestataires
-                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles labellisées « Super prestataire » par le Marché de l'Inclusion."><i class="ri-information-line" aria-hidden="true"></i></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="fr-col-6 fr-col-md-2">
-                            <div class="ipa-metric-card">
-                                <a href="{{ result.search_urls.won_contract }}" target="_blank" rel="noopener" class="ipa-metric-link">
-                                    <div class="ipa-metric-value">{{ result.siaes_with_won_contract }}</div>
-                                </a>
-                                <div class="ipa-metric-label">
-                                    Marchés publics remportés
-                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles ayant déjà remporté au moins un marché public au cours des 3 dernières années (source DECP)."><i class="ri-information-line" aria-hidden="true"></i></span>
-                                </div>
+                        <div x-show="expandedGroups[group.name]">
+                            <div class="ipa-table-container">
+                                <table class="fr-table fr-table--sm ipa-table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Titre</th>
+                                            <th scope="col" x-show="view === 'by_sector'">Périmètre</th>
+                                            <th scope="col" x-show="view === 'by_perimeter'">Catégorie achat</th>
+                                            <th scope="col" style="text-align:right;">Montant</th>
+                                            <th scope="col" style="text-align:right;">Structures</th>
+                                            <th scope="col" style="text-align:right;">Insertion</th>
+                                            <th scope="col" style="text-align:right;">Handicap</th>
+                                            <th scope="col" style="text-align:right;">Locales</th>
+                                            <th scope="col" style="text-align:right;">Super prest.</th>
+                                            <th scope="col" style="text-align:right;">Marchés rem.</th>
+                                            <th scope="col" style="text-align:right;">Dép. éco.</th>
+                                            <th scope="col" style="min-width:160px;">Recommandation</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template x-for="p in group.projects" :key="p.titre + '||' + p.perimeter_name">
+                                            <tr>
+                                                <td style="font-weight:600;" x-text="p.titre"></td>
+                                                <td x-show="view === 'by_sector'" x-text="p.perimeter_name"></td>
+                                                <td x-show="view === 'by_perimeter'" x-text="p.secteur_name"></td>
+                                                <td style="text-align:right; white-space:nowrap;"
+                                                    x-text="p.montant ? p.montant + ' €' : '—'"></td>
+                                                <td style="text-align:right; font-weight:700; color:#000091;"
+                                                    x-text="p.potential_siaes"></td>
+                                                <td style="text-align:right;" x-text="p.insertion_siaes"></td>
+                                                <td style="text-align:right;" x-text="p.handicap_siaes"></td>
+                                                <td style="text-align:right;" x-text="p.local_siaes"></td>
+                                                <td style="text-align:right;" x-text="p.siaes_with_super_badge"></td>
+                                                <td style="text-align:right;" x-text="p.siaes_with_won_contract"></td>
+                                                <td style="text-align:right;"
+                                                    :style="p.eco_dependency !== null && p.eco_dependency > 30 ? 'color:#ce0500; font-weight:700;' : ''"
+                                                    x-text="p.eco_dependency !== null ? p.eco_dependency + ' %' : '—'"></td>
+                                                <td>
+                                                    <span class="ipa-reco"
+                                                          :class="recoClass(p.recommendation_title)"
+                                                          :title="p.recommendation_title || ''"
+                                                          x-text="p.recommendation_title || '—'"></span>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-                </div>
+                </template>
+            </div>
 
-                {# Section 2 — Effectifs #}
-                <div class="fr-mb-3w">
-                    <p class="ipa-section-title">
-                        <span class="fr-icon-group-line" aria-hidden="true"></span>
-                        Effectifs moyens
+            {# Projets en erreur #}
+            <template x-if="erroredProjects.length > 0">
+                <div class="fr-alert fr-alert--error fr-mt-3w">
+                    <p>
+                        <strong x-text="erroredProjects.length + ' projet' + (erroredProjects.length > 1 ? 's' : '') + ' en erreur :'"></strong>
                     </p>
-                    <div class="fr-grid-row fr-grid-row--gutters">
-                        <div class="fr-col-6 fr-col-md-3">
-                            <div class="ipa-metric-card">
-                                <div class="ipa-metric-value">{{ result.employees_insertion_average }}</div>
-                                <div class="ipa-metric-label">
-                                    ETP insertion
-                                    <span class="ipa-tip" data-tip="Nombre moyen d'équivalents temps plein en parcours d'insertion dans les structures potentielles."><i class="ri-information-line" aria-hidden="true"></i></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="fr-col-6 fr-col-md-3">
-                            <div class="ipa-metric-card">
-                                <div class="ipa-metric-value">{{ result.employees_permanent_average }}</div>
-                                <div class="ipa-metric-label">
-                                    ETP permanents
-                                    <span class="ipa-tip" data-tip="Nombre moyen d'équivalents temps plein permanents (encadrants, accompagnateurs) dans les structures potentielles."><i class="ri-information-line" aria-hidden="true"></i></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <ul>
+                        <template x-for="p in erroredProjects" :key="p.titre">
+                            <li><strong x-text="p.titre"></strong> — <span x-text="p.error"></span></li>
+                        </template>
+                    </ul>
                 </div>
+            </template>
 
-                {# Section 3 — Analyse économique (affichée dès qu'un montant est fourni) #}
-                {% if result.montant %}
-                <div class="fr-mb-3w">
-                    <p class="ipa-section-title">
-                        <span class="ri-bar-chart-2-line" aria-hidden="true"></span>
-                        Analyse économique
-                    </p>
-                    <div class="fr-grid-row fr-grid-row--gutters">
-                        <div class="fr-col-6 fr-col-md-3">
-                            <div class="ipa-metric-card">
-                                <div class="ipa-metric-value">
-                                    {% if result.eco_dependency is not None %}{{ result.eco_dependency }} %{% else %}—{% endif %}
-                                </div>
-                                <div class="ipa-metric-label">
-                                    Dépendance économique
-                                    <span class="ipa-tip" data-tip="Part que représente votre marché dans le CA moyen des structures potentielles. Au-delà de 30 %, le risque de dépendance économique est considéré comme élevé."><i class="ri-information-line" aria-hidden="true"></i></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="fr-col-6 fr-col-md-3">
-                            <div class="ipa-metric-card">
-                                <div class="ipa-metric-value">
-                                    {% if result.ca_average %}{{ result.ca_average|fr_number }} €{% else %}—{% endif %}
-                                </div>
-                                <div class="ipa-metric-label">
-                                    CA moyen des structures
-                                    <span class="ipa-tip" data-tip="Chiffre d'affaires moyen des structures potentielles, qui permet d'estimer leur capacité à absorber votre commande."><i class="ri-information-line" aria-hidden="true"></i></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-
-                {# Section 4 — Recommandation #}
-                {% if result.recommendation_title %}
-                <div>
-                    <p class="ipa-section-title">
-                        <span class="fr-icon-lightbulb-line" aria-hidden="true"></span>
-                        Recommandation
-                    </p>
-                    <div class="ipa-recommendation">
-                        <p class="ipa-recommendation-title">{{ result.recommendation_title }}</p>
-                        {% if result.recommendation_response %}
-                        <p style="margin: 0; color: #3a3a3a;">{{ result.recommendation_response }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endif %}
-
-                {% endif %}{# end if result.error #}
-
-            </div>{# /ipa-project-body #}
-        </div>{# /fr-mb-4w #}
-        {% endfor %}
-
-    {% endif %}{# end if mode == "excel" ... else #}
+        </div>{# /x-data=ipaResults() #}
 
     {% else %}
         <div class="fr-alert fr-alert--warning">
             <p>Aucun résultat à afficher. Vérifiez que vos projets d'achat sont correctement renseignés.</p>
         </div>
-    {% endif %}{# end if results #}
+    {% endif %}
 
     {% else %}
 
@@ -851,5 +889,114 @@
 {% block extra_js %}
     {% if results is None %}
         <script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
+    {% endif %}
+    {% if results %}
+    <script>
+    function ipaResults() {
+        const raw = JSON.parse(document.getElementById('ipa-results-data').textContent);
+        return {
+            allProjects: raw.filter(p => !p.error).map(p => ({
+                ...p,
+                montant_num: p.montant ? parseInt(p.montant.replace(/\s/g, ''), 10) : null,
+            })),
+            erroredProjects: raw.filter(p => !!p.error),
+            view: 'flat',
+            activeSectors: [],
+            activePerimeters: [],
+            sort: { col: 'potential_siaes', dir: 'desc' },
+            showMoreSectors: false,
+            showMorePerimeters: false,
+            expandedGroups: {},
+
+            get filteredProjects() {
+                return this.allProjects.filter(p => {
+                    if (this.activeSectors.length && !this.activeSectors.includes(p.secteur_name)) return false;
+                    if (this.activePerimeters.length && !this.activePerimeters.includes(p.perimeter_name)) return false;
+                    return true;
+                });
+            },
+
+            get sortedProjects() {
+                const col = this.sort.col;
+                const dir = this.sort.dir === 'asc' ? 1 : -1;
+                return [...this.filteredProjects].sort((a, b) => {
+                    let va = col === 'montant_num' ? a.montant_num : a[col];
+                    let vb = col === 'montant_num' ? b.montant_num : b[col];
+                    if (va === null || va === undefined) return 1;
+                    if (vb === null || vb === undefined) return -1;
+                    if (typeof va === 'string') return dir * va.localeCompare(vb, 'fr');
+                    return dir * (va - vb);
+                });
+            },
+
+            get groupedBySector() {
+                return this._groupBy('secteur_name');
+            },
+
+            get groupedByPerimeter() {
+                return this._groupBy('perimeter_name');
+            },
+
+            _groupBy(key) {
+                const groups = {};
+                for (const p of this.filteredProjects) {
+                    if (!groups[p[key]]) groups[p[key]] = { name: p[key], projects: [], total: 0 };
+                    groups[p[key]].projects.push(p);
+                    groups[p[key]].total += p.potential_siaes;
+                }
+                return Object.values(groups).sort((a, b) => b.total - a.total);
+            },
+
+            get uniqueSectors() {
+                return [...new Set(this.allProjects.map(p => p.secteur_name))].sort((a, b) => a.localeCompare(b, 'fr'));
+            },
+
+            get uniquePerimeters() {
+                return [...new Set(this.allProjects.map(p => p.perimeter_name))].sort((a, b) => a.localeCompare(b, 'fr'));
+            },
+
+            get kpis() {
+                const ps = this.filteredProjects;
+                const count = ps.length;
+                const avgPotential = count ? Math.round(ps.reduce((s, p) => s + p.potential_siaes, 0) / count) : 0;
+                const fortPotentiel = ps.filter(p => p.recommendation_title === 'Réservation totale').length;
+                const sansPotentiel = ps.filter(p => p.recommendation_title === 'Aucun potentiel inclusif identifié').length;
+                return { count, avgPotential, fortPotentiel, sansPotentiel };
+            },
+
+            toggleSort(col) {
+                if (this.sort.col === col) {
+                    this.sort.dir = this.sort.dir === 'asc' ? 'desc' : 'asc';
+                } else {
+                    this.sort.col = col;
+                    this.sort.dir = 'desc';
+                }
+            },
+
+            sortIcon(col) {
+                if (this.sort.col !== col) return '↕';
+                return this.sort.dir === 'asc' ? '↑' : '↓';
+            },
+
+            toggleFilter(type, value) {
+                const arr = type === 'sector' ? this.activeSectors : this.activePerimeters;
+                const idx = arr.indexOf(value);
+                if (idx === -1) arr.push(value);
+                else arr.splice(idx, 1);
+            },
+
+            toggleGroup(name) {
+                this.expandedGroups[name] = !this.expandedGroups[name];
+            },
+
+            recoClass(title) {
+                if (!title) return 'ipa-reco--none';
+                if (title === 'Réservation totale') return 'ipa-reco--green';
+                if (title === 'Aucun potentiel inclusif identifié') return 'ipa-reco--grey';
+                return 'ipa-reco--blue';
+            },
+        };
+    }
+    </script>
     {% endif %}
 {% endblock extra_js %}
