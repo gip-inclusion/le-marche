@@ -36,10 +36,18 @@
         line-height: 1.1;
     }
     .ipa-metric-value--accent { color: #000091; }
-    .ipa-metric-link {
+    .ipa-metric-link,
+    .ipa-metric-link:hover,
+    .ipa-metric-link:focus,
+    .ipa-metric-link:visited {
         display: block;
         text-decoration: none;
         color: inherit;
+        background-image: none;
+    }
+    .ipa-metric-link::before,
+    .ipa-metric-link::after {
+        display: none !important;
     }
     .ipa-metric-card:has(a:hover) {
         background: #ececec;
