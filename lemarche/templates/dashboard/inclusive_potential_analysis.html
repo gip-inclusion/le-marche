@@ -301,6 +301,42 @@
             </p>
         </div>
 
+        {# ── Segmented control : mode de prestation ── #}
+        <div class="fr-mb-3w">
+            <form method="post" action="" id="presta-mode-form">
+                {% csrf_token %}
+                <input type="hidden" name="mode" value="reanalyze">
+                <fieldset class="fr-segmented fr-segmented--sm">
+                    <legend class="fr-segmented__legend fr-text--sm fr-mb-1w" style="font-weight:600;">
+                        Type de prestation analysé
+                        <span class="fr-hint-text">Le mode sélectionné modifie la base de structures et tous les indicateurs.</span>
+                    </legend>
+                    <div class="fr-segmented__elements">
+                        <div class="fr-segmented__element">
+                            <input type="radio" name="presta_mode"
+                                   id="presta-mode-service"
+                                   value="service"
+                                   {% if presta_mode == "service" %}checked{% endif %}
+                                   onchange="document.getElementById('presta-mode-form').submit()">
+                            <label class="fr-label" for="presta-mode-service">
+                                Services et fournitures
+                            </label>
+                        </div>
+                        <div class="fr-segmented__element">
+                            <input type="radio" name="presta_mode"
+                                   id="presta-mode-mise-a-dispo"
+                                   value="mise_a_disposition"
+                                   {% if presta_mode == "mise_a_disposition" %}checked{% endif %}
+                                   onchange="document.getElementById('presta-mode-form').submit()">
+                            <label class="fr-label" for="presta-mode-mise-a-dispo">
+                                Mise à disposition de personnel (intérim d'insertion)
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+
     {# ══ Résultats Excel : tableau Alpine.js ══ #}
     {% if mode == "excel" %}
 
