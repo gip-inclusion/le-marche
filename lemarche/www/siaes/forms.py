@@ -237,7 +237,9 @@ class SiaeFilterForm(forms.Form):
             siae_activity_subquery = siae_activity_subquery.filter_sectors(sectors)
 
         if perimeters := self.cleaned_data.get("perimeters", None):
-            siae_activity_subquery = siae_activity_subquery.geo_range_in_perimeter_list(perimeters)
+            siae_activity_subquery = siae_activity_subquery.geo_range_in_perimeter_list(
+                perimeters, include_country_area=True
+            )
 
         if presta_types := self.cleaned_data.get("presta_type", None):
             siae_activity_subquery = siae_activity_subquery.filter(presta_type__overlap=presta_types)
