@@ -6,6 +6,7 @@ from lemarche.www.dashboard.views import (
     InclusivePotentialAnalysisView,
     InclusivePurchaseStatsDashboardView,
     ProfileEditView,
+    inclusive_potential_excel_export,
     inclusive_potential_excel_template,
 )
 
@@ -22,6 +23,11 @@ urlpatterns = [
         "analyse-potentiel-inclusif/modele-excel/",
         inclusive_potential_excel_template,
         name="inclusive_potential_analysis_template",
+    ),
+    path(
+        "analyse-potentiel-inclusif/export-excel/",
+        inclusive_potential_excel_export,
+        name="inclusive_potential_analysis_export",
     ),
     # FavoriteList
     # see dashboard_favorites/urls.py

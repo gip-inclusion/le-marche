@@ -1,13 +1,14 @@
 import io
 import logging
+from urllib.parse import urlencode
 
 import openpyxl
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.text import slugify
 from django.views import View
@@ -310,6 +311,26 @@ class DisabledEmailEditView(LoginRequiredMixin, SuccessMessageMixin, FormView):
         return super().form_valid(form)
 
 
+def _build_search_urls(sector: Sector, perimeter: Perimeter | None) -> dict:
+    """Build search URLs for each indicator, pointing to the Marché search page."""
+    base_params = [("sectors", sector.slug)]
+    if perimeter:
+        base_params.append(("perimeters", perimeter.slug))
+
+    def url(extra_params=None):
+        params = base_params + (extra_params or [])
+        return f"/prestataires/?{urlencode(params)}"
+
+    return {
+        "all": url(),
+        "insertion": url([("kind", k) for k in KIND_INSERTION_LIST]),
+        "handicap": url([("kind", k) for k in KIND_HANDICAP_LIST]),
+        "local": url([("local", "True")]),
+        "super_badge": url([("super_badge", "True")]),
+        "won_contract": url([("has_won_contract", "True")]),
+    }
+
+
 def _analyze_purchase_project(titre: str, sector: Sector, perimeter: Perimeter | None, budget: int | None) -> dict:
     """Run the inclusive potential analysis for a single purchase project."""
     try:
@@ -321,6 +342,7 @@ def _analyze_purchase_project(titre: str, sector: Sector, perimeter: Perimeter |
             "error": "Une erreur technique s'est produite lors de l'analyse. Veuillez réessayer.",
         }
 
+    search_urls = _build_search_urls(sector, perimeter)
     result = {
         "titre": titre,
         "secteur_name": sector.name,
@@ -331,12 +353,14 @@ def _analyze_purchase_project(titre: str, sector: Sector, perimeter: Perimeter |
         "handicap_siaes": potential_data.handicap_siaes,
         "local_siaes": potential_data.local_siaes,
         "siaes_with_super_badge": potential_data.siaes_with_super_badge,
+        "siaes_with_won_contract": potential_data.siaes_with_won_contract,
         "employees_insertion_average": potential_data.employees_insertion_average,
         "employees_permanent_average": potential_data.employees_permanent_average,
         "ca_average": None,
         "eco_dependency": None,
         "recommendation_title": None,
         "recommendation_response": None,
+        "search_urls": search_urls,
         "error": None,
     }
 
@@ -566,6 +590,8 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
 
         by_sector, by_perimeter = _aggregate_results(results)
 
+        request.session["ipa_excel_results"] = [{k: v for k, v in r.items() if k != "search_urls"} for r in results]
+
         return render(
             request,
             self.template_name,
@@ -633,4 +659,75 @@ def inclusive_potential_excel_template(request):
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
     response["Content-Disposition"] = 'attachment; filename="modele_analyse_potentiel_inclusif.xlsx"'
+    return response
+
+
+@login_required
+def inclusive_potential_excel_export(request):
+    """Export the last Excel analysis results as a downloadable .xlsx file."""
+    results = request.session.get("ipa_excel_results")
+    if not results:
+        return HttpResponseRedirect(reverse("dashboard:inclusive_potential_analysis"))
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Analyse potentiel inclusif"
+
+    ws.append(
+        [
+            "Titre du projet d'achat",
+            "Catégorie achat",
+            "Périmètre",
+            "Montant (€)",
+            "Structures potentielles",
+            "Structures d'insertion",
+            "Structures du handicap",
+            "Structures locales",
+            "Super prestataires",
+            "Marchés publics remportés",
+            "ETP insertion (moy.)",
+            "ETP permanents (moy.)",
+            "Dépendance économique (%)",
+            "CA moyen des structures (€)",
+            "Recommandation",
+        ]
+    )
+
+    for result in results:
+        montant_raw = None
+        if result.get("montant"):
+            try:
+                montant_raw = int(result["montant"].replace("\xa0", "").replace(" ", ""))
+            except (ValueError, AttributeError):
+                montant_raw = result["montant"]
+
+        ws.append(
+            [
+                result.get("titre"),
+                result.get("secteur_name"),
+                result.get("perimeter_name"),
+                montant_raw,
+                result.get("potential_siaes"),
+                result.get("insertion_siaes"),
+                result.get("handicap_siaes"),
+                result.get("local_siaes"),
+                result.get("siaes_with_super_badge"),
+                result.get("siaes_with_won_contract"),
+                result.get("employees_insertion_average"),
+                result.get("employees_permanent_average"),
+                result.get("eco_dependency"),
+                result.get("ca_average"),
+                result.get("recommendation_title"),
+            ]
+        )
+
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+
+    response = HttpResponse(
+        buffer.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response["Content-Disposition"] = 'attachment; filename="analyse_potentiel_inclusif.xlsx"'
     return response
