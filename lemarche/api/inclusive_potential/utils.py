@@ -5,7 +5,6 @@ from lemarche.api.inclusive_potential.constants import (
     LIMIT_FOR_ECO_DEPENDENCY,
     LIMIT_FOR_LOT,
     LIMIT_FOR_RESERVATION,
-    PRESTA_MODE_DEFAULT,
     PRESTA_MODE_TO_SIAE_KINDS,
     RECOMMENDATIONS,
 )
@@ -58,21 +57,21 @@ def set_analysis_data(siaes, siaes_count, budget, analysis_data):
 
 
 def get_inclusive_potential_data(
-    sector: str, perimeter: str, budget: int, presta_mode: str = PRESTA_MODE_DEFAULT
+    sector: str, perimeter: str, budget: int, presta_mode: str | None = None
 ) -> tuple[PotentialData, dict]:
     """
     Get the potential data for a given sector and perimeter.
     Budget is optional and is used to calculate the eco-dependency.
     presta_mode filters structures by their economic model (service vs. mise à disposition).
+    When None (API default), all structure kinds are included.
     """
-    allowed_kinds = PRESTA_MODE_TO_SIAE_KINDS.get(presta_mode, PRESTA_MODE_TO_SIAE_KINDS[PRESTA_MODE_DEFAULT])
+    qs = Siae.objects.filter_with_potential_through_activities(sector, perimeter)
+
+    if presta_mode and presta_mode in PRESTA_MODE_TO_SIAE_KINDS:
+        qs = qs.filter(kind__in=PRESTA_MODE_TO_SIAE_KINDS[presta_mode])
 
     # Get all siaes with potential through activities, filtered by presta_mode
-    siaes = (
-        Siae.objects.filter_with_potential_through_activities(sector, perimeter)
-        .filter(kind__in=allowed_kinds)
-        .with_is_local(perimeter)
-    )
+    siaes = qs.with_is_local(perimeter)
 
     # Calculate the number of siaes by kind and the number of employees
     # Prefer to loop over siaes rather than using querysets to avoid lots of big queries
