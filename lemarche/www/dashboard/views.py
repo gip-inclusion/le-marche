@@ -312,23 +312,35 @@ class DisabledEmailEditView(LoginRequiredMixin, SuccessMessageMixin, FormView):
         return super().form_valid(form)
 
 
-def _build_search_urls(sector: Sector, perimeter: Perimeter | None) -> dict:
+def _build_search_urls(sector: Sector, perimeter: Perimeter | None, presta_mode: str | None = None) -> dict:
     """Build search URLs for each indicator, pointing to the Marché search page."""
     base_params = [("sectors", sector.slug)]
     if perimeter:
         base_params.append(("perimeters", perimeter.slug))
 
-    def url(extra_params=None):
-        params = base_params + (extra_params or [])
+    presta_kinds = PRESTA_MODE_TO_SIAE_KINDS.get(presta_mode) if presta_mode else None
+
+    def kind_params(base_kinds=None):
+        """Return kind URL params, intersected with active presta_mode if any."""
+        if base_kinds is None:
+            kinds = presta_kinds or []
+        elif presta_kinds is not None:
+            kinds = [k for k in base_kinds if k in presta_kinds]
+        else:
+            kinds = base_kinds
+        return [("kind", k) for k in kinds]
+
+    def url(kind_filter=None, extra_params=None):
+        params = base_params + kind_params(kind_filter) + (extra_params or [])
         return f"/prestataires/?{urlencode(params)}"
 
     return {
         "all": url(),
-        "insertion": url([("kind", k) for k in KIND_INSERTION_LIST]),
-        "handicap": url([("kind", k) for k in KIND_HANDICAP_LIST]),
-        "local": url([("local", "True")]),
-        "super_badge": url([("super_badge", "True")]),
-        "won_contract": url([("has_won_contract", "True")]),
+        "insertion": url(KIND_INSERTION_LIST),
+        "handicap": url(KIND_HANDICAP_LIST),
+        "local": url(extra_params=[("local", "True")]),
+        "super_badge": url(extra_params=[("super_badge", "True")]),
+        "won_contract": url(extra_params=[("has_won_contract", "True")]),
     }
 
 
@@ -345,7 +357,7 @@ def _analyze_purchase_project(
             "error": "Une erreur technique s'est produite lors de l'analyse. Veuillez réessayer.",
         }
 
-    search_urls = _build_search_urls(sector, perimeter)
+    search_urls = _build_search_urls(sector, perimeter, presta_mode)
     result = {
         "titre": titre,
         "secteur_name": sector.name,

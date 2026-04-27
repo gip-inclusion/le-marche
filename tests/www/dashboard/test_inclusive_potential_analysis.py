@@ -308,6 +308,22 @@ class InclusivePotentialPrestaModeTest(TestCase):
         self.assertEqual(response.context["presta_mode"], "service")
 
     @patch("lemarche.www.dashboard.views.get_inclusive_potential_data")
+    def test_search_urls_filtered_by_presta_mode_service(self, mock_analysis):
+        mock_analysis.return_value = (MOCK_POTENTIAL_DATA, MOCK_ANALYSIS_DATA)
+        response = self._post_manual({"presta_mode": "service"})
+        search_urls = response.context["results"][0]["search_urls"]
+        self.assertIn("kind=EI", search_urls["all"])
+        self.assertNotIn("kind=ETTI", search_urls["all"])
+
+    @patch("lemarche.www.dashboard.views.get_inclusive_potential_data")
+    def test_search_urls_filtered_by_presta_mode_mise_a_dispo(self, mock_analysis):
+        mock_analysis.return_value = (MOCK_POTENTIAL_DATA, MOCK_ANALYSIS_DATA)
+        response = self._post_manual({"presta_mode": "mise_a_disposition"})
+        search_urls = response.context["results"][0]["search_urls"]
+        self.assertIn("kind=ETTI", search_urls["all"])
+        self.assertNotIn("kind=EI", search_urls["all"])
+
+    @patch("lemarche.www.dashboard.views.get_inclusive_potential_data")
     def test_raw_projects_stored_in_session_after_manual(self, mock_analysis):
         mock_analysis.return_value = (MOCK_POTENTIAL_DATA, MOCK_ANALYSIS_DATA)
         self._post_manual()
