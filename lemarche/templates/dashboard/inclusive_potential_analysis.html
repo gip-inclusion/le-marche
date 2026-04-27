@@ -24,7 +24,121 @@
     }
     @keyframes ipa-spin { to { transform: rotate(360deg); } }
 
-    /* KPI bandeau */
+    /* Cartes de résultats (mode saisie manuelle) */
+    .ipa-metric-card {
+        background: #f6f6f6;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        text-align: center;
+        overflow: visible;
+    }
+    .ipa-metric-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #161616;
+        line-height: 1.1;
+    }
+    .ipa-metric-value--accent { color: #000091; }
+    .ipa-metric-link,
+    .ipa-metric-link:hover,
+    .ipa-metric-link:focus,
+    .ipa-metric-link:visited {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        background-image: none;
+    }
+    .ipa-metric-link::before,
+    .ipa-metric-link::after {
+        display: none !important;
+    }
+    .ipa-metric-card:has(a:hover) {
+        background: #ececec;
+        transition: background 0.15s;
+    }
+    .ipa-metric-label {
+        font-size: 0.8rem;
+        color: #666;
+        margin-top: 0.25rem;
+        overflow: visible;
+        position: relative;
+    }
+    .ipa-section-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #161616;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e3e3fd;
+    }
+    .ipa-section-title [class^="fr-icon-"],
+    .ipa-section-title [class*=" fr-icon-"],
+    .ipa-section-title [class^="ri-"],
+    .ipa-section-title [class*=" ri-"] {
+        color: #000091;
+        font-size: 1.2rem;
+    }
+    .ipa-recommendation {
+        background: linear-gradient(135deg, #f0f0fb 0%, #e8f5e9 100%);
+        border-left: 4px solid #18753c;
+        border-radius: 0 8px 8px 0;
+        padding: 1rem 1.5rem;
+    }
+    .ipa-recommendation-title {
+        font-weight: 700;
+        color: #18753c;
+        margin-bottom: 0.25rem;
+    }
+    .ipa-project-header {
+        background: #000091;
+        color: #fff;
+        border-radius: 8px 8px 0 0;
+        padding: 1rem 1.5rem;
+    }
+    .ipa-project-header h3 { color: #fff; margin: 0 0 0.25rem 0; font-size: 1.1rem; }
+    .ipa-project-meta { font-size: 0.85rem; opacity: 0.85; }
+    .ipa-project-body {
+        border: 2px solid #e3e3fd;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        padding: 1.5rem;
+    }
+    .ipa-tip {
+        display: inline-block;
+        position: relative;
+        cursor: help;
+        color: #000091;
+        font-size: 0.9rem;
+        vertical-align: middle;
+        margin-left: 0.25rem;
+        line-height: 1;
+    }
+    .ipa-tip::after {
+        content: attr(data-tip);
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1e1e1e;
+        color: #fff;
+        padding: 0.5rem 0.75rem;
+        border-radius: 4px;
+        font-size: 0.78rem;
+        font-weight: 400;
+        width: 260px;
+        white-space: normal;
+        line-height: 1.5;
+        z-index: 1000;
+        display: none;
+        pointer-events: none;
+        text-align: left;
+    }
+    .ipa-tip:hover::after { display: block; }
+
+    /* KPI bandeau (mode import Excel) */
     .ipa-kpi-card {
         background: #f6f6f6;
         border-radius: 8px;
@@ -81,7 +195,7 @@
     .ipa-tag--more { background: #f0f0fb; border-style: dashed; font-size: 0.75rem; }
     .ipa-tag-close { font-weight: 700; font-size: 1rem; line-height: 1; opacity: 0.7; }
 
-    /* Tableau */
+    /* Tableau (mode import Excel) */
     .ipa-table-container { overflow-x: auto; border-radius: 4px; }
     .ipa-table { min-width: 900px; }
     .ipa-table thead th { white-space: nowrap; vertical-align: bottom; background: #f6f6f6; }
@@ -116,7 +230,7 @@
     .ipa-reco--grey { background: #eeeeee; color: #666; }
     .ipa-reco--none { color: #aaa; }
 
-    /* Vue groupée */
+    /* Vue groupée (mode import Excel) */
     .ipa-group-hd {
         background: #f0f0fb;
         border: 1px solid #e3e3fd;
@@ -187,18 +301,13 @@
             </p>
         </div>
 
-        {# ── Erreurs d'import ── #}
-        {% if import_errors %}
-        <div class="fr-alert fr-alert--warning fr-mb-3w">
-            <p><strong>Lignes ignorées lors de l'import :</strong></p>
-            <ul>{% for err in import_errors %}<li>{{ err }}</li>{% endfor %}</ul>
-        </div>
-        {% endif %}
+    {# ══ Résultats Excel : tableau Alpine.js ══ #}
+    {% if mode == "excel" %}
 
-        {# ── Données JSON pour Alpine.js ── #}
+        {# Données JSON pour Alpine.js #}
         {{ results|json_script:"ipa-results-data" }}
 
-        {# ── Composant principal ── #}
+        {# Composant principal #}
         <div x-data="ipaResults()" x-cloak>
 
             {# KPI bandeau #}
@@ -398,7 +507,7 @@
                                     <td x-text="p.secteur_name"></td>
                                     <td x-text="p.perimeter_name"></td>
                                     <td style="text-align:right; white-space:nowrap;">
-                                        <span x-text="p.montant ? p.montant + ' €' : '—'"></span>
+                                        <span x-text="p.montant ? p.montant + ' €' : '—'"></span>
                                     </td>
                                     <td style="text-align:right; font-weight:700; color:#000091;">
                                         <a :href="p.search_urls.all" target="_blank" rel="noopener"
@@ -422,7 +531,7 @@
                                     </td>
                                     <td style="text-align:right;"
                                         :style="p.eco_dependency !== null && p.eco_dependency > 30 ? 'color:#ce0500; font-weight:700;' : ''">
-                                        <span x-text="p.eco_dependency !== null ? p.eco_dependency + ' %' : '—'"></span>
+                                        <span x-text="p.eco_dependency !== null ? p.eco_dependency + ' %' : '—'"></span>
                                     </td>
                                     <td>
                                         <span class="ipa-reco"
@@ -476,7 +585,7 @@
                                                 <td x-show="view === 'by_sector'" x-text="p.perimeter_name"></td>
                                                 <td x-show="view === 'by_perimeter'" x-text="p.secteur_name"></td>
                                                 <td style="text-align:right; white-space:nowrap;"
-                                                    x-text="p.montant ? p.montant + ' €' : '—'"></td>
+                                                    x-text="p.montant ? p.montant + ' €' : '—'"></td>
                                                 <td style="text-align:right; font-weight:700; color:#000091;"
                                                     x-text="p.potential_siaes"></td>
                                                 <td style="text-align:right;" x-text="p.insertion_siaes"></td>
@@ -486,7 +595,7 @@
                                                 <td style="text-align:right;" x-text="p.siaes_with_won_contract"></td>
                                                 <td style="text-align:right;"
                                                     :style="p.eco_dependency !== null && p.eco_dependency > 30 ? 'color:#ce0500; font-weight:700;' : ''"
-                                                    x-text="p.eco_dependency !== null ? p.eco_dependency + ' %' : '—'"></td>
+                                                    x-text="p.eco_dependency !== null ? p.eco_dependency + ' %' : '—'"></td>
                                                 <td>
                                                     <span class="ipa-reco"
                                                           :class="recoClass(p.recommendation_title)"
@@ -503,27 +612,205 @@
                 </template>
             </div>
 
-            {# Projets en erreur #}
+            {# Projets en erreur : compteur uniquement #}
             <template x-if="erroredProjects.length > 0">
-                <div class="fr-alert fr-alert--error fr-mt-3w">
-                    <p>
-                        <strong x-text="erroredProjects.length + ' projet' + (erroredProjects.length > 1 ? 's' : '') + ' en erreur :'"></strong>
-                    </p>
-                    <ul>
-                        <template x-for="p in erroredProjects" :key="p.titre">
-                            <li><strong x-text="p.titre"></strong> — <span x-text="p.error"></span></li>
-                        </template>
-                    </ul>
-                </div>
+                <p class="fr-text--sm fr-mt-2w" style="color:#666;">
+                    <span x-text="erroredProjects.length + ' projet' + (erroredProjects.length > 1 ? 's' : '') + ' n\'ont pas pu être analysé' + (erroredProjects.length > 1 ? 's' : '') + ' et n\'apparaissent pas dans les résultats.'"></span>
+                </p>
             </template>
 
         </div>{# /x-data=ipaResults() #}
+
+    {# ══ Résultats manuels : cartes détaillées ══ #}
+    {% else %}
+
+        {% for result in results %}
+        <div class="fr-mb-4w">
+            <div class="ipa-project-header">
+                <h3>{{ result.titre }}</h3>
+                <p class="ipa-project-meta">
+                    <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
+                    {{ result.secteur_name }} &nbsp;·&nbsp; {{ result.perimeter_name }}
+                    {% if result.montant %}&nbsp;·&nbsp; {{ result.montant|fr_number }} €{% endif %}
+                </p>
+            </div>
+
+            <div class="ipa-project-body">
+
+                {% if result.error %}
+                <div class="fr-alert fr-alert--error">
+                    <p>{{ result.error }}</p>
+                </div>
+
+                {% else %}
+
+                {# Section 1 — Structures potentielles #}
+                <div class="fr-mb-3w">
+                    <p class="ipa-section-title">
+                        <span class="fr-icon-building-line" aria-hidden="true"></span>
+                        Structures potentielles
+                    </p>
+                    <div class="fr-grid-row fr-grid-row--gutters">
+                        <div class="fr-col-6 fr-col-md-2">
+                            <div class="ipa-metric-card">
+                                <a href="{{ result.search_urls.all }}" target="_blank" rel="noopener" class="ipa-metric-link">
+                                    <div class="ipa-metric-value ipa-metric-value--accent">{{ result.potential_siaes }}</div>
+                                </a>
+                                <div class="ipa-metric-label">
+                                    Total
+                                    <span class="ipa-tip" data-tip="Nombre total de structures inclusives identifiées sur ce secteur et ce périmètre qui pourraient répondre à votre besoin."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-2">
+                            <div class="ipa-metric-card">
+                                <a href="{{ result.search_urls.insertion }}" target="_blank" rel="noopener" class="ipa-metric-link">
+                                    <div class="ipa-metric-value">{{ result.insertion_siaes }}</div>
+                                </a>
+                                <div class="ipa-metric-label">
+                                    Insertion
+                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles appartenant au secteur de l'insertion par l'activité économique (EI, AI, ETTI, EITI, ACI)."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-2">
+                            <div class="ipa-metric-card">
+                                <a href="{{ result.search_urls.handicap }}" target="_blank" rel="noopener" class="ipa-metric-link">
+                                    <div class="ipa-metric-value">{{ result.handicap_siaes }}</div>
+                                </a>
+                                <div class="ipa-metric-label">
+                                    Handicap
+                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles du secteur adapté et protégé (EA, ESAT)."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-2">
+                            <div class="ipa-metric-card">
+                                <a href="{{ result.search_urls.local }}" target="_blank" rel="noopener" class="ipa-metric-link">
+                                    <div class="ipa-metric-value">{{ result.local_siaes }}</div>
+                                </a>
+                                <div class="ipa-metric-label">
+                                    Locales
+                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles dont le siège est implanté dans le périmètre géographique indiqué."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-2">
+                            <div class="ipa-metric-card">
+                                <a href="{{ result.search_urls.super_badge }}" target="_blank" rel="noopener" class="ipa-metric-link">
+                                    <div class="ipa-metric-value">{{ result.siaes_with_super_badge }}</div>
+                                </a>
+                                <div class="ipa-metric-label">
+                                    Super prestataires
+                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles labellisées « Super prestataire » par le Marché de l'Inclusion."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-2">
+                            <div class="ipa-metric-card">
+                                <a href="{{ result.search_urls.won_contract }}" target="_blank" rel="noopener" class="ipa-metric-link">
+                                    <div class="ipa-metric-value">{{ result.siaes_with_won_contract }}</div>
+                                </a>
+                                <div class="ipa-metric-label">
+                                    Marchés publics remportés
+                                    <span class="ipa-tip" data-tip="Parmi les structures potentielles, celles ayant déjà remporté au moins un marché public au cours des 3 dernières années (source DECP)."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# Section 2 — Effectifs #}
+                <div class="fr-mb-3w">
+                    <p class="ipa-section-title">
+                        <span class="fr-icon-group-line" aria-hidden="true"></span>
+                        Effectifs moyens
+                    </p>
+                    <div class="fr-grid-row fr-grid-row--gutters">
+                        <div class="fr-col-6 fr-col-md-3">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">{{ result.employees_insertion_average }}</div>
+                                <div class="ipa-metric-label">
+                                    ETP insertion
+                                    <span class="ipa-tip" data-tip="Nombre moyen d'équivalents temps plein en parcours d'insertion dans les structures potentielles."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-3">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">{{ result.employees_permanent_average }}</div>
+                                <div class="ipa-metric-label">
+                                    ETP permanents
+                                    <span class="ipa-tip" data-tip="Nombre moyen d'équivalents temps plein permanents (encadrants, accompagnateurs) dans les structures potentielles."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# Section 3 — Analyse économique (affichée dès qu'un montant est fourni) #}
+                {% if result.montant %}
+                <div class="fr-mb-3w">
+                    <p class="ipa-section-title">
+                        <span class="ri-bar-chart-2-line" aria-hidden="true"></span>
+                        Analyse économique
+                    </p>
+                    <div class="fr-grid-row fr-grid-row--gutters">
+                        <div class="fr-col-6 fr-col-md-3">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">
+                                    {% if result.eco_dependency is not None %}{{ result.eco_dependency }} %{% else %}—{% endif %}
+                                </div>
+                                <div class="ipa-metric-label">
+                                    Dépendance économique
+                                    <span class="ipa-tip" data-tip="Part que représente votre marché dans le CA moyen des structures potentielles. Au-delà de 30 %, le risque de dépendance économique est considéré comme élevé."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-col-6 fr-col-md-3">
+                            <div class="ipa-metric-card">
+                                <div class="ipa-metric-value">
+                                    {% if result.ca_average %}{{ result.ca_average|fr_number }} €{% else %}—{% endif %}
+                                </div>
+                                <div class="ipa-metric-label">
+                                    CA moyen des structures
+                                    <span class="ipa-tip" data-tip="Chiffre d'affaires moyen des structures potentielles, qui permet d'estimer leur capacité à absorber votre commande."><i class="ri-information-line" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {# Section 4 — Recommandation #}
+                {% if result.recommendation_title %}
+                <div>
+                    <p class="ipa-section-title">
+                        <span class="fr-icon-lightbulb-line" aria-hidden="true"></span>
+                        Recommandation
+                    </p>
+                    <div class="ipa-recommendation">
+                        <p class="ipa-recommendation-title">{{ result.recommendation_title }}</p>
+                        {% if result.recommendation_response %}
+                        <p style="margin: 0; color: #3a3a3a;">{{ result.recommendation_response }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% endif %}{# end if result.error #}
+
+            </div>{# /ipa-project-body #}
+        </div>{# /fr-mb-4w #}
+        {% endfor %}
+
+    {% endif %}{# end if mode == "excel" ... else #}
 
     {% else %}
         <div class="fr-alert fr-alert--warning">
             <p>Aucun résultat à afficher. Vérifiez que vos projets d'achat sont correctement renseignés.</p>
         </div>
-    {% endif %}
+    {% endif %}{# end if results #}
 
     {% else %}
 
@@ -890,7 +1177,7 @@
     {% if results is None %}
         <script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
     {% endif %}
-    {% if results %}
+    {% if results and mode == "excel" %}
     <script>
     function ipaResults() {
         const raw = JSON.parse(document.getElementById('ipa-results-data').textContent);
