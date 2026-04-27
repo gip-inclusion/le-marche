@@ -252,3 +252,86 @@ class InclusivePotentialExcelTemplateTest(TestCase):
         self.assertIn("secteur", headers)
         self.assertIn("montant", headers)
         self.assertIn("perimetre_geographique", headers)
+
+
+class InclusivePotentialPrestaModeTest(TestCase):
+    """Tests du filtrage par mode de prestation (service vs mise à disposition)."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.url = reverse(ANALYSIS_URL)
+        cls.user = UserFactory(kind=User.KIND_BUYER)
+        cls.sector = SectorFactory()
+        cls.perimeter = PerimeterFactory(name="Paris", slug="paris")
+
+    def _post_manual(self, extra_data=None):
+        self.client.force_login(self.user)
+        data = {
+            "mode": "manual",
+            "form-TOTAL_FORMS": "1",
+            "form-INITIAL_FORMS": "0",
+            "form-MIN_NUM_FORMS": "0",
+            "form-MAX_NUM_FORMS": "1000",
+            "form-0-titre": "Projet test",
+            "form-0-secteur": self.sector.slug,
+            "form-0-montant": "80000",
+            "form-0-perimeter_slug": "paris",
+            "form-0-france_entiere": "",
+        }
+        if extra_data:
+            data.update(extra_data)
+        return self.client.post(self.url, data)
+
+    @patch("lemarche.www.dashboard.views.get_inclusive_potential_data")
+    def test_default_presta_mode_is_service(self, mock_analysis):
+        mock_analysis.return_value = (MOCK_POTENTIAL_DATA, MOCK_ANALYSIS_DATA)
+        response = self._post_manual()
+        self.assertEqual(response.context["presta_mode"], "service")
+
+    @patch("lemarche.www.dashboard.views.get_inclusive_potential_data")
+    def test_presta_mode_service_passed_to_analysis(self, mock_analysis):
+        mock_analysis.return_value = (MOCK_POTENTIAL_DATA, MOCK_ANALYSIS_DATA)
+        self._post_manual({"presta_mode": "service"})
+        call_kwargs = mock_analysis.call_args[1]
+        self.assertEqual(call_kwargs.get("presta_mode") or mock_analysis.call_args[0][3], "service")
+
+    @patch("lemarche.www.dashboard.views.get_inclusive_potential_data")
+    def test_presta_mode_mise_a_dispo_passed_to_analysis(self, mock_analysis):
+        mock_analysis.return_value = (MOCK_POTENTIAL_DATA, {})
+        response = self._post_manual({"presta_mode": "mise_a_disposition"})
+        self.assertEqual(response.context["presta_mode"], "mise_a_disposition")
+
+    @patch("lemarche.www.dashboard.views.get_inclusive_potential_data")
+    def test_invalid_presta_mode_falls_back_to_default(self, mock_analysis):
+        mock_analysis.return_value = (MOCK_POTENTIAL_DATA, {})
+        response = self._post_manual({"presta_mode": "mode_invalide"})
+        self.assertEqual(response.context["presta_mode"], "service")
+
+    @patch("lemarche.www.dashboard.views.get_inclusive_potential_data")
+    def test_raw_projects_stored_in_session_after_manual(self, mock_analysis):
+        mock_analysis.return_value = (MOCK_POTENTIAL_DATA, MOCK_ANALYSIS_DATA)
+        self._post_manual()
+        raw = self.client.session.get("ipa_raw_projects")
+        self.assertIsNotNone(raw)
+        self.assertEqual(len(raw), 1)
+        self.assertEqual(raw[0]["titre"], "Projet test")
+        self.assertEqual(raw[0]["secteur_slug"], self.sector.slug)
+        self.assertEqual(raw[0]["input_mode"], "manual")
+
+    @patch("lemarche.www.dashboard.views.get_inclusive_potential_data")
+    def test_reanalyze_from_session_changes_mode(self, mock_analysis):
+        mock_analysis.return_value = (MOCK_POTENTIAL_DATA, MOCK_ANALYSIS_DATA)
+        # Première analyse en mode service
+        self._post_manual({"presta_mode": "service"})
+        # Re-analyse en mode mise à disposition depuis la session
+        self.client.force_login(self.user)
+        response = self.client.post(self.url, {"mode": "reanalyze", "presta_mode": "mise_a_disposition"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["presta_mode"], "mise_a_disposition")
+        self.assertIsNotNone(response.context["results"])
+
+    def test_reanalyze_without_session_redirects(self):
+        self.client.force_login(self.user)
+        response = self.client.post(self.url, {"mode": "reanalyze", "presta_mode": "service"})
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("analyse-potentiel-inclusif", response.url)
