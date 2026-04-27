@@ -486,29 +486,34 @@ class SiaePerimeterSearchFilterTest(TestCase):
         self.assertIn("Sélectionnez un choix valide", form.errors["perimeters"][0])
 
     def test_search_perimeter_region(self):
+        # siae_11 (GEO_RANGE_COUNTRY, Bretagne) now included via include_country_area=True
+        # siae_1 and siae_7 (GEO_RANGE_COUNTRY, AuRA) were already matched via siae__region=AuRA
         form = SiaeFilterForm(data={"perimeters": [self.auvergne_rhone_alpes_perimeter.slug]})
         qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 10)
+        self.assertEqual(qs.count(), 11)
 
     def test_search_perimeter_department(self):
+        # siae_7 (COUNTRY, dept 69) and siae_11 (COUNTRY, dept 29) now included via include_country_area=True
+        # siae_1 (COUNTRY, dept 38) was already matched via siae__department=38
         form = SiaeFilterForm(data={"perimeters": [self.isere_perimeter]})
         qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 8)
+        self.assertEqual(qs.count(), 10)
 
     def test_search_perimeter_city(self):
         """
         We should return:
-        - all the Siae exactly in the city - Grenoble (4 Siae)
+        - all the Siae exactly in the city - Grenoble (4 Siae, including siae_1 GEO_RANGE_COUNTRY via post_code)
         + all the Siae in the city's department (except GEO_RANGE_CUSTOM) - Isere (0 new Siae)
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble
           (1 new Siae: La Tronche. Chamrousse is outside)
         + all the Siae with activities in the region Auvergne-Rhône-Alpes (1 new Siae)
         + all the Siae with activities in the department Isere (1 new Siae)
+        + siae_7 and siae_11 (GEO_RANGE_COUNTRY) now included via include_country_area=True (2 new Siae)
         """
         form = SiaeFilterForm(data={"perimeters": [self.grenoble_perimeter.slug]})
         self.assertTrue(form.is_valid())
         qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 4 + 0 + 1 + 1 + 1)
+        self.assertEqual(qs.count(), 4 + 0 + 1 + 1 + 1 + 2)
 
     def test_search_perimeter_city_2(self):
         """
@@ -520,10 +525,11 @@ class SiaePerimeterSearchFilterTest(TestCase):
         + all the Siae with activities in the region Auvergne-Rhône-Alpes
           (0 new Siae, siae_8 already matched by city's department)
         + all the Siae with activities in the department Isere (1 new Siae)
+        + siae_1, siae_7 and siae_11 (GEO_RANGE_COUNTRY) now included via include_country_area=True (3 new Siae)
         """
         form = SiaeFilterForm(data={"perimeters": [self.chamrousse_perimeter]})
         qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 1 + 3 + 0 + 0 + 1)
+        self.assertEqual(qs.count(), 1 + 3 + 0 + 0 + 1 + 3)
 
     def test_search_perimeter_multiperimeter_1(self):
         """
@@ -534,10 +540,12 @@ class SiaePerimeterSearchFilterTest(TestCase):
           Chamrousse (2 Siae, 1 new)
         + all the Siae with activities in the region Auvergne-Rhône-Alpes (1 new Siae)
         + all the Siae with activities in the department Isere (1 new Siae)
+        + siae_7 and siae_11 (GEO_RANGE_COUNTRY) now included via include_country_area=True (2 new Siae)
+          (siae_1 already matched by Grenoble post_code)
         """
         form = SiaeFilterForm(data={"perimeters": [self.grenoble_perimeter, self.chamrousse_perimeter]})
         qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 5 + 0 + 1 + 1 + 1)
+        self.assertEqual(qs.count(), 5 + 0 + 1 + 1 + 1 + 2)
 
     def test_search_perimeter_multiperimeter_2(self):
         """
@@ -549,10 +557,12 @@ class SiaePerimeterSearchFilterTest(TestCase):
         + all the Siae with activities in the region Auvergne-Rhône-Alpes (1 new Siae)
         + all the Siae with activities in the department Isere
           (0 new Siae, siae_9 already matched by city's department)
+        + siae_7 and siae_11 (GEO_RANGE_COUNTRY) now included via include_country_area=True (2 new Siae)
+          (siae_1 already matched by Grenoble post_code)
         """
         form = SiaeFilterForm(data={"perimeters": [self.grenoble_perimeter, self.quimper_perimeter]})
         qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 8 + 0 + 1 + 1 + 0)
+        self.assertEqual(qs.count(), 8 + 0 + 1 + 1 + 0 + 2)
 
     def test_search_perimeter_multiperimeter_error(self):
         """
