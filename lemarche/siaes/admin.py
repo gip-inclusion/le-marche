@@ -23,6 +23,7 @@ from lemarche.siaes.models import (
     SiaeLabel,
     SiaeLabelOld,
     SiaeOffer,
+    SiaePublicMarket,
     SiaeUser,
     SiaeUserRequest,
 )
@@ -145,6 +146,24 @@ class SiaeUserInline(admin.TabularInline):
         return format_html('<a href="{}">{}</a>', url, siae_user.user)
 
     user_with_link.short_description = User._meta.verbose_name
+
+
+class SiaePublicMarketInline(admin.TabularInline):
+    model = SiaePublicMarket
+    fields = ["buyer_name", "market_object", "amount", "award_date", "cpv_code", "procedure_type", "lieu_execution"]
+    readonly_fields = [field.name for field in SiaePublicMarket._meta.fields]
+    can_delete = False
+    extra = 0
+    max_num = 0
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class ConversationsInline(admin.TabularInline):
@@ -362,6 +381,17 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
                 )
             },
         ),
+        (
+            "Données DECP (Commande Publique)",
+            {
+                "fields": (
+                    "has_won_contract_last_3_years",
+                    "decp_contracts_count_last_3_years",
+                    "decp_last_sync_date",
+                )
+            },
+        ),
+        SiaePublicMarketInline,
         (
             "Stats",
             {
