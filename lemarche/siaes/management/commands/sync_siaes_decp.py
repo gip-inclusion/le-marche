@@ -48,13 +48,7 @@ class Command(BaseCommand):
         if options["siret"]:
             siaes_qs = Siae.objects.filter(siret=options["siret"])
         else:
-            siaes_qs = (
-                Siae.objects.is_live()
-                .filter(siret_is_valid=True)
-                .exclude(siret="")
-                .only("id", "siret", "has_won_contract_last_3_years", "decp_contracts_count_last_3_years")
-                .order_by("id")
-            )
+            siaes_qs = Siae.objects.is_live().filter(siret_is_valid=True).exclude(siret="").order_by("id")
 
         if options["limit"]:
             siaes_qs = siaes_qs[: options["limit"]]

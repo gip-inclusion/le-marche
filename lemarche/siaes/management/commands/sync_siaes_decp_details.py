@@ -88,7 +88,6 @@ class Command(BaseCommand):
                 Siae.objects.is_live()
                 .filter(siret_is_valid=True, has_won_contract_last_3_years=True)
                 .exclude(siret="")
-                .only("id", "siret")
                 .order_by("id")
             )
 
