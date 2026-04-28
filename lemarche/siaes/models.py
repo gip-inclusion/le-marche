@@ -1835,6 +1835,54 @@ class SiaeImage(models.Model):
     #         return self.name
 
 
+class SiaePublicMarketQuerySet(models.QuerySet):
+    def for_siae(self, siae):
+        return self.filter(siae=siae)
+
+
+class SiaePublicMarket(models.Model):
+    """Marchés publics remportés par une SIAE (source DECP, max 3 par structure)."""
+
+    SOURCE_DATE_NOTIFICATION = "dateNotification"
+    SOURCE_DATE_PUBLICATION = "datePublicationDonnees"
+    SOURCE_DATE_CHOICES = [
+        (SOURCE_DATE_NOTIFICATION, "Date de notification"),
+        (SOURCE_DATE_PUBLICATION, "Date de publication"),
+    ]
+
+    siae = models.ForeignKey(
+        "siaes.Siae", verbose_name="Structure", related_name="public_markets", on_delete=models.CASCADE
+    )
+    market_uid = models.CharField(verbose_name="Identifiant du marché (uid DECP)", max_length=255)
+    buyer_name = models.CharField(verbose_name="Acheteur", max_length=500, blank=True)
+    market_object = models.TextField(verbose_name="Objet du marché", blank=True)
+    amount = models.DecimalField(verbose_name="Montant (€)", max_digits=14, decimal_places=2, null=True, blank=True)
+    award_date = models.DateField(verbose_name="Date d'attribution", null=True, blank=True)
+    source_date_type = models.CharField(
+        verbose_name="Source de la date",
+        max_length=30,
+        choices=SOURCE_DATE_CHOICES,
+        default=SOURCE_DATE_NOTIFICATION,
+    )
+    cpv_code = models.CharField(verbose_name="Code CPV", max_length=20, blank=True)
+    procedure_type = models.CharField(verbose_name="Type de procédure", max_length=100, blank=True)
+    lieu_execution = models.CharField(verbose_name="Lieu d'exécution", max_length=200, blank=True)
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(SiaePublicMarketQuerySet)()
+
+    class Meta:
+        verbose_name = "Marché public remporté"
+        verbose_name_plural = "Marchés publics remportés"
+        unique_together = [("siae", "market_uid")]
+        ordering = ["-award_date"]
+
+    def __str__(self) -> str:
+        return f"{self.buyer_name} — {self.market_object[:60]}"
+
+
 class SiaeESUS(models.Model):
     """Model to store SIREN from ESUS db"""
 
