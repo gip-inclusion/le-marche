@@ -488,27 +488,30 @@ def _parse_excel_projects(file) -> list[dict]:
     if not rows:
         raise ValueError("Le fichier est vide.")
 
-    # Fuzzy matching des en-têtes : tolère les variantes ("Secteur d'activité", "périmètre", etc.)
+    # Recherche automatique de la ligne d'en-têtes dans les 10 premières lignes
+    # (certains fichiers ont des lignes de légende ou d'instructions avant les colonnes)
+    header_row_idx = None
     col = {}
-    for i, h in enumerate(rows[0]):
-        if not h:
-            continue
-        resolved = resolve_column_header(str(h))
-        if resolved and resolved not in col:
-            col[resolved] = i
+    for idx, row in enumerate(rows[:10]):
+        candidate = {}
+        for i, h in enumerate(row):
+            if not h:
+                continue
+            resolved = resolve_column_header(str(h))
+            if resolved and resolved not in candidate:
+                candidate[resolved] = i
+        if "titre" in candidate:
+            header_row_idx = idx
+            col = candidate
+            break
 
-    required = {"titre"}
-    missing = required - set(col.keys())
-    if missing:
-        detected = list(col.keys()) if col else []
-        raw_headers = [str(h) for h in rows[0] if h]
+    if header_row_idx is None:
         raise ValueError(
-            f"Colonnes obligatoires manquantes : {', '.join(sorted(missing))}. "
-            f"Colonnes détectées : {detected or 'aucune'}. "
-            f"En-têtes bruts lus : {raw_headers}."
+            "Impossible de trouver la ligne d'en-têtes. "
+            "Assurez-vous que votre fichier contient une colonne 'Titre' (ou équivalent)."
         )
 
-    data_rows = [r for r in rows[1:] if any(r)]
+    data_rows = [r for r in rows[header_row_idx + 1 :] if any(r)]
 
     if not data_rows:
         raise ValueError("Le fichier ne contient aucune ligne de données.")
