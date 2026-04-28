@@ -28,7 +28,52 @@
         border-radius: 3px;
         font-size: 0.9rem;
     }
+    .autocomplete-dropdown {
+        position: absolute;
+        z-index: 100;
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        max-height: 220px;
+        overflow-y: auto;
+        width: 100%;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    .autocomplete-item {
+        padding: 0.5rem 0.75rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+    .autocomplete-item:hover, .autocomplete-item.is-active {
+        background: #f0f0ff;
+    }
+    .autocomplete-wrapper {
+        position: relative;
+    }
+    .autocomplete-selected-tag {
+        display: inline-flex;
+        align-items: center;
+        background: #e3e3fd;
+        border-radius: 4px;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+    .autocomplete-selected-tag button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        margin-left: 0.4rem;
+        font-size: 1rem;
+        line-height: 1;
+        color: #333;
+    }
 </style>
+
+{# Données secteurs pour Alpine.js (filtrage côté client) #}
+<script>
+    window.IPA_SECTORS = {{ sectors_json|safe }};
+</script>
 
 <div class="fr-container fr-py-4w">
     <h1 class="fr-h3">Confirmer les correspondances</h1>
@@ -50,7 +95,12 @@
         <div x-data="{ submitting: false }">
 
         {% for item in ambiguous_items %}
-        <div x-data="{ sectorChoice: '{{ item.sector_result.candidates.0.slug|default:'' }}', perimeterChoice: '{{ item.perimeter_result.candidates.0.slug|default:'' }}', showSectorCustom: false, showPerimeterCustom: false }"
+        <div x-data="{
+                sectorChoice: '{{ item.sector_result.candidates.0.slug|default:'' }}',
+                perimeterChoice: '{{ item.perimeter_result.candidates.0.slug|default:'' }}',
+                showSectorCustom: false,
+                showPerimeterCustom: false
+             }"
              class="mapping-card{% if item.sector_result.source == 'title_inference' %} mapping-card--title-inference{% endif %}">
 
             <div class="fr-mb-2w">
@@ -92,17 +142,64 @@
                                    name="sector_{{ item.row }}"
                                    value=""
                                    @change="showSectorCustom = true; sectorChoice = ''">
-                            <label class="fr-label" for="sector_{{ item.row }}_custom">Saisir manuellement</label>
+                            <label class="fr-label" for="sector_{{ item.row }}_custom">Choisir un autre secteur</label>
                         </div>
                     </div>
                 </fieldset>
-                <div x-show="showSectorCustom" x-cloak class="fr-mt-1w">
-                    <input type="text"
-                           class="fr-input"
-                           name="sector_{{ item.row }}"
-                           placeholder="Slug du secteur (ex: nettoyage-des-locaux)"
-                           @input="sectorChoice = $event.target.value">
+
+                {# Autocomplete secteur #}
+                <div x-show="showSectorCustom" x-cloak class="fr-mt-1w"
+                     x-data="{
+                         query: '',
+                         results: [],
+                         selectedSlug: '',
+                         selectedName: '',
+                         open: false,
+                         filter() {
+                             if (this.query.length < 1) { this.results = []; this.open = false; return; }
+                             const q = this.query.toLowerCase();
+                             this.results = window.IPA_SECTORS.filter(s => s.name.toLowerCase().includes(q)).slice(0, 10);
+                             this.open = this.results.length > 0;
+                         },
+                         select(s) {
+                             this.selectedSlug = s.slug;
+                             this.selectedName = s.name;
+                             this.query = '';
+                             this.open = false;
+                             $dispatch('sector-selected-{{ item.row }}', { slug: s.slug });
+                         },
+                         clear() {
+                             this.selectedSlug = '';
+                             this.selectedName = '';
+                             $dispatch('sector-selected-{{ item.row }}', { slug: '' });
+                         }
+                     }"
+                     @sector-selected-{{ item.row }}.window="sectorChoice = $event.detail.slug">
+                    <template x-if="!selectedSlug">
+                        <div class="autocomplete-wrapper">
+                            <input type="text"
+                                   class="fr-input"
+                                   x-model="query"
+                                   @input="filter()"
+                                   @keydown.escape="open = false"
+                                   placeholder="Rechercher un secteur d'activité…"
+                                   autocomplete="off">
+                            <div class="autocomplete-dropdown" x-show="open" x-cloak @click.outside="open = false">
+                                <template x-for="s in results" :key="s.slug">
+                                    <div class="autocomplete-item" @click="select(s)" x-text="s.name"></div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                    <template x-if="selectedSlug">
+                        <div class="autocomplete-selected-tag">
+                            <span x-text="selectedName"></span>
+                            <button type="button" @click="clear()" title="Modifier">✕</button>
+                        </div>
+                    </template>
+                    <input type="hidden" name="sector_{{ item.row }}" :value="selectedSlug">
                 </div>
+
                 <input type="hidden" name="sector_confidence_{{ item.row }}" value="{{ item.sector_result.candidates.0.score|default:1 }}">
             </div>
             {% else %}
@@ -137,21 +234,82 @@
                     <div class="fr-fieldset__element">
                         <div class="fr-radio-group">
                             <input type="radio"
+                                   id="perimeter_{{ item.row }}_france"
+                                   name="france_entiere_{{ item.row }}"
+                                   value="1"
+                                   @change="perimeterChoice = 'france_entiere'; showPerimeterCustom = false">
+                            <label class="fr-label" for="perimeter_{{ item.row }}_france">France entière</label>
+                        </div>
+                    </div>
+                    {% if item.perimeter_result.candidates %}
+                    <div class="fr-fieldset__element">
+                        <div class="fr-radio-group">
+                            <input type="radio"
                                    id="perimeter_{{ item.row }}_custom"
                                    name="perimeter_{{ item.row }}"
                                    value=""
                                    @change="showPerimeterCustom = true; perimeterChoice = ''">
-                            <label class="fr-label" for="perimeter_{{ item.row }}_custom">Saisir manuellement</label>
+                            <label class="fr-label" for="perimeter_{{ item.row }}_custom">Choisir un autre périmètre</label>
                         </div>
                     </div>
+                    {% endif %}
                 </fieldset>
-                <div x-show="showPerimeterCustom" x-cloak class="fr-mt-1w">
-                    <input type="text"
-                           class="fr-input"
-                           name="perimeter_{{ item.row }}"
-                           placeholder="Slug du périmètre (ex: hauts-de-seine)"
-                           @input="perimeterChoice = $event.target.value">
+
+                {# Autocomplete périmètre — affiché directement si pas de candidats, sinon en option #}
+                <div {% if item.perimeter_result.candidates %}x-show="showPerimeterCustom" x-cloak{% endif %}
+                     class="fr-mt-1w"
+                     x-data="{
+                         query: '',
+                         results: [],
+                         selectedSlug: '',
+                         selectedName: '',
+                         open: false,
+                         async search() {
+                             if (this.query.length < 2) { this.results = []; this.open = false; return; }
+                             const res = await fetch('/api/perimeters/autocomplete/?q=' + encodeURIComponent(this.query) + '&results=10');
+                             const data = await res.json();
+                             this.results = data.results || [];
+                             this.open = this.results.length > 0;
+                         },
+                         select(p) {
+                             this.selectedSlug = p.slug;
+                             this.selectedName = p.name;
+                             this.query = '';
+                             this.open = false;
+                             $dispatch('perimeter-selected-{{ item.row }}', { slug: p.slug });
+                         },
+                         clear() {
+                             this.selectedSlug = '';
+                             this.selectedName = '';
+                             $dispatch('perimeter-selected-{{ item.row }}', { slug: '' });
+                         }
+                     }"
+                     @perimeter-selected-{{ item.row }}.window="perimeterChoice = $event.detail.slug">
+                    <template x-if="!selectedSlug">
+                        <div class="autocomplete-wrapper">
+                            <input type="text"
+                                   class="fr-input"
+                                   x-model="query"
+                                   @input.debounce.300ms="search()"
+                                   @keydown.escape="open = false"
+                                   placeholder="Rechercher une ville, un département, une région…"
+                                   autocomplete="off">
+                            <div class="autocomplete-dropdown" x-show="open" x-cloak @click.outside="open = false">
+                                <template x-for="p in results" :key="p.slug">
+                                    <div class="autocomplete-item" @click="select(p)" x-text="p.name"></div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                    <template x-if="selectedSlug">
+                        <div class="autocomplete-selected-tag">
+                            <span x-text="selectedName"></span>
+                            <button type="button" @click="clear()" title="Modifier">✕</button>
+                        </div>
+                    </template>
+                    <input type="hidden" name="perimeter_{{ item.row }}" :value="selectedSlug">
                 </div>
+
                 <input type="hidden" name="perimeter_confidence_{{ item.row }}" value="{{ item.perimeter_result.candidates.0.score|default:1 }}">
             </div>
             {% else %}

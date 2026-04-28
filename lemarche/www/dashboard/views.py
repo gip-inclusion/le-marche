@@ -1,4 +1,5 @@
 import io
+import json
 import logging
 from urllib.parse import urlencode
 
@@ -828,10 +829,15 @@ class SlugMappingValidationView(LoginRequiredMixin, View):
         pending = request.session.get("ipa_pending_projects")
         if not pending:
             return HttpResponseRedirect(reverse("dashboard:inclusive_potential_analysis"))
+        sectors_json = json.dumps(list(Sector.objects.form_filter_queryset().values("slug", "name")))
         return render(
             request,
             self.template_name,
-            {"ambiguous_items": pending["ambiguous"], "unresolvable_count": pending.get("unresolvable_count", 0)},
+            {
+                "ambiguous_items": pending["ambiguous"],
+                "unresolvable_count": pending.get("unresolvable_count", 0),
+                "sectors_json": sectors_json,
+            },
         )
 
     def post(self, request, *args, **kwargs):
