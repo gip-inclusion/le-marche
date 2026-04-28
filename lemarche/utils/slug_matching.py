@@ -59,7 +59,22 @@ COLUMN_HEADER_ALIASES = {
         "libelle",
     ],
     "description": ["description", "detail", "détail", "commentaire"],
-    "montant": ["montant", "budget", "montant €", "montant eur", "valeur"],
+    "montant": [
+        "montant",
+        "budget",
+        "montant €",
+        "montant eur",
+        "valeur",
+        "montant annuel",
+        "montant total",
+        "montant ht",
+        "montant annuel en € ht",
+        "montant total en € ht",
+        "montant annuel ht",
+        "montant total ht",
+        "montant annuel en euros ht",
+        "montant total en euros ht",
+    ],
 }
 
 
