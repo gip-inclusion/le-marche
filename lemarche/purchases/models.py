@@ -4,6 +4,7 @@ from django.db.models.functions import Coalesce, Round
 from django.utils import timezone
 from django.utils.text import slugify
 
+from lemarche.purchases import constants as purchases_constants
 from lemarche.siaes.constants import KIND_HANDICAP_LIST, KIND_INSERTION_LIST
 from lemarche.users.models import User
 
@@ -306,3 +307,70 @@ class Purchase(models.Model):
 
     def __str__(self):
         return f"{self.supplier_name} - {self.purchase_amount}€ ({self.purchase_year})"
+
+
+class SlugMappingCacheQuerySet(models.QuerySet):
+    def validated(self):
+        return self.filter(source=purchases_constants.SLUG_MAPPING_SOURCE_ADMIN_VALIDATED)
+
+    def pending(self):
+        return self.filter(source=purchases_constants.SLUG_MAPPING_SOURCE_USER_PROPOSED)
+
+    def for_kind(self, kind: str):
+        return self.filter(kind=kind)
+
+
+class SlugMappingCache(models.Model):
+    """
+    Base de correspondances entre valeurs saisies librement dans l'Excel
+    et slugs internes (secteurs, périmètres, en-têtes de colonnes).
+
+    Alimentée par les validations utilisateurs, modérée par l'admin.
+    Les entrées admin_validated sont utilisées en priorité pour tous les utilisateurs.
+    """
+
+    raw_value = models.CharField(verbose_name="Valeur saisie", max_length=255, db_index=True)
+    kind = models.CharField(
+        verbose_name="Type",
+        max_length=30,
+        choices=purchases_constants.SLUG_MAPPING_KIND_CHOICES,
+    )
+    resolved_slug = models.CharField(verbose_name="Slug résolu", max_length=255)
+    source = models.CharField(
+        verbose_name="Source",
+        max_length=30,
+        choices=purchases_constants.SLUG_MAPPING_SOURCE_CHOICES,
+        default=purchases_constants.SLUG_MAPPING_SOURCE_USER_PROPOSED,
+    )
+    confidence = models.FloatField(verbose_name="Score de confiance", default=1.0)
+    usage_count = models.PositiveIntegerField(verbose_name="Nombre d'utilisations", default=1)
+    proposed_by = models.ForeignKey(
+        User,
+        verbose_name="Proposé par",
+        related_name="slug_mapping_proposals",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    validated_by = models.ForeignKey(
+        User,
+        verbose_name="Validé par",
+        related_name="slug_mapping_validations",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    validated_at = models.DateTimeField(verbose_name="Date de validation", null=True, blank=True)
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(SlugMappingCacheQuerySet)()
+
+    class Meta:
+        verbose_name = "Correspondance de matching"
+        verbose_name_plural = "Correspondances de matching"
+        unique_together = [("raw_value", "kind")]
+        ordering = ["-usage_count", "raw_value"]
+
+    def __str__(self) -> str:
+        return f"« {self.raw_value} » → {self.resolved_slug} ({self.get_kind_display()})"
