@@ -401,8 +401,13 @@ def _analyze_purchase_project(
 INCLUSIVE_POTENTIAL_ANALYSIS_TEMPLATE = "dashboard/inclusive_potential_analysis.html"
 
 
-def _run_excel_analysis(request, resolved_projects: list, unresolvable_count: int):
+def _run_excel_analysis(
+    request, resolved_projects: list, unresolvable_count: int, presta_mode: str = PRESTA_MODE_DEFAULT
+):
     """Lance l'analyse IPA sur les projets résolus et retourne la réponse rendue."""
+    if presta_mode not in PRESTA_MODE_TO_SIAE_KINDS:
+        presta_mode = PRESTA_MODE_DEFAULT
+
     results = []
 
     for project in resolved_projects:
@@ -423,7 +428,7 @@ def _run_excel_analysis(request, resolved_projects: list, unresolvable_count: in
             except Perimeter.DoesNotExist:
                 continue
 
-        result = _analyze_purchase_project(titre, sector, perimeter, montant)
+        result = _analyze_purchase_project(titre, sector, perimeter, montant, presta_mode)
         results.append(result)
 
     context_extra = {}
@@ -458,6 +463,8 @@ def _run_excel_analysis(request, resolved_projects: list, unresolvable_count: in
             "results_by_sector": by_sector,
             "results_by_perimeter": by_perimeter,
             "mode": "excel",
+            "presta_mode": presta_mode,
+            "presta_mode_choices": list(PRESTA_MODE_TO_SIAE_KINDS.keys()),
             **context_extra,
         },
     )
