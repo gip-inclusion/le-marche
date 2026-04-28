@@ -614,6 +614,11 @@ class Siae(NexusModelMixin, models.Model):
         "api_entreprise_ca_date_fin_exercice",
         "api_entreprise_exercice_last_sync_date",
     ]
+    FIELDS_FROM_DECP = [
+        "has_won_contract_last_3_years",
+        "decp_contracts_count_last_3_years",
+        "decp_last_sync_date",
+    ]
     FIELDS_STATS_COUNT = [
         "user_count",
         "sector_count",
@@ -634,7 +639,13 @@ class Siae(NexusModelMixin, models.Model):
     FIELDS_STATS_TIMESTAMPS = ["signup_date", "content_filled_basic_date", "created_at", "updated_at"]
     FIELDS_STATS = FIELDS_STATS_COUNT + FIELDS_STATS_TIMESTAMPS + ["super_badge", "completion_rate"]
     READONLY_FIELDS = (
-        FIELDS_FROM_C1 + FIELDS_FROM_C2 + FIELDS_FROM_QPV + FIELDS_FROM_ZRR + FIELDS_FROM_API_ENTREPRISE + FIELDS_STATS
+        FIELDS_FROM_C1
+        + FIELDS_FROM_C2
+        + FIELDS_FROM_QPV
+        + FIELDS_FROM_ZRR
+        + FIELDS_FROM_API_ENTREPRISE
+        + FIELDS_FROM_DECP
+        + FIELDS_STATS
     )
 
     TRACK_UPDATE_FIELDS = [
@@ -838,6 +849,9 @@ class Siae(NexusModelMixin, models.Model):
     # DECP (Données Essentielles de la Commande Publique)
     has_won_contract_last_3_years = models.BooleanField(
         "A remporté un marché public ces 3 dernières années (DECP)", default=False
+    )
+    decp_contracts_count_last_3_years = models.IntegerField(
+        "Nombre de marchés publics remportés ces 3 dernières années (DECP)", default=0
     )
     decp_last_sync_date = models.DateTimeField("Date de dernière synchronisation (DECP)", blank=True, null=True)
 
