@@ -1,9 +1,5 @@
-import logging
-
 import requests
 
-
-logger = logging.getLogger(__name__)
 
 DECP_API_URL = "https://tabular-api.data.gouv.fr/api/resources/22847056-61df-452d-837d-8b8ceadbfc52/data/"
 DECP_API_TIMEOUT = 10
