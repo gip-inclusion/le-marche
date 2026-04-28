@@ -26,6 +26,15 @@ from lemarche.siaes.constants import KIND_HANDICAP_LIST, KIND_INSERTION_LIST, LE
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
+from lemarche.utils.slug_matching import (
+    RESOLUTION_STATUS_ERROR,
+    RESOLUTION_STATUS_RESOLVED,
+    record_user_choices,
+    resolve_column_header,
+    resolve_perimeter,
+    resolve_sector,
+    resolve_sector_from_title,
+)
 from lemarche.www.dashboard.filters import PurchaseFilterSet
 from lemarche.www.dashboard.forms import DisabledEmailEditForm, ProfileEditForm, PurchaseProjectFormSet
 
@@ -389,8 +398,74 @@ def _analyze_purchase_project(
     return result
 
 
+INCLUSIVE_POTENTIAL_ANALYSIS_TEMPLATE = "dashboard/inclusive_potential_analysis.html"
+
+
+def _run_excel_analysis(request, resolved_projects: list, unresolvable_count: int):
+    """Lance l'analyse IPA sur les projets résolus et retourne la réponse rendue."""
+    results = []
+
+    for project in resolved_projects:
+        sector_slug = project["sector_slug"]
+        perimeter_result = project["perimeter_result"]
+        montant = project["montant"]
+        titre = project["titre"]
+
+        try:
+            sector = Sector.objects.get(slug=sector_slug)
+        except Sector.DoesNotExist:
+            continue
+
+        perimeter = None
+        if not perimeter_result.get("france_entiere") and perimeter_result.get("slug"):
+            try:
+                perimeter = Perimeter.objects.get(slug=perimeter_result["slug"])
+            except Perimeter.DoesNotExist:
+                continue
+
+        result = _analyze_purchase_project(titre, sector, perimeter, montant)
+        results.append(result)
+
+    context_extra = {}
+    if unresolvable_count:
+        context_extra["import_errors"] = [f"⚠️ {unresolvable_count} projet(s) ignoré(s) : correspondance introuvable."]
+
+    if not results:
+        error_msg = "Aucun projet analysable trouvé."
+        if unresolvable_count:
+            error_msg += f" {unresolvable_count} projet(s) ignoré(s) : correspondance introuvable."
+        return render(
+            request,
+            INCLUSIVE_POTENTIAL_ANALYSIS_TEMPLATE,
+            {
+                "sectors": list(Sector.objects.form_filter_queryset()),
+                "formset": PurchaseProjectFormSet(prefix="form"),
+                "import_errors": [error_msg],
+                "mode": "excel",
+            },
+        )
+
+    by_sector, by_perimeter = _aggregate_results(results)
+    request.session["ipa_excel_results"] = [{k: v for k, v in r.items() if k != "search_urls"} for r in results]
+
+    return render(
+        request,
+        INCLUSIVE_POTENTIAL_ANALYSIS_TEMPLATE,
+        {
+            "sectors": list(Sector.objects.form_filter_queryset()),
+            "formset": PurchaseProjectFormSet(prefix="form"),
+            "results": results,
+            "results_by_sector": by_sector,
+            "results_by_perimeter": by_perimeter,
+            "mode": "excel",
+            **context_extra,
+        },
+    )
+
+
 def _parse_excel_projects(file) -> list[dict]:
     """Parse an uploaded Excel file into a list of raw project dicts.
+    Applies fuzzy matching on column headers to tolerate non-standard names.
     Raises ValueError with a user-friendly message on validation failure.
     """
 
@@ -405,13 +480,20 @@ def _parse_excel_projects(file) -> list[dict]:
     if not rows:
         raise ValueError("Le fichier est vide.")
 
-    headers = [str(h).strip().lower() if h else "" for h in rows[0]]
+    # Fuzzy matching des en-têtes : tolère les variantes ("Secteur d'activité", "périmètre", etc.)
+    col = {}
+    for i, h in enumerate(rows[0]):
+        if not h:
+            continue
+        resolved = resolve_column_header(str(h))
+        if resolved and resolved not in col:
+            col[resolved] = i
+
     required = {"titre", "secteur", "perimetre_geographique"}
-    missing = required - set(headers)
+    missing = required - set(col.keys())
     if missing:
         raise ValueError(f"Colonnes obligatoires manquantes : {', '.join(sorted(missing))}.")
 
-    col = {h: i for i, h in enumerate(headers)}
     data_rows = [r for r in rows[1:] if any(r)]
 
     if not data_rows:
@@ -420,9 +502,9 @@ def _parse_excel_projects(file) -> list[dict]:
     projects = []
     for row_num, row in enumerate(data_rows, start=2):
 
-        def cell(name):
+        def cell(name, _row=row):
             idx = col.get(name)
-            return str(row[idx]).strip() if idx is not None and row[idx] is not None else ""
+            return str(_row[idx]).strip() if idx is not None and _row[idx] is not None else ""
 
         montant = None
         if col.get("montant") is not None and row[col["montant"]] is not None:
@@ -436,8 +518,8 @@ def _parse_excel_projects(file) -> list[dict]:
                 "row": row_num,
                 "titre": cell("titre"),
                 "description": cell("description"),
-                "secteur_slug": cell("secteur"),
-                "perimetre": cell("perimetre_geographique"),
+                "secteur_raw": cell("secteur"),
+                "perimetre_raw": cell("perimetre_geographique"),
                 "montant": montant,
             }
         )
@@ -591,132 +673,155 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
         if presta_mode not in PRESTA_MODE_TO_SIAE_KINDS:
             presta_mode = PRESTA_MODE_DEFAULT
 
-        raw_projects = []
-        results = []
-        import_errors = []
+        resolved_projects = []
+        ambiguous_items = []
+        unresolvable_count = 0
 
         for project in projects:
             titre = project["titre"]
-            secteur_slug = project["secteur_slug"]
-            perimetre = project["perimetre"]
-            montant = project["montant"]
             row_num = project["row"]
 
-            if not titre or not secteur_slug or not perimetre:
-                import_errors.append(f"Ligne {row_num} : titre, secteur et périmètre géographique sont obligatoires.")
+            if not titre:
+                unresolvable_count += 1
                 continue
 
-            try:
-                sector = Sector.objects.get(slug=secteur_slug)
-            except Sector.DoesNotExist:
-                import_errors.append(f"Ligne {row_num} — « {titre} » : secteur « {secteur_slug} » introuvable.")
-                continue
+            sector_result = resolve_sector(project["secteur_raw"], user=request.user)
+            perimeter_result = resolve_perimeter(project["perimetre_raw"], user=request.user)
 
-            perimeter = None
-            if perimetre.lower() != "france_entiere":
-                try:
-                    perimeter = Perimeter.objects.get(slug=perimetre)
-                except Perimeter.DoesNotExist:
-                    import_errors.append(f"Ligne {row_num} — « {titre} » : périmètre « {perimetre} » introuvable.")
-                    continue
+            # Si le secteur est introuvable, tenter l'inférence depuis le titre/description
+            if sector_result["status"] == RESOLUTION_STATUS_ERROR and titre:
+                sector_result = resolve_sector_from_title(titre, project.get("description", ""))
 
-            raw_projects.append(
-                {
-                    "titre": titre,
-                    "secteur_slug": sector.slug,
-                    "perimeter_slug": perimeter.slug if perimeter else None,
-                    "france_entiere": perimetre.lower() == "france_entiere",
-                    "montant": montant,
-                    "input_mode": "excel",
-                }
-            )
-            result = _analyze_purchase_project(titre, sector, perimeter, montant, presta_mode)
-            results.append(result)
+            sector_status = sector_result["status"]
+            perimeter_status = perimeter_result["status"]
 
-        if not results:
-            return render(
-                request,
-                self.template_name,
-                self._get_context(import_errors=import_errors or ["Aucun projet analysable trouvé."], mode="excel"),
-            )
+            if sector_status == RESOLUTION_STATUS_RESOLVED and perimeter_status == RESOLUTION_STATUS_RESOLVED:
+                resolved_projects.append(
+                    {**project, "sector_slug": sector_result["slug"], "perimeter_result": perimeter_result}
+                )
+            elif sector_status == RESOLUTION_STATUS_ERROR or perimeter_status == RESOLUTION_STATUS_ERROR:
+                unresolvable_count += 1
+            else:
+                ambiguous_items.append(
+                    {
+                        "row": row_num,
+                        "titre": titre,
+                        "montant": project["montant"],
+                        "description": project.get("description", ""),
+                        "sector_raw": project["secteur_raw"],
+                        "perimeter_raw": project["perimetre_raw"],
+                        "sector_result": sector_result,
+                        "perimeter_result": perimeter_result,
+                    }
+                )
 
-        by_sector, by_perimeter = _aggregate_results(results)
+        if ambiguous_items:
+            request.session["ipa_pending_projects"] = {
+                "resolved": resolved_projects,
+                "ambiguous": ambiguous_items,
+                "unresolvable_count": unresolvable_count,
+                "presta_mode": presta_mode,
+            }
+            return HttpResponseRedirect(reverse("dashboard:slug_mapping_validation"))
 
-        request.session["ipa_raw_projects"] = raw_projects
-        request.session["ipa_excel_results"] = [{k: v for k, v in r.items() if k != "search_urls"} for r in results]
+        return _run_excel_analysis(request, resolved_projects, unresolvable_count, presta_mode)
 
+
+class SlugMappingValidationView(LoginRequiredMixin, View):
+    """Affiche la page de validation des correspondances ambiguës issues de l'import Excel IPA.
+
+    GET  — affiche les items ambigus stockés en session pour validation manuelle.
+    POST — collecte les choix utilisateur, enregistre en cache, lance l'analyse.
+    """
+
+    template_name = "dashboard/inclusive_potential_mapping_validation.html"
+
+    def get(self, request, *args, **kwargs):
+        pending = request.session.get("ipa_pending_projects")
+        if not pending:
+            return HttpResponseRedirect(reverse("dashboard:inclusive_potential_analysis"))
         return render(
             request,
             self.template_name,
-            self._get_context(
-                results=results,
-                results_by_sector=by_sector,
-                results_by_perimeter=by_perimeter,
-                import_errors=import_errors or None,
-                mode="excel",
-                presta_mode=presta_mode,
-            ),
+            {"ambiguous_items": pending["ambiguous"], "unresolvable_count": pending.get("unresolvable_count", 0)},
         )
 
-    def _handle_reanalyze(self, request):
-        """Re-run the analysis from session data with a new presta_mode."""
-        raw_projects = request.session.get("ipa_raw_projects")
-        if not raw_projects:
+    def post(self, request, *args, **kwargs):
+        pending = request.session.get("ipa_pending_projects")
+        if not pending:
             return HttpResponseRedirect(reverse("dashboard:inclusive_potential_analysis"))
 
-        presta_mode = request.POST.get("presta_mode", PRESTA_MODE_DEFAULT)
-        if presta_mode not in PRESTA_MODE_TO_SIAE_KINDS:
-            presta_mode = PRESTA_MODE_DEFAULT
+        ambiguous_items = pending["ambiguous"]
+        resolved_projects = list(pending["resolved"])
+        unresolvable_count = pending.get("unresolvable_count", 0)
+        presta_mode = pending.get("presta_mode", PRESTA_MODE_DEFAULT)
 
-        input_mode = raw_projects[0].get("input_mode", "manual") if raw_projects else "manual"
-
-        results = []
-        for project in raw_projects:
-            titre = project["titre"]
-            montant = project["montant"]
-            france_entiere = project.get("france_entiere", False)
-
-            try:
-                sector = Sector.objects.get(slug=project["secteur_slug"])
-            except Sector.DoesNotExist:
-                results.append({"titre": titre, "error": f"Secteur '{project['secteur_slug']}' introuvable."})
-                continue
-
-            perimeter = None
-            if project.get("perimeter_slug") and not france_entiere:
-                try:
-                    perimeter = Perimeter.objects.get(slug=project["perimeter_slug"])
-                except Perimeter.DoesNotExist:
-                    results.append({"titre": titre, "error": f"Périmètre '{project['perimeter_slug']}' introuvable."})
-                    continue
-
-            result = _analyze_purchase_project(titre, sector, perimeter, montant, presta_mode)
-            results.append(result)
-
-        request.session["ipa_raw_projects"] = raw_projects
-
-        if input_mode == "excel":
-            request.session["ipa_excel_results"] = [
-                {k: v for k, v in r.items() if k != "search_urls"} for r in results
-            ]
-            by_sector, by_perimeter = _aggregate_results(results)
-            return render(
-                request,
-                self.template_name,
-                self._get_context(
-                    results=results,
-                    results_by_sector=by_sector,
-                    results_by_perimeter=by_perimeter,
-                    mode="excel",
-                    presta_mode=presta_mode,
-                ),
+        # L'utilisateur veut analyser uniquement les projets déjà résolus, sans traiter les ambigus
+        if request.POST.get("ignore_remaining") == "1":
+            del request.session["ipa_pending_projects"]
+            return _run_excel_analysis(
+                request, resolved_projects, unresolvable_count + len(ambiguous_items), presta_mode
             )
 
-        return render(
-            request,
-            self.template_name,
-            self._get_context(results=results, mode="manual", presta_mode=presta_mode),
-        )
+        user_choices = []
+
+        for item in ambiguous_items:
+            row = str(item["row"])
+            sector_slug = request.POST.get(f"sector_{row}", "").strip()
+            perimeter_slug = request.POST.get(f"perimeter_{row}", "").strip()
+            france_entiere = request.POST.get(f"france_entiere_{row}") == "1"
+
+            if not sector_slug or (not perimeter_slug and not france_entiere):
+                unresolvable_count += 1
+                continue
+
+            resolved_projects.append(
+                {
+                    "titre": item["titre"],
+                    "montant": item["montant"],
+                    "description": item.get("description", ""),
+                    "sector_slug": sector_slug,
+                    "perimeter_result": {"slug": perimeter_slug or None, "france_entiere": france_entiere},
+                }
+            )
+
+            try:
+                sector_confidence = float(request.POST.get(f"sector_confidence_{row}", 1.0))
+            except (ValueError, TypeError):
+                sector_confidence = 1.0
+            try:
+                perimeter_confidence = float(request.POST.get(f"perimeter_confidence_{row}", 1.0))
+            except (ValueError, TypeError):
+                perimeter_confidence = 1.0
+
+            if item["sector_raw"] and sector_slug:
+                user_choices.append(
+                    {
+                        "raw_value": item["sector_raw"],
+                        "kind": "sector",
+                        "resolved_slug": sector_slug,
+                        "confidence": sector_confidence,
+                    }
+                )
+            if item["perimeter_raw"] and perimeter_slug:
+                user_choices.append(
+                    {
+                        "raw_value": item["perimeter_raw"],
+                        "kind": "perimeter",
+                        "resolved_slug": perimeter_slug,
+                        "confidence": perimeter_confidence,
+                    }
+                )
+
+        if user_choices:
+            try:
+                record_user_choices(user_choices, request.user)
+            except Exception:
+                # Ne jamais bloquer l'analyse si l'enregistrement du cache échoue
+                logger.exception("Erreur lors de l'enregistrement des choix de matching en cache")
+
+        del request.session["ipa_pending_projects"]
+        return _run_excel_analysis(request, resolved_projects, unresolvable_count, presta_mode)
 
 
 @login_required
