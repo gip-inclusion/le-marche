@@ -651,6 +651,66 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
             self._get_context(formset=formset, results=results, mode="manual", presta_mode=presta_mode),
         )
 
+    def _handle_reanalyze(self, request):
+        """Re-run the analysis from session data with a new presta_mode."""
+        raw_projects = request.session.get("ipa_raw_projects")
+        if not raw_projects:
+            return HttpResponseRedirect(reverse("dashboard:inclusive_potential_analysis"))
+
+        presta_mode = request.POST.get("presta_mode", PRESTA_MODE_DEFAULT)
+        if presta_mode not in PRESTA_MODE_TO_SIAE_KINDS:
+            presta_mode = PRESTA_MODE_DEFAULT
+
+        input_mode = raw_projects[0].get("input_mode", "manual") if raw_projects else "manual"
+
+        results = []
+        for project in raw_projects:
+            titre = project["titre"]
+            montant = project["montant"]
+            france_entiere = project.get("france_entiere", False)
+
+            try:
+                sector = Sector.objects.get(slug=project["secteur_slug"])
+            except Sector.DoesNotExist:
+                results.append({"titre": titre, "error": f"Secteur '{project['secteur_slug']}' introuvable."})
+                continue
+
+            perimeter = None
+            if project.get("perimeter_slug") and not france_entiere:
+                try:
+                    perimeter = Perimeter.objects.get(slug=project["perimeter_slug"])
+                except Perimeter.DoesNotExist:
+                    results.append({"titre": titre, "error": f"Périmètre '{project['perimeter_slug']}' introuvable."})
+                    continue
+
+            result = _analyze_purchase_project(titre, sector, perimeter, montant, presta_mode)
+            results.append(result)
+
+        request.session["ipa_raw_projects"] = raw_projects
+
+        if input_mode == "excel":
+            request.session["ipa_excel_results"] = [
+                {k: v for k, v in r.items() if k != "search_urls"} for r in results
+            ]
+            by_sector, by_perimeter = _aggregate_results(results)
+            return render(
+                request,
+                self.template_name,
+                self._get_context(
+                    results=results,
+                    results_by_sector=by_sector,
+                    results_by_perimeter=by_perimeter,
+                    mode="excel",
+                    presta_mode=presta_mode,
+                ),
+            )
+
+        return render(
+            request,
+            self.template_name,
+            self._get_context(results=results, mode="manual", presta_mode=presta_mode),
+        )
+
     def _handle_excel_import(self, request):
         excel_file = request.FILES.get("excel_file")
         if not excel_file:
