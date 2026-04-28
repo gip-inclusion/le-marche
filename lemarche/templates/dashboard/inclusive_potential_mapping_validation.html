@@ -1,0 +1,191 @@
+{% extends "layouts/base.html" %}
+{% load static dsfr_tags %}
+
+{% block page_title %}Confirmer les correspondances — Analyse du potentiel inclusif{{ block.super }}{% endblock page_title %}
+
+{% block content %}
+<style>
+    [x-cloak] { display: none !important; }
+    .mapping-card {
+        background: #f6f6f6;
+        border-radius: 8px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid #000091;
+    }
+    .mapping-card--title-inference {
+        border-left-color: #e1000f;
+    }
+    .mapping-score {
+        font-size: 0.75rem;
+        color: #666;
+        margin-left: 0.5rem;
+    }
+    .mapping-raw {
+        font-family: monospace;
+        background: #ececec;
+        padding: 0.1rem 0.4rem;
+        border-radius: 3px;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="fr-container fr-py-4w">
+    <h1 class="fr-h3">Confirmer les correspondances</h1>
+
+    {% if unresolvable_count %}
+    <div class="fr-alert fr-alert--warning fr-mb-3w">
+        <p>{{ unresolvable_count }} projet(s) n'ont pas pu être analysés (correspondance introuvable).</p>
+    </div>
+    {% endif %}
+
+    <p class="fr-text--lead">
+        {{ ambiguous_items|length }} valeur(s) de votre fichier nécessitent une confirmation.
+        Sélectionnez la correspondance correcte pour chaque ligne.
+    </p>
+
+    <form method="post" action="">
+        {% csrf_token %}
+
+        <div x-data="{ submitting: false }">
+
+        {% for item in ambiguous_items %}
+        <div x-data="{ sectorChoice: '{{ item.sector_result.candidates.0.slug|default:'' }}', perimeterChoice: '{{ item.perimeter_result.candidates.0.slug|default:'' }}', showSectorCustom: false, showPerimeterCustom: false }"
+             class="mapping-card{% if item.sector_result.source == 'title_inference' %} mapping-card--title-inference{% endif %}">
+
+            <div class="fr-mb-2w">
+                <strong>Ligne {{ item.row }} — {{ item.titre }}</strong>
+                {% if item.sector_result.source == 'title_inference' %}
+                <span class="fr-badge fr-badge--sm fr-badge--warning fr-ml-1w">Secteur suggéré d'après le titre</span>
+                {% endif %}
+            </div>
+
+            {# ── Secteur ── #}
+            {% if item.sector_result.status == 'ambiguous' or item.sector_result.source == 'title_inference' %}
+            <div class="fr-mb-2w">
+                <p class="fr-text--sm fr-mb-1w">
+                    Secteur saisi : <span class="mapping-raw">{{ item.sector_raw }}</span>
+                </p>
+                <fieldset class="fr-fieldset" id="sector-fieldset-{{ item.row }}">
+                    <legend class="fr-fieldset__legend fr-text--sm">Secteur correspondant</legend>
+                    {% for candidate in item.sector_result.candidates %}
+                    <div class="fr-fieldset__element">
+                        <div class="fr-radio-group">
+                            <input type="radio"
+                                   id="sector_{{ item.row }}_{{ forloop.counter }}"
+                                   name="sector_{{ item.row }}"
+                                   value="{{ candidate.slug }}"
+                                   x-model="sectorChoice"
+                                   @change="showSectorCustom = false"
+                                   {% if forloop.first %}checked{% endif %}>
+                            <label class="fr-label" for="sector_{{ item.row }}_{{ forloop.counter }}">
+                                {{ candidate.name }}
+                                <span class="mapping-score">({% widthratio candidate.score 1 100 %}% de similarité)</span>
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="fr-fieldset__element">
+                        <div class="fr-radio-group">
+                            <input type="radio"
+                                   id="sector_{{ item.row }}_custom"
+                                   name="sector_{{ item.row }}"
+                                   value=""
+                                   @change="showSectorCustom = true; sectorChoice = ''">
+                            <label class="fr-label" for="sector_{{ item.row }}_custom">Saisir manuellement</label>
+                        </div>
+                    </div>
+                </fieldset>
+                <div x-show="showSectorCustom" x-cloak class="fr-mt-1w">
+                    <input type="text"
+                           class="fr-input"
+                           name="sector_{{ item.row }}"
+                           placeholder="Slug du secteur (ex: nettoyage-des-locaux)"
+                           @input="sectorChoice = $event.target.value">
+                </div>
+                <input type="hidden" name="sector_confidence_{{ item.row }}" value="{{ item.sector_result.candidates.0.score|default:1 }}">
+            </div>
+            {% else %}
+            <input type="hidden" name="sector_{{ item.row }}" value="{{ item.sector_result.slug }}">
+            {% endif %}
+
+            {# ── Périmètre ── #}
+            {% if item.perimeter_result.status == 'ambiguous' %}
+            <div class="fr-mb-1w">
+                <p class="fr-text--sm fr-mb-1w">
+                    Périmètre saisi : <span class="mapping-raw">{{ item.perimeter_raw }}</span>
+                </p>
+                <fieldset class="fr-fieldset" id="perimeter-fieldset-{{ item.row }}">
+                    <legend class="fr-fieldset__legend fr-text--sm">Périmètre correspondant</legend>
+                    {% for candidate in item.perimeter_result.candidates %}
+                    <div class="fr-fieldset__element">
+                        <div class="fr-radio-group">
+                            <input type="radio"
+                                   id="perimeter_{{ item.row }}_{{ forloop.counter }}"
+                                   name="perimeter_{{ item.row }}"
+                                   value="{{ candidate.slug }}"
+                                   x-model="perimeterChoice"
+                                   @change="showPerimeterCustom = false"
+                                   {% if forloop.first %}checked{% endif %}>
+                            <label class="fr-label" for="perimeter_{{ item.row }}_{{ forloop.counter }}">
+                                {{ candidate.name }}
+                                <span class="mapping-score">({% widthratio candidate.score 1 100 %}% de similarité)</span>
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="fr-fieldset__element">
+                        <div class="fr-radio-group">
+                            <input type="radio"
+                                   id="perimeter_{{ item.row }}_custom"
+                                   name="perimeter_{{ item.row }}"
+                                   value=""
+                                   @change="showPerimeterCustom = true; perimeterChoice = ''">
+                            <label class="fr-label" for="perimeter_{{ item.row }}_custom">Saisir manuellement</label>
+                        </div>
+                    </div>
+                </fieldset>
+                <div x-show="showPerimeterCustom" x-cloak class="fr-mt-1w">
+                    <input type="text"
+                           class="fr-input"
+                           name="perimeter_{{ item.row }}"
+                           placeholder="Slug du périmètre (ex: hauts-de-seine)"
+                           @input="perimeterChoice = $event.target.value">
+                </div>
+                <input type="hidden" name="perimeter_confidence_{{ item.row }}" value="{{ item.perimeter_result.candidates.0.score|default:1 }}">
+            </div>
+            {% else %}
+            <input type="hidden" name="perimeter_{{ item.row }}" value="{{ item.perimeter_result.slug|default:'' }}">
+            <input type="hidden" name="france_entiere_{{ item.row }}" value="{% if item.perimeter_result.france_entiere %}1{% else %}0{% endif %}">
+            {% endif %}
+
+        </div>
+        {% endfor %}
+
+        <div class="fr-grid-row fr-grid-row--gutters fr-mt-4w">
+            <div class="fr-col-12 fr-col-md-6">
+                <button type="submit"
+                        class="fr-btn fr-btn--secondary fr-btn--lg fr-width-full"
+                        name="ignore_remaining"
+                        value="1"
+                        @click="submitting = true">
+                    Ignorer les non résolus et analyser quand même
+                </button>
+            </div>
+            <div class="fr-col-12 fr-col-md-6">
+                <button type="submit"
+                        class="fr-btn fr-btn--lg fr-width-full"
+                        @click="submitting = true">
+                    Valider et lancer l'analyse →
+                </button>
+            </div>
+        </div>
+
+        <div x-show="submitting" x-cloak class="fr-mt-3w" style="text-align:center;">
+            <p class="fr-text--lead" style="color:#000091;">Analyse en cours…</p>
+        </div>
+
+        </div>{# /x-data submitting #}
+    </form>
+</div>
+{% endblock content %}
