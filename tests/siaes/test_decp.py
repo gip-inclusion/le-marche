@@ -13,7 +13,7 @@ class ApiDecpFetchContractsCountTest(TestCase):
     """Tests du wrapper api_decp.fetch_contracts_count."""
 
     @patch("lemarche.utils.apis.api_decp.requests.get")
-    def test_retourne_le_total(self, mocked_get):
+    def test_retourne_le_total_par_siret(self, mocked_get):
         mocked_get.return_value.json.return_value = {"meta": {"total": 5}}
         mocked_get.return_value.raise_for_status.return_value = None
 
@@ -21,11 +21,28 @@ class ApiDecpFetchContractsCountTest(TestCase):
 
         result = fetch_contracts_count("12345678901234", "2023-01-01")
         self.assertEqual(result, 5)
+        # Un seul appel : SIRET exact a trouvé des résultats, pas de fallback SIREN
+        self.assertEqual(mocked_get.call_count, 1)
 
     @patch("lemarche.utils.apis.api_decp.requests.get")
-    def test_retourne_zero_si_absent(self, mocked_get):
-        mocked_get.return_value.json.return_value = {}
+    def test_fallback_siren_si_siret_vide(self, mocked_get):
+        # Premier appel (SIRET) → 0, deuxième appel (SIREN) → 3
         mocked_get.return_value.raise_for_status.return_value = None
+        mocked_get.return_value.json.side_effect = [
+            {"meta": {"total": 0}},
+            {"meta": {"total": 3}},
+        ]
+
+        from lemarche.utils.apis.api_decp import fetch_contracts_count
+
+        result = fetch_contracts_count("12345678901234", "2023-01-01")
+        self.assertEqual(result, 3)
+        self.assertEqual(mocked_get.call_count, 2)
+
+    @patch("lemarche.utils.apis.api_decp.requests.get")
+    def test_retourne_zero_si_siret_et_siren_vides(self, mocked_get):
+        mocked_get.return_value.raise_for_status.return_value = None
+        mocked_get.return_value.json.return_value = {"meta": {"total": 0}}
 
         from lemarche.utils.apis.api_decp import fetch_contracts_count
 
@@ -33,9 +50,9 @@ class ApiDecpFetchContractsCountTest(TestCase):
         self.assertEqual(result, 0)
 
     @patch("lemarche.utils.apis.api_decp.requests.get")
-    def test_retourne_zero_si_meta_vide(self, mocked_get):
-        mocked_get.return_value.json.return_value = {"meta": {}}
+    def test_retourne_zero_si_meta_absent(self, mocked_get):
         mocked_get.return_value.raise_for_status.return_value = None
+        mocked_get.return_value.json.return_value = {}
 
         from lemarche.utils.apis.api_decp import fetch_contracts_count
 
@@ -47,7 +64,7 @@ class ApiDecpFetchRecentContractsTest(TestCase):
     """Tests du wrapper api_decp.fetch_recent_contracts."""
 
     @patch("lemarche.utils.apis.api_decp.requests.get")
-    def test_retourne_la_liste_data(self, mocked_get):
+    def test_retourne_la_liste_data_par_siret(self, mocked_get):
         mocked_get.return_value.json.return_value = {"data": [{"uid": "abc"}, {"uid": "def"}]}
         mocked_get.return_value.raise_for_status.return_value = None
 
@@ -55,11 +72,27 @@ class ApiDecpFetchRecentContractsTest(TestCase):
 
         result = fetch_recent_contracts("12345678901234", "2023-01-01")
         self.assertEqual(len(result), 2)
+        # SIRET a trouvé des résultats, pas de fallback
+        self.assertEqual(mocked_get.call_count, 1)
 
     @patch("lemarche.utils.apis.api_decp.requests.get")
-    def test_retourne_liste_vide_si_absent(self, mocked_get):
-        mocked_get.return_value.json.return_value = {}
+    def test_fallback_siren_si_siret_vide(self, mocked_get):
         mocked_get.return_value.raise_for_status.return_value = None
+        mocked_get.return_value.json.side_effect = [
+            {"data": []},
+            {"data": [{"uid": "xyz"}]},
+        ]
+
+        from lemarche.utils.apis.api_decp import fetch_recent_contracts
+
+        result = fetch_recent_contracts("12345678901234", "2023-01-01")
+        self.assertEqual(len(result), 1)
+        self.assertEqual(mocked_get.call_count, 2)
+
+    @patch("lemarche.utils.apis.api_decp.requests.get")
+    def test_retourne_liste_vide_si_siret_et_siren_vides(self, mocked_get):
+        mocked_get.return_value.raise_for_status.return_value = None
+        mocked_get.return_value.json.return_value = {"data": []}
 
         from lemarche.utils.apis.api_decp import fetch_recent_contracts
 
