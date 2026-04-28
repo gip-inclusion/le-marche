@@ -25,5 +25,7 @@
     "50 7 * * 1 $ROOT/clevercloud/companies_update_users_and_count_fields.sh",
     "55 7 * * 1 $ROOT/clevercloud/crm_brevo_sync_companies.sh",
     "0 8 * * 1 $ROOT/clevercloud/crm_brevo_sync_contacts.sh",
-    "0 7 * * 2 $ROOT/clevercloud/siaes_send_completion_reminder_emails.sh"
+    "0 7 * * 2 $ROOT/clevercloud/siaes_send_completion_reminder_emails.sh",
+    "30 2 * * * $ROOT/clevercloud/run_management_command.sh sync_siaes_decp --wet-run",
+    "30 3 * * * $ROOT/clevercloud/run_management_command.sh sync_siaes_decp_details --wet-run"
 ]

@@ -614,6 +614,11 @@ class Siae(NexusModelMixin, models.Model):
         "api_entreprise_ca_date_fin_exercice",
         "api_entreprise_exercice_last_sync_date",
     ]
+    FIELDS_FROM_DECP = [
+        "has_won_contract_last_3_years",
+        "decp_contracts_count_last_3_years",
+        "decp_last_sync_date",
+    ]
     FIELDS_STATS_COUNT = [
         "user_count",
         "sector_count",
@@ -634,7 +639,13 @@ class Siae(NexusModelMixin, models.Model):
     FIELDS_STATS_TIMESTAMPS = ["signup_date", "content_filled_basic_date", "created_at", "updated_at"]
     FIELDS_STATS = FIELDS_STATS_COUNT + FIELDS_STATS_TIMESTAMPS + ["super_badge", "completion_rate"]
     READONLY_FIELDS = (
-        FIELDS_FROM_C1 + FIELDS_FROM_C2 + FIELDS_FROM_QPV + FIELDS_FROM_ZRR + FIELDS_FROM_API_ENTREPRISE + FIELDS_STATS
+        FIELDS_FROM_C1
+        + FIELDS_FROM_C2
+        + FIELDS_FROM_QPV
+        + FIELDS_FROM_ZRR
+        + FIELDS_FROM_API_ENTREPRISE
+        + FIELDS_FROM_DECP
+        + FIELDS_STATS
     )
 
     TRACK_UPDATE_FIELDS = [
@@ -838,6 +849,9 @@ class Siae(NexusModelMixin, models.Model):
     # DECP (Données Essentielles de la Commande Publique)
     has_won_contract_last_3_years = models.BooleanField(
         "A remporté un marché public ces 3 dernières années (DECP)", default=False
+    )
+    decp_contracts_count_last_3_years = models.IntegerField(
+        "Nombre de marchés publics remportés ces 3 dernières années (DECP)", default=0
     )
     decp_last_sync_date = models.DateTimeField("Date de dernière synchronisation (DECP)", blank=True, null=True)
 
@@ -1819,6 +1833,54 @@ class SiaeImage(models.Model):
     # def __str__(self):
     #     if self.name:
     #         return self.name
+
+
+class SiaePublicMarketQuerySet(models.QuerySet):
+    def for_siae(self, siae):
+        return self.filter(siae=siae)
+
+
+class SiaePublicMarket(models.Model):
+    """Marchés publics remportés par une SIAE (source DECP, max 3 par structure)."""
+
+    SOURCE_DATE_NOTIFICATION = "dateNotification"
+    SOURCE_DATE_PUBLICATION = "datePublicationDonnees"
+    SOURCE_DATE_CHOICES = [
+        (SOURCE_DATE_NOTIFICATION, "Date de notification"),
+        (SOURCE_DATE_PUBLICATION, "Date de publication"),
+    ]
+
+    siae = models.ForeignKey(
+        "siaes.Siae", verbose_name="Structure", related_name="public_markets", on_delete=models.CASCADE
+    )
+    market_uid = models.CharField(verbose_name="Identifiant du marché (uid DECP)", max_length=255)
+    buyer_name = models.CharField(verbose_name="Acheteur", max_length=500, blank=True)
+    market_object = models.TextField(verbose_name="Objet du marché", blank=True)
+    amount = models.DecimalField(verbose_name="Montant (€)", max_digits=14, decimal_places=2, null=True, blank=True)
+    award_date = models.DateField(verbose_name="Date d'attribution", null=True, blank=True)
+    source_date_type = models.CharField(
+        verbose_name="Source de la date",
+        max_length=30,
+        choices=SOURCE_DATE_CHOICES,
+        default=SOURCE_DATE_NOTIFICATION,
+    )
+    cpv_code = models.CharField(verbose_name="Code CPV", max_length=20, blank=True)
+    procedure_type = models.CharField(verbose_name="Type de procédure", max_length=100, blank=True)
+    lieu_execution = models.CharField(verbose_name="Lieu d'exécution", max_length=200, blank=True)
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(SiaePublicMarketQuerySet)()
+
+    class Meta:
+        verbose_name = "Marché public remporté"
+        verbose_name_plural = "Marchés publics remportés"
+        unique_together = [("siae", "market_uid")]
+        ordering = ["-award_date"]
+
+    def __str__(self) -> str:
+        return f"{self.buyer_name} — {self.market_object[:60]}"
 
 
 class SiaeESUS(models.Model):
