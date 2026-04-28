@@ -500,7 +500,13 @@ def _parse_excel_projects(file) -> list[dict]:
     required = {"titre"}
     missing = required - set(col.keys())
     if missing:
-        raise ValueError(f"Colonnes obligatoires manquantes : {', '.join(sorted(missing))}.")
+        detected = list(col.keys()) if col else []
+        raw_headers = [str(h) for h in rows[0] if h]
+        raise ValueError(
+            f"Colonnes obligatoires manquantes : {', '.join(sorted(missing))}. "
+            f"Colonnes détectées : {detected or 'aucune'}. "
+            f"En-têtes bruts lus : {raw_headers}."
+        )
 
     data_rows = [r for r in rows[1:] if any(r)]
 
