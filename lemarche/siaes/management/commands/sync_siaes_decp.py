@@ -13,7 +13,6 @@ Usage:
 """
 
 import logging
-import time
 from datetime import timedelta
 from itertools import batched
 
@@ -30,7 +29,6 @@ logger = logging.getLogger(__name__)
 
 
 BATCH_SIZE = 1_000
-SLEEP_BETWEEN_REQUESTS = 0.05  # 50 ms → ~20 req/s, bien sous la limite data.gouv.fr
 
 
 class Command(BaseCommand):
@@ -84,8 +82,6 @@ class Command(BaseCommand):
             except requests.exceptions.RequestException as e:
                 logger.error("Erreur DECP SIRET %s : %s", siae.siret, e)
                 error_count += 1
-
-            time.sleep(SLEEP_BETWEEN_REQUESTS)
 
             if i % 100 == 0:
                 self.stdout_info(f"{i}/{total}...")
