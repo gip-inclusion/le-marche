@@ -27,6 +27,7 @@ from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.utils.slug_matching import (
+    RESOLUTION_STATUS_AMBIGUOUS,
     RESOLUTION_STATUS_ERROR,
     RESOLUTION_STATUS_RESOLVED,
     record_user_choices,
@@ -496,7 +497,7 @@ def _parse_excel_projects(file) -> list[dict]:
         if resolved and resolved not in col:
             col[resolved] = i
 
-    required = {"titre", "secteur", "perimetre_geographique"}
+    required = {"titre"}
     missing = required - set(col.keys())
     if missing:
         raise ValueError(f"Colonnes obligatoires manquantes : {', '.join(sorted(missing))}.")
@@ -753,11 +754,22 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
                 continue
 
             sector_result = resolve_sector(project["secteur_raw"], user=request.user)
-            perimeter_result = resolve_perimeter(project["perimetre_raw"], user=request.user)
 
             # Si le secteur est introuvable, tenter l'inférence depuis le titre/description
             if sector_result["status"] == RESOLUTION_STATUS_ERROR and titre:
                 sector_result = resolve_sector_from_title(titre, project.get("description", ""))
+
+            # Si le périmètre est vide (colonne absente ou non renseignée), envoyer en validation manuelle
+            if not project["perimetre_raw"]:
+                perimeter_result = {
+                    "status": RESOLUTION_STATUS_AMBIGUOUS,
+                    "slug": None,
+                    "france_entiere": False,
+                    "candidates": [],
+                    "source": "",
+                }
+            else:
+                perimeter_result = resolve_perimeter(project["perimetre_raw"], user=request.user)
 
             sector_status = sector_result["status"]
             perimeter_status = perimeter_result["status"]
