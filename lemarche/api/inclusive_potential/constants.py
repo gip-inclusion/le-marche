@@ -1,3 +1,30 @@
+from lemarche.siaes import constants as siae_constants
+
+
+PRESTA_MODE_SERVICE = "service"
+PRESTA_MODE_MISE_A_DISPO = "mise_a_disposition"
+PRESTA_MODE_DEFAULT = PRESTA_MODE_SERVICE
+
+PRESTA_MODE_CHOICES = [
+    (PRESTA_MODE_SERVICE, "Services et fournitures"),
+    (PRESTA_MODE_MISE_A_DISPO, "Mise à disposition de personnel (intérim d'insertion)"),
+]
+
+PRESTA_MODE_TO_SIAE_KINDS = {
+    PRESTA_MODE_SERVICE: [
+        siae_constants.KIND_EI,
+        siae_constants.KIND_ACI,
+        siae_constants.KIND_EA,
+        siae_constants.KIND_ESAT,
+    ],
+    PRESTA_MODE_MISE_A_DISPO: [
+        siae_constants.KIND_ETTI,
+        siae_constants.KIND_AI,
+        siae_constants.KIND_EATT,
+        siae_constants.KIND_GEIQ,
+    ],
+}
+
 LIMIT_FOR_RESERVATION = 30
 LIMIT_FOR_LOT = 10
 LIMIT_FOR_CLAUSE = 1

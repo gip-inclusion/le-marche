@@ -16,6 +16,7 @@ from django.views.generic import DetailView, FormView, UpdateView
 from django_filters.views import FilterView
 
 from content_manager.models import ContentPage, Tag
+from lemarche.api.inclusive_potential.constants import PRESTA_MODE_DEFAULT, PRESTA_MODE_TO_SIAE_KINDS
 from lemarche.api.inclusive_potential.utils import get_inclusive_potential_data
 from lemarche.cms.models import ArticleList
 from lemarche.perimeters.models import Perimeter
@@ -311,30 +312,44 @@ class DisabledEmailEditView(LoginRequiredMixin, SuccessMessageMixin, FormView):
         return super().form_valid(form)
 
 
-def _build_search_urls(sector: Sector, perimeter: Perimeter | None) -> dict:
+def _build_search_urls(sector: Sector, perimeter: Perimeter | None, presta_mode: str | None = None) -> dict:
     """Build search URLs for each indicator, pointing to the Marché search page."""
     base_params = [("sectors", sector.slug)]
     if perimeter:
         base_params.append(("perimeters", perimeter.slug))
 
-    def url(extra_params=None):
-        params = base_params + (extra_params or [])
+    presta_kinds = PRESTA_MODE_TO_SIAE_KINDS.get(presta_mode) if presta_mode else None
+
+    def kind_params(base_kinds=None):
+        """Return kind URL params, intersected with active presta_mode if any."""
+        if base_kinds is None:
+            kinds = presta_kinds or []
+        elif presta_kinds is not None:
+            kinds = [k for k in base_kinds if k in presta_kinds]
+        else:
+            kinds = base_kinds
+        return [("kind", k) for k in kinds]
+
+    def url(kind_filter=None, extra_params=None):
+        params = base_params + kind_params(kind_filter) + (extra_params or [])
         return f"/prestataires/?{urlencode(params)}"
 
     return {
         "all": url(),
-        "insertion": url([("kind", k) for k in KIND_INSERTION_LIST]),
-        "handicap": url([("kind", k) for k in KIND_HANDICAP_LIST]),
-        "local": url([("local", "True")]),
-        "super_badge": url([("super_badge", "True")]),
-        "won_contract": url([("has_won_contract", "True")]),
+        "insertion": url(KIND_INSERTION_LIST),
+        "handicap": url(KIND_HANDICAP_LIST),
+        "local": url(extra_params=[("local", "True")]),
+        "super_badge": url(extra_params=[("super_badge", "True")]),
+        "won_contract": url(extra_params=[("has_won_contract", "True")]),
     }
 
 
-def _analyze_purchase_project(titre: str, sector: Sector, perimeter: Perimeter | None, budget: int | None) -> dict:
+def _analyze_purchase_project(
+    titre: str, sector: Sector, perimeter: Perimeter | None, budget: int | None, presta_mode: str = PRESTA_MODE_DEFAULT
+) -> dict:
     """Run the inclusive potential analysis for a single purchase project."""
     try:
-        potential_data, analysis_data = get_inclusive_potential_data(sector, perimeter, budget)
+        potential_data, analysis_data = get_inclusive_potential_data(sector, perimeter, budget, presta_mode)
     except Exception:
         logger.exception("Erreur lors de l'analyse du potentiel inclusif pour '%s'", titre)
         return {
@@ -342,7 +357,7 @@ def _analyze_purchase_project(titre: str, sector: Sector, perimeter: Perimeter |
             "error": "Une erreur technique s'est produite lors de l'analyse. Veuillez réessayer.",
         }
 
-    search_urls = _build_search_urls(sector, perimeter)
+    search_urls = _build_search_urls(sector, perimeter, presta_mode)
     result = {
         "titre": titre,
         "secteur_name": sector.name,
@@ -476,6 +491,7 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
         results_by_perimeter=None,
         import_errors=None,
         mode="manual",
+        presta_mode=PRESTA_MODE_DEFAULT,
     ):
         return {
             "sectors": list(Sector.objects.form_filter_queryset()),
@@ -485,6 +501,8 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
             "results_by_perimeter": results_by_perimeter,
             "import_errors": import_errors,
             "mode": mode,
+            "presta_mode": presta_mode,
+            "presta_mode_choices": list(PRESTA_MODE_TO_SIAE_KINDS.keys()),
         }
 
     def get(self, request):
@@ -492,6 +510,8 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
 
     def post(self, request):
         mode = request.POST.get("mode", "manual")
+        if mode == "reanalyze":
+            return self._handle_reanalyze(request)
         if mode == "excel":
             return self._handle_excel_import(request)
         return self._handle_manual_form(request)
@@ -505,6 +525,11 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
                 self._get_context(formset=formset, mode="manual"),
             )
 
+        presta_mode = request.POST.get("presta_mode", PRESTA_MODE_DEFAULT)
+        if presta_mode not in PRESTA_MODE_TO_SIAE_KINDS:
+            presta_mode = PRESTA_MODE_DEFAULT
+
+        raw_projects = []
         results = []
         for form in formset:
             if not form.cleaned_data:
@@ -523,13 +548,25 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
                     results.append({"titre": titre, "error": f"Périmètre '{perimeter_slug}' introuvable."})
                     continue
 
-            result = _analyze_purchase_project(titre, sector, perimeter, montant)
+            raw_projects.append(
+                {
+                    "titre": titre,
+                    "secteur_slug": sector.slug,
+                    "perimeter_slug": perimeter.slug if perimeter else None,
+                    "france_entiere": france_entiere,
+                    "montant": montant,
+                    "input_mode": "manual",
+                }
+            )
+            result = _analyze_purchase_project(titre, sector, perimeter, montant, presta_mode)
             results.append(result)
+
+        request.session["ipa_raw_projects"] = raw_projects
 
         return render(
             request,
             self.template_name,
-            self._get_context(formset=formset, results=results, mode="manual"),
+            self._get_context(formset=formset, results=results, mode="manual", presta_mode=presta_mode),
         )
 
     def _handle_excel_import(self, request):
@@ -550,6 +587,11 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
                 self._get_context(import_errors=[str(e)], mode="excel"),
             )
 
+        presta_mode = request.POST.get("presta_mode", PRESTA_MODE_DEFAULT)
+        if presta_mode not in PRESTA_MODE_TO_SIAE_KINDS:
+            presta_mode = PRESTA_MODE_DEFAULT
+
+        raw_projects = []
         results = []
         import_errors = []
 
@@ -578,7 +620,17 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
                     import_errors.append(f"Ligne {row_num} — « {titre} » : périmètre « {perimetre} » introuvable.")
                     continue
 
-            result = _analyze_purchase_project(titre, sector, perimeter, montant)
+            raw_projects.append(
+                {
+                    "titre": titre,
+                    "secteur_slug": sector.slug,
+                    "perimeter_slug": perimeter.slug if perimeter else None,
+                    "france_entiere": perimetre.lower() == "france_entiere",
+                    "montant": montant,
+                    "input_mode": "excel",
+                }
+            )
+            result = _analyze_purchase_project(titre, sector, perimeter, montant, presta_mode)
             results.append(result)
 
         if not results:
@@ -590,6 +642,7 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
 
         by_sector, by_perimeter = _aggregate_results(results)
 
+        request.session["ipa_raw_projects"] = raw_projects
         request.session["ipa_excel_results"] = [{k: v for k, v in r.items() if k != "search_urls"} for r in results]
 
         return render(
@@ -601,7 +654,68 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
                 results_by_perimeter=by_perimeter,
                 import_errors=import_errors or None,
                 mode="excel",
+                presta_mode=presta_mode,
             ),
+        )
+
+    def _handle_reanalyze(self, request):
+        """Re-run the analysis from session data with a new presta_mode."""
+        raw_projects = request.session.get("ipa_raw_projects")
+        if not raw_projects:
+            return HttpResponseRedirect(reverse("dashboard:inclusive_potential_analysis"))
+
+        presta_mode = request.POST.get("presta_mode", PRESTA_MODE_DEFAULT)
+        if presta_mode not in PRESTA_MODE_TO_SIAE_KINDS:
+            presta_mode = PRESTA_MODE_DEFAULT
+
+        input_mode = raw_projects[0].get("input_mode", "manual") if raw_projects else "manual"
+
+        results = []
+        for project in raw_projects:
+            titre = project["titre"]
+            montant = project["montant"]
+            france_entiere = project.get("france_entiere", False)
+
+            try:
+                sector = Sector.objects.get(slug=project["secteur_slug"])
+            except Sector.DoesNotExist:
+                results.append({"titre": titre, "error": f"Secteur '{project['secteur_slug']}' introuvable."})
+                continue
+
+            perimeter = None
+            if project.get("perimeter_slug") and not france_entiere:
+                try:
+                    perimeter = Perimeter.objects.get(slug=project["perimeter_slug"])
+                except Perimeter.DoesNotExist:
+                    results.append({"titre": titre, "error": f"Périmètre '{project['perimeter_slug']}' introuvable."})
+                    continue
+
+            result = _analyze_purchase_project(titre, sector, perimeter, montant, presta_mode)
+            results.append(result)
+
+        request.session["ipa_raw_projects"] = raw_projects
+
+        if input_mode == "excel":
+            request.session["ipa_excel_results"] = [
+                {k: v for k, v in r.items() if k != "search_urls"} for r in results
+            ]
+            by_sector, by_perimeter = _aggregate_results(results)
+            return render(
+                request,
+                self.template_name,
+                self._get_context(
+                    results=results,
+                    results_by_sector=by_sector,
+                    results_by_perimeter=by_perimeter,
+                    mode="excel",
+                    presta_mode=presta_mode,
+                ),
+            )
+
+        return render(
+            request,
+            self.template_name,
+            self._get_context(results=results, mode="manual", presta_mode=presta_mode),
         )
 
 
