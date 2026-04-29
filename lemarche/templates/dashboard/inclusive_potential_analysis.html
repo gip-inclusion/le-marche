@@ -274,6 +274,8 @@
 
     {% if results is not None %}
 
+    <div id="ipa-results" style="scroll-margin-top: 1.5rem;"></div>
+
     {# ── Bouton nouvelle analyse + export ── #}
     <div class="fr-mb-3w" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
         <a href="{% url 'dashboard:inclusive_potential_analysis' %}"
@@ -1215,6 +1217,10 @@
     {% endif %}
     {% if results and mode == "excel" %}
     <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const anchor = document.getElementById('ipa-results');
+        if (anchor) anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
     function ipaResults() {
         const raw = JSON.parse(document.getElementById('ipa-results-data').textContent);
         return {
