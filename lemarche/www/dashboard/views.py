@@ -933,36 +933,35 @@ def inclusive_potential_excel_template(request):
     ws = wb.active
     ws.title = "Projets d'achat"
 
-    ws.append(["titre", "description", "secteur", "montant", "perimetre_geographique"])
+    ws.append(["Titre du projet", "Catégorie achat", "Localisation", "Montant €", "Description"])
 
-    # Use real sector slugs so the examples work out of the box.
     example_sectors = list(Sector.objects.form_filter_queryset().values_list("slug", "name")[:2])
     if example_sectors:
         ws.append(
             [
                 f"Prestations de {example_sectors[0][1][:40]}",
-                "Description optionnelle",
-                example_sectors[0][0],
+                example_sectors[0][1],
+                "Paris",
                 80000,
-                "paris",
+                "Description optionnelle",
             ]
         )
     if len(example_sectors) > 1:
         ws.append(
             [
                 f"Prestations de {example_sectors[1][1][:40]}",
-                "",
-                example_sectors[1][0],
+                example_sectors[1][1],
+                "France entière",
                 45000,
-                "france_entiere",
+                "",
             ]
         )
 
-    # Feuille 2 : référentiel des slugs secteurs
+    # Feuille 2 : référentiel des secteurs (nom + slug)
     ws2 = wb.create_sheet("Secteurs disponibles")
-    ws2.append(["slug (valeur à saisir dans la colonne secteur)", "Nom du secteur"])
+    ws2.append(["Nom du secteur (à saisir dans Catégorie achat)", "Slug technique (alternative)"])
     for slug, name in Sector.objects.form_filter_queryset().values_list("slug", "name"):
-        ws2.append([slug, name])
+        ws2.append([name, slug])
 
     buffer = io.BytesIO()
     wb.save(buffer)
