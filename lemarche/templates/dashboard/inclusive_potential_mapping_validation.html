@@ -4,346 +4,451 @@
 {% block page_title %}Confirmer les correspondances — Analyse du potentiel inclusif{{ block.super }}{% endblock page_title %}
 
 {% block content %}
+<script>
+    window.IPA_SECTORS = {{ sectors_json|safe }};
+    window.IPA_AMBIGUOUS_ITEMS = {{ ambiguous_items_json|safe }};
+</script>
+
 <style>
-    [x-cloak] { display: none !important; }
-    .mapping-card {
-        background: #f6f6f6;
+    .ipa-overlay {
+        position: fixed; inset: 0;
+        background: rgba(0, 0, 0, .65);
+        z-index: 1000;
+        display: flex; align-items: center; justify-content: center;
+        padding: 1rem;
+    }
+    .ipa-modal {
+        background: #fff;
         border-radius: 8px;
-        padding: 1.25rem 1.5rem;
-        margin-bottom: 1rem;
-        border-left: 4px solid #000091;
+        width: min(640px, 100%);
+        max-height: 90vh;
+        display: flex; flex-direction: column;
+        box-shadow: 0 24px 48px rgba(0,0,0,.25);
     }
-    .mapping-card--title-inference {
-        border-left-color: #e1000f;
+    .ipa-modal__header {
+        padding: 1.5rem 2rem 1.25rem;
+        border-bottom: 1px solid #e5e5e5;
+        flex-shrink: 0;
     }
-    .mapping-score {
-        font-size: 0.75rem;
-        color: #666;
-        margin-left: 0.5rem;
-    }
-    .mapping-raw {
-        font-family: monospace;
-        background: #ececec;
-        padding: 0.1rem 0.4rem;
-        border-radius: 3px;
-        font-size: 0.9rem;
-    }
-    .autocomplete-dropdown {
-        position: absolute;
-        z-index: 100;
-        background: white;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        max-height: 220px;
+    .ipa-modal__body {
+        padding: 1.5rem 2rem;
         overflow-y: auto;
-        width: 100%;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        flex: 1;
     }
-    .autocomplete-item {
-        padding: 0.5rem 0.75rem;
-        cursor: pointer;
-        font-size: 0.9rem;
+    .ipa-modal__footer {
+        padding: 1.25rem 2rem;
+        border-top: 1px solid #e5e5e5;
+        display: flex; align-items: center; gap: .75rem;
+        flex-shrink: 0;
     }
-    .autocomplete-item:hover, .autocomplete-item.is-active {
-        background: #f0f0ff;
+    .ipa-progress {
+        height: 4px; background: #e5e5e5; border-radius: 2px;
+        margin-top: .75rem; overflow: hidden;
     }
-    .autocomplete-wrapper {
-        position: relative;
+    .ipa-progress__fill {
+        height: 100%; background: #000091; border-radius: 2px;
+        transition: width .25s ease;
     }
-    .autocomplete-selected-tag {
-        display: inline-flex;
-        align-items: center;
-        background: #e3e3fd;
-        border-radius: 4px;
-        padding: 0.2rem 0.6rem;
-        font-size: 0.875rem;
-        margin-top: 0.5rem;
+    .ipa-raw-value {
+        font-family: monospace; background: #f0f0f0;
+        padding: .1rem .45rem; border-radius: 3px; font-size: .875rem;
     }
-    .autocomplete-selected-tag button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        margin-left: 0.4rem;
-        font-size: 1rem;
-        line-height: 1;
-        color: #333;
+    .ipa-score {
+        font-size: .75rem; color: #666; background: #f0f0f0;
+        padding: .1rem .35rem; border-radius: 3px; margin-left: .4rem;
+    }
+    .ipa-autocomplete { position: relative; }
+    .ipa-dropdown {
+        position: absolute; top: 100%; left: 0; right: 0; z-index: 10;
+        background: #fff; border: 1px solid #ccc; border-radius: 4px;
+        max-height: 200px; overflow-y: auto;
+        box-shadow: 0 4px 12px rgba(0,0,0,.12);
+    }
+    .ipa-dropdown__item {
+        padding: .5rem .75rem; cursor: pointer; font-size: .875rem;
+    }
+    .ipa-dropdown__item:hover { background: #f0f0ff; }
+    .ipa-selected-tag {
+        display: inline-flex; align-items: center; gap: .5rem;
+        background: #e3e3fd; border-radius: 4px;
+        padding: .2rem .65rem; font-size: .875rem; margin-top: .5rem;
+    }
+    .ipa-selected-tag button {
+        background: none; border: none; cursor: pointer;
+        font-size: 1rem; line-height: 1; color: #333; padding: 0;
+    }
+    .ipa-section-label {
+        font-weight: 600; font-size: .9rem;
+        text-transform: uppercase; letter-spacing: .04em;
+        color: #3a3a3a; margin-bottom: .5rem;
     }
 </style>
 
-{# Données secteurs pour Alpine.js (filtrage côté client) #}
-<script>
-    window.IPA_SECTORS = {{ sectors_json|safe }};
-</script>
+<div x-data="ipaValidationWizard()" x-init="init()">
 
-<div class="fr-container fr-py-4w">
-    <h1 class="fr-h3">Confirmer les correspondances</h1>
-
-    {% if unresolvable_count %}
-    <div class="fr-alert fr-alert--warning fr-mb-3w">
-        <p>{{ unresolvable_count }} projet(s) n'ont pas pu être analysés (correspondance introuvable).</p>
+    {# Spinner post-soumission #}
+    <div x-show="submitting" x-cloak class="ipa-overlay" style="z-index:1001;">
+        <div style="text-align:center; color:#fff;">
+            <p class="fr-text--lead">Analyse en cours…</p>
+        </div>
     </div>
-    {% endif %}
 
-    <p class="fr-text--lead">
-        {{ ambiguous_items|length }} valeur(s) de votre fichier nécessitent une confirmation.
-        Sélectionnez la correspondance correcte pour chaque ligne.
-    </p>
+    {# Modal wizard #}
+    <div class="ipa-overlay" x-show="!submitting">
+        <div class="ipa-modal">
 
-    <form method="post" action="">
-        {% csrf_token %}
-
-        <div x-data="{ submitting: false }">
-
-        {% for item in ambiguous_items %}
-        <div x-data="{
-                sectorChoice: '{{ item.sector_result.candidates.0.slug|default:'' }}',
-                perimeterChoice: '{{ item.perimeter_result.candidates.0.slug|default:'' }}',
-                showSectorCustom: false,
-                showPerimeterCustom: false
-             }"
-             class="mapping-card{% if item.sector_result.source == 'title_inference' %} mapping-card--title-inference{% endif %}">
-
-            <div class="fr-mb-2w">
-                <strong>Ligne {{ item.row }} — {{ item.titre }}</strong>
-                {% if item.sector_result.source == 'title_inference' %}
-                <span class="fr-badge fr-badge--sm fr-badge--warning fr-ml-1w">Secteur suggéré d'après le titre</span>
+            {# En-tête #}
+            <div class="ipa-modal__header">
+                <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                    <span class="fr-h5 fr-mb-0">Confirmer les correspondances</span>
+                    <span class="fr-text--sm" style="color:#666; white-space:nowrap; margin-left:1rem;"
+                          x-text="`${currentIndex + 1} / ${items.length}`"></span>
+                </div>
+                <div class="ipa-progress">
+                    <div class="ipa-progress__fill" :style="`width:${progress}%`"></div>
+                </div>
+                <p class="fr-text--sm fr-mb-0 fr-mt-1w" style="font-weight:600; color:#161616;"
+                   x-text="currentItem.titre"></p>
+                {% if unresolvable_count %}
+                <p class="fr-text--sm fr-mb-0 fr-mt-1w" style="color:#b34000;">
+                    ⚠ {{ unresolvable_count }} projet(s) déjà ignoré(s) — correspondance introuvable.
+                </p>
                 {% endif %}
             </div>
 
-            {# ── Secteur ── #}
-            {% if item.sector_result.status == 'ambiguous' or item.sector_result.source == 'title_inference' %}
-            <div class="fr-mb-2w">
-                <p class="fr-text--sm fr-mb-1w">
-                    Secteur saisi : <span class="mapping-raw">{{ item.sector_raw }}</span>
-                </p>
-                <fieldset class="fr-fieldset" id="sector-fieldset-{{ item.row }}">
-                    <legend class="fr-fieldset__legend fr-text--sm">Secteur correspondant</legend>
-                    {% for candidate in item.sector_result.candidates %}
-                    <div class="fr-fieldset__element">
-                        <div class="fr-radio-group">
-                            <input type="radio"
-                                   id="sector_{{ item.row }}_{{ forloop.counter }}"
-                                   name="sector_{{ item.row }}"
-                                   value="{{ candidate.slug }}"
-                                   x-model="sectorChoice"
-                                   @change="showSectorCustom = false"
-                                   {% if forloop.first %}checked{% endif %}>
-                            <label class="fr-label" for="sector_{{ item.row }}_{{ forloop.counter }}">
-                                {{ candidate.name }}
-                                <span class="mapping-score">({% widthratio candidate.score 1 100 %}% de similarité)</span>
-                            </label>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    <div class="fr-fieldset__element">
-                        <div class="fr-radio-group">
-                            <input type="radio"
-                                   id="sector_{{ item.row }}_custom"
-                                   name="sector_{{ item.row }}"
-                                   value=""
-                                   @change="showSectorCustom = true; sectorChoice = ''">
-                            <label class="fr-label" for="sector_{{ item.row }}_custom">Choisir un autre secteur</label>
-                        </div>
-                    </div>
-                </fieldset>
+            {# Corps #}
+            <div class="ipa-modal__body">
 
-                {# Autocomplete secteur #}
-                <div x-show="showSectorCustom" x-cloak class="fr-mt-1w"
-                     x-data="{
-                         query: '',
-                         results: [],
-                         selectedSlug: '',
-                         selectedName: '',
-                         open: false,
-                         filter() {
-                             if (this.query.length < 1) { this.results = []; this.open = false; return; }
-                             const q = this.query.toLowerCase();
-                             this.results = window.IPA_SECTORS.filter(s => s.name.toLowerCase().includes(q)).slice(0, 10);
-                             this.open = this.results.length > 0;
-                         },
-                         select(s) {
-                             this.selectedSlug = s.slug;
-                             this.selectedName = s.name;
-                             this.query = '';
-                             this.open = false;
-                             $dispatch('sector-selected-{{ item.row }}', { slug: s.slug });
-                         },
-                         clear() {
-                             this.selectedSlug = '';
-                             this.selectedName = '';
-                             $dispatch('sector-selected-{{ item.row }}', { slug: '' });
-                         }
-                     }"
-                     @sector-selected-{{ item.row }}.window="sectorChoice = $event.detail.slug">
-                    <template x-if="!selectedSlug">
-                        <div class="autocomplete-wrapper">
-                            <input type="text"
-                                   class="fr-input"
-                                   x-model="query"
-                                   @input="filter()"
-                                   @keydown.escape="open = false"
+                {# ── Secteur ── #}
+                <template x-if="needsSectorValidation">
+                    <div class="fr-mb-3w">
+                        <p class="ipa-section-label">Secteur d'achat</p>
+                        <p class="fr-text--sm fr-mb-2w">
+                            Valeur dans votre fichier :
+                            <span class="ipa-raw-value" x-text="currentItem.sector_raw || '(vide)'"></span>
+                        </p>
+
+                        {# Candidats radio #}
+                        <template x-if="currentItem.sector_result.candidates.length > 0">
+                            <div class="fr-mb-2w">
+                                <template x-for="c in currentItem.sector_result.candidates" :key="c.slug">
+                                    <div class="fr-radio-group">
+                                        <input type="radio"
+                                               :id="`s_${currentItem.row}_${c.slug}`"
+                                               :value="c.slug"
+                                               x-model="sectorChoice">
+                                        <label :for="`s_${currentItem.row}_${c.slug}`">
+                                            <span x-text="c.name"></span>
+                                            <span class="ipa-score"
+                                                  x-text="`${Math.round(c.score * 100)}% de similarité`"></span>
+                                        </label>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+
+                        {# Recherche secteur #}
+                        <p class="fr-text--sm fr-mb-1w">Ou rechercher un autre secteur :</p>
+                        <div class="ipa-autocomplete">
+                            <input type="text" class="fr-input"
+                                   x-model="sectorQuery"
+                                   @input="filterSectors()"
+                                   @keydown.escape="sectorDropdownOpen = false"
                                    placeholder="Rechercher un secteur d'activité…"
                                    autocomplete="off">
-                            <div class="autocomplete-dropdown" x-show="open" x-cloak @click.outside="open = false">
-                                <template x-for="s in results" :key="s.slug">
-                                    <div class="autocomplete-item" @click="select(s)" x-text="s.name"></div>
+                            <div class="ipa-dropdown"
+                                 x-show="sectorDropdownOpen"
+                                 @click.outside="sectorDropdownOpen = false">
+                                <template x-for="s in sectorSearchResults" :key="s.slug">
+                                    <div class="ipa-dropdown__item" @click="selectSector(s)" x-text="s.name"></div>
                                 </template>
                             </div>
                         </div>
-                    </template>
-                    <template x-if="selectedSlug">
-                        <div class="autocomplete-selected-tag">
-                            <span x-text="selectedName"></span>
-                            <button type="button" @click="clear()" title="Modifier">✕</button>
-                        </div>
-                    </template>
-                    <input type="hidden" name="sector_{{ item.row }}" :value="selectedSlug">
-                </div>
-
-                <input type="hidden" name="sector_confidence_{{ item.row }}" value="{{ item.sector_result.candidates.0.score|default:1 }}">
-            </div>
-            {% else %}
-            <input type="hidden" name="sector_{{ item.row }}" value="{{ item.sector_result.slug }}">
-            {% endif %}
-
-            {# ── Périmètre ── #}
-            {% if item.perimeter_result.status == 'ambiguous' %}
-            <div class="fr-mb-1w">
-                <p class="fr-text--sm fr-mb-1w">
-                    Périmètre saisi : <span class="mapping-raw">{{ item.perimeter_raw }}</span>
-                </p>
-                <fieldset class="fr-fieldset" id="perimeter-fieldset-{{ item.row }}">
-                    <legend class="fr-fieldset__legend fr-text--sm">Périmètre correspondant</legend>
-                    {% for candidate in item.perimeter_result.candidates %}
-                    <div class="fr-fieldset__element">
-                        <div class="fr-radio-group">
-                            <input type="radio"
-                                   id="perimeter_{{ item.row }}_{{ forloop.counter }}"
-                                   name="perimeter_{{ item.row }}"
-                                   value="{{ candidate.slug }}"
-                                   x-model="perimeterChoice"
-                                   @change="showPerimeterCustom = false"
-                                   {% if forloop.first %}checked{% endif %}>
-                            <label class="fr-label" for="perimeter_{{ item.row }}_{{ forloop.counter }}">
-                                {{ candidate.name }}
-                                <span class="mapping-score">({% widthratio candidate.score 1 100 %}% de similarité)</span>
-                            </label>
-                        </div>
+                        <template x-if="sectorSelectedName && !currentItem.sector_result.candidates.find(c => c.slug === sectorChoice)">
+                            <div class="ipa-selected-tag">
+                                <span x-text="sectorSelectedName"></span>
+                                <button type="button"
+                                        @click="sectorChoice = ''; sectorSelectedName = ''"
+                                        title="Effacer">✕</button>
+                            </div>
+                        </template>
                     </div>
-                    {% endfor %}
-                    <div class="fr-fieldset__element">
-                        <div class="fr-radio-group">
-                            <input type="radio"
-                                   id="perimeter_{{ item.row }}_france"
-                                   name="france_entiere_{{ item.row }}"
-                                   value="1"
-                                   @change="perimeterChoice = 'france_entiere'; showPerimeterCustom = false">
-                            <label class="fr-label" for="perimeter_{{ item.row }}_france">France entière</label>
-                        </div>
-                    </div>
-                    {% if item.perimeter_result.candidates %}
-                    <div class="fr-fieldset__element">
-                        <div class="fr-radio-group">
-                            <input type="radio"
-                                   id="perimeter_{{ item.row }}_custom"
-                                   name="perimeter_{{ item.row }}"
-                                   value=""
-                                   @change="showPerimeterCustom = true; perimeterChoice = ''">
-                            <label class="fr-label" for="perimeter_{{ item.row }}_custom">Choisir un autre périmètre</label>
-                        </div>
-                    </div>
-                    {% endif %}
-                </fieldset>
+                </template>
 
-                {# Autocomplete périmètre — affiché directement si pas de candidats, sinon en option #}
-                <div {% if item.perimeter_result.candidates %}x-show="showPerimeterCustom" x-cloak{% endif %}
-                     class="fr-mt-1w"
-                     x-data="{
-                         query: '',
-                         results: [],
-                         selectedSlug: '',
-                         selectedName: '',
-                         open: false,
-                         async search() {
-                             if (this.query.length < 2) { this.results = []; this.open = false; return; }
-                             const res = await fetch('/api/perimeters/autocomplete/?q=' + encodeURIComponent(this.query) + '&results=10');
-                             const data = await res.json();
-                             this.results = data.results || [];
-                             this.open = this.results.length > 0;
-                         },
-                         select(p) {
-                             this.selectedSlug = p.slug;
-                             this.selectedName = p.name;
-                             this.query = '';
-                             this.open = false;
-                             $dispatch('perimeter-selected-{{ item.row }}', { slug: p.slug });
-                         },
-                         clear() {
-                             this.selectedSlug = '';
-                             this.selectedName = '';
-                             $dispatch('perimeter-selected-{{ item.row }}', { slug: '' });
-                         }
-                     }"
-                     @perimeter-selected-{{ item.row }}.window="perimeterChoice = $event.detail.slug">
-                    <template x-if="!selectedSlug">
-                        <div class="autocomplete-wrapper">
-                            <input type="text"
-                                   class="fr-input"
-                                   x-model="query"
-                                   @input.debounce.300ms="search()"
-                                   @keydown.escape="open = false"
-                                   placeholder="Rechercher une ville, un département, une région…"
+                {# ── Périmètre ── #}
+                <template x-if="needsPerimeterValidation">
+                    <div>
+                        <p class="ipa-section-label">Périmètre géographique</p>
+                        <p class="fr-text--sm fr-mb-2w">
+                            Valeur dans votre fichier :
+                            <span class="ipa-raw-value" x-text="currentItem.perimeter_raw || '(vide)'"></span>
+                        </p>
+
+                        {# Candidats radio #}
+                        <template x-if="currentItem.perimeter_result.candidates && currentItem.perimeter_result.candidates.length > 0">
+                            <div class="fr-mb-2w">
+                                <template x-for="c in currentItem.perimeter_result.candidates" :key="c.slug">
+                                    <div class="fr-radio-group">
+                                        <input type="radio"
+                                               :id="`p_${currentItem.row}_${c.slug}`"
+                                               :value="c.slug"
+                                               x-model="perimeterChoice"
+                                               @change="franceEntiere = false">
+                                        <label :for="`p_${currentItem.row}_${c.slug}`">
+                                            <span x-text="c.name"></span>
+                                            <span class="ipa-score"
+                                                  x-text="`${Math.round(c.score * 100)}% de similarité`"></span>
+                                        </label>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+
+                        {# Recherche périmètre — toujours visible #}
+                        <p class="fr-text--sm fr-mb-1w">Ou rechercher une ville, un département, une région :</p>
+                        <div class="ipa-autocomplete">
+                            <input type="text" class="fr-input"
+                                   x-model="perimeterQuery"
+                                   @input.debounce.300ms="searchPerimeter()"
+                                   @keydown.escape="perimeterDropdownOpen = false"
+                                   placeholder="Paris, Île-de-France, Seine-et-Marne…"
                                    autocomplete="off">
-                            <div class="autocomplete-dropdown" x-show="open" x-cloak @click.outside="open = false">
-                                <template x-for="p in results" :key="p.slug">
-                                    <div class="autocomplete-item" @click="select(p)" x-text="p.name"></div>
+                            <div class="ipa-dropdown"
+                                 x-show="perimeterDropdownOpen"
+                                 @click.outside="perimeterDropdownOpen = false">
+                                <template x-for="p in perimeterSearchResults" :key="p.slug">
+                                    <div class="ipa-dropdown__item" @click="selectPerimeter(p)" x-text="p.name"></div>
                                 </template>
                             </div>
                         </div>
-                    </template>
-                    <template x-if="selectedSlug">
-                        <div class="autocomplete-selected-tag">
-                            <span x-text="selectedName"></span>
-                            <button type="button" @click="clear()" title="Modifier">✕</button>
+                        <template x-if="perimeterSelectedName && !(currentItem.perimeter_result.candidates || []).find(c => c.slug === perimeterChoice)">
+                            <div class="ipa-selected-tag">
+                                <span x-text="perimeterSelectedName"></span>
+                                <button type="button"
+                                        @click="perimeterChoice = ''; perimeterSelectedName = ''"
+                                        title="Effacer">✕</button>
+                            </div>
+                        </template>
+
+                        {# France entière #}
+                        <div class="fr-mt-2w">
+                            <div class="fr-checkbox-group">
+                                <input type="checkbox"
+                                       id="france_entiere_check"
+                                       x-model="franceEntiere"
+                                       @change="if (franceEntiere) { perimeterChoice = ''; perimeterSelectedName = ''; }">
+                                <label class="fr-label" for="france_entiere_check">France entière</label>
+                            </div>
                         </div>
+                    </div>
+                </template>
+
+                {# Cas où tout est déjà résolu #}
+                <template x-if="!needsSectorValidation && !needsPerimeterValidation">
+                    <div class="fr-alert fr-alert--info fr-alert--sm">
+                        <p>Ce projet a été résolu automatiquement. Cliquez sur Suivant pour continuer.</p>
+                    </div>
+                </template>
+
+            </div>
+
+            {# Pied de page #}
+            <div class="ipa-modal__footer">
+                <button class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
+                        x-show="currentIndex > 0"
+                        @click="previous()"
+                        style="margin-right:auto;">
+                    ← Précédent
+                </button>
+                <div style="display:flex; gap:.75rem; margin-left:auto;">
+                    <button class="fr-btn fr-btn--secondary fr-btn--sm" @click="skip()">Ignorer</button>
+                    <template x-if="!isLast">
+                        <button class="fr-btn fr-btn--sm" @click="next()">Suivant →</button>
                     </template>
-                    <input type="hidden" name="perimeter_{{ item.row }}" :value="selectedSlug">
+                    <template x-if="isLast">
+                        <button class="fr-btn fr-btn--sm" @click="submitAll()">Valider et analyser →</button>
+                    </template>
                 </div>
-
-                <input type="hidden" name="perimeter_confidence_{{ item.row }}" value="{{ item.perimeter_result.candidates.0.score|default:1 }}">
             </div>
-            {% else %}
-            <input type="hidden" name="perimeter_{{ item.row }}" value="{{ item.perimeter_result.slug|default:'' }}">
-            <input type="hidden" name="france_entiere_{{ item.row }}" value="{% if item.perimeter_result.france_entiere %}1{% else %}0{% endif %}">
-            {% endif %}
 
         </div>
-        {% endfor %}
+    </div>
 
-        <div class="fr-grid-row fr-grid-row--gutters fr-mt-4w">
-            <div class="fr-col-12 fr-col-md-6">
-                <button type="submit"
-                        class="fr-btn fr-btn--secondary fr-btn--lg fr-width-full"
-                        name="ignore_remaining"
-                        value="1"
-                        @click="submitting = true">
-                    Ignorer les non résolus et analyser quand même
-                </button>
-            </div>
-            <div class="fr-col-12 fr-col-md-6">
-                <button type="submit"
-                        class="fr-btn fr-btn--lg fr-width-full"
-                        @click="submitting = true">
-                    Valider et lancer l'analyse →
-                </button>
-            </div>
-        </div>
-
-        <div x-show="submitting" x-cloak class="fr-mt-3w" style="text-align:center;">
-            <p class="fr-text--lead" style="color:#000091;">Analyse en cours…</p>
-        </div>
-
-        </div>{# /x-data submitting #}
+    {# Formulaire caché — rempli par JS avant soumission #}
+    <form id="ipa-validation-form" method="post" action="">
+        {% csrf_token %}
     </form>
+
 </div>
+
+<script>
+function ipaValidationWizard() {
+    return {
+        items: window.IPA_AMBIGUOUS_ITEMS,
+        sectors: window.IPA_SECTORS,
+        currentIndex: 0,
+        choices: {},
+        submitting: false,
+
+        sectorChoice: '',
+        sectorSelectedName: '',
+        sectorQuery: '',
+        sectorSearchResults: [],
+        sectorDropdownOpen: false,
+
+        perimeterChoice: '',
+        perimeterSelectedName: '',
+        franceEntiere: false,
+        perimeterQuery: '',
+        perimeterSearchResults: [],
+        perimeterDropdownOpen: false,
+
+        init() { this.initItem(); },
+
+        get total() { return this.items.length; },
+        get currentItem() { return this.items[this.currentIndex]; },
+        get isLast() { return this.currentIndex === this.items.length - 1; },
+        get progress() { return Math.round((this.currentIndex + 1) / this.items.length * 100); },
+
+        get needsSectorValidation() {
+            const s = this.currentItem?.sector_result;
+            return s?.status === 'ambiguous' || s?.source === 'title_inference';
+        },
+
+        get needsPerimeterValidation() {
+            const p = this.currentItem?.perimeter_result;
+            return p?.status === 'ambiguous' || p?.status === 'error';
+        },
+
+        initItem() {
+            const item = this.currentItem;
+            const saved = this.choices[item.row];
+            if (saved) {
+                this.sectorChoice = saved.sector_slug;
+                this.sectorSelectedName = saved.sector_name;
+                this.perimeterChoice = saved.perimeter_slug;
+                this.perimeterSelectedName = saved.perimeter_name;
+                this.franceEntiere = saved.france_entiere;
+            } else {
+                const sr = item.sector_result;
+                this.sectorChoice = sr.status === 'resolved' ? (sr.slug || '') : (sr.candidates?.[0]?.slug || '');
+                this.sectorSelectedName = sr.candidates?.[0]?.name || '';
+
+                const pr = item.perimeter_result;
+                this.perimeterChoice = pr.status === 'resolved' ? (pr.slug || '') : (pr.candidates?.[0]?.slug || '');
+                this.perimeterSelectedName = pr.candidates?.[0]?.name || '';
+                this.franceEntiere = pr.france_entiere || false;
+            }
+            this.sectorQuery = '';
+            this.sectorSearchResults = [];
+            this.sectorDropdownOpen = false;
+            this.perimeterQuery = '';
+            this.perimeterSearchResults = [];
+            this.perimeterDropdownOpen = false;
+        },
+
+        saveCurrentChoice() {
+            const item = this.currentItem;
+            this.choices[item.row] = {
+                sector_slug: this.sectorChoice,
+                sector_name: this.sectorSelectedName,
+                perimeter_slug: this.perimeterChoice,
+                perimeter_name: this.perimeterSelectedName,
+                france_entiere: this.franceEntiere,
+            };
+        },
+
+        next() {
+            this.saveCurrentChoice();
+            this.currentIndex++;
+            this.initItem();
+        },
+
+        previous() {
+            this.saveCurrentChoice();
+            this.currentIndex--;
+            this.initItem();
+        },
+
+        skip() {
+            const item = this.currentItem;
+            this.choices[item.row] = {
+                sector_slug: '', sector_name: '',
+                perimeter_slug: '', perimeter_name: '',
+                france_entiere: false,
+            };
+            if (!this.isLast) {
+                this.currentIndex++;
+                this.initItem();
+            } else {
+                this._buildAndSubmitForm();
+            }
+        },
+
+        filterSectors() {
+            const q = this.sectorQuery.toLowerCase();
+            if (!q) { this.sectorSearchResults = []; this.sectorDropdownOpen = false; return; }
+            this.sectorSearchResults = this.sectors.filter(s => s.name.toLowerCase().includes(q)).slice(0, 10);
+            this.sectorDropdownOpen = this.sectorSearchResults.length > 0;
+        },
+
+        selectSector(s) {
+            this.sectorChoice = s.slug;
+            this.sectorSelectedName = s.name;
+            this.sectorQuery = '';
+            this.sectorSearchResults = [];
+            this.sectorDropdownOpen = false;
+        },
+
+        async searchPerimeter() {
+            if (this.perimeterQuery.length < 2) {
+                this.perimeterSearchResults = [];
+                this.perimeterDropdownOpen = false;
+                return;
+            }
+            try {
+                const res = await fetch(`/api/perimeters/autocomplete/?q=${encodeURIComponent(this.perimeterQuery)}&results=10`);
+                const data = await res.json();
+                this.perimeterSearchResults = data.results || [];
+                this.perimeterDropdownOpen = this.perimeterSearchResults.length > 0;
+            } catch {
+                this.perimeterSearchResults = [];
+                this.perimeterDropdownOpen = false;
+            }
+        },
+
+        selectPerimeter(p) {
+            this.perimeterChoice = p.slug;
+            this.perimeterSelectedName = p.name;
+            this.franceEntiere = false;
+            this.perimeterQuery = '';
+            this.perimeterSearchResults = [];
+            this.perimeterDropdownOpen = false;
+        },
+
+        submitAll() {
+            this.saveCurrentChoice();
+            this._buildAndSubmitForm();
+        },
+
+        _buildAndSubmitForm() {
+            const form = document.getElementById('ipa-validation-form');
+            for (const [row, choice] of Object.entries(this.choices)) {
+                const add = (name, value) => {
+                    const inp = document.createElement('input');
+                    inp.type = 'hidden';
+                    inp.name = name;
+                    inp.value = value;
+                    form.appendChild(inp);
+                };
+                add(`sector_${row}`, choice.sector_slug || '');
+                add(`perimeter_${row}`, choice.perimeter_slug || '');
+                if (choice.france_entiere) add(`france_entiere_${row}`, '1');
+            }
+            this.submitting = true;
+            this.$nextTick(() => form.submit());
+        },
+    };
+}
+</script>
 {% endblock content %}

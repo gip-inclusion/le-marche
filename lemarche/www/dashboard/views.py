@@ -835,6 +835,7 @@ class SlugMappingValidationView(LoginRequiredMixin, View):
             self.template_name,
             {
                 "ambiguous_items": pending["ambiguous"],
+                "ambiguous_items_json": json.dumps(pending["ambiguous"]),
                 "unresolvable_count": pending.get("unresolvable_count", 0),
                 "sectors_json": sectors_json,
             },
