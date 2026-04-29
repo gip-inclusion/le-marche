@@ -74,6 +74,36 @@ class ResolveColumnHeaderTest(TestCase):
     def test_variante_titre(self):
         self.assertEqual(resolve_column_header("Titre du projet"), "titre")
 
+    def test_variante_categorie_achat(self):
+        self.assertEqual(resolve_column_header("Catégorie achat"), "secteur")
+
+    def test_variante_cpv(self):
+        self.assertEqual(resolve_column_header("Code CPV"), "secteur")
+
+    def test_variante_famille_achat(self):
+        self.assertEqual(resolve_column_header("Famille achat"), "secteur")
+
+    def test_variante_lieu(self):
+        self.assertEqual(resolve_column_header("Lieu"), "perimetre_geographique")
+
+    def test_variante_ville(self):
+        self.assertEqual(resolve_column_header("Ville"), "perimetre_geographique")
+
+    def test_variante_departement(self):
+        self.assertEqual(resolve_column_header("Département"), "perimetre_geographique")
+
+    def test_variante_region(self):
+        self.assertEqual(resolve_column_header("Région"), "perimetre_geographique")
+
+    def test_variante_budget_previsionnel(self):
+        self.assertEqual(resolve_column_header("Budget prévisionnel"), "montant")
+
+    def test_variante_estimation(self):
+        self.assertEqual(resolve_column_header("Estimation"), "montant")
+
+    def test_variante_depense(self):
+        self.assertEqual(resolve_column_header("Dépense"), "montant")
+
     def test_valeur_inconnue_retourne_none(self):
         self.assertIsNone(resolve_column_header("colonne_inconnue_xyz"))
 

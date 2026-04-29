@@ -861,8 +861,8 @@ class SlugMappingValidationView(LoginRequiredMixin, View):
 
         for item in ambiguous_items:
             row = str(item["row"])
-            sector_slug = request.POST.get(f"sector_{row}", "").strip()
-            perimeter_slug = request.POST.get(f"perimeter_{row}", "").strip()
+            sector_slug = next((v.strip() for v in request.POST.getlist(f"sector_{row}") if v.strip()), "")
+            perimeter_slug = next((v.strip() for v in request.POST.getlist(f"perimeter_{row}") if v.strip()), "")
             france_entiere = request.POST.get(f"france_entiere_{row}") == "1"
 
             if not sector_slug or (not perimeter_slug and not france_entiere):
