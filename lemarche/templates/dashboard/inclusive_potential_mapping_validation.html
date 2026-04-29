@@ -21,7 +21,7 @@
         background: #fff;
         border-radius: 8px;
         width: min(640px, 100%);
-        max-height: 90vh;
+        height: min(620px, 90vh);
         display: flex; flex-direction: column;
         box-shadow: 0 24px 48px rgba(0,0,0,.25);
     }
@@ -100,17 +100,24 @@
             {# En-tête #}
             <div class="ipa-modal__header">
                 <div style="display:flex; justify-content:space-between; align-items:baseline;">
-                    <span class="fr-h5 fr-mb-0">Confirmer les correspondances</span>
+                    <span class="fr-h5 fr-mb-0">Votre analyse est presque prête</span>
                     <span class="fr-text--sm" style="color:#666; white-space:nowrap; margin-left:1rem;"
                           x-text="`${currentIndex + 1} / ${items.length}`"></span>
                 </div>
-                <div class="ipa-progress">
+                <p class="fr-text--sm fr-mb-0 fr-mt-1w" style="color:#555;">
+                    {{ ambiguous_items|length }} valeur{% if ambiguous_items|length > 1 %}s{% endif %}
+                    de votre fichier n'ont pas été reconnues automatiquement (secteur ou localisation).
+                    Confirmez ou corrigez les correspondances ci-dessous pour lancer l'analyse.
+                </p>
+                <div class="ipa-progress fr-mt-1w">
                     <div class="ipa-progress__fill" :style="`width:${progress}%`"></div>
                 </div>
-                <p class="fr-text--sm fr-mb-0 fr-mt-1w" style="font-weight:600; color:#161616;"
-                   x-text="currentItem.titre"></p>
+                <p class="fr-text--xs fr-mb-0 fr-mt-1w" style="color:#777;">
+                    Projet en cours :
+                    <strong x-text="currentItem.titre"></strong>
+                </p>
                 {% if unresolvable_count %}
-                <p class="fr-text--sm fr-mb-0 fr-mt-1w" style="color:#b34000;">
+                <p class="fr-text--xs fr-mb-0 fr-mt-1w" style="color:#b34000;">
                     ⚠ {{ unresolvable_count }} projet(s) déjà ignoré(s) — correspondance introuvable.
                 </p>
                 {% endif %}
@@ -124,8 +131,8 @@
                     <div class="fr-mb-3w">
                         <p class="ipa-section-label">Secteur d'achat</p>
                         <p class="fr-text--sm fr-mb-2w">
-                            Valeur dans votre fichier :
-                            <span class="ipa-raw-value" x-text="currentItem.sector_raw || '(vide)'"></span>
+                            Votre fichier indique <span class="ipa-raw-value" x-text="currentItem.sector_raw || '(vide)'"></span>.
+                            À quel secteur d'activité cela correspond-il ?
                         </p>
 
                         {# Candidats radio #}
@@ -180,8 +187,8 @@
                     <div>
                         <p class="ipa-section-label">Périmètre géographique</p>
                         <p class="fr-text--sm fr-mb-2w">
-                            Valeur dans votre fichier :
-                            <span class="ipa-raw-value" x-text="currentItem.perimeter_raw || '(vide)'"></span>
+                            Votre fichier indique <span class="ipa-raw-value" x-text="currentItem.perimeter_raw || '(vide)'"></span>.
+                            À quelle zone géographique cela correspond-il ?
                         </p>
 
                         {# Candidats radio #}
