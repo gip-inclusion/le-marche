@@ -1215,12 +1215,16 @@
     {% if results is None %}
         <script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
     {% endif %}
-    {% if results and mode == "excel" %}
+    {% if results %}
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         const anchor = document.getElementById('ipa-results');
         if (anchor) anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
+    </script>
+    {% endif %}
+    {% if results and mode == "excel" %}
+    <script>
     function ipaResults() {
         const raw = JSON.parse(document.getElementById('ipa-results-data').textContent);
         return {
