@@ -248,10 +248,10 @@ class InclusivePotentialExcelTemplateTest(TestCase):
         wb = openpyxl.load_workbook(io.BytesIO(response.content))
         ws = wb.active
         headers = [cell.value for cell in ws[1]]
-        self.assertIn("titre", headers)
-        self.assertIn("secteur", headers)
-        self.assertIn("montant", headers)
-        self.assertIn("perimetre_geographique", headers)
+        self.assertIn("Titre du projet", headers)
+        self.assertIn("Catégorie achat", headers)
+        self.assertIn("Montant €", headers)
+        self.assertIn("Localisation", headers)
 
 
 class InclusivePotentialPrestaModeTest(TestCase):
