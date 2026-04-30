@@ -237,6 +237,30 @@ class SyncSiaesDecpDetailsCommandTest(TestCase):
 
     @patch("lemarche.utils.apis.api_slack.send_message_to_channel")
     @patch("lemarche.utils.apis.api_decp.fetch_recent_contracts")
+    def test_wet_run_met_a_jour_decp_details_last_sync_date(self, mocked_fetch, mocked_slack):
+        mocked_fetch.return_value = [{"uid": "uid-001", "acheteur_nom": "Mairie", "objet": "Travaux", "montant": None}]
+
+        from django.core.management import call_command
+
+        call_command("sync_siaes_decp_details", siret=self.siae.siret, wet_run=True, stdout=StringIO())
+
+        self.siae.refresh_from_db()
+        self.assertIsNotNone(self.siae.decp_details_last_sync_date)
+
+    @patch("lemarche.utils.apis.api_decp.fetch_recent_contracts")
+    def test_siae_deja_traitee_aujourd_hui_est_ignoree(self, mocked_fetch):
+        from django.core.management import call_command
+        from django.utils import timezone
+
+        self.siae.decp_details_last_sync_date = timezone.now()
+        self.siae.save(update_fields=["decp_details_last_sync_date"])
+
+        call_command("sync_siaes_decp_details", wet_run=True, stdout=StringIO())
+
+        mocked_fetch.assert_not_called()
+
+    @patch("lemarche.utils.apis.api_slack.send_message_to_channel")
+    @patch("lemarche.utils.apis.api_decp.fetch_recent_contracts")
     def test_wet_run_remplace_les_marchés_existants(self, mocked_fetch, mocked_slack):
         SiaePublicMarket.objects.create(
             siae=self.siae,
