@@ -351,3 +351,28 @@ class InclusivePotentialPrestaModeTest(TestCase):
         response = self.client.post(self.url, {"mode": "reanalyze", "presta_mode": "service"})
         self.assertEqual(response.status_code, 302)
         self.assertIn("analyse-potentiel-inclusif", response.url)
+
+    @patch("lemarche.www.dashboard.views.get_inclusive_potential_data")
+    def test_reanalyze_excel_depuis_session_ne_redirige_pas(self, mock_analysis):
+        """Après import Excel, changer le presta_mode doit relancer l'analyse — pas rediriger."""
+        mock_analysis.return_value = (MOCK_POTENTIAL_DATA, MOCK_ANALYSIS_DATA)
+        self.client.force_login(self.user)
+        session = self.client.session
+        session["ipa_raw_projects"] = [
+            {
+                "titre": "Projet Excel",
+                "montant": 50000,
+                "secteur_slug": self.sector.slug,
+                "perimeter_slug": self.perimeter.slug,
+                "france_entiere": False,
+                "input_mode": "excel",
+            }
+        ]
+        session.save()
+
+        response = self.client.post(self.url, {"mode": "reanalyze", "presta_mode": "mise_a_disposition"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["presta_mode"], "mise_a_disposition")
+        self.assertEqual(response.context["mode"], "excel")
+        self.assertIsNotNone(response.context["results"])
