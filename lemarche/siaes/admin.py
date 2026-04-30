@@ -388,6 +388,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
                     "has_won_contract_last_3_years",
                     "decp_contracts_count_last_3_years",
                     "decp_last_sync_date",
+                    "decp_details_last_sync_date",
                 )
             },
         ),

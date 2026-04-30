@@ -618,6 +618,7 @@ class Siae(NexusModelMixin, models.Model):
         "has_won_contract_last_3_years",
         "decp_contracts_count_last_3_years",
         "decp_last_sync_date",
+        "decp_details_last_sync_date",
     ]
     FIELDS_STATS_COUNT = [
         "user_count",
@@ -854,6 +855,9 @@ class Siae(NexusModelMixin, models.Model):
         "Nombre de marchés publics remportés ces 3 dernières années (DECP)", default=0
     )
     decp_last_sync_date = models.DateTimeField("Date de dernière synchronisation (DECP)", blank=True, null=True)
+    decp_details_last_sync_date = models.DateTimeField(
+        "Date de dernière synchronisation des détails DECP", blank=True, null=True
+    )
 
     c1_id = models.IntegerField(blank=True, null=True)
     c4_id_old = models.IntegerField(blank=True, null=True)
