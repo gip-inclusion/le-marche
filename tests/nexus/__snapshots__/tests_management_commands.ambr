@@ -78,6 +78,7 @@
                  "siaes_siae"."has_won_contract_last_3_years",
                  "siaes_siae"."decp_contracts_count_last_3_years",
                  "siaes_siae"."decp_last_sync_date",
+                 "siaes_siae"."decp_details_last_sync_date",
                  "siaes_siae"."c1_id",
                  "siaes_siae"."c4_id_old",
                  "siaes_siae"."c1_last_sync_date",
