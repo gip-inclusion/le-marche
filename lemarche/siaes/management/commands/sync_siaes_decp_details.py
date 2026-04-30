@@ -100,6 +100,7 @@ class Command(BaseCommand):
                 Siae.objects.is_live()
                 .filter(siret_is_valid=True, has_won_contract_last_3_years=True)
                 .exclude(siret="")
+                .exclude(decp_details_last_sync_date__date=sync_start.date())
                 .order_by(F("decp_details_last_sync_date").asc(nulls_first=True))
             )
 
