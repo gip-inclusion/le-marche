@@ -454,6 +454,17 @@ def _run_excel_analysis(
 
     by_sector, by_perimeter = _aggregate_results(results)
     request.session["ipa_excel_results"] = [{k: v for k, v in r.items() if k != "search_urls"} for r in results]
+    request.session["ipa_raw_projects"] = [
+        {
+            "titre": p["titre"],
+            "montant": p["montant"],
+            "secteur_slug": p["sector_slug"],
+            "perimeter_slug": p["perimeter_result"].get("slug"),
+            "france_entiere": p["perimeter_result"].get("france_entiere", False),
+            "input_mode": "excel",
+        }
+        for p in resolved_projects
+    ]
 
     return render(
         request,
