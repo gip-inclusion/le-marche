@@ -305,7 +305,7 @@
 
         {# ── Segmented control : mode de prestation ── #}
         <div class="fr-mb-3w">
-            <form method="post" action="" id="presta-mode-form">
+            <form method="post" action="{% url 'dashboard:inclusive_potential_analysis' %}" id="presta-mode-form">
                 {% csrf_token %}
                 <input type="hidden" name="mode" value="reanalyze">
                 <fieldset class="fr-segmented fr-segmented--sm">
