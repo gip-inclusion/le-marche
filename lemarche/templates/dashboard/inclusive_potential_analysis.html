@@ -274,6 +274,8 @@
 
     {% if results is not None %}
 
+    <div id="ipa-results" style="scroll-margin-top: 1.5rem;"></div>
+
     {# ── Bouton nouvelle analyse + export ── #}
     <div class="fr-mb-3w" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
         <a href="{% url 'dashboard:inclusive_potential_analysis' %}"
@@ -1135,14 +1137,20 @@
                         <strong>catégorie achat</strong> et par <strong>périmètre géographique</strong>,
                         avec le détail de chaque projet d'achat accessible en un clic.
                     </p>
-                    <div class="fr-callout fr-mb-3w">
-                        <p class="fr-callout__text">
-                            Votre fichier Excel doit contenir les colonnes suivantes :
-                            <strong>titre</strong> (obligatoire),
-                            <strong>secteur</strong> (slug obligatoire — voir onglet « Secteurs disponibles » du modèle),
-                            <strong>perimetre_geographique</strong> (slug obligatoire ou <code>france_entiere</code>),
-                            <strong>montant</strong> (obligatoire, en €),
-                            <strong>description</strong> (optionnelle).
+                    <div class="fr-callout fr-mb-2w">
+                        <p class="fr-callout__text fr-mb-1w">
+                            Votre fichier doit contenir au minimum ces colonnes
+                            (les intitulés exacts ne sont pas obligatoires) :
+                        </p>
+                        <ul class="fr-text--sm fr-mb-1w" style="padding-left:1.25rem;">
+                            <li><strong>Titre</strong> — aussi : Intitulé, Objet, Libellé</li>
+                            <li><strong>Catégorie achat</strong> — aussi : Secteur, Famille, Code CPV</li>
+                            <li><strong>Localisation</strong> — aussi : Périmètre, Lieu, Ville, Département, Région</li>
+                            <li><strong>Montant</strong> (en €) — aussi : Budget, Estimation, Dépense</li>
+                            <li style="color:#666;">Description (optionnelle)</li>
+                        </ul>
+                        <p class="fr-text--sm fr-mb-0">
+                            Les valeurs non reconnues vous seront soumises pour confirmation avant le lancement de l'analyse.
                         </p>
                     </div>
                     <a href="{% url 'dashboard:inclusive_potential_analysis_template' %}"
@@ -1212,6 +1220,14 @@
 {% block extra_js %}
     {% if results is None %}
         <script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
+    {% endif %}
+    {% if results %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const anchor = document.getElementById('ipa-results');
+        if (anchor) anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    </script>
     {% endif %}
     {% if results and mode == "excel" %}
     <script>

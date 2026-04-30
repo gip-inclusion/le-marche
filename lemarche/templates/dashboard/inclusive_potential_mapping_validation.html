@@ -1,0 +1,461 @@
+{% extends "layouts/base.html" %}
+{% load static dsfr_tags %}
+
+{% block page_title %}Confirmer les correspondances — Analyse du potentiel inclusif{{ block.super }}{% endblock page_title %}
+
+{% block content %}
+<script>
+    window.IPA_SECTORS = {{ sectors_json|safe }};
+    window.IPA_AMBIGUOUS_ITEMS = {{ ambiguous_items_json|safe }};
+</script>
+
+<style>
+    .ipa-overlay {
+        position: fixed; inset: 0;
+        background: rgba(0, 0, 0, .65);
+        z-index: 1000;
+        display: flex; align-items: center; justify-content: center;
+        padding: 1rem;
+    }
+    .ipa-modal {
+        background: #fff;
+        border-radius: 8px;
+        width: min(640px, 100%);
+        height: min(620px, 90vh);
+        display: flex; flex-direction: column;
+        box-shadow: 0 24px 48px rgba(0,0,0,.25);
+    }
+    .ipa-modal__header {
+        padding: 1.5rem 2rem 1.25rem;
+        border-bottom: 1px solid #e5e5e5;
+        flex-shrink: 0;
+    }
+    .ipa-modal__body {
+        padding: 1.5rem 2rem;
+        overflow-y: auto;
+        flex: 1;
+    }
+    .ipa-modal__footer {
+        padding: 1.25rem 2rem;
+        border-top: 1px solid #e5e5e5;
+        display: flex; align-items: center; gap: .75rem;
+        flex-shrink: 0;
+    }
+    .ipa-progress {
+        height: 4px; background: #e5e5e5; border-radius: 2px;
+        margin-top: .75rem; overflow: hidden;
+    }
+    .ipa-progress__fill {
+        height: 100%; background: #000091; border-radius: 2px;
+        transition: width .25s ease;
+    }
+    .ipa-raw-value {
+        font-family: monospace; background: #f0f0f0;
+        padding: .1rem .45rem; border-radius: 3px; font-size: .875rem;
+    }
+    .ipa-score {
+        font-size: .75rem; color: #666; background: #f0f0f0;
+        padding: .1rem .35rem; border-radius: 3px; margin-left: .4rem;
+    }
+    .ipa-autocomplete { position: relative; }
+    .ipa-dropdown {
+        position: absolute; top: 100%; left: 0; right: 0; z-index: 10;
+        background: #fff; border: 1px solid #ccc; border-radius: 4px;
+        max-height: 200px; overflow-y: auto;
+        box-shadow: 0 4px 12px rgba(0,0,0,.12);
+    }
+    .ipa-dropdown__item {
+        padding: .5rem .75rem; cursor: pointer; font-size: .875rem;
+    }
+    .ipa-dropdown__item:hover { background: #f0f0ff; }
+    .ipa-selected-tag {
+        display: inline-flex; align-items: center; gap: .5rem;
+        background: #e3e3fd; border-radius: 4px;
+        padding: .2rem .65rem; font-size: .875rem; margin-top: .5rem;
+    }
+    .ipa-selected-tag button {
+        background: none; border: none; cursor: pointer;
+        font-size: 1rem; line-height: 1; color: #333; padding: 0;
+    }
+    .ipa-section-label {
+        font-weight: 600; font-size: .9rem;
+        text-transform: uppercase; letter-spacing: .04em;
+        color: #3a3a3a; margin-bottom: .5rem;
+    }
+</style>
+
+<div x-data="ipaValidationWizard()" x-init="init()">
+
+    {# Spinner post-soumission #}
+    <div x-show="submitting" x-cloak class="ipa-overlay" style="z-index:1001;">
+        <div style="text-align:center; color:#fff;">
+            <p class="fr-text--lead">Analyse du potentiel inclusif de votre programmation achat en cours…</p>
+        </div>
+    </div>
+
+    {# Modal wizard #}
+    <div class="ipa-overlay" x-show="!submitting">
+        <div class="ipa-modal">
+
+            {# En-tête #}
+            <div class="ipa-modal__header">
+                <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                    <span class="fr-h5 fr-mb-0">Votre analyse est presque prête</span>
+                    <span class="fr-text--sm" style="color:#666; white-space:nowrap; margin-left:1rem;"
+                          x-text="`${currentIndex + 1} / ${items.length}`"></span>
+                </div>
+                <p class="fr-text--sm fr-mb-0 fr-mt-1w" style="color:#555;">
+                    {{ ambiguous_items|length }} valeur{% if ambiguous_items|length > 1 %}s{% endif %}
+                    de votre fichier n'ont pas été reconnues automatiquement (secteur ou localisation).
+                    Confirmez ou corrigez les correspondances ci-dessous pour lancer l'analyse.
+                </p>
+                <div class="ipa-progress fr-mt-1w">
+                    <div class="ipa-progress__fill" :style="`width:${progress}%`"></div>
+                </div>
+                <p class="fr-text--xs fr-mb-0 fr-mt-1w" style="color:#777;">
+                    Projet en cours :
+                    <strong x-text="currentItem.titre"></strong>
+                </p>
+                {% if unresolvable_count %}
+                <p class="fr-text--xs fr-mb-0 fr-mt-1w" style="color:#b34000;">
+                    ⚠ {{ unresolvable_count }} projet(s) déjà ignoré(s) — correspondance introuvable.
+                </p>
+                {% endif %}
+            </div>
+
+            {# Corps #}
+            <div class="ipa-modal__body">
+
+                {# ── Secteur ── #}
+                <template x-if="needsSectorValidation">
+                    <div class="fr-mb-3w">
+                        <p class="ipa-section-label">Secteur d'achat</p>
+                        <p class="fr-text--sm fr-mb-2w">
+                            Votre fichier indique <span class="ipa-raw-value" x-text="currentItem.sector_raw || '(vide)'"></span>.
+                            À quel secteur d'activité cela correspond-il ?
+                        </p>
+
+                        {# Candidats radio #}
+                        <template x-if="currentItem.sector_result.candidates.length > 0">
+                            <div class="fr-mb-2w">
+                                <template x-for="c in currentItem.sector_result.candidates" :key="c.slug">
+                                    <div class="fr-radio-group">
+                                        <input type="radio"
+                                               :id="`s_${currentItem.row}_${c.slug}`"
+                                               :value="c.slug"
+                                               x-model="sectorChoice">
+                                        <label :for="`s_${currentItem.row}_${c.slug}`">
+                                            <span x-text="c.name"></span>
+                                            <span class="ipa-score"
+                                                  x-text="`${Math.round(c.score * 100)}% de similarité`"></span>
+                                        </label>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+
+                        {# Recherche secteur #}
+                        <p class="fr-text--sm fr-mb-1w">Ou rechercher un autre secteur :</p>
+                        <div class="ipa-autocomplete">
+                            <input type="text" class="fr-input"
+                                   x-model="sectorQuery"
+                                   @input="filterSectors()"
+                                   @keydown.escape="sectorDropdownOpen = false"
+                                   placeholder="Rechercher un secteur d'activité…"
+                                   autocomplete="off">
+                            <div class="ipa-dropdown"
+                                 x-show="sectorDropdownOpen"
+                                 @click.outside="sectorDropdownOpen = false">
+                                <template x-for="s in sectorSearchResults" :key="s.slug">
+                                    <div class="ipa-dropdown__item" @click="selectSector(s)" x-text="s.name"></div>
+                                </template>
+                            </div>
+                        </div>
+                        <template x-if="sectorSelectedName && !currentItem.sector_result.candidates.find(c => c.slug === sectorChoice)">
+                            <div class="ipa-selected-tag">
+                                <span x-text="sectorSelectedName"></span>
+                                <button type="button"
+                                        @click="sectorChoice = ''; sectorSelectedName = ''"
+                                        title="Effacer">✕</button>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                {# ── Périmètre ── #}
+                <template x-if="needsPerimeterValidation">
+                    <div>
+                        <p class="ipa-section-label">Périmètre géographique</p>
+                        <p class="fr-text--sm fr-mb-2w">
+                            Votre fichier indique <span class="ipa-raw-value" x-text="currentItem.perimeter_raw || '(vide)'"></span>.
+                            À quelle zone géographique cela correspond-il ?
+                        </p>
+
+                        {# Candidats radio #}
+                        <template x-if="currentItem.perimeter_result.candidates && currentItem.perimeter_result.candidates.length > 0">
+                            <div class="fr-mb-2w">
+                                <template x-for="c in currentItem.perimeter_result.candidates" :key="c.slug">
+                                    <div class="fr-radio-group">
+                                        <input type="radio"
+                                               :id="`p_${currentItem.row}_${c.slug}`"
+                                               :value="c.slug"
+                                               x-model="perimeterChoice"
+                                               @change="franceEntiere = false">
+                                        <label :for="`p_${currentItem.row}_${c.slug}`">
+                                            <span x-text="c.name"></span>
+                                            <span class="ipa-score"
+                                                  x-text="`${Math.round(c.score * 100)}% de similarité`"></span>
+                                        </label>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+
+                        {# Recherche périmètre — toujours visible #}
+                        <p class="fr-text--sm fr-mb-1w">Ou rechercher une ville, un département, une région :</p>
+                        <div class="ipa-autocomplete">
+                            <input type="text" class="fr-input"
+                                   x-model="perimeterQuery"
+                                   @input.debounce.300ms="searchPerimeter()"
+                                   @keydown.escape="perimeterDropdownOpen = false"
+                                   placeholder="Paris, Île-de-France, Seine-et-Marne…"
+                                   autocomplete="off">
+                            <div class="ipa-dropdown"
+                                 x-show="perimeterDropdownOpen"
+                                 @click.outside="perimeterDropdownOpen = false">
+                                <template x-for="p in perimeterSearchResults" :key="p.slug">
+                                    <div class="ipa-dropdown__item" @click="selectPerimeter(p)" x-text="p.name"></div>
+                                </template>
+                            </div>
+                        </div>
+                        <template x-if="perimeterSelectedName && !(currentItem.perimeter_result.candidates || []).find(c => c.slug === perimeterChoice)">
+                            <div class="ipa-selected-tag">
+                                <span x-text="perimeterSelectedName"></span>
+                                <button type="button"
+                                        @click="perimeterChoice = ''; perimeterSelectedName = ''"
+                                        title="Effacer">✕</button>
+                            </div>
+                        </template>
+
+                        {# France entière #}
+                        <div class="fr-mt-2w">
+                            <div class="fr-checkbox-group">
+                                <input type="checkbox"
+                                       id="france_entiere_check"
+                                       x-model="franceEntiere"
+                                       @change="if (franceEntiere) { perimeterChoice = ''; perimeterSelectedName = ''; }">
+                                <label class="fr-label" for="france_entiere_check">France entière</label>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                {# Cas où tout est déjà résolu #}
+                <template x-if="!needsSectorValidation && !needsPerimeterValidation">
+                    <div class="fr-alert fr-alert--info fr-alert--sm">
+                        <p>Ce projet a été résolu automatiquement. Cliquez sur Suivant pour continuer.</p>
+                    </div>
+                </template>
+
+            </div>
+
+            {# Pied de page #}
+            <div class="ipa-modal__footer">
+                <button class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
+                        x-show="currentIndex > 0"
+                        @click="previous()"
+                        style="margin-right:auto;">
+                    ← Précédent
+                </button>
+                <div style="display:flex; gap:.75rem; margin-left:auto;">
+                    <button class="fr-btn fr-btn--secondary fr-btn--sm" @click="skip()">Ignorer</button>
+                    <template x-if="!isLast">
+                        <button class="fr-btn fr-btn--sm" @click="next()">Suivant →</button>
+                    </template>
+                    <template x-if="isLast">
+                        <button class="fr-btn fr-btn--sm" @click="submitAll()">Valider et analyser →</button>
+                    </template>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    {# Formulaire caché — rempli par JS avant soumission #}
+    <form id="ipa-validation-form" method="post" action="">
+        {% csrf_token %}
+    </form>
+
+</div>
+
+<script>
+function ipaValidationWizard() {
+    return {
+        items: window.IPA_AMBIGUOUS_ITEMS,
+        sectors: window.IPA_SECTORS,
+        currentIndex: 0,
+        choices: {},
+        submitting: false,
+
+        sectorChoice: '',
+        sectorSelectedName: '',
+        sectorQuery: '',
+        sectorSearchResults: [],
+        sectorDropdownOpen: false,
+
+        perimeterChoice: '',
+        perimeterSelectedName: '',
+        franceEntiere: false,
+        perimeterQuery: '',
+        perimeterSearchResults: [],
+        perimeterDropdownOpen: false,
+
+        init() { this.initItem(); },
+
+        get total() { return this.items.length; },
+        get currentItem() { return this.items[this.currentIndex]; },
+        get isLast() { return this.currentIndex === this.items.length - 1; },
+        get progress() { return Math.round((this.currentIndex + 1) / this.items.length * 100); },
+
+        get needsSectorValidation() {
+            const s = this.currentItem?.sector_result;
+            return s?.status === 'ambiguous' || s?.source === 'title_inference';
+        },
+
+        get needsPerimeterValidation() {
+            const p = this.currentItem?.perimeter_result;
+            return p?.status === 'ambiguous' || p?.status === 'error';
+        },
+
+        initItem() {
+            const item = this.currentItem;
+            const saved = this.choices[item.row];
+            if (saved) {
+                this.sectorChoice = saved.sector_slug;
+                this.sectorSelectedName = saved.sector_name;
+                this.perimeterChoice = saved.perimeter_slug;
+                this.perimeterSelectedName = saved.perimeter_name;
+                this.franceEntiere = saved.france_entiere;
+            } else {
+                const sr = item.sector_result;
+                this.sectorChoice = sr.status === 'resolved' ? (sr.slug || '') : (sr.candidates?.[0]?.slug || '');
+                this.sectorSelectedName = sr.candidates?.[0]?.name || '';
+
+                const pr = item.perimeter_result;
+                this.perimeterChoice = pr.status === 'resolved' ? (pr.slug || '') : (pr.candidates?.[0]?.slug || '');
+                this.perimeterSelectedName = pr.candidates?.[0]?.name || '';
+                this.franceEntiere = pr.france_entiere || false;
+            }
+            this.sectorQuery = '';
+            this.sectorSearchResults = [];
+            this.sectorDropdownOpen = false;
+            this.perimeterQuery = '';
+            this.perimeterSearchResults = [];
+            this.perimeterDropdownOpen = false;
+        },
+
+        saveCurrentChoice() {
+            const item = this.currentItem;
+            this.choices[item.row] = {
+                sector_slug: this.sectorChoice,
+                sector_name: this.sectorSelectedName,
+                perimeter_slug: this.perimeterChoice,
+                perimeter_name: this.perimeterSelectedName,
+                france_entiere: this.franceEntiere,
+            };
+        },
+
+        next() {
+            this.saveCurrentChoice();
+            this.currentIndex++;
+            this.initItem();
+        },
+
+        previous() {
+            this.saveCurrentChoice();
+            this.currentIndex--;
+            this.initItem();
+        },
+
+        skip() {
+            const item = this.currentItem;
+            this.choices[item.row] = {
+                sector_slug: '', sector_name: '',
+                perimeter_slug: '', perimeter_name: '',
+                france_entiere: false,
+            };
+            if (!this.isLast) {
+                this.currentIndex++;
+                this.initItem();
+            } else {
+                this._buildAndSubmitForm();
+            }
+        },
+
+        filterSectors() {
+            const q = this.sectorQuery.toLowerCase();
+            if (!q) { this.sectorSearchResults = []; this.sectorDropdownOpen = false; return; }
+            this.sectorSearchResults = this.sectors.filter(s => s.name.toLowerCase().includes(q)).slice(0, 10);
+            this.sectorDropdownOpen = this.sectorSearchResults.length > 0;
+        },
+
+        selectSector(s) {
+            this.sectorChoice = s.slug;
+            this.sectorSelectedName = s.name;
+            this.sectorQuery = '';
+            this.sectorSearchResults = [];
+            this.sectorDropdownOpen = false;
+        },
+
+        async searchPerimeter() {
+            if (this.perimeterQuery.length < 2) {
+                this.perimeterSearchResults = [];
+                this.perimeterDropdownOpen = false;
+                return;
+            }
+            try {
+                const res = await fetch(`/api/perimeters/autocomplete/?q=${encodeURIComponent(this.perimeterQuery)}&results=10`);
+                const data = await res.json();
+                this.perimeterSearchResults = data.results || [];
+                this.perimeterDropdownOpen = this.perimeterSearchResults.length > 0;
+            } catch {
+                this.perimeterSearchResults = [];
+                this.perimeterDropdownOpen = false;
+            }
+        },
+
+        selectPerimeter(p) {
+            this.perimeterChoice = p.slug;
+            this.perimeterSelectedName = p.name;
+            this.franceEntiere = false;
+            this.perimeterQuery = '';
+            this.perimeterSearchResults = [];
+            this.perimeterDropdownOpen = false;
+        },
+
+        submitAll() {
+            this.saveCurrentChoice();
+            this._buildAndSubmitForm();
+        },
+
+        _buildAndSubmitForm() {
+            const form = document.getElementById('ipa-validation-form');
+            for (const [row, choice] of Object.entries(this.choices)) {
+                const add = (name, value) => {
+                    const inp = document.createElement('input');
+                    inp.type = 'hidden';
+                    inp.name = name;
+                    inp.value = value;
+                    form.appendChild(inp);
+                };
+                add(`sector_${row}`, choice.sector_slug || '');
+                add(`perimeter_${row}`, choice.perimeter_slug || '');
+                if (choice.france_entiere) add(`france_entiere_${row}`, '1');
+            }
+            this.submitting = true;
+            this.$nextTick(() => form.submit());
+        },
+    };
+}
+</script>
+{% endblock content %}
