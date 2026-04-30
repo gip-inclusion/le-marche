@@ -619,18 +619,35 @@
                                     <tbody>
                                         <template x-for="p in group.projects" :key="p.titre + '||' + p.perimeter_name">
                                             <tr>
-                                                <td style="font-weight:600;" x-text="p.titre"></td>
+                                                <td style="font-weight:600;">
+                                                    <a :href="p.search_urls.all" target="_blank" rel="noopener"
+                                                       style="color:inherit;"
+                                                       x-text="p.titre"></a>
+                                                </td>
                                                 <td x-show="view === 'by_sector'" x-text="p.perimeter_name"></td>
                                                 <td x-show="view === 'by_perimeter'" x-text="p.secteur_name"></td>
                                                 <td style="text-align:right; white-space:nowrap;"
                                                     x-text="p.montant ? p.montant + ' €' : '—'"></td>
-                                                <td style="text-align:right; font-weight:700; color:#000091;"
-                                                    x-text="p.potential_siaes"></td>
-                                                <td style="text-align:right;" x-text="p.insertion_siaes"></td>
-                                                <td style="text-align:right;" x-text="p.handicap_siaes"></td>
-                                                <td style="text-align:right;" x-text="p.local_siaes"></td>
-                                                <td style="text-align:right;" x-text="p.siaes_with_super_badge"></td>
-                                                <td style="text-align:right;" x-text="p.siaes_with_won_contract"></td>
+                                                <td style="text-align:right; font-weight:700; color:#000091;">
+                                                    <a :href="p.search_urls.all" target="_blank" rel="noopener"
+                                                       style="color:inherit;"
+                                                       x-text="p.potential_siaes"></a>
+                                                </td>
+                                                <td style="text-align:right;">
+                                                    <a :href="p.search_urls.insertion" target="_blank" rel="noopener" x-text="p.insertion_siaes"></a>
+                                                </td>
+                                                <td style="text-align:right;">
+                                                    <a :href="p.search_urls.handicap" target="_blank" rel="noopener" x-text="p.handicap_siaes"></a>
+                                                </td>
+                                                <td style="text-align:right;">
+                                                    <a :href="p.search_urls.local" target="_blank" rel="noopener" x-text="p.local_siaes"></a>
+                                                </td>
+                                                <td style="text-align:right;">
+                                                    <a :href="p.search_urls.super_badge" target="_blank" rel="noopener" x-text="p.siaes_with_super_badge"></a>
+                                                </td>
+                                                <td style="text-align:right;">
+                                                    <a :href="p.search_urls.won_contract" target="_blank" rel="noopener" x-text="p.siaes_with_won_contract"></a>
+                                                </td>
                                                 <td style="text-align:right;"
                                                     :style="p.eco_dependency !== null && p.eco_dependency > 30 ? 'color:#ce0500; font-weight:700;' : ''"
                                                     x-text="p.eco_dependency !== null ? p.eco_dependency + ' %' : '—'"></td>
