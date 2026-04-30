@@ -1128,7 +1128,7 @@
              tabindex="0">
 
             {# Intro #}
-            <div class="fr-grid-row fr-mb-4w">
+            <div class="fr-grid-row fr-mb-3w">
                 <div class="fr-col-12 fr-col-lg-10">
                     <h2 class="fr-h5">Analyser le potentiel inclusif de l'ensemble de votre programmation achat</h2>
                     <p>
@@ -1137,26 +1137,6 @@
                         <strong>catégorie achat</strong> et par <strong>périmètre géographique</strong>,
                         avec le détail de chaque projet d'achat accessible en un clic.
                     </p>
-                    <div class="fr-callout fr-mb-2w">
-                        <p class="fr-callout__text fr-mb-1w">
-                            Votre fichier doit contenir au minimum ces colonnes
-                            (les intitulés exacts ne sont pas obligatoires) :
-                        </p>
-                        <ul class="fr-text--sm fr-mb-1w" style="padding-left:1.25rem;">
-                            <li><strong>Titre</strong> — aussi : Intitulé, Objet, Libellé</li>
-                            <li><strong>Catégorie achat</strong> — aussi : Secteur, Famille, Code CPV</li>
-                            <li><strong>Localisation</strong> — aussi : Périmètre, Lieu, Ville, Département, Région</li>
-                            <li><strong>Montant</strong> (en €) — aussi : Budget, Estimation, Dépense</li>
-                            <li style="color:#666;">Description (optionnelle)</li>
-                        </ul>
-                        <p class="fr-text--sm fr-mb-0">
-                            Les valeurs non reconnues vous seront soumises pour confirmation avant le lancement de l'analyse.
-                        </p>
-                    </div>
-                    <a href="{% url 'dashboard:inclusive_potential_analysis_template' %}"
-                       class="fr-btn fr-btn--secondary fr-icon-download-line fr-btn--icon-left fr-mb-3w">
-                        Télécharger le modèle Excel
-                    </a>
                 </div>
             </div>
 
@@ -1189,22 +1169,58 @@
                 </div>
 
                 <div x-show="!submitting">
-                    <div class="fr-upload-group fr-mb-3w">
-                        <label class="fr-label" for="excel-file">
-                            Fichier Excel (.xlsx)
-                            <span class="fr-hint-text">
-                                Taille maximale recommandée : quelques centaines de lignes.
-                                Formats acceptés : .xlsx uniquement.
-                            </span>
-                        </label>
-                        <input class="fr-upload" type="file" id="excel-file"
-                               name="excel_file" accept=".xlsx" required>
+                    {# Upload + CTA sur la même ligne #}
+                    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+                        <div class="fr-col-12 fr-col-md-8">
+                            <div class="fr-upload-group">
+                                <label class="fr-label" for="excel-file">Fichier Excel (.xlsx)</label>
+                                <input class="fr-upload" type="file" id="excel-file"
+                                       name="excel_file" accept=".xlsx" required>
+                            </div>
+                            <p class="fr-text--sm fr-mt-1v" style="color:#666;">
+                                Format accepté&nbsp;: .xlsx &nbsp;·&nbsp; Taille recommandée&nbsp;: quelques centaines de lignes
+                            </p>
+                        </div>
+                        <div class="fr-col-12 fr-col-md-4">
+                            <button type="submit"
+                                    class="fr-btn fr-icon-upload-line fr-btn--icon-left"
+                                    :disabled="submitting">
+                                Lancer l'analyse
+                            </button>
+                        </div>
                     </div>
-                    <button type="submit"
-                            class="fr-btn fr-icon-upload-line fr-btn--icon-left"
-                            :disabled="submitting">
-                        Lancer l'analyse
-                    </button>
+
+                    {# Encart aide (replié par défaut) #}
+                    <section class="fr-accordion fr-mt-3w">
+                        <h3 class="fr-accordion__title">
+                            <button type="button"
+                                    class="fr-accordion__btn"
+                                    aria-expanded="false"
+                                    aria-controls="accordion-excel-help">
+                                Comment préparer votre fichier ?
+                            </button>
+                        </h3>
+                        <div class="fr-collapse" id="accordion-excel-help">
+                            <p class="fr-text--sm fr-mb-1w">
+                                Votre fichier doit contenir au minimum ces colonnes
+                                (les intitulés exacts ne sont pas obligatoires) :
+                            </p>
+                            <ul class="fr-text--sm fr-mb-2w" style="padding-left:1.25rem;">
+                                <li><strong>Titre</strong> — aussi&nbsp;: Intitulé, Objet, Libellé</li>
+                                <li><strong>Catégorie achat</strong> — aussi&nbsp;: Secteur, Famille, Code CPV</li>
+                                <li><strong>Localisation</strong> — aussi&nbsp;: Périmètre, Lieu, Ville, Département, Région</li>
+                                <li><strong>Montant</strong> (en €) — aussi&nbsp;: Budget, Estimation, Dépense</li>
+                                <li style="color:#666;">Description (optionnelle)</li>
+                            </ul>
+                            <p class="fr-text--sm fr-mb-2w">
+                                Les valeurs non reconnues vous seront soumises pour confirmation avant le lancement de l'analyse.
+                            </p>
+                            <a href="{% url 'dashboard:inclusive_potential_analysis_template' %}"
+                               class="fr-link fr-icon-download-line fr-link--icon-left">
+                                Télécharger un modèle
+                            </a>
+                        </div>
+                    </section>
                 </div>
             </form>
 
