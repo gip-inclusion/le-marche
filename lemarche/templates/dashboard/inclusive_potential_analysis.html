@@ -602,7 +602,7 @@
                         <div class="ipa-group-hd" @click="toggleGroup(group.name)">
                             <span class="ipa-group-hd__name" x-text="group.name"></span>
                             <span class="ipa-group-hd__meta">
-                                <span x-text="group.projects.length + ' projet' + (group.projects.length > 1 ? 's' : '')"></span>
+                                <span x-text="group.withPotential + ' / ' + group.projects.length + ' projet' + (group.projects.length > 1 ? 's' : '') + ' avec potentiel inclusif'"></span>
                             </span>
                             <span class="ipa-group-hd__chevron" x-text="expandedGroups[group.name] ? '▲' : '▼'"></span>
                         </div>
@@ -1324,7 +1324,13 @@
                     if (!groups[p[key]]) groups[p[key]] = { name: p[key], projects: [] };
                     groups[p[key]].projects.push(p);
                 }
-                return Object.values(groups).sort((a, b) => b.projects.length - a.projects.length);
+                return Object.values(groups).sort((a, b) => b.projects.length - a.projects.length).map(g => ({
+                    ...g,
+                    withPotential: g.projects.filter(p =>
+                        p.recommendation_title === 'Réservation totale' ||
+                        p.recommendation_title === 'Clause sociale'
+                    ).length,
+                }));
             },
 
             get uniqueSectors() {
