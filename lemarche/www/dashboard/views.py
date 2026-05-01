@@ -623,7 +623,58 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
         }
 
     def get(self, request):
+        if request.GET.get("from_detail"):
+            response = self._restore_excel_results(request)
+            if response:
+                return response
         return render(request, self.template_name, self._get_context())
+
+    def _restore_excel_results(self, request):
+        """Restaure les résultats Excel depuis la session (retour depuis la page détail projet)."""
+        raw_projects = request.session.get("ipa_raw_projects", [])
+        if not raw_projects or raw_projects[0].get("input_mode") != "excel":
+            return None
+
+        presta_mode = request.session.get("ipa_presta_mode", PRESTA_MODE_DEFAULT)
+        if presta_mode not in PRESTA_MODE_TO_SIAE_KINDS:
+            presta_mode = PRESTA_MODE_DEFAULT
+
+        results = []
+        for project in raw_projects:
+            try:
+                sector = Sector.objects.get(slug=project["secteur_slug"])
+            except Sector.DoesNotExist:
+                continue
+            perimeter = None
+            if project.get("perimeter_slug") and not project.get("france_entiere"):
+                try:
+                    perimeter = Perimeter.objects.get(slug=project["perimeter_slug"])
+                except Perimeter.DoesNotExist:
+                    continue
+            result = _analyze_purchase_project(
+                project["titre"], sector, perimeter, project.get("montant"), presta_mode
+            )
+            results.append(result)
+
+        if not results:
+            return None
+
+        for i, result in enumerate(results):
+            if not result.get("error"):
+                result["detail_url"] = reverse("dashboard:inclusive_potential_project_detail", args=[i])
+
+        by_sector, by_perimeter = _aggregate_results(results)
+        return render(
+            request,
+            self.template_name,
+            self._get_context(
+                results=results,
+                results_by_sector=by_sector,
+                results_by_perimeter=by_perimeter,
+                mode="excel",
+                presta_mode=presta_mode,
+            ),
+        )
 
     def post(self, request):
         mode = request.POST.get("mode", "manual")
@@ -884,7 +935,7 @@ class InclusivePotentialProjectDetailView(LoginRequiredMixin, View):
                 "presta_mode": presta_mode,
                 "presta_mode_choices": list(PRESTA_MODE_TO_SIAE_KINDS.keys()),
                 "is_excel_project_detail": True,
-                "back_url": reverse("dashboard:inclusive_potential_analysis"),
+                "back_url": reverse("dashboard:inclusive_potential_analysis") + "?from_detail=1",
                 "sectors": [],
                 "formset": None,
             },
