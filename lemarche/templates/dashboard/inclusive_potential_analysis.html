@@ -603,8 +603,6 @@
                             <span class="ipa-group-hd__name" x-text="group.name"></span>
                             <span class="ipa-group-hd__meta">
                                 <span x-text="group.projects.length + ' projet' + (group.projects.length > 1 ? 's' : '')"></span>
-                                &nbsp;·&nbsp;
-                                <strong x-text="group.total + ' structure' + (group.total > 1 ? 's' : '') + ' potentielle' + (group.total > 1 ? 's' : '')"></strong>
                             </span>
                             <span class="ipa-group-hd__chevron" x-text="expandedGroups[group.name] ? '▲' : '▼'"></span>
                         </div>
@@ -1323,11 +1321,10 @@
             _groupBy(key) {
                 const groups = {};
                 for (const p of this.filteredProjects) {
-                    if (!groups[p[key]]) groups[p[key]] = { name: p[key], projects: [], total: 0 };
+                    if (!groups[p[key]]) groups[p[key]] = { name: p[key], projects: [] };
                     groups[p[key]].projects.push(p);
-                    groups[p[key]].total += p.potential_siaes;
                 }
-                return Object.values(groups).sort((a, b) => b.total - a.total);
+                return Object.values(groups).sort((a, b) => b.projects.length - a.projects.length);
             },
 
             get uniqueSectors() {
