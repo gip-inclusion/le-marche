@@ -276,8 +276,14 @@
 
     <div id="ipa-results" style="scroll-margin-top: 1.5rem;"></div>
 
-    {# ── Bouton nouvelle analyse + export ── #}
+    {# ── Bouton retour / nouvelle analyse + export ── #}
     <div class="fr-mb-3w" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+        {% if is_excel_project_detail %}
+        <a href="{{ back_url }}"
+           class="fr-btn fr-btn--secondary fr-icon-arrow-go-back-line fr-btn--icon-left">
+            Retour aux résultats
+        </a>
+        {% else %}
         <a href="{% url 'dashboard:inclusive_potential_analysis' %}"
            class="fr-btn fr-btn--secondary fr-icon-arrow-go-back-line fr-btn--icon-left">
             Lancer une nouvelle analyse
@@ -288,11 +294,13 @@
             Exporter en Excel
         </a>
         {% endif %}
+        {% endif %}
     </div>
 
     {% if results %}
 
-        {# ── Alerte succès ── #}
+        {# ── Alerte succès (masquée sur la page détail projet) ── #}
+        {% if not is_excel_project_detail %}
         <div class="fr-alert fr-alert--success fr-mb-3w">
             <p>
                 <strong>Analyse terminée !</strong>
@@ -302,8 +310,10 @@
                 {% endif %}
             </p>
         </div>
+        {% endif %}
 
-        {# ── Segmented control : mode de prestation ── #}
+        {# ── Segmented control : mode de prestation (masqué sur la page détail projet) ── #}
+        {% if not is_excel_project_detail %}
         <div class="fr-mb-3w">
             <form method="post" action="{% url 'dashboard:inclusive_potential_analysis' %}" id="presta-mode-form">
                 {% csrf_token %}
@@ -338,6 +348,7 @@
                 </fieldset>
             </form>
         </div>
+        {% endif %}
 
     {# ══ Résultats Excel : tableau Alpine.js ══ #}
     {% if mode == "excel" %}
@@ -537,7 +548,7 @@
                             <template x-for="p in sortedProjects" :key="p.titre + '||' + p.secteur_name + '||' + p.perimeter_name">
                                 <tr>
                                     <td class="ipa-col-title">
-                                        <a :href="p.search_urls.all" target="_blank" rel="noopener"
+                                        <a :href="p.detail_url"
                                            style="font-weight:600; max-width:200px; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
                                            :title="p.titre"
                                            x-text="p.titre"></a>
@@ -620,7 +631,7 @@
                                         <template x-for="p in group.projects" :key="p.titre + '||' + p.perimeter_name">
                                             <tr>
                                                 <td style="font-weight:600;">
-                                                    <a :href="p.search_urls.all" target="_blank" rel="noopener"
+                                                    <a :href="p.detail_url"
                                                        style="color:inherit;"
                                                        x-text="p.titre"></a>
                                                 </td>
