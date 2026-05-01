@@ -1327,9 +1327,9 @@
                 return Object.values(groups).sort((a, b) => b.projects.length - a.projects.length).map(g => ({
                     ...g,
                     withPotential: g.projects.filter(p =>
-                        p.recommendation_title === 'Réservation totale' ||
-                        p.recommendation_title === 'Lot réservé' ||
-                        p.recommendation_title === 'Clause sociale d\'exécution'
+                        p.recommendation_key === 'reservation' ||
+                        p.recommendation_key === 'lot' ||
+                        p.recommendation_key === 'clause'
                     ).length,
                 }));
             },
