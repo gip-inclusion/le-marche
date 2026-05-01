@@ -17,17 +17,15 @@
         {# En-tête #}
         <div class="fr-mb-5w">
             <h1 class="fr-h2">Répondre en groupement pour : {{ tender.title }}</h1>
-            <p class="fr-text--lead fr-mb-0">{{ tender.author.company_name|default:tender.author.full_name }} — {{ tender.get_kind_display }}</p>
         </div>
 
         {# Bloc réassurance #}
-        <div class="fr-callout fr-callout--blue-ecume fr-mb-5w" x-data>
+        <div class="fr-callout fr-callout--blue-ecume fr-mb-5w">
             <h2 class="fr-callout__title fr-h5">Répondre en groupement, c'est simple</h2>
             <p class="fr-callout__text">
                 Vous identifiez un partenaire ci-dessous, vous prenez contact, et votre référent régional facilite
                 la relation avec l'acheteur. Pas besoin de maîtriser les aspects juridiques — c'est son rôle.
             </p>
-            {# Lien article blog #}
             <a href="https://lemarche.inclusion.gouv.fr/blog/groupement-cotraitance-exemple/"
                class="fr-link fr-icon-article-line fr-link--icon-left"
                target="_blank" rel="noopener noreferrer">
@@ -39,7 +37,7 @@
         <div class="fr-mb-6w">
             <h2 class="fr-h4 fr-mb-1w">Les meilleures structures prestataires pour répondre avec vous</h2>
             <p class="fr-text--sm fr-text-mention--grey fr-mb-3w">
-                Entreprises d'insertion, Ateliers chantiers d'insertion, Entreprises adaptées, ESAT
+                Sélectionnées parmi les structures les mieux notées sur votre secteur et votre périmètre.
             </p>
 
             {% if presta_service_siaes %}
@@ -58,9 +56,6 @@
         {# Section B — Mise à disposition #}
         <div class="fr-mb-6w">
             <h2 class="fr-h4 fr-mb-1w">Les meilleures structures de mise à disposition de personnel pour répondre avec vous</h2>
-            <p class="fr-text--sm fr-text-mention--grey fr-mb-1w">
-                Associations intermédiaires, Entreprises de travail temporaire d'insertion, Entreprises adaptées de travail temporaire
-            </p>
             <p class="fr-text--sm fr-mb-3w">
                 Une structure de mise à disposition peut intervenir en sous-traitance sur la partie ressources humaines
                 de votre réponse : recrutement de profils en insertion, renfort de personnel temporaire.
@@ -80,54 +75,75 @@
             {% endif %}
         </div>
 
+        {# Mail type #}
+        <div class="fr-callout fr-mb-6w"
+             x-data="{
+                 copied: false,
+                 message: `Bonjour,\n\nJe suis {{ initiating_siae.name }}, et je réponds actuellement au besoin d'achat suivant :\n« {{ tender.title }} »\n\nJe pense que nous pourrions y répondre ensemble en groupement ou en sous-traitance. Nos compétences semblent complémentaires.\n\nSeriez-vous disponible pour en discuter rapidement ?\n\nCordialement,\n{{ initiating_siae.contact_full_name }} — {{ initiating_siae.name }}\n{% if initiating_siae.contact_phone %}{{ initiating_siae.contact_phone_display }} — {% endif %}{{ initiating_siae.contact_email }}`
+             }">
+            <h2 class="fr-callout__title fr-h5">Pas d'inspiration pour votre prise de contact ?</h2>
+            <p class="fr-callout__text fr-mb-2w">
+                Copiez notre message type et adaptez-le pour chaque structure que vous souhaitez contacter.
+            </p>
+            <div class="fr-p-3w fr-mb-2w" style="background: white; border-radius: 4px; border: 1px solid #e5e5e5; white-space: pre-wrap; font-size: 0.875rem; font-family: monospace;">{{ initiating_siae.name }} — {{ tender.title }}
+…</div>
+            <button type="button"
+                    class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-clipboard-line fr-btn--icon-left"
+                    @click="navigator.clipboard.writeText(message); copied = true; setTimeout(() => copied = false, 3000)">
+                <span x-text="copied ? '✓ Message copié !' : 'Copier le message type'">Copier le message type</span>
+            </button>
+        </div>
+
         {# Référents régionaux #}
         <div class="fr-callout fr-mb-6w">
             <h2 class="fr-callout__title fr-h5">
                 {% if referents %}
-                    Vos référents régionaux
-                    {% if initiating_siae.region %}— {{ initiating_siae.region }}{% endif %}
+                    Vos référents régionaux{% if initiating_siae.region %} — {{ initiating_siae.region }}{% endif %}
                 {% else %}
                     L'équipe du Marché de l'inclusion
                 {% endif %}
             </h2>
             {% if referents %}
                 {% for referent in referents %}
-                    <div class="fr-mb-2w" x-data="{ copied: false }">
+                    <div class="fr-mb-2w"
+                         x-data="{ hovered: false, copied: false }"
+                         @mouseenter="hovered = true"
+                         @mouseleave="hovered = false">
                         <p class="fr-mb-1w fr-text--bold">{{ referent.user.full_name }}</p>
-                        <div class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters">
-                            <div class="fr-col-auto">
-                                <span class="fr-text--sm">{{ referent.user.email }}</span>
-                            </div>
-                            <div class="fr-col-auto">
-                                <button type="button"
-                                        class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm fr-icon-clipboard-line fr-btn--icon-left"
-                                        @click="navigator.clipboard.writeText('{{ referent.user.email }}'); copied = true; setTimeout(() => copied = false, 2000)">
-                                    <span x-text="copied ? 'Copié !' : 'Copier l\'email'">Copier l'email</span>
-                                </button>
-                            </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="fr-text--sm">{{ referent.user.email }}</span>
+                            <button x-show="hovered || copied"
+                                    type="button"
+                                    class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-only fr-icon-clipboard-line"
+                                    style="padding: 0.2rem; min-height: auto; font-size: 0.75rem;"
+                                    title="Copier l'email"
+                                    @click.stop="navigator.clipboard.writeText('{{ referent.user.email }}'); copied = true; setTimeout(() => copied = false, 2000)">
+                                <span x-show="copied" class="fr-text--xs">✓</span>
+                            </button>
                         </div>
                     </div>
                 {% endfor %}
                 <p class="fr-text--sm fr-text-mention--grey fr-mb-0">
                     Votre référent régional n'a pas accès aux coordonnées de l'acheteur.
-                    Son rôle est de vous accompagner dans votre démarche de groupement
-                    et de faciliter la relation avec l'acheteur via l'équipe du Marché.
+                    Son rôle est de vous accompagner dans votre démarche et de faciliter la relation avec l'acheteur via l'équipe du Marché.
                 </p>
             {% else %}
                 <p class="fr-callout__text">
                     Contactez l'équipe du Marché de l'inclusion pour être accompagné dans votre démarche de groupement.
                 </p>
-                <div x-data="{ copied: false }" class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters">
-                    <div class="fr-col-auto">
-                        <span class="fr-text--sm">commercial@lemarche.inclusion.beta.gouv.fr</span>
-                    </div>
-                    <div class="fr-col-auto">
-                        <button type="button"
-                                class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm fr-icon-clipboard-line fr-btn--icon-left"
-                                @click="navigator.clipboard.writeText('commercial@lemarche.inclusion.beta.gouv.fr'); copied = true; setTimeout(() => copied = false, 2000)">
-                            <span x-text="copied ? 'Copié !' : 'Copier l\'email'">Copier l'email</span>
-                        </button>
-                    </div>
+                <div x-data="{ hovered: false, copied: false }"
+                     @mouseenter="hovered = true"
+                     @mouseleave="hovered = false"
+                     style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="fr-text--sm">commercial@lemarche.inclusion.beta.gouv.fr</span>
+                    <button x-show="hovered || copied"
+                            type="button"
+                            class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-only fr-icon-clipboard-line"
+                            style="padding: 0.2rem; min-height: auto; font-size: 0.75rem;"
+                            title="Copier l'email"
+                            @click.stop="navigator.clipboard.writeText('commercial@lemarche.inclusion.beta.gouv.fr'); copied = true; setTimeout(() => copied = false, 2000)">
+                        <span x-show="copied" class="fr-text--xs">✓</span>
+                    </button>
                 </div>
             {% endif %}
         </div>

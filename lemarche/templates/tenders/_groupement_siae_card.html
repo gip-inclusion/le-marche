@@ -1,4 +1,4 @@
-{% load humanize %}
+{% load static humanize %}
 
 <div class="fr-col-12 fr-col-md-4">
     <div class="fr-card fr-card--shadow fr-h-100"
@@ -6,14 +6,34 @@
              showContact: false,
              copiedEmail: false,
              copiedPhone: false,
-             copiedMsg: false,
-             message: `Bonjour,\n\nJe suis {{ initiating_siae.name }}, et je consulte actuellement le besoin d'achat suivant :\n« {{ tender.title }} » — {{ tender.author.company_name|default:tender.author.full_name }}\n\nJe pense que nous pourrions y répondre ensemble en groupement ou en sous-traitance. Vos compétences seraient complémentaires aux miennes.\n{% for referent in referents %}Notre référent régional {{ referent.user.full_name }} est informé de ma démarche et pourra nous accompagner si besoin.\n{% empty %}L'équipe du Marché de l'inclusion (commercial@lemarche.inclusion.beta.gouv.fr) peut nous accompagner si besoin.\n{% endfor %}\nSeriez-vous disponible pour en discuter rapidement ?\n\nCordialement,\n{{ initiating_siae.contact_full_name }} — {{ initiating_siae.name }}\n{% if initiating_siae.contact_phone %}{{ initiating_siae.contact_phone_display }} — {% endif %}{{ initiating_siae.contact_email }}`
+             hoverEmail: false,
+             hoverPhone: false
          }">
+
+        {# En-tête card : logo + nom #}
+        <div class="fr-card__header">
+            <div class="fr-card__img" style="height: 80px; display: flex; align-items: center; justify-content: center; background: #f6f6f6; padding: 0.75rem;">
+                {% if siae.logo_url %}
+                    <img src="{{ siae.logo_url }}"
+                         style="max-height: 56px; max-width: 100%; object-fit: contain;"
+                         alt="Logo {{ siae.name_display }}"
+                         loading="lazy" />
+                {% else %}
+                    <img src="{% static 'img/default-listing.png' %}"
+                         style="max-height: 56px; max-width: 56px; object-fit: contain; opacity: 0.4;"
+                         alt="{{ siae.name_display }}"
+                         loading="lazy" />
+                {% endif %}
+            </div>
+        </div>
+
         <div class="fr-card__body">
             <div class="fr-card__content">
 
-                {# Badges statut sur ce tender #}
-                <div class="fr-mb-1w">
+                {# Nom + badges #}
+                <h3 class="fr-card__title fr-text--md fr-mb-1w">{{ siae.name_display }}</h3>
+
+                <div class="fr-mb-2w">
                     {% if siae.super_badge %}
                         <span class="fr-badge fr-badge--success fr-badge--sm fr-mr-1w">Super-prestataire</span>
                     {% endif %}
@@ -21,38 +41,33 @@
                         <span class="fr-badge fr-badge--info fr-badge--sm fr-mr-1w">Déjà intéressé par ce besoin</span>
                     {% endif %}
                     {% if siae.wants_groupement %}
-                        <span class="fr-badge fr-badge--purple-glycine fr-badge--sm">Cherche aussi un partenaire groupement</span>
+                        <span class="fr-badge fr-badge--purple-glycine fr-badge--sm">Cherche aussi un partenaire</span>
                     {% endif %}
                 </div>
 
-                <h3 class="fr-card__title fr-text--md fr-mb-1w">{{ siae.name_display }}</h3>
-                <p class="fr-text--sm fr-text-mention--grey fr-mb-1w">{{ siae.get_kind_display }}</p>
-
                 {# Localisation + distance #}
-                <p class="fr-text--sm fr-mb-1w">
+                <p class="fr-text--sm fr-mb-2w">
                     <span class="fr-icon-map-pin-2-line fr-icon--sm" aria-hidden="true"></span>
                     {{ siae.city }}{% if siae.department %} ({{ siae.department }}){% endif %}
                     {% if siae.distance_km is not None %}
-                        &mdash; <strong>{{ siae.distance_km|floatformat:0 }} km</strong>
+                        &mdash; à <strong>{{ siae.distance_km|floatformat:0 }} km</strong> de votre structure
                     {% endif %}
                 </p>
 
                 {# Indicateurs clés #}
                 <ul class="fr-text--sm fr-mb-2w" style="list-style: none; padding: 0; margin: 0;">
                     {% if siae.ca or siae.api_entreprise_ca %}
-                        <li>
-                            CA : {{ siae.ca|default:siae.api_entreprise_ca|intcomma }} €
-                        </li>
+                        <li>CA : <strong>{{ siae.ca|default:siae.api_entreprise_ca|intcomma }} €</strong></li>
                     {% endif %}
                     {% if siae.employees_insertion_count or siae.employees_permanent_count %}
                         <li>
                             {% with total=siae.employees_insertion_count|default:0 %}
-                                {{ total }} salarié{{ total|pluralize }} en insertion
+                                <strong>{{ total }}</strong> salarié{{ total|pluralize }} en insertion
                             {% endwith %}
                         </li>
                     {% endif %}
                     {% if siae.has_won_contract_last_3_years %}
-                        <li>Marchés publics remportés ces 3 dernières années</li>
+                        <li>✓ Marchés publics remportés ces 3 ans</li>
                     {% endif %}
                 </ul>
 
@@ -61,51 +76,50 @@
                     <button type="button"
                             class="fr-btn fr-btn--tertiary fr-btn--sm"
                             @click="showContact = true">
-                        Voir les coordonnées du responsable de la structure
+                        Voir les coordonnées du responsable
                     </button>
                 </div>
 
                 <div x-show="showContact" x-cloak class="fr-mt-2w">
-                    <p class="fr-text--sm fr-text--bold fr-mb-1w">
+                    <p class="fr-text--sm fr-text--bold fr-mb-2w">
                         {{ siae.contact_full_name|default:"Responsable de la structure" }}
                     </p>
 
-                    {# Email #}
-                    <div class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters fr-mb-1w">
-                        <div class="fr-col-auto">
-                            <span class="fr-text--sm">{{ siae.contact_email }}</span>
-                        </div>
-                        <div class="fr-col-auto">
-                            <button type="button"
-                                    class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm fr-icon-clipboard-line fr-btn--icon-left"
-                                    @click="navigator.clipboard.writeText('{{ siae.contact_email }}'); copiedEmail = true; setTimeout(() => copiedEmail = false, 2000)">
-                                <span x-text="copiedEmail ? 'Copié !' : 'Copier l\'email'">Copier l'email</span>
-                            </button>
-                        </div>
+                    {# Email avec bouton copier au survol #}
+                    <div class="fr-mb-1w"
+                         x-data="{ hoverEmail: false, copiedEmail: false }"
+                         @mouseenter="hoverEmail = true"
+                         @mouseleave="hoverEmail = false"
+                         style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="fr-text--sm">{{ siae.contact_email }}</span>
+                        <button x-show="hoverEmail || copiedEmail"
+                                type="button"
+                                class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-only fr-icon-clipboard-line"
+                                style="padding: 0.2rem; min-height: auto; font-size: 0.75rem;"
+                                title="Copier l'email"
+                                @click.stop="navigator.clipboard.writeText('{{ siae.contact_email }}'); copiedEmail = true; setTimeout(() => copiedEmail = false, 2000)">
+                            <span x-show="copiedEmail" class="fr-text--xs">✓</span>
+                        </button>
                     </div>
 
-                    {# Téléphone #}
+                    {# Téléphone avec bouton copier au survol #}
                     {% if siae.contact_phone %}
-                        <div class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters fr-mb-2w">
-                            <div class="fr-col-auto">
-                                <span class="fr-text--sm">{{ siae.contact_phone_display }}</span>
-                            </div>
-                            <div class="fr-col-auto">
-                                <button type="button"
-                                        class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm fr-icon-clipboard-line fr-btn--icon-left"
-                                        @click="navigator.clipboard.writeText('{{ siae.contact_phone_display }}'); copiedPhone = true; setTimeout(() => copiedPhone = false, 2000)">
-                                    <span x-text="copiedPhone ? 'Copié !' : 'Copier le téléphone'">Copier le téléphone</span>
-                                </button>
-                            </div>
+                        <div class="fr-mb-2w"
+                             x-data="{ hoverPhone: false, copiedPhone: false }"
+                             @mouseenter="hoverPhone = true"
+                             @mouseleave="hoverPhone = false"
+                             style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="fr-text--sm">{{ siae.contact_phone_display }}</span>
+                            <button x-show="hoverPhone || copiedPhone"
+                                    type="button"
+                                    class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-only fr-icon-clipboard-line"
+                                    style="padding: 0.2rem; min-height: auto; font-size: 0.75rem;"
+                                    title="Copier le téléphone"
+                                    @click.stop="navigator.clipboard.writeText('{{ siae.contact_phone_display }}'); copiedPhone = true; setTimeout(() => copiedPhone = false, 2000)">
+                                <span x-show="copiedPhone" class="fr-text--xs">✓</span>
+                            </button>
                         </div>
                     {% endif %}
-
-                    {# Message type #}
-                    <button type="button"
-                            class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-mail-line fr-btn--icon-left"
-                            @click="navigator.clipboard.writeText(message); copiedMsg = true; setTimeout(() => copiedMsg = false, 2000)">
-                        <span x-text="copiedMsg ? '✓ Message copié !' : 'Copier le message type'">Copier le message type</span>
-                    </button>
                 </div>
 
             </div>

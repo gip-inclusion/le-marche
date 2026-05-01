@@ -261,6 +261,13 @@ class TenderQuerySet(models.QuerySet):
                     output_field=IntegerField(),
                 )
             ),
+            siae_detail_groupement_click_count_annotated=Sum(
+                Case(
+                    When(tendersiae__detail_groupement_click_date__isnull=False, then=1),
+                    default=0,
+                    output_field=IntegerField(),
+                )
+            ),
             siae_detail_not_interested_click_count_annotated=Sum(
                 Case(
                     When(tendersiae__detail_not_interested_click_date__isnull=False, then=1),

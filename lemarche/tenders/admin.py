@@ -385,6 +385,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "siae_count_annotated_with_link",
         "siae_email_send_count_annotated_with_link",
         "siae_detail_contact_click_count_annotated_with_link",
+        "siae_detail_groupement_click_count_annotated_with_link",
         "siae_detail_not_interested_click_count_annotated_with_link",
         "siae_transactioned_source",
         "siae_transactioned_last_updated",
@@ -496,6 +497,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "siae_count_annotated_with_link",
                     "siae_email_send_count_annotated_with_link",
                     "siae_detail_contact_click_count_annotated_with_link",
+                    "siae_detail_groupement_click_count_annotated_with_link",
                     "siae_detail_not_interested_click_count_annotated_with_link",
                 )
             },
@@ -742,6 +744,17 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     siae_detail_contact_click_count_annotated_with_link_in_list.admin_order_field = (
         "siae_detail_contact_click_count_annotated"
     )
+
+    def siae_detail_groupement_click_count_annotated_with_link(self, tender):
+        url = (
+            reverse("admin:siaes_siae_changelist")
+            + f"?tenders__in={tender.id}&tendersiae__detail_groupement_click_date__isnull=False"
+        )
+        return format_html(
+            '<a href="{}">{}</a>', url, getattr(tender, "siae_detail_groupement_click_count_annotated", 0)
+        )
+
+    siae_detail_groupement_click_count_annotated_with_link.short_description = "S. groupement"
 
     def siae_detail_not_interested_click_count_annotated_with_link(self, tender):
         url = (
