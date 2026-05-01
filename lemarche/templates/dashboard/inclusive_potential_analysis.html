@@ -246,6 +246,71 @@
     .ipa-group-hd__name { font-weight: 700; flex: 1; }
     .ipa-group-hd__meta { font-size: 0.875rem; color: #555; }
     .ipa-group-hd__chevron { color: #000091; margin-left: auto; }
+
+    /* ── Dashboard refonte ── */
+    .ipa-dashboard {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 1.5rem;
+        align-items: start;
+    }
+    .ipa-mini-badge {
+        display: inline-flex; align-items: center; gap: 0.2rem;
+        background: #f0f0fb; border-radius: 3px;
+        padding: 0.1rem 0.45rem; font-size: 0.75rem;
+        color: #3a3a3a; text-decoration: none; white-space: nowrap;
+        line-height: 1.5; transition: background 0.1s, color 0.1s;
+    }
+    .ipa-mini-badge:hover { background: #e3e3fd; color: #000091; }
+    .ipa-row--selected > td { background-color: #f0f0fb !important; }
+    .ipa-table tbody tr { cursor: pointer; }
+    .ipa-table tbody tr:hover > td { background-color: #fafafe; }
+    .ipa-side-panel {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        position: sticky;
+        top: 1rem;
+        max-height: calc(100vh - 2rem);
+        overflow-y: auto;
+    }
+    .ipa-side-panel__header {
+        padding: 1.25rem;
+        border-bottom: 1px solid #e5e5e5;
+        position: relative;
+    }
+    .ipa-side-panel__body { padding: 1.25rem; }
+    .ipa-side-panel__close {
+        background: none; border: none; cursor: pointer;
+        font-size: 1.25rem; color: #666; line-height: 1; padding: 0;
+        position: absolute; top: 1rem; right: 1rem;
+    }
+    .ipa-side-panel__close:hover { color: #161616; }
+    .ipa-side-panel__placeholder {
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        min-height: 250px; color: #aaa;
+        text-align: center; padding: 2rem; gap: 0.75rem;
+    }
+    .ipa-panel-kpi {
+        background: #f8f8f8; border-radius: 6px;
+        padding: 0.5rem 0.75rem;
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 0.4rem;
+    }
+    .ipa-panel-kpi__label { font-size: 0.8rem; color: #555; }
+    .ipa-panel-kpi__value { font-size: 1.1rem; font-weight: 700; color: #161616; }
+    .ipa-panel-kpi__value--accent { color: #000091; }
+    .ipa-reco--lg { font-size: 0.85rem !important; padding: 0.3rem 0.75rem !important; max-width: 100% !important; }
+    .ipa-pagination {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0.75rem 0; font-size: 0.875rem; color: #555;
+        border-top: 1px solid #e5e5e5; margin-top: 0.5rem;
+    }
+    @media (max-width: 991px) {
+        .ipa-dashboard { grid-template-columns: 1fr; }
+        .ipa-side-panel { position: static; max-height: none; }
+    }
 </style>
 
 <div class="fr-container fr-py-4w">
@@ -284,16 +349,18 @@
             Retour aux résultats
         </a>
         {% else %}
-        <a href="{% url 'dashboard:inclusive_potential_analysis' %}"
-           class="fr-btn fr-btn--secondary fr-icon-arrow-go-back-line fr-btn--icon-left">
-            Lancer une nouvelle analyse
-        </a>
-        {% if mode == "excel" and results %}
-        <a href="{% url 'dashboard:inclusive_potential_analysis_export' %}"
-           class="fr-btn fr-btn--secondary fr-icon-download-line fr-btn--icon-left">
-            Exporter en Excel
-        </a>
-        {% endif %}
+        <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+            {% if mode == "excel" and results %}
+            <a href="{% url 'dashboard:inclusive_potential_analysis_export' %}"
+               class="fr-btn fr-icon-download-line fr-btn--icon-left">
+                Exporter en Excel
+            </a>
+            {% endif %}
+            <a href="{% url 'dashboard:inclusive_potential_analysis' %}"
+               class="fr-btn fr-btn--secondary fr-icon-arrow-go-back-line fr-btn--icon-left">
+                Lancer une nouvelle analyse
+            </a>
+        </div>
         {% endif %}
     </div>
 
@@ -350,13 +417,11 @@
         </div>
         {% endif %}
 
-    {# ══ Résultats Excel : tableau Alpine.js ══ #}
+    {# ══ Résultats Excel : Dashboard ══ #}
     {% if mode == "excel" %}
 
-        {# Données JSON pour Alpine.js #}
         {{ results|json_script:"ipa-results-data" }}
 
-        {# Composant principal #}
         <div x-data="ipaResults()" x-cloak>
 
             {# KPI bandeau #}
@@ -387,30 +452,30 @@
                 </div>
             </div>
 
-            {# Vue switcher #}
+            {# Onglets de vue #}
             <div class="ipa-view-switcher fr-mb-2w">
                 <button type="button" class="ipa-view-btn"
                         :class="{ 'ipa-view-btn--active': view === 'flat' }"
-                        @click="view = 'flat'">
+                        @click="view = 'flat'; currentPage = 1;">
                     <span class="fr-icon-list-unordered" aria-hidden="true"></span>
                     Tous les projets
                 </button>
                 <button type="button" class="ipa-view-btn"
                         :class="{ 'ipa-view-btn--active': view === 'by_sector' }"
-                        @click="view = 'by_sector'">
+                        @click="view = 'by_sector';">
                     <span class="fr-icon-building-line" aria-hidden="true"></span>
                     Par catégorie achat
                 </button>
                 <button type="button" class="ipa-view-btn"
                         :class="{ 'ipa-view-btn--active': view === 'by_perimeter' }"
-                        @click="view = 'by_perimeter'">
+                        @click="view = 'by_perimeter';">
                     <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
                     Par périmètre
                 </button>
             </div>
 
             {# Filtres tags #}
-            <div class="ipa-filter-bar fr-mb-3w">
+            <div class="ipa-filter-bar fr-mb-2w">
                 <div class="ipa-filter-row">
                     <span class="ipa-filter-label">Catégorie :</span>
                     <div class="ipa-filter-tags">
@@ -425,7 +490,7 @@
                         <button type="button" x-show="uniqueSectors.length > 6"
                                 class="ipa-tag ipa-tag--more"
                                 @click="showMoreSectors = !showMoreSectors">
-                            <span x-text="showMoreSectors ? '▲ moins' : '▼ ' + (uniqueSectors.length - 6) + ' autres'"></span>
+                            <span x-text="showMoreSectors ? '▲ moins' : '+ ' + (uniqueSectors.length - 6) + ' autres'"></span>
                         </button>
                     </div>
                 </div>
@@ -443,254 +508,312 @@
                         <button type="button" x-show="uniquePerimeters.length > 6"
                                 class="ipa-tag ipa-tag--more"
                                 @click="showMorePerimeters = !showMorePerimeters">
-                            <span x-text="showMorePerimeters ? '▲ moins' : '▼ ' + (uniquePerimeters.length - 6) + ' autres'"></span>
+                            <span x-text="showMorePerimeters ? '▲ moins' : '+ ' + (uniquePerimeters.length - 6) + ' autres'"></span>
                         </button>
                     </div>
                 </div>
-                <div x-show="activeSectors.length > 0 || activePerimeters.length > 0"
-                     class="fr-mt-1w"
-                     style="display:flex; align-items:center; gap:1rem;">
-                    <button type="button"
-                            @click="activeSectors = []; activePerimeters = []"
-                            class="fr-btn fr-btn--tertiary fr-btn--sm">
-                        Réinitialiser les filtres
-                    </button>
-                    <span style="font-size:0.85rem; color:#666;"
+                <div class="fr-mt-1w" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+                    <span class="fr-text--sm" style="color:#666;"
                           x-text="filteredProjects.length + ' projet' + (filteredProjects.length > 1 ? 's' : '') + ' affiché' + (filteredProjects.length > 1 ? 's' : '')">
                     </span>
+                    <button type="button"
+                            @click="activeSectors = []; activePerimeters = []; currentPage = 1;"
+                            class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm">
+                        Réinitialiser les filtres
+                    </button>
                 </div>
             </div>
 
-            {# ══ Vue plate ══ #}
-            <div x-show="view === 'flat'">
-                <div class="ipa-table-container">
-                    <table class="fr-table fr-table--sm ipa-table">
-                        <caption class="fr-sr-only">Projets d'achat — potentiel inclusif</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col" class="ipa-col-title sortable" @click="toggleSort('titre')">
-                                    Titre
-                                    <span class="ipa-sort-icon"
-                                          :class="{ 'ipa-sort-icon--active': sort.col === 'titre' }"
-                                          x-text="sortIcon('titre')"></span>
-                                </th>
-                                <th scope="col" class="sortable" @click="toggleSort('secteur_name')">
-                                    Catégorie
-                                    <span class="ipa-sort-icon"
-                                          :class="{ 'ipa-sort-icon--active': sort.col === 'secteur_name' }"
-                                          x-text="sortIcon('secteur_name')"></span>
-                                </th>
-                                <th scope="col" class="sortable" @click="toggleSort('perimeter_name')">
-                                    Périmètre
-                                    <span class="ipa-sort-icon"
-                                          :class="{ 'ipa-sort-icon--active': sort.col === 'perimeter_name' }"
-                                          x-text="sortIcon('perimeter_name')"></span>
-                                </th>
-                                <th scope="col" class="sortable" @click="toggleSort('montant_num')" style="text-align:right;">
-                                    Montant
-                                    <span class="ipa-sort-icon"
-                                          :class="{ 'ipa-sort-icon--active': sort.col === 'montant_num' }"
-                                          x-text="sortIcon('montant_num')"></span>
-                                </th>
-                                <th scope="col" class="sortable" @click="toggleSort('potential_siaes')" style="text-align:right;">
-                                    Structures
-                                    <span class="ipa-sort-icon"
-                                          :class="{ 'ipa-sort-icon--active': sort.col === 'potential_siaes' }"
-                                          x-text="sortIcon('potential_siaes')"></span>
-                                </th>
-                                <th scope="col" class="sortable" @click="toggleSort('insertion_siaes')" style="text-align:right;">
-                                    Insertion
-                                    <span class="ipa-sort-icon"
-                                          :class="{ 'ipa-sort-icon--active': sort.col === 'insertion_siaes' }"
-                                          x-text="sortIcon('insertion_siaes')"></span>
-                                </th>
-                                <th scope="col" class="sortable" @click="toggleSort('handicap_siaes')" style="text-align:right;">
-                                    Handicap
-                                    <span class="ipa-sort-icon"
-                                          :class="{ 'ipa-sort-icon--active': sort.col === 'handicap_siaes' }"
-                                          x-text="sortIcon('handicap_siaes')"></span>
-                                </th>
-                                <th scope="col" class="sortable" @click="toggleSort('local_siaes')" style="text-align:right;">
-                                    Locales
-                                    <span class="ipa-sort-icon"
-                                          :class="{ 'ipa-sort-icon--active': sort.col === 'local_siaes' }"
-                                          x-text="sortIcon('local_siaes')"></span>
-                                </th>
-                                <th scope="col" class="sortable" @click="toggleSort('siaes_with_super_badge')" style="text-align:right;">
-                                    Super prest.
-                                    <span class="ipa-sort-icon"
-                                          :class="{ 'ipa-sort-icon--active': sort.col === 'siaes_with_super_badge' }"
-                                          x-text="sortIcon('siaes_with_super_badge')"></span>
-                                </th>
-                                <th scope="col" class="sortable" @click="toggleSort('siaes_with_won_contract')" style="text-align:right;">
-                                    Marchés rem.
-                                    <span class="ipa-sort-icon"
-                                          :class="{ 'ipa-sort-icon--active': sort.col === 'siaes_with_won_contract' }"
-                                          x-text="sortIcon('siaes_with_won_contract')"></span>
-                                </th>
-                                <th scope="col" class="sortable" @click="toggleSort('eco_dependency')" style="text-align:right;">
-                                    Dép. éco.
-                                    <span class="ipa-sort-icon"
-                                          :class="{ 'ipa-sort-icon--active': sort.col === 'eco_dependency' }"
-                                          x-text="sortIcon('eco_dependency')"></span>
-                                </th>
-                                <th scope="col" style="min-width:160px;">Recommandation</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <template x-if="sortedProjects.length === 0">
-                                <tr>
-                                    <td colspan="12" style="text-align:center; color:#666; padding:2rem;">
-                                        Aucun projet ne correspond aux filtres sélectionnés.
-                                    </td>
-                                </tr>
-                            </template>
-                            <template x-for="p in sortedProjects" :key="p.titre + '||' + p.secteur_name + '||' + p.perimeter_name">
-                                <tr>
-                                    <td class="ipa-col-title">
-                                        <a :href="p.detail_url"
-                                           style="font-weight:600; max-width:200px; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
-                                           :title="p.titre"
-                                           x-text="p.titre"></a>
-                                    </td>
-                                    <td x-text="p.secteur_name"></td>
-                                    <td x-text="p.perimeter_name"></td>
-                                    <td style="text-align:right; white-space:nowrap;">
-                                        <span x-text="p.montant ? p.montant + ' €' : '—'"></span>
-                                    </td>
-                                    <td style="text-align:right; font-weight:700; color:#000091;">
-                                        <a :href="p.search_urls.all" target="_blank" rel="noopener"
-                                           style="color:inherit;"
-                                           x-text="p.potential_siaes"></a>
-                                    </td>
-                                    <td style="text-align:right;">
-                                        <a :href="p.search_urls.insertion" target="_blank" rel="noopener" x-text="p.insertion_siaes"></a>
-                                    </td>
-                                    <td style="text-align:right;">
-                                        <a :href="p.search_urls.handicap" target="_blank" rel="noopener" x-text="p.handicap_siaes"></a>
-                                    </td>
-                                    <td style="text-align:right;">
-                                        <a :href="p.search_urls.local" target="_blank" rel="noopener" x-text="p.local_siaes"></a>
-                                    </td>
-                                    <td style="text-align:right;">
-                                        <a :href="p.search_urls.super_badge" target="_blank" rel="noopener" x-text="p.siaes_with_super_badge"></a>
-                                    </td>
-                                    <td style="text-align:right;">
-                                        <a :href="p.search_urls.won_contract" target="_blank" rel="noopener" x-text="p.siaes_with_won_contract"></a>
-                                    </td>
-                                    <td style="text-align:right;">
-                                        <template x-if="p.eco_dependency !== null">
-                                            <span class="fr-badge fr-badge--sm"
-                                                  :class="ecoDepBadgeClass(p.eco_dependency)"
-                                                  x-text="p.eco_dependency + ' %'"></span>
-                                        </template>
-                                        <template x-if="p.eco_dependency === null"><span>—</span></template>
-                                    </td>
-                                    <td>
-                                        <span class="ipa-reco"
-                                              :class="recoClass(p.recommendation_title)"
-                                              :title="p.recommendation_title || ''"
-                                              x-text="p.recommendation_title || '—'"></span>
-                                    </td>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            {# ══ Dashboard : table + panneau ══ #}
+            <div class="ipa-dashboard">
 
-            {# ══ Vues groupées ══ #}
-            <div x-show="view === 'by_sector' || view === 'by_perimeter'">
-                <template x-for="group in (view === 'by_sector' ? groupedBySector : groupedByPerimeter)" :key="group.name">
-                    <div class="fr-mb-2w">
-                        <div class="ipa-group-hd" @click="toggleGroup(group.name)">
-                            <span class="ipa-group-hd__name" x-text="group.name"></span>
-                            <span class="ipa-group-hd__meta">
-                                <span x-text="group.withPotential + ' / ' + group.projects.length + ' projet' + (group.projects.length > 1 ? 's' : '') + ' avec potentiel inclusif'"></span>
-                            </span>
-                            <span class="ipa-group-hd__chevron" x-text="expandedGroups[group.name] ? '▲' : '▼'"></span>
-                        </div>
-                        <div x-show="expandedGroups[group.name]">
-                            <div class="ipa-table-container">
-                                <table class="fr-table fr-table--sm ipa-table">
-                                    <thead>
+                {# ── Colonne principale ── #}
+                <div>
+
+                    {# Vue plate #}
+                    <div x-show="view === 'flat'">
+                        <div class="ipa-table-container">
+                            <table class="fr-table fr-table--sm ipa-table">
+                                <caption class="fr-sr-only">Projets d'achat — potentiel inclusif</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="sortable" @click="toggleSort('titre')">
+                                            Projet d'achat
+                                            <span class="ipa-sort-icon" :class="{ 'ipa-sort-icon--active': sort.col === 'titre' }" x-text="sortIcon('titre')"></span>
+                                        </th>
+                                        <th scope="col" class="sortable" @click="toggleSort('montant_num')" style="text-align:right;">
+                                            Montant
+                                            <span class="ipa-sort-icon" :class="{ 'ipa-sort-icon--active': sort.col === 'montant_num' }" x-text="sortIcon('montant_num')"></span>
+                                        </th>
+                                        <th scope="col" class="sortable" @click="toggleSort('potential_siaes')">
+                                            Structures
+                                            <span class="ipa-tip" data-tip="Total cliquable vers les prestataires · Ins. = insertion · Hand. = handicap · Loc. = locales"><i class="ri-information-line" aria-hidden="true"></i></span>
+                                            <span class="ipa-sort-icon" :class="{ 'ipa-sort-icon--active': sort.col === 'potential_siaes' }" x-text="sortIcon('potential_siaes')"></span>
+                                        </th>
+                                        <th scope="col" class="sortable" @click="toggleSort('siaes_with_won_contract')" style="text-align:right;">
+                                            Marchés rem.
+                                            <span class="ipa-sort-icon" :class="{ 'ipa-sort-icon--active': sort.col === 'siaes_with_won_contract' }" x-text="sortIcon('siaes_with_won_contract')"></span>
+                                        </th>
+                                        <th scope="col" class="sortable" @click="toggleSort('eco_dependency')" style="text-align:right;">
+                                            Dép. éco.
+                                            <span class="ipa-sort-icon" :class="{ 'ipa-sort-icon--active': sort.col === 'eco_dependency' }" x-text="sortIcon('eco_dependency')"></span>
+                                        </th>
+                                        <th scope="col">Recommandation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template x-if="paginatedProjects.length === 0">
                                         <tr>
-                                            <th scope="col">Titre</th>
-                                            <th scope="col" x-show="view === 'by_sector'">Périmètre</th>
-                                            <th scope="col" x-show="view === 'by_perimeter'">Catégorie achat</th>
-                                            <th scope="col" style="text-align:right;">Montant</th>
-                                            <th scope="col" style="text-align:right;">Structures</th>
-                                            <th scope="col" style="text-align:right;">Insertion</th>
-                                            <th scope="col" style="text-align:right;">Handicap</th>
-                                            <th scope="col" style="text-align:right;">Locales</th>
-                                            <th scope="col" style="text-align:right;">Super prest.</th>
-                                            <th scope="col" style="text-align:right;">Marchés rem.</th>
-                                            <th scope="col" style="text-align:right;">Dép. éco.</th>
-                                            <th scope="col" style="min-width:160px;">Recommandation</th>
+                                            <td colspan="6" style="text-align:center; color:#666; padding:2rem;">
+                                                Aucun projet ne correspond aux filtres sélectionnés.
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        <template x-for="p in group.projects" :key="p.titre + '||' + p.perimeter_name">
-                                            <tr>
-                                                <td style="font-weight:600;">
-                                                    <a :href="p.detail_url"
-                                                       style="color:inherit;"
-                                                       x-text="p.titre"></a>
-                                                </td>
-                                                <td x-show="view === 'by_sector'" x-text="p.perimeter_name"></td>
-                                                <td x-show="view === 'by_perimeter'" x-text="p.secteur_name"></td>
-                                                <td style="text-align:right; white-space:nowrap;"
-                                                    x-text="p.montant ? p.montant + ' €' : '—'"></td>
-                                                <td style="text-align:right; font-weight:700; color:#000091;">
+                                    </template>
+                                    <template x-for="p in paginatedProjects" :key="p.titre + '||' + p.secteur_name + '||' + p.perimeter_name">
+                                        <tr @click="selectProject(p)"
+                                            :class="{ 'ipa-row--selected': isSelected(p) }">
+                                            <td>
+                                                <div style="font-weight:600; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" :title="p.titre" x-text="p.titre"></div>
+                                                <div style="font-size:0.78rem; color:#666; margin-top:0.15rem;" x-text="p.secteur_name + ' · ' + p.perimeter_name"></div>
+                                            </td>
+                                            <td style="text-align:right; white-space:nowrap;">
+                                                <span x-text="p.montant ? p.montant + ' €' : '—'"></span>
+                                            </td>
+                                            <td>
+                                                <div style="font-size:1.2rem; font-weight:700; color:#000091; line-height:1.1;">
                                                     <a :href="p.search_urls.all" target="_blank" rel="noopener"
-                                                       style="color:inherit;"
+                                                       style="color:inherit;" @click.stop
                                                        x-text="p.potential_siaes"></a>
-                                                </td>
-                                                <td style="text-align:right;">
-                                                    <a :href="p.search_urls.insertion" target="_blank" rel="noopener" x-text="p.insertion_siaes"></a>
-                                                </td>
-                                                <td style="text-align:right;">
-                                                    <a :href="p.search_urls.handicap" target="_blank" rel="noopener" x-text="p.handicap_siaes"></a>
-                                                </td>
-                                                <td style="text-align:right;">
-                                                    <a :href="p.search_urls.local" target="_blank" rel="noopener" x-text="p.local_siaes"></a>
-                                                </td>
-                                                <td style="text-align:right;">
-                                                    <a :href="p.search_urls.super_badge" target="_blank" rel="noopener" x-text="p.siaes_with_super_badge"></a>
-                                                </td>
-                                                <td style="text-align:right;">
-                                                    <a :href="p.search_urls.won_contract" target="_blank" rel="noopener" x-text="p.siaes_with_won_contract"></a>
-                                                </td>
-                                                <td style="text-align:right;">
-                                                    <template x-if="p.eco_dependency !== null">
-                                                        <span class="fr-badge fr-badge--sm"
-                                                              :class="ecoDepBadgeClass(p.eco_dependency)"
-                                                              x-text="p.eco_dependency + ' %'"></span>
-                                                    </template>
-                                                    <template x-if="p.eco_dependency === null"><span>—</span></template>
-                                                </td>
-                                                <td>
-                                                    <span class="ipa-reco"
-                                                          :class="recoClass(p.recommendation_title)"
-                                                          :title="p.recommendation_title || ''"
-                                                          x-text="p.recommendation_title || '—'"></span>
-                                                </td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
+                                                </div>
+                                                <div style="display:flex; gap:0.25rem; flex-wrap:wrap; margin-top:0.3rem;">
+                                                    <a :href="p.search_urls.insertion" target="_blank" rel="noopener"
+                                                       class="ipa-mini-badge" @click.stop
+                                                       :title="'Structures d\'insertion : ' + p.insertion_siaes">
+                                                        Ins.&nbsp;<span x-text="p.insertion_siaes"></span>
+                                                    </a>
+                                                    <a :href="p.search_urls.handicap" target="_blank" rel="noopener"
+                                                       class="ipa-mini-badge" @click.stop
+                                                       :title="'Structures du handicap : ' + p.handicap_siaes">
+                                                        Hand.&nbsp;<span x-text="p.handicap_siaes"></span>
+                                                    </a>
+                                                    <a :href="p.search_urls.local" target="_blank" rel="noopener"
+                                                       class="ipa-mini-badge" @click.stop
+                                                       :title="'Structures locales : ' + p.local_siaes">
+                                                        Loc.&nbsp;<span x-text="p.local_siaes"></span>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td style="text-align:right;">
+                                                <a :href="p.search_urls.won_contract" target="_blank" rel="noopener"
+                                                   @click.stop x-text="p.siaes_with_won_contract"></a>
+                                            </td>
+                                            <td style="text-align:right;">
+                                                <template x-if="p.eco_dependency !== null">
+                                                    <span class="fr-badge fr-badge--sm"
+                                                          :class="ecoDepBadgeClass(p.eco_dependency)"
+                                                          x-text="p.eco_dependency + ' %'"></span>
+                                                </template>
+                                                <template x-if="p.eco_dependency === null"><span>—</span></template>
+                                            </td>
+                                            <td>
+                                                <span class="ipa-reco"
+                                                      :class="recoClass(p.recommendation_title)"
+                                                      :title="p.recommendation_title || ''"
+                                                      x-text="p.recommendation_title || '—'"></span>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {# Pagination #}
+                        <div class="ipa-pagination" x-show="totalPages > 1">
+                            <span x-text="paginationInfo"></span>
+                            <div style="display:flex; align-items:center; gap:0.5rem;">
+                                <button class="fr-btn fr-btn--secondary fr-btn--sm"
+                                        :disabled="currentPage === 1"
+                                        @click="currentPage--">←</button>
+                                <span x-text="currentPage + ' / ' + totalPages" style="font-size:0.875rem;"></span>
+                                <button class="fr-btn fr-btn--secondary fr-btn--sm"
+                                        :disabled="currentPage === totalPages"
+                                        @click="currentPage++">→</button>
                             </div>
                         </div>
                     </div>
-                </template>
-            </div>
 
-            {# Projets en erreur : compteur uniquement #}
-            <template x-if="erroredProjects.length > 0">
-                <p class="fr-text--sm fr-mt-2w" style="color:#666;">
-                    <span x-text="erroredProjects.length + ' projet' + (erroredProjects.length > 1 ? 's' : '') + ' n\'ont pas pu être analysé' + (erroredProjects.length > 1 ? 's' : '') + ' et n\'apparaissent pas dans les résultats.'"></span>
-                </p>
-            </template>
+                    {# Vues groupées #}
+                    <div x-show="view === 'by_sector' || view === 'by_perimeter'">
+                        <template x-for="group in (view === 'by_sector' ? groupedBySector : groupedByPerimeter)" :key="group.name">
+                            <div class="fr-mb-2w">
+                                <div class="ipa-group-hd" @click="toggleGroup(group.name)">
+                                    <span class="ipa-group-hd__name" x-text="group.name"></span>
+                                    <span class="ipa-group-hd__meta">
+                                        <span x-text="group.withPotential + ' / ' + group.projects.length + ' projet' + (group.projects.length > 1 ? 's' : '') + ' avec potentiel inclusif'"></span>
+                                    </span>
+                                    <span class="ipa-group-hd__chevron" x-text="expandedGroups[group.name] ? '▲' : '▼'"></span>
+                                </div>
+                                <div x-show="expandedGroups[group.name]">
+                                    <div class="ipa-table-container">
+                                        <table class="fr-table fr-table--sm ipa-table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Projet d'achat</th>
+                                                    <th scope="col" x-show="view === 'by_sector'">Périmètre</th>
+                                                    <th scope="col" x-show="view === 'by_perimeter'">Catégorie</th>
+                                                    <th scope="col" style="text-align:right;">Montant</th>
+                                                    <th scope="col">Structures</th>
+                                                    <th scope="col" style="text-align:right;">Marchés rem.</th>
+                                                    <th scope="col" style="text-align:right;">Dép. éco.</th>
+                                                    <th scope="col">Recommandation</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template x-for="p in group.projects" :key="p.titre + '||' + p.perimeter_name">
+                                                    <tr @click="selectProject(p)"
+                                                        :class="{ 'ipa-row--selected': isSelected(p) }">
+                                                        <td style="font-weight:600; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" :title="p.titre" x-text="p.titre"></td>
+                                                        <td x-show="view === 'by_sector'" x-text="p.perimeter_name"></td>
+                                                        <td x-show="view === 'by_perimeter'" x-text="p.secteur_name"></td>
+                                                        <td style="text-align:right; white-space:nowrap;" x-text="p.montant ? p.montant + ' €' : '—'"></td>
+                                                        <td>
+                                                            <div style="font-size:1.1rem; font-weight:700; color:#000091;">
+                                                                <a :href="p.search_urls.all" target="_blank" rel="noopener" style="color:inherit;" @click.stop x-text="p.potential_siaes"></a>
+                                                            </div>
+                                                            <div style="display:flex; gap:0.2rem; flex-wrap:wrap; margin-top:0.2rem;">
+                                                                <a :href="p.search_urls.insertion" target="_blank" rel="noopener" class="ipa-mini-badge" @click.stop :title="'Insertion : ' + p.insertion_siaes">Ins.&nbsp;<span x-text="p.insertion_siaes"></span></a>
+                                                                <a :href="p.search_urls.handicap" target="_blank" rel="noopener" class="ipa-mini-badge" @click.stop :title="'Handicap : ' + p.handicap_siaes">Hand.&nbsp;<span x-text="p.handicap_siaes"></span></a>
+                                                                <a :href="p.search_urls.local" target="_blank" rel="noopener" class="ipa-mini-badge" @click.stop :title="'Locales : ' + p.local_siaes">Loc.&nbsp;<span x-text="p.local_siaes"></span></a>
+                                                            </div>
+                                                        </td>
+                                                        <td style="text-align:right;">
+                                                            <a :href="p.search_urls.won_contract" target="_blank" rel="noopener" @click.stop x-text="p.siaes_with_won_contract"></a>
+                                                        </td>
+                                                        <td style="text-align:right;">
+                                                            <template x-if="p.eco_dependency !== null">
+                                                                <span class="fr-badge fr-badge--sm" :class="ecoDepBadgeClass(p.eco_dependency)" x-text="p.eco_dependency + ' %'"></span>
+                                                            </template>
+                                                            <template x-if="p.eco_dependency === null"><span>—</span></template>
+                                                        </td>
+                                                        <td>
+                                                            <span class="ipa-reco" :class="recoClass(p.recommendation_title)" :title="p.recommendation_title || ''" x-text="p.recommendation_title || '—'"></span>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    {# Erreurs #}
+                    <template x-if="erroredProjects.length > 0">
+                        <p class="fr-text--sm fr-mt-2w" style="color:#666;">
+                            <span x-text="erroredProjects.length + ' projet' + (erroredProjects.length > 1 ? 's' : '') + ' n\'ont pas pu être analysé' + (erroredProjects.length > 1 ? 's' : '') + ' et n\'apparaissent pas dans les résultats.'"></span>
+                        </p>
+                    </template>
+
+                </div>{# /colonne principale #}
+
+                {# ── Panneau latéral droit ── #}
+                <div class="ipa-side-panel">
+
+                    {# Placeholder — aucun projet sélectionné #}
+                    <template x-if="!selectedProject">
+                        <div class="ipa-side-panel__placeholder">
+                            <span class="fr-icon-cursor-line" style="font-size:2rem;" aria-hidden="true"></span>
+                            <p class="fr-text--sm fr-mb-0">Cliquez sur un projet<br>pour voir son aperçu</p>
+                        </div>
+                    </template>
+
+                    {# Aperçu du projet sélectionné #}
+                    <template x-if="selectedProject">
+                        <div>
+                            <div class="ipa-side-panel__header">
+                                <button class="ipa-side-panel__close" @click="selectedProject = null" aria-label="Fermer l'aperçu">×</button>
+                                <p class="fr-text--xs fr-mb-1v" style="color:#555; text-transform:uppercase; letter-spacing:.04em;">Aperçu du projet</p>
+                                <p style="font-size:1rem; font-weight:700; margin:0; padding-right:1.5rem;" x-text="selectedProject.titre"></p>
+                                <p class="fr-text--sm fr-mb-0 fr-mt-1v" style="color:#666;">
+                                    <span x-text="selectedProject.secteur_name"></span>
+                                    &nbsp;·&nbsp;
+                                    <span x-text="selectedProject.perimeter_name"></span>
+                                </p>
+                                <template x-if="selectedProject.montant">
+                                    <p class="fr-text--sm fr-mb-0" style="color:#666;">
+                                        <span x-text="selectedProject.montant + ' €'"></span>
+                                    </p>
+                                </template>
+                            </div>
+
+                            <div class="ipa-side-panel__body">
+
+                                {# Recommandation #}
+                                <div class="fr-mb-2w">
+                                    <span class="ipa-reco ipa-reco--lg"
+                                          :class="recoClass(selectedProject.recommendation_title)"
+                                          x-text="selectedProject.recommendation_title || 'Pas de recommandation (montant non renseigné)'"></span>
+                                </div>
+
+                                {# Structures #}
+                                <p style="font-size:0.75rem; font-weight:600; text-transform:uppercase; color:#555; letter-spacing:.04em; margin-bottom:0.5rem;">Structures potentielles</p>
+                                <div class="ipa-panel-kpi">
+                                    <span class="ipa-panel-kpi__label">Total</span>
+                                    <a :href="selectedProject.search_urls.all" target="_blank" rel="noopener"
+                                       class="ipa-panel-kpi__value ipa-panel-kpi__value--accent"
+                                       x-text="selectedProject.potential_siaes"></a>
+                                </div>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.4rem; margin-bottom:1rem;">
+                                    <div class="ipa-panel-kpi">
+                                        <span class="ipa-panel-kpi__label">Insertion</span>
+                                        <a :href="selectedProject.search_urls.insertion" target="_blank" rel="noopener" class="ipa-panel-kpi__value" x-text="selectedProject.insertion_siaes"></a>
+                                    </div>
+                                    <div class="ipa-panel-kpi">
+                                        <span class="ipa-panel-kpi__label">Handicap</span>
+                                        <a :href="selectedProject.search_urls.handicap" target="_blank" rel="noopener" class="ipa-panel-kpi__value" x-text="selectedProject.handicap_siaes"></a>
+                                    </div>
+                                    <div class="ipa-panel-kpi">
+                                        <span class="ipa-panel-kpi__label">Locales</span>
+                                        <a :href="selectedProject.search_urls.local" target="_blank" rel="noopener" class="ipa-panel-kpi__value" x-text="selectedProject.local_siaes"></a>
+                                    </div>
+                                    <div class="ipa-panel-kpi">
+                                        <span class="ipa-panel-kpi__label">Super prest.</span>
+                                        <a :href="selectedProject.search_urls.super_badge" target="_blank" rel="noopener" class="ipa-panel-kpi__value" x-text="selectedProject.siaes_with_super_badge"></a>
+                                    </div>
+                                    <div class="ipa-panel-kpi" style="grid-column:1/-1;">
+                                        <span class="ipa-panel-kpi__label">Marchés remportés</span>
+                                        <a :href="selectedProject.search_urls.won_contract" target="_blank" rel="noopener" class="ipa-panel-kpi__value" x-text="selectedProject.siaes_with_won_contract"></a>
+                                    </div>
+                                </div>
+
+                                {# Dépendance éco #}
+                                <template x-if="selectedProject.eco_dependency !== null">
+                                    <div class="fr-mb-2w">
+                                        <p style="font-size:0.75rem; font-weight:600; text-transform:uppercase; color:#555; letter-spacing:.04em; margin-bottom:0.5rem;">Analyse économique</p>
+                                        <div class="ipa-panel-kpi">
+                                            <span class="ipa-panel-kpi__label">Dépendance économique</span>
+                                            <span class="fr-badge fr-badge--sm"
+                                                  :class="ecoDepBadgeClass(selectedProject.eco_dependency)"
+                                                  x-text="selectedProject.eco_dependency + ' %'"></span>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                {# CTA vers page détail #}
+                                <a :href="selectedProject.detail_url"
+                                   class="fr-btn fr-btn--primary fr-icon-arrow-right-line fr-btn--icon-right"
+                                   style="width:100%; justify-content:space-between;">
+                                    Voir l'analyse complète
+                                </a>
+
+                            </div>
+                        </div>
+                    </template>
+
+                </div>{# /panneau latéral #}
+
+            </div>{# /ipa-dashboard #}
 
         </div>{# /x-data=ipaResults() #}
 
@@ -1308,6 +1431,9 @@
             showMoreSectors: false,
             showMorePerimeters: false,
             expandedGroups: {},
+            selectedProject: null,
+            currentPage: 1,
+            pageSize: 25,
 
             get filteredProjects() {
                 return this.allProjects.filter(p => {
@@ -1328,6 +1454,23 @@
                     if (typeof va === 'string') return dir * va.localeCompare(vb, 'fr');
                     return dir * (va - vb);
                 });
+            },
+
+            get paginatedProjects() {
+                const start = (this.currentPage - 1) * this.pageSize;
+                return this.sortedProjects.slice(start, start + this.pageSize);
+            },
+
+            get totalPages() {
+                return Math.max(1, Math.ceil(this.sortedProjects.length / this.pageSize));
+            },
+
+            get paginationInfo() {
+                const total = this.sortedProjects.length;
+                if (total === 0) return '0 projet';
+                const start = (this.currentPage - 1) * this.pageSize + 1;
+                const end = Math.min(this.currentPage * this.pageSize, total);
+                return `${start}–${end} sur ${total} projet${total > 1 ? 's' : ''}`;
             },
 
             get groupedBySector() {
@@ -1366,9 +1509,24 @@
                 const ps = this.filteredProjects;
                 const count = ps.length;
                 const avgPotential = count ? Math.round(ps.reduce((s, p) => s + p.potential_siaes, 0) / count) : 0;
-                const fortPotentiel = ps.filter(p => p.recommendation_title === 'Réservation totale').length;
-                const sansPotentiel = ps.filter(p => p.recommendation_title === 'Aucun potentiel inclusif identifié').length;
+                const fortPotentiel = ps.filter(p => p.recommendation_key === 'reservation').length;
+                const sansPotentiel = ps.filter(p => p.recommendation_key === 'aucun').length;
                 return { count, avgPotential, fortPotentiel, sansPotentiel };
+            },
+
+            selectProject(p) {
+                if (this.isSelected(p)) {
+                    this.selectedProject = null;
+                } else {
+                    this.selectedProject = p;
+                }
+            },
+
+            isSelected(p) {
+                return this.selectedProject !== null &&
+                    this.selectedProject.titre === p.titre &&
+                    this.selectedProject.secteur_name === p.secteur_name &&
+                    this.selectedProject.perimeter_name === p.perimeter_name;
             },
 
             toggleSort(col) {
@@ -1378,6 +1536,7 @@
                     this.sort.col = col;
                     this.sort.dir = 'desc';
                 }
+                this.currentPage = 1;
             },
 
             sortIcon(col) {
@@ -1390,6 +1549,7 @@
                 const idx = arr.indexOf(value);
                 if (idx === -1) arr.push(value);
                 else arr.splice(idx, 1);
+                this.currentPage = 1;
             },
 
             toggleGroup(name) {
