@@ -343,7 +343,7 @@ def _build_search_urls(sector: Sector, perimeter: Perimeter | None, presta_mode:
 
     def url(kind_filter=None, extra_params=None):
         params = base_params + kind_params(kind_filter) + (extra_params or [])
-        return f"/prestataires/?{urlencode(params)}"
+        return f"/prestataires/?{urlencode(params)}#searchResults"
 
     return {
         "all": url(),
