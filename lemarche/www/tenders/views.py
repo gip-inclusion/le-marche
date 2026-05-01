@@ -1218,12 +1218,12 @@ def _get_partner_siaes(tender: Tender, initiating_siae: Siae, kind_list: list, m
 
     scored = []
     for siae in qs:
-        siae._score = _score_siae(siae, tender_sector_ids)
-        siae._is_interested = siae.pk in interested_ids
-        siae._wants_groupement = siae.pk in groupement_ids
+        siae.groupement_score = _score_siae(siae, tender_sector_ids)
+        siae.is_interested_in_tender = siae.pk in interested_ids
+        siae.wants_groupement = siae.pk in groupement_ids
         scored.append(siae)
 
-    scored.sort(key=lambda s: s._score, reverse=True)
+    scored.sort(key=lambda s: s.groupement_score, reverse=True)
     return scored[:max_results]
 
 

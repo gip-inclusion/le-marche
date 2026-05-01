@@ -17,10 +17,10 @@
                     {% if siae.super_badge %}
                         <span class="fr-badge fr-badge--success fr-badge--sm fr-mr-1w">Super-prestataire</span>
                     {% endif %}
-                    {% if siae._is_interested %}
+                    {% if siae.is_interested_in_tender %}
                         <span class="fr-badge fr-badge--info fr-badge--sm fr-mr-1w">Déjà intéressé par ce besoin</span>
                     {% endif %}
-                    {% if siae._wants_groupement %}
+                    {% if siae.wants_groupement %}
                         <span class="fr-badge fr-badge--purple-glycine fr-badge--sm">Cherche aussi un partenaire groupement</span>
                     {% endif %}
                 </div>
