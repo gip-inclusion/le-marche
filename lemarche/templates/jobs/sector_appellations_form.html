@@ -1,0 +1,51 @@
+{% extends "layouts/base.html" %}
+{% load dsfr_tags static %}
+
+{% block page_title %}Secteurs d'activité et métiers correspondants{% endblock page_title %}
+
+{% block breadcrumb %}
+    {% dsfr_breadcrumb %}
+{% endblock breadcrumb %}
+
+{% block content %}
+    <div class="fr-container fr-my-6w">
+        <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-lg-10">
+                <h1>Secteurs d'activité et métiers correspondants</h1>
+                <p class="fr-text--lead fr-mb-4w">
+                    Cette page montre l'affichage dynamique des métiers en fonction des secteurs d'activité sélectionnés.
+                </p>
+                <form method="get" class="fr-mb-6w">
+                    <div class="fr-grid-row">
+                        <div class="fr-col-12 fr-col-lg-8">
+                            {% dsfr_form_field form.sectors %}
+                            
+                            <!-- Container for dynamic appellations display -->
+                            <div 
+                                id="appellations-container"
+                                hx-get="{% url 'jobs:sector-appellations' %}"
+                                hx-trigger="multiselect:change from:window"
+                                hx-target="#appellations-container"
+                                hx-swap="innerHTML"
+                                hx-vals="js:{ sectors: event.detail.selectedValues }"
+                                class="fr-mt-4w"
+                            >
+                                <div class="fr-callout fr-callout--purple-glycine">
+                                    <p class="fr-callout__text fr-mb-0">
+                                        <span class="fr-icon-arrow-up-line" aria-hidden="true"></span>
+                                        Sélectionnez des secteurs ci-dessus pour voir les métiers correspondants
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+    <script type="text/javascript" src="{% static 'js/multiselect.js' %}"></script>
+{% endblock extra_js %}
+
