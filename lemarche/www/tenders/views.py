@@ -11,7 +11,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
-from django.db.models import OuterRef, Prefetch, Subquery
+from django.db.models import ExpressionWrapper, FloatField, OuterRef, Prefetch, Subquery
 from django.forms import formset_factory
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
@@ -1195,7 +1195,12 @@ def _get_partner_siaes(tender: Tender, initiating_siae: Siae, kind_list: list, m
         .prefetch_related("activities")
     )
     if initiating_siae.coords:
-        qs = qs.annotate(distance_km=Distance("coords", initiating_siae.coords) / 1000)
+        qs = qs.annotate(
+            distance_km=ExpressionWrapper(
+                Distance("coords", initiating_siae.coords) / 1000,
+                output_field=FloatField(),
+            )
+        )
 
     tender_sector_ids = set(tender.sectors.values_list("id", flat=True))
 
