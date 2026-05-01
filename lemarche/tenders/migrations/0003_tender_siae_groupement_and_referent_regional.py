@@ -7,32 +7,69 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tenders', '0002_alter_tender_sectors'),
+        ("tenders", "0002_alter_tender_sectors"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tendersiae',
-            name='detail_groupement_click_date',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Date de clic sur Répondre en groupement'),
+            model_name="tendersiae",
+            name="detail_groupement_click_date",
+            field=models.DateTimeField(blank=True, null=True, verbose_name="Date de clic sur Répondre en groupement"),
         ),
         migrations.CreateModel(
-            name='ReferentRegional',
+            name="ReferentRegional",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('region', models.CharField(choices=[('Auvergne-Rhône-Alpes', 'Auvergne-Rhône-Alpes'), ('Bourgogne-Franche-Comté', 'Bourgogne-Franche-Comté'), ('Bretagne', 'Bretagne'), ('Centre-Val de Loire', 'Centre-Val de Loire'), ('Corse', 'Corse'), ('Grand Est', 'Grand Est'), ('Guadeloupe', 'Guadeloupe'), ('Guyane', 'Guyane'), ('Hauts-de-France', 'Hauts-de-France'), ('Île-de-France', 'Île-de-France'), ('La Réunion', 'La Réunion'), ('Martinique', 'Martinique'), ('Mayotte', 'Mayotte'), ('Normandie', 'Normandie'), ('Nouvelle-Aquitaine', 'Nouvelle-Aquitaine'), ('Occitanie', 'Occitanie'), ('Pays de la Loire', 'Pays de la Loire'), ("Provence-Alpes-Côte d'Azur", "Provence-Alpes-Côte d'Azur"), ("Collectivités d'outre-mer", "Collectivités d'outre-mer")], max_length=255, verbose_name='Région')),
-                ('is_active', models.BooleanField(default=True, verbose_name='Actif')),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Date de création')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Date de modification')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='referent_regional_set', to=settings.AUTH_USER_MODEL, verbose_name='Utilisateur')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "region",
+                    models.CharField(
+                        choices=[
+                            ("Auvergne-Rhône-Alpes", "Auvergne-Rhône-Alpes"),
+                            ("Bourgogne-Franche-Comté", "Bourgogne-Franche-Comté"),
+                            ("Bretagne", "Bretagne"),
+                            ("Centre-Val de Loire", "Centre-Val de Loire"),
+                            ("Corse", "Corse"),
+                            ("Grand Est", "Grand Est"),
+                            ("Guadeloupe", "Guadeloupe"),
+                            ("Guyane", "Guyane"),
+                            ("Hauts-de-France", "Hauts-de-France"),
+                            ("Île-de-France", "Île-de-France"),
+                            ("La Réunion", "La Réunion"),
+                            ("Martinique", "Martinique"),
+                            ("Mayotte", "Mayotte"),
+                            ("Normandie", "Normandie"),
+                            ("Nouvelle-Aquitaine", "Nouvelle-Aquitaine"),
+                            ("Occitanie", "Occitanie"),
+                            ("Pays de la Loire", "Pays de la Loire"),
+                            ("Provence-Alpes-Côte d'Azur", "Provence-Alpes-Côte d'Azur"),
+                            ("Collectivités d'outre-mer", "Collectivités d'outre-mer"),
+                        ],
+                        max_length=255,
+                        verbose_name="Région",
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True, verbose_name="Actif")),
+                (
+                    "created_at",
+                    models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date de création"),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True, verbose_name="Date de modification")),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="referent_regional_set",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Utilisateur",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Référent régional',
-                'verbose_name_plural': 'Référents régionaux',
-                'ordering': ['region', 'user__last_name'],
+                "verbose_name": "Référent régional",
+                "verbose_name_plural": "Référents régionaux",
+                "ordering": ["region", "user__last_name"],
             },
         ),
     ]
