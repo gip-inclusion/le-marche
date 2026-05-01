@@ -14,23 +14,24 @@
          }"
          :style="$store.groupement.isSelected(pk) ? 'border: 2px solid #000091; box-shadow: 0 0 0 2px #dde3fa;' : ''">
 
-        {# Logo + sélection #}
+        {# Logo + nom + checkbox sur la même ligne #}
         <div class="fr-card__header">
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem 0; background: #f9f9f9; border-bottom: 1px solid #e5e5e5;">
-                <div style="height: 48px; display: flex; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; justify-content: space-between; padding: 0.75rem 1rem; background: #f9f9f9; border-bottom: 1px solid #e5e5e5;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 0;">
                     {% if siae.logo_url %}
                         <img src="{{ siae.logo_url }}"
-                             style="max-height: 40px; max-width: 100px; object-fit: contain;"
+                             style="flex-shrink:0; height: 36px; width: 36px; object-fit: contain;"
                              alt="Logo {{ siae.name_display }}"
                              loading="lazy" />
                     {% else %}
-                        <div style="width:40px; height:40px; background:#e5e5e5; border-radius:4px; display:flex; align-items:center; justify-content:center;">
-                            <span class="fr-icon-building-line" aria-hidden="true" style="color:#999;"></span>
+                        <div style="flex-shrink:0; width:36px; height:36px; background:#e5e5e5; border-radius:4px; display:flex; align-items:center; justify-content:center;">
+                            <span class="fr-icon-building-line" aria-hidden="true" style="color:#999; font-size:1rem;"></span>
                         </div>
                     {% endif %}
+                    <h3 class="fr-text--sm fr-text--bold fr-mb-0" style="line-height:1.3; overflow:hidden; text-overflow:ellipsis;">{{ siae.name_display }}</h3>
                 </div>
                 {# Checkbox sélection #}
-                <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; user-select: none;"
+                <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; user-select: none; flex-shrink: 0;"
                        @click.prevent="$store.groupement.toggle(pk, siaeName)">
                     <input type="checkbox"
                            class="fr-checkbox"
@@ -45,8 +46,7 @@
         <div class="fr-card__body">
             <div class="fr-card__content">
 
-                {# Nom + type #}
-                <h3 class="fr-card__title fr-text--md fr-mb-1w">{{ siae.name_display }}</h3>
+                {# Type de structure #}
                 <p class="fr-text--xs fr-text-mention--grey fr-mb-2w">
                     <span class="fr-badge fr-badge--blue-cumulus fr-badge--sm fr-mr-1w">{{ siae.kind }}</span>
                     {{ siae.get_kind_display }}
