@@ -1,38 +1,58 @@
 {% load static humanize %}
 
-<div class="fr-col-12 fr-col-md-4">
-    <div class="fr-card fr-card--shadow fr-h-100"
+<div class="fr-col-12 fr-col-md-6 fr-col-lg-6">
+    <div class="fr-card fr-card--shadow"
+         style="transition: box-shadow 0.15s, border-color 0.15s;"
          x-data="{
              showContact: false,
              copiedEmail: false,
              copiedPhone: false,
              hoverEmail: false,
-             hoverPhone: false
-         }">
+             hoverPhone: false,
+             pk: '{{ siae.pk }}',
+             siaeName: '{{ siae.name_display|escapejs }}'
+         }"
+         :style="$store.groupement.isSelected(pk) ? 'border: 2px solid #000091; box-shadow: 0 0 0 2px #dde3fa;' : ''">
 
-        {# En-tête card : logo + nom #}
+        {# Logo + sélection #}
         <div class="fr-card__header">
-            <div class="fr-card__img" style="height: 80px; display: flex; align-items: center; justify-content: center; background: #f6f6f6; padding: 0.75rem;">
-                {% if siae.logo_url %}
-                    <img src="{{ siae.logo_url }}"
-                         style="max-height: 56px; max-width: 100%; object-fit: contain;"
-                         alt="Logo {{ siae.name_display }}"
-                         loading="lazy" />
-                {% else %}
-                    <img src="{% static 'img/default-listing.png' %}"
-                         style="max-height: 56px; max-width: 56px; object-fit: contain; opacity: 0.4;"
-                         alt="{{ siae.name_display }}"
-                         loading="lazy" />
-                {% endif %}
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem 0; background: #f9f9f9; border-bottom: 1px solid #e5e5e5;">
+                <div style="height: 48px; display: flex; align-items: center;">
+                    {% if siae.logo_url %}
+                        <img src="{{ siae.logo_url }}"
+                             style="max-height: 40px; max-width: 100px; object-fit: contain;"
+                             alt="Logo {{ siae.name_display }}"
+                             loading="lazy" />
+                    {% else %}
+                        <div style="width:40px; height:40px; background:#e5e5e5; border-radius:4px; display:flex; align-items:center; justify-content:center;">
+                            <span class="fr-icon-building-line" aria-hidden="true" style="color:#999;"></span>
+                        </div>
+                    {% endif %}
+                </div>
+                {# Checkbox sélection #}
+                <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; user-select: none;"
+                       @click.prevent="$store.groupement.toggle(pk, siaeName)">
+                    <input type="checkbox"
+                           class="fr-checkbox"
+                           :checked="$store.groupement.isSelected(pk)"
+                           @change.prevent="$store.groupement.toggle(pk, siaeName)"
+                           style="cursor: pointer;">
+                    <span class="fr-text--xs" x-text="$store.groupement.isSelected(pk) ? 'Sélectionné' : 'Sélectionner'">Sélectionner</span>
+                </label>
             </div>
         </div>
 
         <div class="fr-card__body">
             <div class="fr-card__content">
 
-                {# Nom + badges #}
+                {# Nom + type #}
                 <h3 class="fr-card__title fr-text--md fr-mb-1w">{{ siae.name_display }}</h3>
+                <p class="fr-text--xs fr-text-mention--grey fr-mb-2w">
+                    <span class="fr-badge fr-badge--blue-cumulus fr-badge--sm fr-mr-1w">{{ siae.kind }}</span>
+                    {{ siae.get_kind_display }}
+                </p>
 
+                {# Badges statut #}
                 <div class="fr-mb-2w">
                     {% if siae.super_badge %}
                         <span class="fr-badge fr-badge--success fr-badge--sm fr-mr-1w">Super-prestataire</span>
@@ -55,21 +75,28 @@
                 </p>
 
                 {# Indicateurs clés #}
-                <ul class="fr-text--sm fr-mb-2w" style="list-style: none; padding: 0; margin: 0;">
-                    {% if siae.ca or siae.api_entreprise_ca %}
-                        <li>CA : <strong>{{ siae.ca|default:siae.api_entreprise_ca|intcomma }} €</strong></li>
-                    {% endif %}
-                    {% if siae.employees_insertion_count or siae.employees_permanent_count %}
-                        <li>
-                            {% with total=siae.employees_insertion_count|default:0 %}
-                                <strong>{{ total }}</strong> salarié{{ total|pluralize }} en insertion
-                            {% endwith %}
-                        </li>
-                    {% endif %}
-                    {% if siae.has_won_contract_last_3_years %}
-                        <li>✓ Marchés publics remportés ces 3 ans</li>
-                    {% endif %}
-                </ul>
+                {% if siae.ca or siae.api_entreprise_ca or siae.employees_insertion_count or siae.employees_permanent_count or siae.has_won_contract_last_3_years %}
+                    <ul class="fr-text--sm fr-mb-2w" style="list-style: none; padding: 0; margin: 0;">
+                        {% if siae.ca or siae.api_entreprise_ca %}
+                            <li>
+                                <span class="fr-icon-money-euro-circle-line fr-icon--sm fr-mr-1w" aria-hidden="true"></span>
+                                CA : <strong>{{ siae.ca|default:siae.api_entreprise_ca|intcomma }} €</strong>
+                            </li>
+                        {% endif %}
+                        {% if siae.employees_insertion_count %}
+                            <li>
+                                <span class="fr-icon-team-line fr-icon--sm fr-mr-1w" aria-hidden="true"></span>
+                                <strong>{{ siae.employees_insertion_count }}</strong> salarié{{ siae.employees_insertion_count|pluralize }} en insertion
+                            </li>
+                        {% endif %}
+                        {% if siae.has_won_contract_last_3_years %}
+                            <li>
+                                <span class="fr-icon-award-line fr-icon--sm fr-mr-1w" aria-hidden="true"></span>
+                                Marchés publics remportés ces 3 ans
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
 
                 {# CTA coordonnées #}
                 <div x-show="!showContact">
@@ -85,7 +112,7 @@
                         {{ siae.contact_full_name|default:"Responsable de la structure" }}
                     </p>
 
-                    {# Email avec bouton copier au survol #}
+                    {# Email au survol #}
                     <div class="fr-mb-1w"
                          x-data="{ hoverEmail: false, copiedEmail: false }"
                          @mouseenter="hoverEmail = true"
@@ -102,9 +129,9 @@
                         </button>
                     </div>
 
-                    {# Téléphone avec bouton copier au survol #}
+                    {# Téléphone au survol #}
                     {% if siae.contact_phone %}
-                        <div class="fr-mb-2w"
+                        <div class="fr-mb-0"
                              x-data="{ hoverPhone: false, copiedPhone: false }"
                              @mouseenter="hoverPhone = true"
                              @mouseleave="hoverPhone = false"

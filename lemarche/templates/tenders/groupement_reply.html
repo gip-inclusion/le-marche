@@ -4,150 +4,404 @@
 {% block page_title %}Répondre en groupement — {{ tender.title }}{{ block.super }}{% endblock page_title %}
 
 {% block content %}
+<style>
+.groupement-hero {
+    background: #f5f5fe;
+    border: 1px solid #cecece;
+    border-radius: 8px;
+    padding: 2.5rem;
+}
+.groupement-benefit {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+}
+.groupement-sidebar-card {
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+}
+.groupement-stepper-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.875rem;
+}
+.groupement-stepper-item:last-child { border-bottom: none; }
+.groupement-stepper-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: bold; flex-shrink: 0;
+    background: #e5e5e5; color: #666;
+}
+.groupement-stepper-item.active .groupement-stepper-num {
+    background: #000091; color: white;
+}
+.groupement-stepper-item.active { font-weight: bold; color: #000091; }
+.groupement-selected-panel {
+    background: #f0f0fb;
+    border: 2px solid #000091;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+.groupement-member-row {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #cecece;
+}
+.groupement-member-row:last-child { border-bottom: none; }
+.groupement-member-role {
+    font-size: 0.75rem;
+    color: #666;
+    background: #f6f6f6;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+}
+</style>
+
 <section>
-    <div class="fr-container fr-py-6w">
+    <div class="fr-container fr-py-5w">
 
-        {# Retour #}
-        <div class="fr-mb-4w">
-            <a href="{{ back_url }}" class="fr-link fr-icon-arrow-left-line fr-link--icon-left">
-                Retour au besoin d'achat
-            </a>
-        </div>
-
-        {# En-tête #}
-        <div class="fr-mb-5w">
-            <h1 class="fr-h2">Répondre en groupement pour : {{ tender.title }}</h1>
-        </div>
-
-        {# Bloc réassurance #}
-        <div class="fr-callout fr-callout--blue-ecume fr-mb-5w">
-            <h2 class="fr-callout__title fr-h5">Répondre en groupement, c'est simple</h2>
-            <p class="fr-callout__text">
-                Vous identifiez un partenaire ci-dessous, vous prenez contact, et votre référent régional facilite
-                la relation avec l'acheteur. Pas besoin de maîtriser les aspects juridiques — c'est son rôle.
-            </p>
-            <a href="https://lemarche.inclusion.gouv.fr/blog/groupement-cotraitance-exemple/"
-               class="fr-link fr-icon-article-line fr-link--icon-left"
-               target="_blank" rel="noopener noreferrer">
-                Ils l'ont fait — retour d'expérience
-            </a>
-        </div>
-
-        {# Section A — Prestation de service #}
-        <div class="fr-mb-6w">
-            <h2 class="fr-h4 fr-mb-1w">Les meilleures structures prestataires pour répondre avec vous</h2>
-            <p class="fr-text--sm fr-text-mention--grey fr-mb-3w">
-                Sélectionnées parmi les structures les mieux notées sur votre secteur et votre périmètre.
-            </p>
-
-            {% if presta_service_siaes %}
-                <div class="fr-grid-row fr-grid-row--gutters">
-                    {% for siae in presta_service_siaes %}
-                        {% include "tenders/_groupement_siae_card.html" with tender=tender initiating_siae=initiating_siae %}
-                    {% endfor %}
+        {# Hero #}
+        <div class="groupement-hero fr-mb-6w">
+            <div class="fr-mb-2w">
+                <a href="{{ back_url }}" class="fr-link fr-icon-arrow-left-line fr-link--icon-left fr-text--sm">
+                    Retour au besoin d'achat
+                </a>
+            </div>
+            <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+                <div class="fr-col-12 fr-col-lg-8">
+                    <p class="fr-text--sm fr-text-mention--grey fr-mb-1w">Répondre en groupement</p>
+                    <h1 class="fr-h3 fr-mb-1w">{{ tender.title }}</h1>
+                    <div class="fr-mb-2w">
+                        {% if tender.deadline_date_outdated %}
+                            <span class="fr-badge fr-badge--error fr-badge--sm">Clôturé</span>
+                        {% else %}
+                            <span class="fr-badge fr-badge--success fr-badge--sm">Ouvert</span>
+                        {% endif %}
+                    </div>
+                    <p class="fr-text--lead fr-mb-3w">
+                        Identifiez des partenaires complémentaires, prenez contact, et constituez une équipe pour répondre à ce marché.
+                    </p>
+                    <a href="{{ back_url }}" class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-arrow-right-line fr-btn--icon-right">
+                        Voir les détails du besoin d'achat
+                    </a>
                 </div>
-            {% else %}
-                <p class="fr-text-mention--grey">
-                    Aucune structure partenaire de prestation de service identifiée pour ce secteur et ce périmètre.
-                </p>
-            {% endif %}
-        </div>
-
-        {# Section B — Mise à disposition #}
-        <div class="fr-mb-6w">
-            <h2 class="fr-h4 fr-mb-1w">Les meilleures structures de mise à disposition de personnel pour répondre avec vous</h2>
-            <p class="fr-text--sm fr-mb-3w">
-                Une structure de mise à disposition peut intervenir en sous-traitance sur la partie ressources humaines
-                de votre réponse : recrutement de profils en insertion, renfort de personnel temporaire.
-                Cela renforce votre dossier et votre capacité à exécuter le marché.
-            </p>
-
-            {% if mise_a_dispo_siaes %}
-                <div class="fr-grid-row fr-grid-row--gutters">
-                    {% for siae in mise_a_dispo_siaes %}
-                        {% include "tenders/_groupement_siae_card.html" with tender=tender initiating_siae=initiating_siae %}
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p class="fr-text-mention--grey">
-                    Aucune structure partenaire de mise à disposition identifiée pour ce secteur et ce périmètre.
-                </p>
-            {% endif %}
-        </div>
-
-        {# Mail type #}
-        <div class="fr-callout fr-mb-6w"
-             x-data="{
-                 copied: false,
-                 message: `Bonjour,\n\nJe suis {{ initiating_siae.name }}, et je réponds actuellement au besoin d'achat suivant :\n« {{ tender.title }} »\n\nJe pense que nous pourrions y répondre ensemble en groupement ou en sous-traitance. Nos compétences semblent complémentaires.\n\nSeriez-vous disponible pour en discuter rapidement ?\n\nCordialement,\n{{ initiating_siae.contact_full_name }} — {{ initiating_siae.name }}\n{% if initiating_siae.contact_phone %}{{ initiating_siae.contact_phone_display }} — {% endif %}{{ initiating_siae.contact_email }}`
-             }">
-            <h2 class="fr-callout__title fr-h5">Pas d'inspiration pour votre prise de contact ?</h2>
-            <p class="fr-callout__text fr-mb-2w">
-                Copiez notre message type et adaptez-le pour chaque structure que vous souhaitez contacter.
-            </p>
-            <div class="fr-p-3w fr-mb-2w" style="background: white; border-radius: 4px; border: 1px solid #e5e5e5; white-space: pre-wrap; font-size: 0.875rem; font-family: monospace;">{{ initiating_siae.name }} — {{ tender.title }}
-…</div>
-            <button type="button"
-                    class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-clipboard-line fr-btn--icon-left"
-                    @click="navigator.clipboard.writeText(message); copied = true; setTimeout(() => copied = false, 3000)">
-                <span x-text="copied ? '✓ Message copié !' : 'Copier le message type'">Copier le message type</span>
-            </button>
-        </div>
-
-        {# Référents régionaux #}
-        <div class="fr-callout fr-mb-6w">
-            <h2 class="fr-callout__title fr-h5">
-                {% if referents %}
-                    Vos référents régionaux{% if initiating_siae.region %} — {{ initiating_siae.region }}{% endif %}
-                {% else %}
-                    L'équipe du Marché de l'inclusion
-                {% endif %}
-            </h2>
-            {% if referents %}
-                {% for referent in referents %}
-                    <div class="fr-mb-2w"
-                         x-data="{ hovered: false, copied: false }"
-                         @mouseenter="hovered = true"
-                         @mouseleave="hovered = false">
-                        <p class="fr-mb-1w fr-text--bold">{{ referent.user.full_name }}</p>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span class="fr-text--sm">{{ referent.user.email }}</span>
-                            <button x-show="hovered || copied"
-                                    type="button"
-                                    class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-only fr-icon-clipboard-line"
-                                    style="padding: 0.2rem; min-height: auto; font-size: 0.75rem;"
-                                    title="Copier l'email"
-                                    @click.stop="navigator.clipboard.writeText('{{ referent.user.email }}'); copied = true; setTimeout(() => copied = false, 2000)">
-                                <span x-show="copied" class="fr-text--xs">✓</span>
-                            </button>
+                <div class="fr-col-12 fr-col-lg-4 fr-mt-4w fr-mt-lg-0">
+                    <div class="groupement-benefit fr-mb-2w">
+                        <span class="fr-icon-group-line fr-icon--sm" aria-hidden="true" style="color:#000091; flex-shrink:0;"></span>
+                        <div>
+                            <p class="fr-text--sm fr-text--bold fr-mb-0">Plus fort ensemble</p>
+                            <p class="fr-text--xs fr-text-mention--grey fr-mb-0">Augmentez vos chances de répondre au marché.</p>
                         </div>
                     </div>
-                {% endfor %}
-                <p class="fr-text--sm fr-text-mention--grey fr-mb-0">
-                    Votre référent régional n'a pas accès aux coordonnées de l'acheteur.
-                    Son rôle est de vous accompagner dans votre démarche et de faciliter la relation avec l'acheteur via l'équipe du Marché.
-                </p>
-            {% else %}
-                <p class="fr-callout__text">
-                    Contactez l'équipe du Marché de l'inclusion pour être accompagné dans votre démarche de groupement.
-                </p>
-                <div x-data="{ hovered: false, copied: false }"
-                     @mouseenter="hovered = true"
-                     @mouseleave="hovered = false"
-                     style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span class="fr-text--sm">commercial@lemarche.inclusion.beta.gouv.fr</span>
-                    <button x-show="hovered || copied"
-                            type="button"
-                            class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-only fr-icon-clipboard-line"
-                            style="padding: 0.2rem; min-height: auto; font-size: 0.75rem;"
-                            title="Copier l'email"
-                            @click.stop="navigator.clipboard.writeText('commercial@lemarche.inclusion.beta.gouv.fr'); copied = true; setTimeout(() => copied = false, 2000)">
-                        <span x-show="copied" class="fr-text--xs">✓</span>
-                    </button>
+                    <div class="groupement-benefit fr-mb-2w">
+                        <span class="fr-icon-search-line fr-icon--sm" aria-hidden="true" style="color:#000091; flex-shrink:0;"></span>
+                        <div>
+                            <p class="fr-text--sm fr-text--bold fr-mb-0">Partenaires complémentaires</p>
+                            <p class="fr-text--xs fr-text-mention--grey fr-mb-0">Identifiez les structures adaptées à votre besoin.</p>
+                        </div>
+                    </div>
+                    <div class="groupement-benefit">
+                        <span class="fr-icon-customer-service-line fr-icon--sm" aria-hidden="true" style="color:#000091; flex-shrink:0;"></span>
+                        <div>
+                            <p class="fr-text--sm fr-text--bold fr-mb-0">Accompagnement inclus</p>
+                            <p class="fr-text--xs fr-text-mention--grey fr-mb-0">Un référent peut vous aider à cadrer la démarche.</p>
+                        </div>
+                    </div>
                 </div>
-            {% endif %}
+            </div>
         </div>
 
+        {# Layout principal 2 colonnes #}
+        <div class="fr-grid-row fr-grid-row--gutters">
+
+            {# Colonne principale #}
+            <div class="fr-col-12 fr-col-lg-8">
+
+                {# Section A — Prestataires #}
+                <div class="fr-mb-5w">
+                    <h2 class="fr-h4 fr-mb-1w">Les meilleures structures prestataires pour répondre avec vous</h2>
+                    <p class="fr-text--sm fr-text-mention--grey fr-mb-3w">
+                        Sélectionnées parmi les structures les mieux classées sur votre secteur et votre périmètre.
+                        Cochez celles avec lesquelles vous souhaitez vous associer.
+                    </p>
+                    {% if presta_service_siaes %}
+                        <div class="fr-grid-row fr-grid-row--gutters">
+                            {% for siae in presta_service_siaes %}
+                                {% include "tenders/_groupement_siae_card.html" with tender=tender initiating_siae=initiating_siae %}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="fr-callout fr-callout--brown-caramel">
+                            <h3 class="fr-callout__title fr-h6">Aucun partenaire prestataire identifié pour ce secteur et ce périmètre.</h3>
+                            <p class="fr-callout__text">Vous pouvez élargir votre recherche ou contacter l'équipe pour identifier d'autres pistes de groupement.</p>
+                            <a href="mailto:commercial@lemarche.inclusion.beta.gouv.fr" class="fr-btn fr-btn--sm fr-btn--secondary">Contacter l'équipe</a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Section B — Mise à disposition #}
+                <div class="fr-mb-5w">
+                    <h2 class="fr-h4 fr-mb-1w">Les meilleures structures de mise à disposition de personnel pour répondre avec vous</h2>
+                    <p class="fr-text--sm fr-mb-3w">
+                        Ces structures peuvent renforcer votre capacité d'exécution : recrutement de profils en insertion, mise à disposition de personnel ou renfort temporaire.
+                    </p>
+                    {% if mise_a_dispo_siaes %}
+                        <div class="fr-grid-row fr-grid-row--gutters">
+                            {% for siae in mise_a_dispo_siaes %}
+                                {% include "tenders/_groupement_siae_card.html" with tender=tender initiating_siae=initiating_siae %}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="fr-callout fr-callout--brown-caramel">
+                            <h3 class="fr-callout__title fr-h6">Aucun partenaire de mise à disposition identifié pour ce secteur et ce périmètre.</h3>
+                            <p class="fr-callout__text">Vous pouvez élargir votre recherche ou contacter l'équipe pour identifier d'autres pistes de groupement.</p>
+                            <a href="mailto:commercial@lemarche.inclusion.beta.gouv.fr" class="fr-btn fr-btn--sm fr-btn--secondary">Contacter l'équipe</a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Bloc Votre groupement #}
+                <div class="groupement-selected-panel fr-mb-5w" x-data>
+                    <h2 class="fr-h5 fr-mb-2w">
+                        <span class="fr-icon-team-line fr-icon--sm fr-mr-1w" aria-hidden="true"></span>
+                        Votre groupement
+                        <span class="fr-badge fr-badge--sm fr-ml-1w"
+                              x-text="$store.groupement.count > 0 ? $store.groupement.count + ' partenaire' + ($store.groupement.count > 1 ? 's' : '') : '0 partenaire'">
+                            0 partenaire
+                        </span>
+                    </h2>
+                    <template x-if="$store.groupement.count === 0">
+                        <p class="fr-text--sm fr-text-mention--grey fr-mb-0">
+                            Sélectionnez une ou plusieurs structures pour préparer votre prise de contact.
+                        </p>
+                    </template>
+                    <template x-if="$store.groupement.count > 0">
+                        <div>
+                            <div class="groupement-member-row">
+                                <span class="fr-icon-user-line fr-icon--sm" aria-hidden="true" style="color:#000091;"></span>
+                                <span class="fr-text--sm fr-text--bold">{{ initiating_siae.name }}</span>
+                                <span class="groupement-member-role">Mandataire pressenti</span>
+                            </div>
+                            <template x-for="s in $store.groupement.selected" :key="s.id">
+                                <div class="groupement-member-row">
+                                    <span class="fr-icon-building-line fr-icon--sm" aria-hidden="true" style="color:#666;"></span>
+                                    <span class="fr-text--sm" x-text="s.name"></span>
+                                    <span class="groupement-member-role">Partenaire pressenti</span>
+                                    <button type="button"
+                                            class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-only fr-icon-close-line fr-btn--sm"
+                                            style="margin-left:auto; min-height:auto;"
+                                            title="Retirer"
+                                            @click="$store.groupement.toggle(s.id, s.name)"></button>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+
+                {# Prise de contact #}
+                <div class="fr-callout fr-mb-5w"
+                     x-data="{
+                         copied: false,
+                         message: `Bonjour,\n\nJe suis {{ initiating_siae.name|escapejs }}, et je réponds actuellement au besoin d'achat suivant :\n« {{ tender.title|escapejs }} »\n\nJe pense que nous pourrions y répondre ensemble en groupement ou en sous-traitance. Nos compétences semblent complémentaires.\n\nSeriez-vous disponible pour en discuter rapidement ?\n\nCordialement,\n{{ initiating_siae.contact_full_name|escapejs }} — {{ initiating_siae.name|escapejs }}\n{% if initiating_siae.contact_phone %}{{ initiating_siae.contact_phone_display|escapejs }} — {% endif %}{{ initiating_siae.contact_email|escapejs }}`
+                     }">
+                    <h2 class="fr-callout__title fr-h5">Votre prise de contact facilitée</h2>
+                    <p class="fr-callout__text fr-mb-2w">
+                        Utilisez ce message type pour contacter les structures sélectionnées et leur proposer d'échanger sur une réponse en groupement.
+                    </p>
+                    <textarea class="fr-input fr-mb-2w"
+                              rows="8"
+                              readonly
+                              style="font-family: monospace; font-size: 0.8rem; background: white; resize: none;"
+                              x-text="message"></textarea>
+                    <div class="fr-btns-group fr-btns-group--inline">
+                        <button type="button"
+                                class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-clipboard-line fr-btn--icon-left"
+                                @click="navigator.clipboard.writeText(message); copied = true; setTimeout(() => copied = false, 3000)">
+                            <span x-text="copied ? '✓ Message copié !' : 'Copier le message type'">Copier le message type</span>
+                        </button>
+                        <button type="button"
+                                class="fr-btn fr-btn--sm fr-icon-send-plane-line fr-btn--icon-left"
+                                x-data
+                                :disabled="$store.groupement.count === 0"
+                                title="Sélectionnez au moins une structure pour activer ce bouton">
+                            Contacter les structures sélectionnées
+                        </button>
+                    </div>
+                    <p class="fr-text--xs fr-text-mention--grey fr-mt-1w fr-mb-0"
+                       x-data
+                       x-show="$store.groupement.count === 0">
+                        Sélectionnez au moins une structure pour activer le bouton de contact.
+                    </p>
+                </div>
+
+                {# Bloc final équipe #}
+                <div class="fr-callout fr-callout--blue-ecume fr-mb-3w">
+                    <h2 class="fr-callout__title fr-h5">L'équipe du Marché de l'inclusion à vos côtés</h2>
+                    <p class="fr-callout__text fr-mb-2w">
+                        Nous pouvons vous aider à identifier les bons partenaires, clarifier le rôle de chacun et sécuriser la prise de contact.
+                    </p>
+                    <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+                        <div class="fr-col-12 fr-col-md-4">
+                            <p class="fr-text--sm fr-mb-0">
+                                <span class="fr-icon-verified-line fr-icon--sm fr-mr-1w" aria-hidden="true"></span>
+                                Mise en relation qualifiée
+                            </p>
+                        </div>
+                        <div class="fr-col-12 fr-col-md-4">
+                            <p class="fr-text--sm fr-mb-0">
+                                <span class="fr-icon-file-text-line fr-icon--sm fr-mr-1w" aria-hidden="true"></span>
+                                Appui au cadrage du groupement
+                            </p>
+                        </div>
+                        <div class="fr-col-12 fr-col-md-4">
+                            <p class="fr-text--sm fr-mb-0">
+                                <span class="fr-icon-hand-heart-line fr-icon--sm fr-mr-1w" aria-hidden="true"></span>
+                                Accompagnement jusqu'à la prise de contact
+                            </p>
+                        </div>
+                    </div>
+                    <a href="mailto:commercial@lemarche.inclusion.beta.gouv.fr" class="fr-btn fr-btn--sm">
+                        Contacter l'équipe
+                    </a>
+                </div>
+
+            </div>
+
+            {# Sidebar #}
+            <div class="fr-col-12 fr-col-lg-4">
+                <div style="position: sticky; top: 1.5rem;">
+
+                    {# Stepper progression #}
+                    <div class="groupement-sidebar-card fr-mb-3w">
+                        <p class="fr-text--sm fr-text--bold fr-mb-2w" style="color:#000091;">
+                            <span class="fr-icon-checkbox-circle-line fr-icon--sm fr-mr-1w" aria-hidden="true"></span>
+                            Votre progression
+                        </p>
+                        <div class="groupement-stepper-item active">
+                            <span class="groupement-stepper-num">1</span>
+                            <span>Identifier les partenaires</span>
+                        </div>
+                        <div class="groupement-stepper-item" x-data :class="$store.groupement.count > 0 ? 'active' : ''">
+                            <span class="groupement-stepper-num">2</span>
+                            <span>Sélectionner les structures</span>
+                        </div>
+                        <div class="groupement-stepper-item">
+                            <span class="groupement-stepper-num">3</span>
+                            <span>Prendre contact</span>
+                        </div>
+                        <div class="groupement-stepper-item">
+                            <span class="groupement-stepper-num">4</span>
+                            <span>Constituer le groupement</span>
+                        </div>
+                    </div>
+
+                    {# Besoin d'aide ? #}
+                    <div class="groupement-sidebar-card fr-mb-3w">
+                        <p class="fr-text--sm fr-text--bold fr-mb-1w">Besoin d'aide ?</p>
+                        <p class="fr-text--sm fr-mb-2w">
+                            L'équipe du Marché de l'inclusion peut vous accompagner dans votre démarche de groupement.
+                        </p>
+                        {% if referents %}
+                            {% for referent in referents %}
+                                <div class="fr-mb-1w"
+                                     x-data="{ hovered: false, copied: false }"
+                                     @mouseenter="hovered = true"
+                                     @mouseleave="hovered = false">
+                                    <p class="fr-text--sm fr-text--bold fr-mb-0">{{ referent.user.full_name }}</p>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span class="fr-text--xs fr-text-mention--grey">{{ referent.user.email }}</span>
+                                        <button x-show="hovered || copied"
+                                                type="button"
+                                                class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-only fr-icon-clipboard-line"
+                                                style="padding: 0.1rem; min-height: auto; font-size: 0.7rem;"
+                                                title="Copier l'email"
+                                                @click.stop="navigator.clipboard.writeText('{{ referent.user.email }}'); copied = true; setTimeout(() => copied = false, 2000)">
+                                            <span x-show="copied" class="fr-text--xs">✓</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <p class="fr-text--xs fr-text-mention--grey fr-mt-1w fr-mb-2w">
+                                Le référent n'a pas accès aux coordonnées de l'acheteur.
+                            </p>
+                        {% else %}
+                            <div class="fr-mb-2w"
+                                 x-data="{ hovered: false, copied: false }"
+                                 @mouseenter="hovered = true"
+                                 @mouseleave="hovered = false">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span class="fr-text--xs">commercial@lemarche.inclusion.beta.gouv.fr</span>
+                                    <button x-show="hovered || copied"
+                                            type="button"
+                                            class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-only fr-icon-clipboard-line"
+                                            style="padding: 0.1rem; min-height: auto; font-size: 0.7rem;"
+                                            title="Copier l'email"
+                                            @click.stop="navigator.clipboard.writeText('commercial@lemarche.inclusion.beta.gouv.fr'); copied = true; setTimeout(() => copied = false, 2000)">
+                                        <span x-show="copied" class="fr-text--xs">✓</span>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <a href="mailto:commercial@lemarche.inclusion.beta.gouv.fr" class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--full-width">
+                            Contacter l'équipe
+                        </a>
+                    </div>
+
+                    {# Bon à savoir #}
+                    <div class="groupement-sidebar-card">
+                        <p class="fr-text--sm fr-text--bold fr-mb-1w">
+                            <span class="fr-icon-information-line fr-icon--sm fr-mr-1w" aria-hidden="true"></span>
+                            Bon à savoir
+                        </p>
+                        <p class="fr-text--sm fr-mb-2w">
+                            Le groupement permet à plusieurs structures de répondre ensemble à un marché, tout en répartissant les rôles et les responsabilités. Le référent peut vous aider à clarifier le cadre adapté.
+                        </p>
+                        <a href="https://lemarche.inclusion.gouv.fr/blog/groupement-cotraitance-exemple/"
+                           class="fr-link fr-text--sm fr-icon-article-line fr-link--icon-left"
+                           target="_blank" rel="noopener noreferrer">
+                            Ils l'ont fait — retour d'expérience
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
     </div>
 </section>
 {% endblock content %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.store('groupement', {
+        selected: [],
+        toggle(id, name) {
+            const idx = this.selected.findIndex(s => s.id === id);
+            if (idx >= 0) {
+                this.selected.splice(idx, 1);
+            } else {
+                this.selected.push({ id, name });
+            }
+        },
+        isSelected(id) {
+            return this.selected.some(s => s.id === id);
+        },
+        get count() {
+            return this.selected.length;
+        }
+    });
+});
+</script>
+{% endblock extra_js %}
