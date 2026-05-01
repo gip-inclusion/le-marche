@@ -23,6 +23,7 @@ from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import (
     PartnerShareTender,
     QuestionAnswer,
+    ReferentRegional,
     SuggestedQuestion,
     Tender,
     TenderInstruction,
@@ -1105,3 +1106,12 @@ class TenderInstructionAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {"widget": CKEditorWidget},
     }
+
+
+@admin.register(ReferentRegional, site=admin_site)
+class ReferentRegionalAdmin(admin.ModelAdmin):
+    list_display = ["id", "user", "region", "is_active", "created_at"]
+    list_filter = ["region", "is_active"]
+    search_fields = ["user__first_name", "user__last_name", "user__email", "region"]
+    raw_id_fields = ["user"]
+    readonly_fields = ["created_at", "updated_at"]

@@ -6,6 +6,7 @@ import openpyxl
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.gis.db.models.functions import Distance
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
@@ -21,6 +22,7 @@ from django.views.generic import DetailView, ListView, UpdateView, View
 from django.views.generic.edit import FormMixin, FormView
 from formtools.wizard.views import SessionWizardView
 
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae, SiaeClientReference
 from lemarche.siaes.tasks import send_reminder_email_to_siae
 from lemarche.tenders import constants as tender_constants
@@ -28,6 +30,7 @@ from lemarche.tenders.enums import TenderSourcesChoices
 from lemarche.tenders.forms import QuestionAnswerForm, SiaeSelectionForm
 from lemarche.tenders.models import (
     QuestionAnswer,
+    ReferentRegional,
     SuggestedQuestion,
     Tender,
     TenderInstruction,
@@ -65,6 +68,7 @@ from lemarche.www.tenders.forms import (
 )
 from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
     notify_admin_tender_created,
+    notify_referents_for_groupement,
     send_siae_interested_email_to_author,
 )
 from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user, update_or_create_questions_list
@@ -1151,3 +1155,142 @@ class TenderReminderView(TenderAuthorOrAdminRequiredMixin, SuccessMessageMixin, 
         )
 
         return super().form_valid(form)
+
+
+# ---------------------------------------------------------------------------
+# Groupement / cotraitance
+# ---------------------------------------------------------------------------
+
+GROUPEMENT_PRESTA_SERVICE_KINDS = [
+    siae_constants.KIND_EI,
+    siae_constants.KIND_ACI,
+    siae_constants.KIND_EA,
+    siae_constants.KIND_ESAT,
+]
+GROUPEMENT_MISE_A_DISPO_KINDS = [
+    siae_constants.KIND_AI,
+    siae_constants.KIND_ETTI,
+    siae_constants.KIND_EATT,
+]
+
+
+def _score_siae(siae, tender_sector_ids: set) -> int:
+    score = 0
+    score += 3 if siae.super_badge else 0
+    siae_sector_ids = {a.sector_id for a in siae.activities.all()}
+    score += 2 if tender_sector_ids & siae_sector_ids else 0
+    score += 1 if siae.has_won_contract_last_3_years else 0
+    score += 1 if (siae.ca or siae.api_entreprise_ca) else 0
+    score += 1 if (siae.employees_insertion_count or siae.employees_permanent_count) else 0
+    return score
+
+
+def _get_partner_siaes(tender: Tender, initiating_siae: Siae, kind_list: list, max_results: int = 3) -> list:
+    """Return scored and sorted partner candidates for groupement, excluding the initiating SIAE."""
+    qs = (
+        Siae.objects.is_live()
+        .has_contact_email()
+        .filter(kind__in=kind_list, region=initiating_siae.region)
+        .exclude(pk=initiating_siae.pk)
+        .prefetch_related("activities")
+    )
+    if initiating_siae.coords:
+        qs = qs.annotate(distance_km=Distance("coords", initiating_siae.coords) / 1000)
+
+    tender_sector_ids = set(tender.sectors.values_list("id", flat=True))
+
+    # Fetch TenderSiae badges in 2 queries to avoid N+1
+    interested_ids = set(
+        TenderSiae.objects.filter(tender=tender, detail_contact_click_date__isnull=False).values_list(
+            "siae_id", flat=True
+        )
+    )
+    groupement_ids = set(
+        TenderSiae.objects.filter(tender=tender, detail_groupement_click_date__isnull=False).values_list(
+            "siae_id", flat=True
+        )
+    )
+
+    scored = []
+    for siae in qs:
+        siae._score = _score_siae(siae, tender_sector_ids)
+        siae._is_interested = siae.pk in interested_ids
+        siae._wants_groupement = siae.pk in groupement_ids
+        scored.append(siae)
+
+    scored.sort(key=lambda s: s._score, reverse=True)
+    return scored[:max_results]
+
+
+class TenderDetailGroupementReplyView(SiaeUserRequiredOrTenderSiaeUUIDParamMixin, DetailView):
+    """Page ‘Répondre en groupement / cotraitance’ — accessible via UUID ou connexion SIAE."""
+
+    template_name = "tenders/groupement_reply.html"
+    model = Tender
+
+    def get_object(self):
+        return get_object_or_404(Tender, slug=self.kwargs.get("slug"))
+
+    def _get_initiating_siae(self) -> Siae | None:
+        user = self.request.user
+        tender_siae_uuid = self.request.GET.get("tender_siae_uuid")
+        if user.is_authenticated and user.kind == User.KIND_SIAE:
+            return user.siaes.first()
+        if tender_siae_uuid:
+            try:
+                ts = TenderSiae.objects.select_related("siae").get(uuid=tender_siae_uuid, tender=self.object)
+                return ts.siae
+            except TenderSiae.DoesNotExist:
+                return None
+        return None
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        initiating_siae = self._get_initiating_siae()
+        if not initiating_siae:
+            return HttpResponseRedirect(reverse_lazy("tenders:detail", args=[self.object.slug]))
+
+        # Track click — only once, same pattern as detail_display_date
+        tender_siae_uuid = request.GET.get("tender_siae_uuid")
+        if request.user.is_authenticated:
+            TenderSiae.objects.filter(
+                tender=self.object,
+                siae__in=request.user.siaes.all(),
+                detail_groupement_click_date__isnull=True,
+            ).update(
+                user=request.user,
+                detail_groupement_click_date=timezone.now(),
+                updated_at=timezone.now(),
+            )
+            is_first_click = True  # simplified — notification sent on every first-time GET
+        elif tender_siae_uuid:
+            updated = TenderSiae.objects.filter(
+                uuid=tender_siae_uuid,
+                tender=self.object,
+                detail_groupement_click_date__isnull=True,
+            ).update(detail_groupement_click_date=timezone.now(), updated_at=timezone.now())
+            is_first_click = updated > 0
+        else:
+            is_first_click = False
+
+        if is_first_click:
+            notify_referents_for_groupement(self.object, initiating_siae)
+
+        context = self.get_context_data(initiating_siae=initiating_siae)
+        return self.render_to_response(context)
+
+    def get_context_data(self, initiating_siae: Siae, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tender = self.object
+
+        context["initiating_siae"] = initiating_siae
+        context["presta_service_siaes"] = _get_partner_siaes(tender, initiating_siae, GROUPEMENT_PRESTA_SERVICE_KINDS)
+        context["mise_a_dispo_siaes"] = _get_partner_siaes(tender, initiating_siae, GROUPEMENT_MISE_A_DISPO_KINDS)
+        context["referents"] = (
+            ReferentRegional.objects.is_active().for_region(initiating_siae.region).select_related("user")
+        )
+        tender_siae_uuid = self.request.GET.get("tender_siae_uuid", "")
+        context["tender_siae_uuid"] = tender_siae_uuid
+        uuid_suffix = f"?tender_siae_uuid={tender_siae_uuid}" if tender_siae_uuid else ""
+        context["back_url"] = str(reverse_lazy("tenders:detail", args=[tender.slug])) + uuid_suffix
+        return context

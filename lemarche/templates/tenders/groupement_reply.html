@@ -1,0 +1,137 @@
+{% extends "layouts/base.html" %}
+{% load dsfr_tags static humanize %}
+
+{% block page_title %}Répondre en groupement — {{ tender.title }}{{ block.super }}{% endblock page_title %}
+
+{% block content %}
+<section>
+    <div class="fr-container fr-py-6w">
+
+        {# Retour #}
+        <div class="fr-mb-4w">
+            <a href="{{ back_url }}" class="fr-link fr-icon-arrow-left-line fr-link--icon-left">
+                Retour au besoin d'achat
+            </a>
+        </div>
+
+        {# En-tête #}
+        <div class="fr-mb-5w">
+            <h1 class="fr-h2">Répondre en groupement pour : {{ tender.title }}</h1>
+            <p class="fr-text--lead fr-mb-0">{{ tender.author.company_name|default:tender.author.full_name }} — {{ tender.get_kind_display }}</p>
+        </div>
+
+        {# Bloc réassurance #}
+        <div class="fr-callout fr-callout--blue-ecume fr-mb-5w" x-data>
+            <h2 class="fr-callout__title fr-h5">Répondre en groupement, c'est simple</h2>
+            <p class="fr-callout__text">
+                Vous identifiez un partenaire ci-dessous, vous prenez contact, et votre référent régional facilite
+                la relation avec l'acheteur. Pas besoin de maîtriser les aspects juridiques — c'est son rôle.
+            </p>
+            {# Lien article blog #}
+            <a href="https://lemarche.inclusion.gouv.fr/blog/groupement-cotraitance-exemple/"
+               class="fr-link fr-icon-article-line fr-link--icon-left"
+               target="_blank" rel="noopener noreferrer">
+                Ils l'ont fait — retour d'expérience
+            </a>
+        </div>
+
+        {# Section A — Prestation de service #}
+        <div class="fr-mb-6w">
+            <h2 class="fr-h4 fr-mb-1w">Les meilleures structures prestataires pour répondre avec vous</h2>
+            <p class="fr-text--sm fr-text-mention--grey fr-mb-3w">
+                Entreprises d'insertion, Ateliers chantiers d'insertion, Entreprises adaptées, ESAT
+            </p>
+
+            {% if presta_service_siaes %}
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    {% for siae in presta_service_siaes %}
+                        {% include "tenders/_groupement_siae_card.html" with tender=tender initiating_siae=initiating_siae %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="fr-text-mention--grey">
+                    Aucune structure partenaire de prestation de service identifiée pour ce secteur et ce périmètre.
+                </p>
+            {% endif %}
+        </div>
+
+        {# Section B — Mise à disposition #}
+        <div class="fr-mb-6w">
+            <h2 class="fr-h4 fr-mb-1w">Les meilleures structures de mise à disposition de personnel pour répondre avec vous</h2>
+            <p class="fr-text--sm fr-text-mention--grey fr-mb-1w">
+                Associations intermédiaires, Entreprises de travail temporaire d'insertion, Entreprises adaptées de travail temporaire
+            </p>
+            <p class="fr-text--sm fr-mb-3w">
+                Une structure de mise à disposition peut intervenir en sous-traitance sur la partie ressources humaines
+                de votre réponse : recrutement de profils en insertion, renfort de personnel temporaire.
+                Cela renforce votre dossier et votre capacité à exécuter le marché.
+            </p>
+
+            {% if mise_a_dispo_siaes %}
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    {% for siae in mise_a_dispo_siaes %}
+                        {% include "tenders/_groupement_siae_card.html" with tender=tender initiating_siae=initiating_siae %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="fr-text-mention--grey">
+                    Aucune structure partenaire de mise à disposition identifiée pour ce secteur et ce périmètre.
+                </p>
+            {% endif %}
+        </div>
+
+        {# Référents régionaux #}
+        <div class="fr-callout fr-mb-6w">
+            <h2 class="fr-callout__title fr-h5">
+                {% if referents %}
+                    Vos référents régionaux
+                    {% if initiating_siae.region %}— {{ initiating_siae.region }}{% endif %}
+                {% else %}
+                    L'équipe du Marché de l'inclusion
+                {% endif %}
+            </h2>
+            {% if referents %}
+                {% for referent in referents %}
+                    <div class="fr-mb-2w" x-data="{ copied: false }">
+                        <p class="fr-mb-1w fr-text--bold">{{ referent.user.full_name }}</p>
+                        <div class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters">
+                            <div class="fr-col-auto">
+                                <span class="fr-text--sm">{{ referent.user.email }}</span>
+                            </div>
+                            <div class="fr-col-auto">
+                                <button type="button"
+                                        class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm fr-icon-clipboard-line fr-btn--icon-left"
+                                        @click="navigator.clipboard.writeText('{{ referent.user.email }}'); copied = true; setTimeout(() => copied = false, 2000)">
+                                    <span x-text="copied ? 'Copié !' : 'Copier l\'email'">Copier l'email</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                <p class="fr-text--sm fr-text-mention--grey fr-mb-0">
+                    Votre référent régional n'a pas accès aux coordonnées de l'acheteur.
+                    Son rôle est de vous accompagner dans votre démarche de groupement
+                    et de faciliter la relation avec l'acheteur via l'équipe du Marché.
+                </p>
+            {% else %}
+                <p class="fr-callout__text">
+                    Contactez l'équipe du Marché de l'inclusion pour être accompagné dans votre démarche de groupement.
+                </p>
+                <div x-data="{ copied: false }" class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters">
+                    <div class="fr-col-auto">
+                        <span class="fr-text--sm">commercial@lemarche.inclusion.beta.gouv.fr</span>
+                    </div>
+                    <div class="fr-col-auto">
+                        <button type="button"
+                                class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm fr-icon-clipboard-line fr-btn--icon-left"
+                                @click="navigator.clipboard.writeText('commercial@lemarche.inclusion.beta.gouv.fr'); copied = true; setTimeout(() => copied = false, 2000)">
+                            <span x-text="copied ? 'Copié !' : 'Copier l\'email'">Copier l'email</span>
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+{% endblock content %}
