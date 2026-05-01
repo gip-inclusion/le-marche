@@ -47,25 +47,6 @@
     background: #000091; color: white;
 }
 .groupement-stepper-item.active { font-weight: bold; color: #000091; }
-.groupement-selected-panel {
-    background: #f0f0fb;
-    border: 2px solid #000091;
-    border-radius: 8px;
-    padding: 1.5rem;
-}
-.groupement-member-row {
-    display: flex; align-items: center; gap: 0.75rem;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #cecece;
-}
-.groupement-member-row:last-child { border-bottom: none; }
-.groupement-member-role {
-    font-size: 0.75rem;
-    color: #666;
-    background: #f6f6f6;
-    border-radius: 4px;
-    padding: 0.1rem 0.4rem;
-}
 </style>
 
 <section>
@@ -90,7 +71,7 @@
                         {% endif %}
                     </div>
                     <p class="fr-text--lead fr-mb-3w">
-                        Identifiez des partenaires complémentaires, prenez contact, et constituez une équipe pour répondre à ce marché.
+                        Identifiez des partenaires complémentaires, prenez contact avec votre référent régional, et constituez une équipe pour répondre à ce marché.
                     </p>
                 </div>
                 <div class="fr-col-12 fr-col-lg-4 fr-mt-4w fr-mt-lg-0">
@@ -130,7 +111,6 @@
                     <h2 class="fr-h4 fr-mb-1w">Les meilleures structures prestataires pour répondre avec vous</h2>
                     <p class="fr-text--sm fr-text-mention--grey fr-mb-3w">
                         Sélectionnées parmi les structures les mieux classées sur votre secteur et votre périmètre.
-                        Cochez celles avec lesquelles vous souhaitez vous associer.
                     </p>
                     {% if presta_service_siaes %}
                         <div class="fr-grid-row fr-grid-row--gutters">
@@ -166,44 +146,6 @@
                             <a href="mailto:commercial@lemarche.inclusion.beta.gouv.fr" class="fr-btn fr-btn--sm fr-btn--secondary">Contacter l'équipe</a>
                         </div>
                     {% endif %}
-                </div>
-
-                {# Bloc Votre groupement #}
-                <div class="groupement-selected-panel fr-mb-5w" x-data>
-                    <h2 class="fr-h5 fr-mb-2w">
-                        <span class="fr-icon-team-line fr-icon--sm fr-mr-1w" aria-hidden="true"></span>
-                        Votre groupement
-                        <span class="fr-badge fr-badge--sm fr-ml-1w"
-                              x-text="$store.groupement.count > 0 ? $store.groupement.count + ' partenaire' + ($store.groupement.count > 1 ? 's' : '') : '0 partenaire'">
-                            0 partenaire
-                        </span>
-                    </h2>
-                    <template x-if="$store.groupement.count === 0">
-                        <p class="fr-text--sm fr-text-mention--grey fr-mb-0">
-                            Sélectionnez une ou plusieurs structures pour préparer votre prise de contact.
-                        </p>
-                    </template>
-                    <template x-if="$store.groupement.count > 0">
-                        <div>
-                            <div class="groupement-member-row">
-                                <span class="fr-icon-user-line fr-icon--sm" aria-hidden="true" style="color:#000091;"></span>
-                                <span class="fr-text--sm fr-text--bold">{{ initiating_siae.name }}</span>
-                                <span class="groupement-member-role">Mandataire pressenti</span>
-                            </div>
-                            <template x-for="s in $store.groupement.selected" :key="s.id">
-                                <div class="groupement-member-row">
-                                    <span class="fr-icon-building-line fr-icon--sm" aria-hidden="true" style="color:#666;"></span>
-                                    <span class="fr-text--sm" x-text="s.name"></span>
-                                    <span class="groupement-member-role">Partenaire pressenti</span>
-                                    <button type="button"
-                                            class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-only fr-icon-close-line fr-btn--sm"
-                                            style="margin-left:auto; min-height:auto;"
-                                            title="Retirer"
-                                            @click="$store.groupement.toggle(s.id, s.name)"></button>
-                                </div>
-                            </template>
-                        </div>
-                    </template>
                 </div>
 
                 {# Prise de contact #}
@@ -243,15 +185,15 @@
                         </p>
                         <div class="groupement-stepper-item active">
                             <span class="groupement-stepper-num">1</span>
-                            <span>Identifier les partenaires</span>
+                            <span>Identifier des structures partenaires</span>
                         </div>
-                        <div class="groupement-stepper-item" x-data :class="$store.groupement.count > 0 ? 'active' : ''">
+                        <div class="groupement-stepper-item">
                             <span class="groupement-stepper-num">2</span>
-                            <span>Sélectionner les structures</span>
+                            <span>Prendre contact avec votre référent régional</span>
                         </div>
                         <div class="groupement-stepper-item">
                             <span class="groupement-stepper-num">3</span>
-                            <span>Prendre contact</span>
+                            <span>Organiser une réunion avec vos futurs partenaires</span>
                         </div>
                         <div class="groupement-stepper-item">
                             <span class="groupement-stepper-num">4</span>
@@ -335,26 +277,3 @@
 </section>
 {% endblock content %}
 
-{% block extra_js %}
-<script>
-document.addEventListener('alpine:init', () => {
-    Alpine.store('groupement', {
-        selected: [],
-        toggle(id, name) {
-            const idx = this.selected.findIndex(s => s.id === id);
-            if (idx >= 0) {
-                this.selected.splice(idx, 1);
-            } else {
-                this.selected.push({ id, name });
-            }
-        },
-        isSelected(id) {
-            return this.selected.some(s => s.id === id);
-        },
-        get count() {
-            return this.selected.length;
-        }
-    });
-});
-</script>
-{% endblock extra_js %}

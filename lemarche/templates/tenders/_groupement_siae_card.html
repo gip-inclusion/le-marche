@@ -2,44 +2,22 @@
 
 <div class="fr-col-12 fr-col-md-6 fr-col-lg-6">
     <div class="fr-card fr-card--shadow"
-         style="transition: box-shadow 0.15s, border-color 0.15s;"
-         x-data="{
-             showContact: false,
-             copiedEmail: false,
-             copiedPhone: false,
-             hoverEmail: false,
-             hoverPhone: false,
-             pk: '{{ siae.pk }}',
-             siaeName: '{{ siae.name_display|escapejs }}'
-         }"
-         :style="$store.groupement.isSelected(pk) ? 'border: 2px solid #000091; box-shadow: 0 0 0 2px #dde3fa;' : ''">
+         x-data="{ showContact: false }">
 
-        {# Logo + nom + checkbox sur la même ligne #}
+        {# Logo + nom sur la même ligne #}
         <div class="fr-card__header">
-            <div style="display: flex; align-items: center; gap: 0.75rem; justify-content: space-between; padding: 0.75rem 1rem; background: #f9f9f9; border-bottom: 1px solid #e5e5e5;">
-                <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 0;">
-                    {% if siae.logo_url %}
-                        <img src="{{ siae.logo_url }}"
-                             style="flex-shrink:0; height: 36px; width: 36px; object-fit: contain;"
-                             alt="Logo {{ siae.name_display }}"
-                             loading="lazy" />
-                    {% else %}
-                        <div style="flex-shrink:0; width:36px; height:36px; background:#e5e5e5; border-radius:4px; display:flex; align-items:center; justify-content:center;">
-                            <span class="fr-icon-building-line" aria-hidden="true" style="color:#999; font-size:1rem;"></span>
-                        </div>
-                    {% endif %}
-                    <h3 class="fr-text--sm fr-text--bold fr-mb-0" style="line-height:1.3; overflow:hidden; text-overflow:ellipsis;">{{ siae.name_display }}</h3>
-                </div>
-                {# Checkbox sélection #}
-                <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; user-select: none; flex-shrink: 0;"
-                       @click.prevent="$store.groupement.toggle(pk, siaeName)">
-                    <input type="checkbox"
-                           class="fr-checkbox"
-                           :checked="$store.groupement.isSelected(pk)"
-                           @change.prevent="$store.groupement.toggle(pk, siaeName)"
-                           style="cursor: pointer;">
-                    <span class="fr-text--xs" x-text="$store.groupement.isSelected(pk) ? 'Sélectionné' : 'Sélectionner'">Sélectionner</span>
-                </label>
+            <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: #f9f9f9; border-bottom: 1px solid #e5e5e5;">
+                {% if siae.logo_url %}
+                    <img src="{{ siae.logo_url }}"
+                         style="flex-shrink:0; height: 36px; width: 36px; object-fit: contain;"
+                         alt="Logo {{ siae.name_display }}"
+                         loading="lazy" />
+                {% else %}
+                    <div style="flex-shrink:0; width:36px; height:36px; background:#e5e5e5; border-radius:4px; display:flex; align-items:center; justify-content:center;">
+                        <span class="fr-icon-building-line" aria-hidden="true" style="color:#999; font-size:1rem;"></span>
+                    </div>
+                {% endif %}
+                <h3 class="fr-text--sm fr-text--bold fr-mb-0" style="line-height:1.3;">{{ siae.name_display }}</h3>
             </div>
         </div>
 
@@ -114,36 +92,36 @@
 
                     {# Email au survol #}
                     <div class="fr-mb-1w"
-                         x-data="{ hoverEmail: false, copiedEmail: false }"
-                         @mouseenter="hoverEmail = true"
-                         @mouseleave="hoverEmail = false"
-                         style="display: flex; align-items: center; gap: 0.5rem;">
+                         x-data="{ hovered: false, copied: false }"
+                         @mouseenter="hovered = true"
+                         @mouseleave="hovered = false"
+                         style="display: flex; align-items: center; gap: 0.35rem; line-height: 1.4;">
                         <span class="fr-text--sm">{{ siae.contact_email }}</span>
-                        <button x-show="hoverEmail || copiedEmail"
+                        <button x-show="hovered || copied"
                                 type="button"
-                                class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-only fr-icon-clipboard-line"
-                                style="padding: 0.2rem; min-height: auto; font-size: 0.75rem;"
                                 title="Copier l'email"
-                                @click.stop="navigator.clipboard.writeText('{{ siae.contact_email }}'); copiedEmail = true; setTimeout(() => copiedEmail = false, 2000)">
-                            <span x-show="copiedEmail" class="fr-text--xs">✓</span>
+                                style="background: none; border: none; cursor: pointer; padding: 0 0.2rem; color: #666; line-height: 1; vertical-align: middle;"
+                                @click.stop="navigator.clipboard.writeText('{{ siae.contact_email }}'); copied = true; setTimeout(() => copied = false, 2000)">
+                            <span x-show="!copied" class="fr-icon-clipboard-line" aria-hidden="true" style="font-size: 0.875rem;"></span>
+                            <span x-show="copied" style="font-size: 0.75rem; color: #18753c;">✓</span>
                         </button>
                     </div>
 
                     {# Téléphone au survol #}
                     {% if siae.contact_phone %}
                         <div class="fr-mb-0"
-                             x-data="{ hoverPhone: false, copiedPhone: false }"
-                             @mouseenter="hoverPhone = true"
-                             @mouseleave="hoverPhone = false"
-                             style="display: flex; align-items: center; gap: 0.5rem;">
+                             x-data="{ hovered: false, copied: false }"
+                             @mouseenter="hovered = true"
+                             @mouseleave="hovered = false"
+                             style="display: flex; align-items: center; gap: 0.35rem; line-height: 1.4;">
                             <span class="fr-text--sm">{{ siae.contact_phone_display }}</span>
-                            <button x-show="hoverPhone || copiedPhone"
+                            <button x-show="hovered || copied"
                                     type="button"
-                                    class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-only fr-icon-clipboard-line"
-                                    style="padding: 0.2rem; min-height: auto; font-size: 0.75rem;"
                                     title="Copier le téléphone"
-                                    @click.stop="navigator.clipboard.writeText('{{ siae.contact_phone_display }}'); copiedPhone = true; setTimeout(() => copiedPhone = false, 2000)">
-                                <span x-show="copiedPhone" class="fr-text--xs">✓</span>
+                                    style="background: none; border: none; cursor: pointer; padding: 0 0.2rem; color: #666; line-height: 1; vertical-align: middle;"
+                                    @click.stop="navigator.clipboard.writeText('{{ siae.contact_phone_display }}'); copied = true; setTimeout(() => copied = false, 2000)">
+                                <span x-show="!copied" class="fr-icon-clipboard-line" aria-hidden="true" style="font-size: 0.875rem;"></span>
+                                <span x-show="copied" style="font-size: 0.75rem; color: #18753c;">✓</span>
                             </button>
                         </div>
                     {% endif %}
