@@ -15,6 +15,10 @@ from lemarche.www.dashboard_siaes.views import (
     SiaeEditOfferView,
     SiaeSearchAdoptConfirmView,
     SiaeSearchBySiretView,
+    SiaeTestimonialListView,
+    SiaeTestimonialPublishView,
+    SiaeTestimonialRejectView,
+    SiaeTestimonialRequestView,
     SiaeUserDeleteView,
     SiaeUserRequestCancelView,
     SiaeUserRequestConfirmView,
@@ -109,6 +113,27 @@ urlpatterns = [
         "<str:slug>/collaborateurs/<str:siaeuser_id>/supprimer",
         SiaeUserDeleteView.as_view(),
         name="siae_user_delete",
+    ),
+    # Témoignages clients
+    path(
+        "<str:slug>/temoignages/",
+        SiaeTestimonialListView.as_view(),
+        name="siae_testimonial_list",
+    ),
+    path(
+        "<str:slug>/temoignages/demander/",
+        SiaeTestimonialRequestView.as_view(),
+        name="siae_testimonial_request",
+    ),
+    path(
+        "<str:slug>/temoignages/<int:pk>/publier/",
+        SiaeTestimonialPublishView.as_view(),
+        name="siae_testimonial_publish",
+    ),
+    path(
+        "<str:slug>/temoignages/<int:pk>/rejeter/",
+        SiaeTestimonialRejectView.as_view(),
+        name="siae_testimonial_reject",
     ),
     # Redirects
     path(

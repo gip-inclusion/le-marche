@@ -21,6 +21,7 @@ from lemarche.conversations.models import Conversation
 from lemarche.favorites.models import FavoriteList
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae, SiaeESUS
+from lemarche.testimonials import constants as testimonial_constants
 from lemarche.utils import settings_context_processors
 from lemarche.utils.apis.api_recherche_entreprises import (
     RechercheEntreprisesAPIException,
@@ -283,6 +284,9 @@ class SiaeDetailView(FormMixin, DetailView):
             ],
             "current": self.get_object().name_display,
         }
+        context["published_testimonials"] = self.get_object().testimonials.filter(
+            status=testimonial_constants.STATUS_PUBLISHED
+        ).order_by("published_at")
         return context
 
 
