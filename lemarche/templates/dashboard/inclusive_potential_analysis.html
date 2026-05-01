@@ -1328,7 +1328,8 @@
                     ...g,
                     withPotential: g.projects.filter(p =>
                         p.recommendation_title === 'Réservation totale' ||
-                        p.recommendation_title === 'Clause sociale'
+                        p.recommendation_title === 'Lot réservé' ||
+                        p.recommendation_title === 'Clause sociale d\'exécution'
                     ).length,
                 }));
             },
