@@ -411,6 +411,7 @@ def _run_excel_analysis(
         presta_mode = PRESTA_MODE_DEFAULT
 
     results = []
+    raw_projects_session = []
 
     for project in resolved_projects:
         sector_slug = project["sector_slug"]
@@ -432,6 +433,16 @@ def _run_excel_analysis(
 
         result = _analyze_purchase_project(titre, sector, perimeter, montant, presta_mode)
         results.append(result)
+        raw_projects_session.append(
+            {
+                "titre": titre,
+                "montant": montant,
+                "secteur_slug": sector_slug,
+                "perimeter_slug": perimeter_result.get("slug"),
+                "france_entiere": perimeter_result.get("france_entiere", False),
+                "input_mode": "excel",
+            }
+        )
 
     context_extra = {}
     if unresolvable_count:
@@ -452,19 +463,14 @@ def _run_excel_analysis(
             },
         )
 
+    for i, result in enumerate(results):
+        if not result.get("error"):
+            result["detail_url"] = reverse("dashboard:inclusive_potential_project_detail", args=[i])
+
     by_sector, by_perimeter = _aggregate_results(results)
     request.session["ipa_excel_results"] = [{k: v for k, v in r.items() if k != "search_urls"} for r in results]
-    request.session["ipa_raw_projects"] = [
-        {
-            "titre": p["titre"],
-            "montant": p["montant"],
-            "secteur_slug": p["sector_slug"],
-            "perimeter_slug": p["perimeter_result"].get("slug"),
-            "france_entiere": p["perimeter_result"].get("france_entiere", False),
-            "input_mode": "excel",
-        }
-        for p in resolved_projects
-    ]
+    request.session["ipa_raw_projects"] = raw_projects_session
+    request.session["ipa_presta_mode"] = presta_mode
 
     return render(
         request,
@@ -718,9 +724,13 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
         request.session["ipa_raw_projects"] = raw_projects
 
         if input_mode == "excel":
+            for i, result in enumerate(results):
+                if not result.get("error"):
+                    result["detail_url"] = reverse("dashboard:inclusive_potential_project_detail", args=[i])
             request.session["ipa_excel_results"] = [
                 {k: v for k, v in r.items() if k != "search_urls"} for r in results
             ]
+            request.session["ipa_presta_mode"] = presta_mode
             by_sector, by_perimeter = _aggregate_results(results)
             return render(
                 request,
@@ -825,6 +835,60 @@ class InclusivePotentialAnalysisView(LoginRequiredMixin, View):
             return HttpResponseRedirect(reverse("dashboard:slug_mapping_validation"))
 
         return _run_excel_analysis(request, resolved_projects, unresolvable_count, presta_mode)
+
+
+class InclusivePotentialProjectDetailView(LoginRequiredMixin, View):
+    """Affiche l'analyse détaillée d'un projet d'achat issu d'un import Excel IPA.
+
+    Lit le projet à l'index donné dans ipa_raw_projects (session), relance l'analyse
+    et affiche le résultat sur le même template que le mode saisie manuelle.
+    """
+
+    template_name = "dashboard/inclusive_potential_analysis.html"
+
+    def get(self, request, index: int):
+        raw_projects = request.session.get("ipa_raw_projects", [])
+
+        if not raw_projects or index >= len(raw_projects):
+            return HttpResponseRedirect(reverse("dashboard:inclusive_potential_analysis"))
+
+        project = raw_projects[index]
+
+        if project.get("input_mode") != "excel":
+            return HttpResponseRedirect(reverse("dashboard:inclusive_potential_analysis"))
+
+        presta_mode = request.session.get("ipa_presta_mode", PRESTA_MODE_DEFAULT)
+        if presta_mode not in PRESTA_MODE_TO_SIAE_KINDS:
+            presta_mode = PRESTA_MODE_DEFAULT
+
+        try:
+            sector = Sector.objects.get(slug=project["secteur_slug"])
+        except Sector.DoesNotExist:
+            return HttpResponseRedirect(reverse("dashboard:inclusive_potential_analysis"))
+
+        perimeter = None
+        if project.get("perimeter_slug") and not project.get("france_entiere"):
+            try:
+                perimeter = Perimeter.objects.get(slug=project["perimeter_slug"])
+            except Perimeter.DoesNotExist:
+                return HttpResponseRedirect(reverse("dashboard:inclusive_potential_analysis"))
+
+        result = _analyze_purchase_project(project["titre"], sector, perimeter, project.get("montant"), presta_mode)
+
+        return render(
+            request,
+            self.template_name,
+            {
+                "results": [result],
+                "mode": "manual",
+                "presta_mode": presta_mode,
+                "presta_mode_choices": list(PRESTA_MODE_TO_SIAE_KINDS.keys()),
+                "is_excel_project_detail": True,
+                "back_url": reverse("dashboard:inclusive_potential_analysis"),
+                "sectors": [],
+                "formset": None,
+            },
+        )
 
 
 class SlugMappingValidationView(LoginRequiredMixin, View):
