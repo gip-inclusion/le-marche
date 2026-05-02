@@ -1311,7 +1311,7 @@ class TenderDetailGroupementReplyView(SiaeUserRequiredOrTenderSiaeUUIDParamMixin
         return context
 
     def _build_search_url(self, tender) -> str:
-        sector_ids = list(tender.sectors.values_list("id", flat=True))
-        params = {"sectors": sector_ids} if sector_ids else {}
+        sector_slugs = list(tender.sectors.values_list("slug", flat=True))
+        params = {"sectors": sector_slugs} if sector_slugs else {}
         base = reverse("siae:search_results")
         return f"{base}?{urlencode(params, doseq=True)}" if params else base
