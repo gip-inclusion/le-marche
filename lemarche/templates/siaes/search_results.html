@@ -80,8 +80,7 @@
                                     <div class="fr-col-12 fr-btns-group--center fr-mt-4v fr-mb-0">
                                         <button type="button"
                                                 class="fr-btn fr-btn--tertiary-no-outline"
-                                                @click="toggle()"
-                                                {% if not user.is_authenticated %} data-fr-opened="false" aria-controls="modal_login_to_access_advanced_search"{% endif %}>
+                                                @click="toggle()">
                                             Recherche avancée
                                             <br />
                                             <span :class="open ? 'fr-icon-arrow-up-s-line' : 'fr-icon-arrow-down-s-line'"
@@ -226,7 +225,6 @@
 {% endblock content %}
 {% block modals %}
     {% include "auth/_login_or_signup_modal.html" %}
-    {% include "auth/_login_or_signup_search_advanced_modal.html" %}
     {% include "favorites/_favorite_item_add_modal.html" %}
     {% include "favorites/_favorite_item_remove_modal.html" %}
 {% endblock modals %}

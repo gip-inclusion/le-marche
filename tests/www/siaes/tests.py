@@ -103,6 +103,27 @@ class SiaeSearchNumQueriesTest(TestCase):
             self.assertEqual(len(siaes), 20)
 
 
+class SiaeAdvancedSearchAnonymousTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        SiaeFactory(kind=siae_constants.KIND_EI)
+        SiaeFactory(kind=siae_constants.KIND_AI)
+        cls.url = reverse("siae:search_results")
+
+    def test_anonymous_can_use_advanced_search_filter(self):
+        """Un visiteur non connecté peut filtrer par type de structure (recherche avancée)."""
+        response = self.client.get(self.url + f"?kind={siae_constants.KIND_EI}")
+        self.assertEqual(response.status_code, 200)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+
+    def test_anonymous_can_use_multiple_advanced_filters(self):
+        response = self.client.get(self.url + f"?kind={siae_constants.KIND_EI}&kind={siae_constants.KIND_AI}")
+        self.assertEqual(response.status_code, 200)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+
+
 class SiaeKindSearchFilterTest(TestCase):
     @classmethod
     def setUpTestData(cls):
