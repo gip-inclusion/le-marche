@@ -1,334 +1,869 @@
 {% extends "layouts/base.html" %}
 {% load static process_dict dsfr_tags wagtailcore_tags %}
-{% block page_title %}
-    Trouvez votre prestataire parmi 8600 prestataires inclusifs{{ block.super }}
-{% endblock page_title %}
+
+{% block page_title %}Trouver un fournisseur inclusif — Marché de l'inclusion{{ block.super }}{% endblock page_title %}
 {% block description %}
     <meta name="description"
-          content="Recherchez en fonction de votre segment d'achats, périmètre géographique et types de prestation afin de trouver le prestataire idéal.">
+          content="Recherchez parmi 8 600 structures inclusives (ESAT, EI, AI, EA…) par secteur d'activité, territoire et type de prestation.">
 {% endblock description %}
-{% block breadcrumb %}
-    {% process_dict root_dir=HOME_PAGE_PATH current="Recherche" as breadcrumb_data %}
-    {% dsfr_breadcrumb breadcrumb_data %}
-{% endblock breadcrumb %}
+
 {% block content %}
+<style>
+/* =====================================================
+   HERO
+   ===================================================== */
+.lm-hero {
+    background: #f5f5fe;
+    border-bottom: 1px solid #ddd;
+    padding: 2.5rem 0 2rem;
+}
+.lm-hero__h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #161616;
+    margin-bottom: 0.5rem;
+}
+.lm-hero__sub {
+    color: #555;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+.lm-search-bar {
+    display: flex;
+    align-items: stretch;
+    background: white;
+    border: 2px solid #000091;
+    border-radius: 4px;
+    overflow: hidden;
+    max-width: 820px;
+}
+.lm-search-bar__icon {
+    display: flex;
+    align-items: center;
+    padding: 0 0.75rem 0 1rem;
+    color: #666;
+    pointer-events: none;
+}
+.lm-search-bar input[type="text"] {
+    flex: 1;
+    border: none;
+    padding: 0.875rem 0.5rem;
+    font-size: 1rem;
+    outline: none;
+    color: #161616;
+    background: transparent;
+    min-width: 0;
+}
+.lm-search-bar input[type="text"]::placeholder { color: #999; }
+.lm-search-bar .fr-btn { border-radius: 0; flex-shrink: 0; padding-left: 1.5rem; padding-right: 1.5rem; }
+
+/* =====================================================
+   QUICK FILTERS
+   ===================================================== */
+.lm-quick-filters {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1.25rem 0 1rem;
+    border-bottom: 1px solid #e5e5e5;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+.lm-qf-block {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    flex: 1 1 200px;
+    min-width: 0;
+}
+.lm-qf-block__label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #161616;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.15rem;
+}
+.lm-qf-block__sub {
+    font-size: 0.72rem;
+    color: #777;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+.lm-qf-block .fr-label { font-size: 0.78rem; }
+.lm-qf-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.75rem 1.25rem;
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #161616;
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: 0;
+    transition: border-color 0.15s;
+}
+.lm-qf-more:hover { border-color: #000091; background: #f5f5fe; }
+.lm-qf-badge {
+    background: #000091;
+    color: white;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.1rem 0.45rem;
+    min-width: 1.2rem;
+    text-align: center;
+}
+
+/* =====================================================
+   ACTIVE FILTERS
+   ===================================================== */
+.lm-active-filters {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e5e5e5;
+    min-height: 2.5rem;
+}
+.lm-active-filters__label { font-size: 0.8rem; color: #666; white-space: nowrap; }
+.lm-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: #e8edff;
+    color: #000074;
+    border: 1px solid #b6c4ff;
+    border-radius: 20px;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+.lm-chip:hover { background: #d4dcff; }
+.lm-chip__x { font-size: 0.85rem; font-weight: 700; color: #000074; line-height: 1; }
+.lm-clear-all {
+    margin-left: auto;
+    color: #000091;
+    font-size: 0.8rem;
+    text-decoration: underline;
+    white-space: nowrap;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+/* =====================================================
+   3-COLUMN LAYOUT
+   ===================================================== */
+.lm-search-3col {
+    display: grid;
+    grid-template-columns: 280px 1fr 300px;
+    gap: 1.5rem;
+    padding-top: 1.5rem;
+    align-items: start;
+}
+
+/* =====================================================
+   FILTER PANEL (left)
+   ===================================================== */
+.lm-filter-panel {
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100vh - 3rem);
+    overflow-y: auto;
+}
+.lm-filter-panel__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem 0.875rem;
+    border-bottom: 1px solid #e5e5e5;
+}
+.lm-filter-panel__title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #161616;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.lm-filter-panel__collapse {
+    font-size: 0.78rem;
+    color: #000091;
+    text-decoration: underline;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+}
+.lm-filter-panel__body { padding: 0.25rem 0; }
+.lm-filter-panel__foot {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid #e5e5e5;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.lm-filter-panel .fr-accordion__btn {
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+}
+.lm-filter-panel .fr-collapse { padding: 0 1.25rem 0.75rem; }
+.lm-filter-section-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+/* =====================================================
+   RESULTS
+   ===================================================== */
+.lm-results-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+.lm-results-count { font-size: 1.05rem; font-weight: 700; color: #161616; margin: 0 0 0.25rem; }
+.lm-results-sub { font-size: 0.78rem; color: #666; margin: 0; line-height: 1.5; }
+
+/* =====================================================
+   RESULT CARD
+   ===================================================== */
+.lm-card {
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    padding: 1.25rem;
+    display: grid;
+    grid-template-columns: 72px 1fr auto;
+    gap: 1rem;
+    margin-bottom: 0.875rem;
+    transition: box-shadow 0.15s, border-color 0.15s;
+}
+.lm-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.07); border-color: #c5c5e5; }
+.lm-card__logo {
+    width: 64px; height: 64px;
+    border-radius: 6px;
+    border: 1px solid #eee;
+    background: #f9f9f9;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; flex-shrink: 0;
+}
+.lm-card__logo img { width: 100%; height: 100%; object-fit: contain; }
+.lm-card__logo-fallback { font-size: 1.5rem; color: #ccc; }
+.lm-card__name {
+    font-size: 1rem; font-weight: 700; color: #000091;
+    text-decoration: none; display: block; margin-bottom: 0.4rem; line-height: 1.3;
+}
+.lm-card__name:hover { text-decoration: underline; }
+.lm-card__badges { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-bottom: 0.5rem; }
+.lm-card__meta {
+    font-size: 0.78rem; color: #555;
+    margin: 0.15rem 0; display: flex; align-items: center; gap: 0.3rem;
+}
+.lm-card__meta [class*="fr-icon-"] { font-size: 0.85rem; color: #888; }
+.lm-card__sectors { margin-top: 0.6rem; }
+.lm-card__actions {
+    display: flex; flex-direction: column; gap: 0.5rem;
+    align-items: flex-end; min-width: 130px; flex-shrink: 0;
+}
+.lm-card__actions .fr-btn { width: 100%; justify-content: center; font-size: 0.85rem; }
+.lm-card__fav { margin-top: 0.25rem; display: flex; justify-content: flex-end; }
+
+/* =====================================================
+   SIDEBAR (right)
+   ===================================================== */
+.lm-sidebar { display: flex; flex-direction: column; gap: 1rem; }
+.lm-sidebar-block { background: white; border: 1px solid #e5e5e5; border-radius: 6px; padding: 1.25rem; }
+.lm-sidebar-block__title {
+    font-size: 0.9rem; font-weight: 700; color: #161616;
+    margin: 0 0 0.875rem;
+    display: flex; align-items: center; gap: 0.5rem;
+}
+.lm-map-holder { border-radius: 4px; overflow: hidden; border: 1px solid #e5e5e5; margin-bottom: 0.75rem; }
+.lm-geo-section { padding: 0.75rem 0; }
+.lm-geo-section + .lm-geo-section { border-top: 1px solid #f0f0f0; }
+.lm-geo-section__label {
+    font-size: 0.8rem; font-weight: 700; color: #161616;
+    margin: 0 0 0.25rem; display: flex; align-items: center; gap: 0.4rem;
+}
+.lm-geo-section__desc { font-size: 0.75rem; color: #666; margin: 0; line-height: 1.45; }
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+@media (max-width: 1200px) {
+    .lm-search-3col { grid-template-columns: 260px 1fr; }
+    .lm-sidebar { display: none; }
+}
+@media (max-width: 991px) {
+    .lm-search-3col { grid-template-columns: 1fr; }
+    .lm-filter-panel { position: static; max-height: none; display: none; }
+    .lm-filter-panel.is-visible { display: block; }
+    .lm-card__actions { display: none; }
+}
+@media (max-width: 767px) {
+    .lm-hero__h1 { font-size: 1.375rem; }
+    .lm-quick-filters { gap: 0.5rem; }
+    .lm-qf-block { flex: 1 1 100%; }
+    .lm-card { grid-template-columns: 52px 1fr; }
+}
+</style>
+
+{# ─── HERO ─────────────────────────────────────────────────────────────────── #}
+<div class="lm-hero">
     <div class="fr-container">
-        <div class="fr-grid-row">
-            <div class="fr-col-12">
-                <div class="fr-tabs">
-                    <ul class="fr-tabs__list" role="tablist" aria-label="Recherches">
-                        <li role="presentation">
-                            <button id="search-filter-tab"
-                                    class="fr-tabs__tab"
-                                    tabindex="0"
-                                    role="tab"
-                                    aria-selected="false"
-                                    aria-controls="search-filter">Recherche par critères</button>
-                        </li>
-                        <li role="presentation">
-                            <button id="search-text-tab"
-                                    class="fr-tabs__tab"
-                                    tabindex="0"
-                                    role="tab"
-                                    aria-selected="false"
-                                    aria-controls="search-text">Recherche par SIRET / nom</button>
-                        </li>
-                    </ul>
-                    <div id="search-filter"
-                         class="fr-tabs__panel"
-                         role="tabpanel"
-                         aria-labelledby="search-filter-tab"
-                         tabindex="0">
-                        <form method="get"
-                              action="{% url 'siae:search_results' %}"
-                              id="filter-search-form"
-                              aria-label="Rechercher des prestataires de l'insertion et du handicap"
-                              role="search">
-                            {% if form.non_field_errors %}
-                                <section class="fr-my-4v fr-input-group fr-input-group--error">
-                                    {{ form.non_field_errors }}
-                                </section>
-                            {% endif %}
-                            <div class="fr-grid-row fr-grid-row--gutters">
-                                <div class="fr-col-12 fr-col-md-6 fr-col-lg-4">
-                                    <div class="fr-input-group">
-                                        <label for="id_perimeters" class="fr-label fr-mb-2v">{{ form.perimeters.label }}</label>
-                                        <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
-                                        <div id="perimeters-selected" class="fr-mt-2v"></div>
-                                        {{ current_perimeters|json_script:"current-perimeters" }}
-                                    </div>
-                                </div>
-                                <div class="fr-col-12 fr-col-md-6 fr-col-lg-4">{% dsfr_form_field form.sectors %}</div>
-                                <div class="fr-col-12 fr-col-md-12 fr-col-lg-4 fr-hidden fr-unhidden-lg">
-                                    <div class="fr-mt-8v">
-                                        <ul class="fr-btns-group fr-btns-group--inline-lg fr-btns-group--icon-right">
-                                            <li>
-                                                <button id="filter-submit" class="fr-btn fr-icon-search-line" type="submit">Rechercher</button>
-                                            </li>
-                                            <li>
-                                                <button id="form-reset-btn"
-                                                        type="button"
-                                                        class="fr-btn fr-icon-delete-bin-line fr-btn--secondary"
-                                                        aria-label="Réinitialiser la recherche">Réinitialiser</button>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div x-data="AdvancedSearchComponent">
-                                <div class="fr-grid-row">
-                                    <div class="fr-col-12 fr-btns-group--center fr-mt-4v fr-mb-0">
-                                        <button type="button"
-                                                class="fr-btn fr-btn--tertiary-no-outline"
-                                                @click="toggle()"
-                                                {% if not user.is_authenticated %} data-fr-opened="false" aria-controls="modal_login_to_access_advanced_search"{% endif %}>
-                                            Recherche avancée
-                                            <br />
-                                            <span :class="open ? 'fr-icon-arrow-up-s-line' : 'fr-icon-arrow-down-s-line'"
-                                                  :aria-label="open ? 'Descendre' : 'Monter' "></span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div x-show="open" class="fr-grid-row fr-grid-row--gutters">
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.kind %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.presta_type %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.territory %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.networks %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
-                                        <div class="fr-input-group{% if form.locations.field.widget.attrs.disabled %} fr-input-group--disabled{% endif %}">
-                                            <label for="id_locations" class="fr-label">{{ form.locations.label }}</label>
-                                            {{ form.locations }}
-                                            {{ current_locations|json_script:"current-locations" }}
-                                        </div>
-                                    </div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.has_client_references %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.has_groups %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.ca %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.legal_form %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.employees %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.labels %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.super_badge %}</div>
-                                </div>
-                            </div>
-                            <div class="fr-grid-row fr-hidden-lg">
-                                <div class="fr-col-12">
-                                    <button id="filter-submit"
-                                            class="fr-btn fr-btn--icon-right fr-icon-search-line fr-mt-4w"
-                                            type="submit">Rechercher</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div id="search-text"
-                         class="fr-tabs__panel"
-                         role="tabpanel"
-                         aria-labelledby="search-text-tab"
-                         tabindex="0">
-                        <form method="get"
-                              action="{% url 'siae:search_results' %}"
-                              id="text-search-form"
-                              aria-label="Rechercher des prestataires de l'insertion et du handicap"
-                              role="search">
-                            {% if form.non_field_errors %}
-                                <section class="fr-my-4v fr-input-group fr-input-group--error">
-                                    {{ form.non_field_errors }}
-                                </section>
-                            {% endif %}
-                            <div class="fr-grid-row fr-grid-row--gutters">
-                                <div class="fr-col-12 fr-col-lg-8">
-                                    <div class="fr-grid-row">
-                                        <div class="fr-col-12">{% dsfr_form_field form.q %}</div>
-                                    </div>
-                                </div>
-                                <div class="fr-col-12 fr-col-lg-4">
-                                    <ul class="fr-btns-group fr-btns-group--icon-left">
-                                        <li>
-                                            <button id="text-search-submit"
-                                                    class="fr-btn fr-btn--icon-right fr-icon-search-line fr-mt-4w"
-                                                    type="submit">Rechercher</button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+        <h1 class="lm-hero__h1">Trouver un fournisseur inclusif</h1>
+        <p class="lm-hero__sub">Trouvez des structures de l'inclusion adaptées à vos besoins et à votre territoire.</p>
+        <form method="get" action="{% url 'siae:search_results' %}" role="search" class="fr-mb-0">
+            {% for key, value in request.GET.items %}
+                {% if key != 'q' and key != 'page' %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}
+            {% endfor %}
+            <div class="lm-search-bar">
+                <span class="lm-search-bar__icon fr-icon-search-line" aria-hidden="true"></span>
+                <input type="text" name="q" id="id_q_hero"
+                       value="{{ form.q.value|default:'' }}"
+                       placeholder="Rechercher par mot-clé, métier ou prestation (ex. espaces verts, nettoyage…)"
+                       aria-label="Recherche par mot-clé">
+                <button type="submit" class="fr-btn">Rechercher</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{# ─── FORMULAIRE PRINCIPAL ─────────────────────────────────────────────────── #}
+<div class="fr-container fr-pb-6w">
+    <form id="filter-search-form"
+          method="get"
+          action="{% url 'siae:search_results' %}"
+          aria-label="Filtrer les prestataires inclusifs">
+
+        {% if form.non_field_errors %}
+            <div class="fr-alert fr-alert--error fr-mt-2w">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        {# ─── FILTRES RAPIDES ───────────────────────────────────────────────── #}
+        <div class="lm-quick-filters">
+
+            {# Bloc 1 — Zone d'intervention #}
+            <div class="lm-qf-block">
+                <span class="lm-qf-block__label">
+                    <span class="fr-icon-map-pin-2-line fr-icon--sm" aria-hidden="true"></span>
+                    Zone d'intervention
+                </span>
+                <span class="lm-qf-block__sub">Structures capables d'intervenir</span>
+                <div class="fr-input-group" style="margin-bottom:0;">
+                    <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
+                    <div id="perimeters-selected" class="fr-mt-1v"></div>
+                    {{ current_perimeters|json_script:"current-perimeters" }}
                 </div>
             </div>
+
+            {# Bloc 2 — Type de structure #}
+            <div class="lm-qf-block">
+                <span class="lm-qf-block__label">
+                    <span class="fr-icon-building-line fr-icon--sm" aria-hidden="true"></span>
+                    Type de structure
+                </span>
+                <span class="lm-qf-block__sub">Ex. ESAT, EI, AI, EA…</span>
+                {% dsfr_form_field form.kind %}
+            </div>
+
+            {# Bloc 3 — Secteur d'activité #}
+            <div class="lm-qf-block">
+                <span class="lm-qf-block__label">
+                    <span class="fr-icon-briefcase-line fr-icon--sm" aria-hidden="true"></span>
+                    Secteur d'activité
+                </span>
+                <span class="lm-qf-block__sub">Domaine de prestation</span>
+                {% dsfr_form_field form.sectors %}
+            </div>
+
+            {# Bouton Plus de filtres #}
+            <button type="button"
+                    class="lm-qf-more"
+                    id="toggle-more-filters"
+                    aria-expanded="{% if is_advanced_search %}true{% else %}false{% endif %}">
+                <span class="fr-icon-equalizer-line fr-icon--sm" aria-hidden="true"></span>
+                Plus de filtres
+                {% if is_advanced_search %}
+                    <span class="lm-qf-badge" aria-label="Filtres avancés actifs">●</span>
+                {% endif %}
+            </button>
+
+            {# Bouton Rechercher (desktop) #}
+            <div class="fr-hidden fr-unhidden-lg" style="display:flex;align-items:flex-end;gap:0.5rem;align-self:flex-end;">
+                <button id="filter-submit" class="fr-btn fr-icon-search-line fr-btn--icon-left" type="submit">Rechercher</button>
+                <button id="form-reset-btn" type="button"
+                        class="fr-btn fr-btn--secondary fr-icon-delete-bin-line fr-btn--icon-only"
+                        aria-label="Réinitialiser" title="Réinitialiser la recherche"></button>
+            </div>
+
         </div>
-    </div>
-    <div class="fr-container fr-pb-6w">
-        <div id="searchResults" class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12 fr-col-lg-8 fr-mt-6v">
-                <div class="fr-grid-row">
-                    <div class="fr-col-12 fr-col-lg-9">
-                        <h4>
-                            {% with paginator.count as siae_count %}
-                                {% if siae_count > 0 %}
-                                    {{ siae_count }} prestataire{{ siae_count|pluralize }} correspond{{ siae_count|pluralize:"ent" }} à vos critères
-                                {% else %}
-                                    Oups, aucun prestataire trouvé !
-                                {% endif %}
-                            {% endwith %}
-                        </h4>
-                    </div>
-                    {% if siaes %}
-                        <div class="fr-col-12 fr-col-lg-3">{% include "siaes/_share_search_results.html" %}</div>
-                    {% endif %}
+
+        {# ─── FILTRES ACTIFS (chips) ────────────────────────────────────────── #}
+        {% if current_perimeters or current_sectors or current_locations or is_advanced_search %}
+        <div class="lm-active-filters">
+            <span class="lm-active-filters__label">Filtres actifs :</span>
+            {% for perimeter in current_perimeters %}
+                <span class="lm-chip" role="button" tabindex="0"
+                      onclick="removeFilterParam('perimeters', '{{ perimeter.slug }}')"
+                      title="Supprimer ce filtre">
+                    {{ perimeter.name }}<span class="lm-chip__x" aria-hidden="true">×</span>
+                </span>
+            {% endfor %}
+            {% for location in current_locations %}
+                <span class="lm-chip" role="button" tabindex="0"
+                      onclick="removeFilterParam('locations', '{{ location.slug }}')"
+                      title="Supprimer ce filtre">
+                    {{ location.name }}<span class="lm-chip__x" aria-hidden="true">×</span>
+                </span>
+            {% endfor %}
+            {% for sector in current_sectors %}
+                <span class="lm-chip" role="button" tabindex="0"
+                      onclick="removeFilterParam('sectors', '{{ sector.slug }}')"
+                      title="Supprimer ce filtre">
+                    {{ sector.name }}<span class="lm-chip__x" aria-hidden="true">×</span>
+                </span>
+            {% endfor %}
+            <a href="{% url 'siae:search_results' %}" class="lm-clear-all">Tout effacer</a>
+        </div>
+        {% endif %}
+
+        {# ─── LAYOUT 3 COLONNES ─────────────────────────────────────────────── #}
+        <div class="lm-search-3col">
+
+            {# ── GAUCHE : panneau filtres avancés ──────────────────────────── #}
+            <aside class="lm-filter-panel" id="advanced-filters-panel">
+                <div class="lm-filter-panel__head">
+                    <p class="lm-filter-panel__title">
+                        <span class="fr-icon-equalizer-line fr-icon--sm" aria-hidden="true"></span>
+                        Filtres avancés
+                    </p>
+                    <button type="button" class="lm-filter-panel__collapse" id="collapse-all-btn">
+                        Tout replier
+                    </button>
                 </div>
-                <div class="fr-grid-row fr-grid-row--gutters">
-                    {% if siaes %}
-                        <!-- buttons needed for modal to be triggered -->
-                        <button data-fr-opened="false"
-                                aria-controls="favorite_item_add_modal"
-                                class="fr-hidden"></button>
-                        <button data-fr-opened="false"
-                                aria-controls="favorite_item_remove_modal"
-                                class="fr-hidden"></button>
-                        {% for siae in siaes %}
-                            <div class="fr-col-12">{% include "siaes/_card_search_result.html" with siae=siae %}</div>
-                            <!-- insert to nudge tender creation -->
-                            {% if forloop.counter in position_promote_tenders and page_obj.number == 1 %}
-                                <div class="fr-col-12">
-                                    {% include "siaes/_card_suggest_tender.html" with current_perimeters=current_perimeters current_sectors=current_sectors %}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                        <div class="fr-col-12">{% include "includes/_pagination.html" %}</div>
-                    {% else %}
-                        <div class="fr-col-12">
-                            <!-- no results -->
-                            <p>Il y a encore de l'espoir ❤️</p>
-                            <p>Publiez votre besoin, et on s'occupe de vous trouver des prestataires inclusifs.</p>
-                            <p>Obtenez des réponses en moins de 24 heures (en moyenne).</p>
-                            <a href="{% url 'tenders:create' %}"
-                               id="siae-search-empty-demande"
-                               class="fr-btn fr-btn--icon-left fr-icon-mail-line">Publier un besoin d'achat</a>
+                <div class="lm-filter-panel__body">
+
+                    <section class="fr-accordion">
+                        <h3 class="fr-accordion__title">
+                            <button class="fr-accordion__btn" aria-expanded="{% if current_locations %}true{% else %}false{% endif %}" aria-controls="acc-geo">
+                                <span class="lm-filter-section-icon">
+                                    <span class="fr-icon-road-map-line fr-icon--sm" aria-hidden="true"></span>
+                                    Géographie
+                                    {% if current_locations %}
+                                        <span class="fr-badge fr-badge--blue-cumulus fr-badge--sm fr-badge--no-icon fr-ml-1w">{{ current_locations|length }}</span>
+                                    {% endif %}
+                                </span>
+                            </button>
+                        </h3>
+                        <div class="fr-collapse" id="acc-geo">
+                            <p class="fr-text--xs fr-text-mention--grey fr-mb-2w">Structures implantées sur ce territoire</p>
+                            <div class="fr-input-group">
+                                <label for="id_locations" class="fr-label">{{ form.locations.label }}</label>
+                                {{ form.locations }}
+                                {{ current_locations|json_script:"current-locations" }}
+                            </div>
                         </div>
-                    {% endif %}
+                    </section>
+
+                    <section class="fr-accordion">
+                        <h3 class="fr-accordion__title">
+                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="acc-presta">
+                                <span class="lm-filter-section-icon">
+                                    <span class="fr-icon-service-line fr-icon--sm" aria-hidden="true"></span>
+                                    Activité
+                                </span>
+                            </button>
+                        </h3>
+                        <div class="fr-collapse" id="acc-presta">
+                            {% dsfr_form_field form.presta_type %}
+                            {% dsfr_form_field form.territory %}
+                        </div>
+                    </section>
+
+                    <section class="fr-accordion">
+                        <h3 class="fr-accordion__title">
+                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="acc-networks">
+                                <span class="lm-filter-section-icon">
+                                    <span class="fr-icon-links-line fr-icon--sm" aria-hidden="true"></span>
+                                    Réseaux et labels
+                                </span>
+                            </button>
+                        </h3>
+                        <div class="fr-collapse" id="acc-networks">
+                            {% dsfr_form_field form.networks %}
+                            {% dsfr_form_field form.labels %}
+                        </div>
+                    </section>
+
+                    <section class="fr-accordion">
+                        <h3 class="fr-accordion__title">
+                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="acc-quality">
+                                <span class="lm-filter-section-icon">
+                                    <span class="fr-icon-award-line fr-icon--sm" aria-hidden="true"></span>
+                                    Qualité et badges
+                                </span>
+                            </button>
+                        </h3>
+                        <div class="fr-collapse" id="acc-quality">
+                            {% dsfr_form_field form.super_badge %}
+                            {% dsfr_form_field form.has_client_references %}
+                        </div>
+                    </section>
+
+                    <section class="fr-accordion">
+                        <h3 class="fr-accordion__title">
+                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="acc-advanced">
+                                <span class="lm-filter-section-icon">
+                                    <span class="fr-icon-settings-5-line fr-icon--sm" aria-hidden="true"></span>
+                                    Critères avancés
+                                </span>
+                            </button>
+                        </h3>
+                        <div class="fr-collapse" id="acc-advanced">
+                            {% dsfr_form_field form.has_groups %}
+                            {% dsfr_form_field form.ca %}
+                            {% dsfr_form_field form.legal_form %}
+                            {% dsfr_form_field form.employees %}
+                        </div>
+                    </section>
+
                 </div>
-            </div>
-            <!-- sidebar -->
-            <div class="fr-col-12 fr-col-lg-4 siae-info fr-mt-6v">
-                <div class="map-holder fr-mb-4v">
-                    <div id="map-siae-list" class="map-canvas"></div>
+                <div class="lm-filter-panel__foot">
+                    <button type="submit" class="fr-btn fr-btn--secondary fr-btn--full-width fr-btn--icon-left fr-icon-search-line">
+                        Appliquer les filtres
+                    </button>
+                    {% include "siaes/_share_search_results.html" %}
                 </div>
+            </aside>
+
+            {# ── CENTRE : résultats ─────────────────────────────────────────── #}
+            <div id="searchResults">
+
+                <div class="lm-results-head">
+                    <div>
+                        {% with paginator.count as siae_count %}
+                            {% if siae_count > 0 %}
+                                <p class="lm-results-count">
+                                    {{ siae_count }} structure{{ siae_count|pluralize }} correspond{{ siae_count|pluralize:"ent" }} à vos critères
+                                </p>
+                                <p class="lm-results-sub">
+                                    Certaines structures peuvent intervenir en dehors de leur zone d'implantation.<br>
+                                    Vérifiez la zone d'intervention indiquée sur chaque fiche.
+                                </p>
+                            {% else %}
+                                <p class="lm-results-count">Aucun résultat pour ces critères</p>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+
+                {% if siaes %}
+                    <button data-fr-opened="false" aria-controls="favorite_item_add_modal" class="fr-hidden"></button>
+                    <button data-fr-opened="false" aria-controls="favorite_item_remove_modal" class="fr-hidden"></button>
+
+                    {% for siae in siaes %}
+                        <div class="lm-card">
+
+                            {# Logo #}
+                            <div class="lm-card__logo">
+                                {% if siae.logo_url %}
+                                    <img src="{{ siae.logo_url }}" alt="Logo {{ siae.name_display }}" loading="lazy">
+                                {% else %}
+                                    <span class="lm-card__logo-fallback fr-icon-building-line" aria-hidden="true"></span>
+                                {% endif %}
+                            </div>
+
+                            {# Contenu #}
+                            <div>
+                                <a href="{% url 'siae:detail' siae.slug %}" class="lm-card__name">{{ siae.name_display }}</a>
+                                <div class="lm-card__badges">
+                                    <span class="fr-badge fr-badge--blue-cumulus fr-badge--sm fr-badge--no-icon"
+                                          title="{{ siae.get_kind_display }}">{{ siae.kind }}</span>
+                                    {% include "includes/_super_badge.html" with siae=siae %}
+                                    {% if siae.is_in_the_hosmoz_network %}
+                                        <span class="fr-badge fr-badge--sm fr-badge--no-icon" title="Réseau Hosmoz">Hosmoz</span>
+                                    {% endif %}
+                                    {% if siae.is_qpv %}
+                                        <span class="fr-badge fr-badge--sm fr-badge--no-icon" title="Quartier prioritaire de la politique de la ville">QPV</span>
+                                    {% endif %}
+                                    {% if siae.is_zrr %}
+                                        <span class="fr-badge fr-badge--sm fr-badge--no-icon" title="Zone de revitalisation rurale">ZRR</span>
+                                    {% endif %}
+                                </div>
+                                <p class="lm-card__meta">
+                                    <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
+                                    <strong>Implantation :</strong> {{ siae.city }}{% if siae.department %} ({{ siae.department }}){% endif %}
+                                </p>
+                                {% if siae.region %}
+                                    <p class="lm-card__meta">
+                                        <span class="fr-icon-road-map-line" aria-hidden="true"></span>
+                                        <strong>Zone d'intervention :</strong> {{ siae.region }}
+                                    </p>
+                                {% endif %}
+                                <div class="lm-card__sectors">
+                                    {% siae_sector_groups_display siae display_max=3 current_sector_groups=current_sector_groups %}
+                                </div>
+                                {% if user.is_authenticated and user.is_admin and not siae.user_count %}
+                                    <p class="fr-text--xs fr-text-mention--grey fr-mt-1w">
+                                        <span class="fr-icon-warning-fill fr-icon--sm" aria-hidden="true"></span>
+                                        Pas encore inscrite
+                                    </p>
+                                {% endif %}
+                            </div>
+
+                            {# Actions #}
+                            <div class="lm-card__actions">
+                                <a href="{% url 'siae:detail' siae.slug %}" class="fr-btn fr-btn--secondary fr-btn--sm">Voir la fiche</a>
+                                <a href="{% url 'siae:detail' siae.slug %}#contact" class="fr-btn fr-btn--sm">Contacter</a>
+                                <div class="lm-card__fav">
+                                    {% if user.is_authenticated %}
+                                        {% if from_profile or siae.in_user_favorite_list_count_annotated %}
+                                            <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-star-fill"
+                                                    x-data="favoriteItem"
+                                                    x-init="initOptions('{{ siae.slug }}', '{{ siae.name_display|escapejs }}')"
+                                                    @click="remove" title="Dans votre liste d'achat"></button>
+                                        {% else %}
+                                            <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-star-line"
+                                                    x-data="favoriteItem"
+                                                    x-init="initOptions('{{ siae.slug }}', '{{ siae.name_display|escapejs }}')"
+                                                    @click="add" title="Ajouter à votre liste d'achat"></button>
+                                        {% endif %}
+                                    {% else %}
+                                        <button class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-star-line"
+                                                data-fr-opened="false"
+                                                aria-controls="login_or_signup_modal"
+                                                data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}"
+                                                title="Ajouter à votre liste d'achat"></button>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                        </div>
+
+                        {% if forloop.counter in position_promote_tenders and page_obj.number == 1 %}
+                            {% include "siaes/_card_suggest_tender.html" with current_perimeters=current_perimeters current_sectors=current_sectors %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% include "includes/_pagination.html" %}
+
+                {% else %}
+                    <div class="fr-callout fr-callout--brown-caramel">
+                        <p class="fr-callout__title fr-h5">Aucune structure trouvée</p>
+                        <p class="fr-callout__text">
+                            Publiez votre besoin et nos conseillers identifient des prestataires inclusifs pour vous.
+                        </p>
+                        <a href="{% url 'tenders:create' %}" class="fr-btn fr-btn--icon-left fr-icon-mail-line">
+                            Publier un besoin d'achat
+                        </a>
+                    </div>
+                {% endif %}
+
+            </div>{# /searchResults #}
+
+            {# ── DROITE : carte + aide ──────────────────────────────────────── #}
+            <aside class="lm-sidebar">
+
+                <div class="lm-sidebar-block">
+                    <p class="lm-sidebar-block__title">
+                        <span class="fr-icon-map-2-line fr-icon--sm" aria-hidden="true"></span>
+                        Zone d'intervention sélectionnée
+                    </p>
+                    <div class="lm-map-holder">
+                        <div id="map-siae-list" class="map-canvas" style="height:180px;"></div>
+                    </div>
+                    <a href="#map-siae-list" class="fr-link fr-text--sm fr-icon-zoom-in-line fr-link--icon-left">
+                        Voir sur la carte
+                    </a>
+                </div>
+
+                <div class="lm-sidebar-block">
+                    <p class="lm-sidebar-block__title">
+                        <span class="fr-icon-information-line fr-icon--sm" aria-hidden="true"></span>
+                        Comprendre les critères géographiques
+                    </p>
+                    <div class="lm-geo-section">
+                        <p class="lm-geo-section__label">
+                            <span class="fr-icon-map-pin-2-line fr-icon--sm" aria-hidden="true"></span>
+                            Zone d'intervention
+                        </p>
+                        <p class="lm-geo-section__desc">
+                            Structures capables d'intervenir sur le territoire sélectionné, où qu'elles soient implantées.
+                        </p>
+                    </div>
+                    <div class="lm-geo-section">
+                        <p class="lm-geo-section__label">
+                            <span class="fr-icon-building-line fr-icon--sm" aria-hidden="true"></span>
+                            Localisation de la structure
+                        </p>
+                        <p class="lm-geo-section__desc">
+                            Structures implantées sur le territoire sélectionné.
+                        </p>
+                    </div>
+                    <a href="#" class="fr-link fr-text--sm fr-mt-2w">En savoir plus</a>
+                </div>
+
+                <div class="lm-sidebar-block">
+                    <p class="lm-sidebar-block__title">
+                        <span class="fr-icon-customer-service-line fr-icon--sm" aria-hidden="true"></span>
+                        Besoin d'aide ?
+                    </p>
+                    <p class="fr-text--sm fr-mb-2w">
+                        Nos conseillers vous orientent vers les structures adaptées à votre projet.
+                    </p>
+                    <a href="mailto:{{ TEAM_CONTACT_EMAIL }}" class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--full-width">
+                        Nous contacter
+                    </a>
+                </div>
+
                 {% include "siaes/_si_ideas_search_result.html" %}
-            </div>
-        </div>
-    </div>
-    {% include "includes/_super_siae_arguments_badge.html" %}
-    {% if invite_colleagues_email_formset %}
-        <!-- buttons needed for modal to be triggered -->
-        <button class="fr-hidden" aria-controls="invite-colleagues-modal" id="invite-colleagues-btn" data-fr-opened="false"></button>
-        {% include "siaes/_invite_colleagues_modal.html" %}
-        <script src="{% static 'js/invite_colleagues_modal.js' %}"></script>
-    {% endif %}
+
+            </aside>
+
+        </div>{# /3col #}
+
+    </form>
+</div>
+
+{% include "includes/_super_siae_arguments_badge.html" %}
+
+{% if invite_colleagues_email_formset %}
+    <button class="fr-hidden" aria-controls="invite-colleagues-modal" id="invite-colleagues-btn" data-fr-opened="false"></button>
+    {% include "siaes/_invite_colleagues_modal.html" %}
+    <script src="{% static 'js/invite_colleagues_modal.js' %}"></script>
+{% endif %}
+
 {% endblock content %}
+
 {% block modals %}
     {% include "auth/_login_or_signup_modal.html" %}
-    {% include "auth/_login_or_signup_search_advanced_modal.html" %}
     {% include "favorites/_favorite_item_add_modal.html" %}
     {% include "favorites/_favorite_item_remove_modal.html" %}
 {% endblock modals %}
+
 {% block extra_js %}
-    <script type="text/javascript"
-            src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/multiselect.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/search_form.js' %}"></script>
-    <script type="text/javascript">
-document.addEventListener('alpine:init', function() {
-    Alpine.data('AdvancedSearchComponent', () => (
-        {
-            open: {{is_advanced_search|yesno:"true,false"}},
-            toggle() {
-                this.open = !this.open;
-            },
-        }
-    ));
-});
-
+    <script src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
+    <script src="{% static 'js/multiselect.js' %}"></script>
+    <script src="{% static 'js/search_form.js' %}"></script>
+    <script>
 document.addEventListener("DOMContentLoaded", function() {
-    let searchFilterTab = document.getElementById('search-filter-tab');
-    let searchFilterContent = document.getElementById('search-filter');
-
-    let searchTextContent = document.getElementById('search-text');
-    let qInput = document.getElementById('id_q');
-
-    let resetBtn = document.getElementById('form-reset-btn');
-
-    if (resetBtn) {
-        resetBtn.addEventListener("click", resetForm);
-    }
-
-    // init search form
-    if (qInput.value) {
-        setTimeout(() => {
-            dsfr(searchTextContent).tabPanel.disclose();
-        }, 500);
-    }
-
-    // init perimeters & locations form fields
+    // Autocomplete zone d'intervention
     const perimetersAutoComplete = new PerimetersMultiAutocomplete();
     perimetersAutoComplete.init();
+
     {% if not form.locations.field.disabled %}
-        const LOCATION_AUTOCOMPLETE_ID = 'id_locations';
-        const LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR = '#id_locations';
-        const LOCATION_SELECTED_CONTAINER_SELECTOR = '#locations-selected-id_locations';
-        const LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX = 'hiddenLocation';
-        const LOCATION_CURRENT_ID = 'current-locations';
-        const locationsAutoComplete = new PerimetersMultiAutocomplete(LOCATION_AUTOCOMPLETE_ID, LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR, LOCATION_SELECTED_CONTAINER_SELECTOR, LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX, LOCATION_CURRENT_ID);
-        locationsAutoComplete.init();
+    const locationsAutoComplete = new PerimetersMultiAutocomplete(
+        'id_locations',
+        '#id_locations',
+        '#locations-selected-id_locations',
+        'hiddenLocation',
+        'current-locations'
+    );
+    locationsAutoComplete.init();
     {% endif %}
-});
-    </script>
-    <script type="text/javascript">
-document.addEventListener("DOMContentLoaded", function() {
-    // Set listings markers on load
-    const siaeList = {{ siaes_json|safe }};
 
-    // init map
-    var map = L.map('map-siae-list').setView([47.08333, 2.4], 5);
+    // Réinitialiser
+    const resetBtn = document.getElementById('form-reset-btn');
+    if (resetBtn) resetBtn.addEventListener("click", resetForm);
 
-    // map tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 19,
-        zoomControl: false,
-    }).addTo(map);
+    // Panneau filtres avancés : visible par défaut sur desktop, togglable sur mobile
+    const panel = document.getElementById('advanced-filters-panel');
+    const toggleBtn = document.getElementById('toggle-more-filters');
+    const isDesktop = () => window.innerWidth >= 992;
 
-    // map zoom controls in the bottom right
-    map.zoomControl.remove();
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-    // create custom marker (because of static url issues)
-    var customLeafletIcon = L.icon({
-        'iconUrl': "{% static 'img/icon_map.png' %}",
-        'shadowUrl': "{% static 'img/icon_map_shadow.png' %}",
-        iconSize: [34,25],
-        shadowSize:[34,25],
-    });
-
-    // add markers from geojson data (with popup on click)
-    var geojson = L.geoJSON(siaeList, {
-        pointToLayer: function(geoJsonPoint, latlng) {
-            return L.marker(latlng, {icon: customLeafletIcon});
-        },
-        onEachFeature: function (feature, layer) {
-            var featureDisplayName = feature.properties.brand ? feature.properties.brand : feature.properties.name;
-            layer.bindPopup(`<a href="/prestataires/${feature.properties.slug}/"><p class="h6">${featureDisplayName}</p></a>`);
+    function updatePanelVisibility() {
+        if (isDesktop()) {
+            panel.classList.remove('is-visible');
+            panel.style.display = '';
+        } else {
+            const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+            panel.classList.toggle('is-visible', isExpanded);
         }
-    }).addTo(map);
+    }
 
-    // set map bounds
-    geoBounds = geojson.getBounds();
-    if (geoBounds.isValid()) {
-        map.fitBounds(geoBounds);
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+            const expanded = this.getAttribute('aria-expanded') === 'true';
+            this.setAttribute('aria-expanded', String(!expanded));
+            updatePanelVisibility();
+        });
+    }
+
+    window.addEventListener('resize', updatePanelVisibility);
+    updatePanelVisibility();
+
+    // Tout replier
+    const collapseBtn = document.getElementById('collapse-all-btn');
+    if (collapseBtn) {
+        collapseBtn.addEventListener('click', function() {
+            document.querySelectorAll('.lm-filter-panel .fr-accordion__btn[aria-expanded="true"]').forEach(btn => {
+                btn.setAttribute('aria-expanded', 'false');
+            });
+        });
     }
 });
+
+// Retirer un filtre par slug
+function removeFilterParam(key, value) {
+    const url = new URL(window.location.href);
+    const values = url.searchParams.getAll(key);
+    url.searchParams.delete(key);
+    values.filter(v => v !== value).forEach(v => url.searchParams.append(key, v));
+    url.searchParams.delete('page');
+    window.location.href = url.toString();
+}
     </script>
-    <script type="text/javascript"
-            src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    const siaeList = {{ siaes_json|safe }};
+    var map = L.map('map-siae-list').setView([47.08333, 2.4], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19, zoomControl: false,
+    }).addTo(map);
+    map.zoomControl.remove();
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+    var customLeafletIcon = L.icon({
+        iconUrl: "{% static 'img/icon_map.png' %}",
+        shadowUrl: "{% static 'img/icon_map_shadow.png' %}",
+        iconSize: [34, 25], shadowSize: [34, 25],
+    });
+    var geojson = L.geoJSON(siaeList, {
+        pointToLayer: (pt, latlng) => L.marker(latlng, { icon: customLeafletIcon }),
+        onEachFeature: (feature, layer) => {
+            var name = feature.properties.brand || feature.properties.name;
+            layer.bindPopup(`<a href="/prestataires/${feature.properties.slug}/"><p class="h6">${name}</p></a>`);
+        }
+    }).addTo(map);
+    var bounds = geojson.getBounds();
+    if (bounds.isValid()) map.fitBounds(bounds);
+});
+    </script>
+    <script src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
     {% if user.is_authenticated %}
-        <script type="text/javascript" src="{% static 'js/favorite_item.js' %}"></script>
+        <script src="{% static 'js/favorite_item.js' %}"></script>
     {% endif %}
 {% endblock extra_js %}
