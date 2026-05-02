@@ -32,6 +32,12 @@
 
                 {# Badges statut #}
                 <div class="fr-mb-2w">
+                    {% if siae.is_eligible_clause_sociale %}
+                        <span class="fr-badge fr-badge--success fr-badge--no-icon fr-badge--sm fr-mr-1w"
+                              title="Cette structure peut être mobilisée dans le cadre de la mise en œuvre de vos clauses sociales d'insertion.">
+                            Éligible à la clause sociale
+                        </span>
+                    {% endif %}
                     {% if siae.super_badge %}
                         <span class="fr-badge fr-badge--success fr-badge--sm fr-mr-1w">Super-prestataire</span>
                     {% endif %}
