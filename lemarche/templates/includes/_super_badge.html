@@ -8,9 +8,15 @@
     {% endif %}
     {% if siae.super_badge %}
         <span class="fr-tag lemarche-super-badge"
-              title="Les Super prestataires sont des structures particulièrement actives sur le Marché de l'inclusion : leur fiche commerciale est complète, et elles répondent régulièrement aux besoins d'achat, que ce soit en prenant contact avec l'acheteur ou en signalant leur indisponibilité.">
+              aria-describedby="tooltip-super-badge-{{ siae.pk }}">
             <span class="fr-icon-award-fill" aria-hidden="true"></span>
             Super prestataire
+        </span>
+        <span class="fr-tooltip fr-placement"
+              id="tooltip-super-badge-{{ siae.pk }}"
+              role="tooltip"
+              aria-hidden="true">
+            Les Super prestataires sont des structures particulièrement actives sur le Marché de l'inclusion : leur fiche commerciale est complète, et elles répondent régulièrement aux besoins d'achat, que ce soit en prenant contact avec l'acheteur ou en signalant leur indisponibilité.
         </span>
     {% endif %}
 </span>
