@@ -636,6 +636,7 @@ class Siae(NexusModelMixin, models.Model):
         "tender_email_link_click_count",
         "tender_detail_display_count",
         "tender_detail_contact_click_count",
+        "tender_detail_not_interested_count",
     ]
     FIELDS_STATS_TIMESTAMPS = ["signup_date", "content_filled_basic_date", "created_at", "updated_at"]
     FIELDS_STATS = FIELDS_STATS_COUNT + FIELDS_STATS_TIMESTAMPS + ["super_badge", "completion_rate"]
@@ -901,6 +902,9 @@ class Siae(NexusModelMixin, models.Model):
     )
     tender_detail_contact_click_count = models.IntegerField(
         "Nombre de besoins intéressés", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
+    )
+    tender_detail_not_interested_count = models.IntegerField(
+        "Nombre de besoins refusés", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
     )
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
     recipient_transactional_send_logs = GenericRelation(
@@ -1180,8 +1184,13 @@ class Siae(NexusModelMixin, models.Model):
             and (self.tender_email_send_count >= 1)
         ):
             tender_view_rate = round(100 * self.tender_email_link_click_count / self.tender_email_send_count)
-            tender_interested_rate = round(100 * self.tender_detail_contact_click_count / self.tender_email_send_count)
-            if (tender_view_rate >= 40) or (tender_interested_rate >= 20):
+            # Engagement = prise de contact OU refus explicite (les deux montrent que la structure est active)
+            tender_engagement_rate = round(
+                100
+                * (self.tender_detail_contact_click_count + self.tender_detail_not_interested_count)
+                / self.tender_email_send_count
+            )
+            if (tender_view_rate >= 40) or (tender_engagement_rate >= 20):
                 return True
         return False
 
