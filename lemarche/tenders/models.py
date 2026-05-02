@@ -1421,7 +1421,7 @@ class ReferentRegional(models.Model):
         upload_to="referents_regionaux/logos/",
         null=True,
         blank=True,
-        help_text="Logo du réseau régional (GRAFIE, GESAT…). Affiché dans 'Besoin d'aide ?' (page groupement).",
+        help_text="Logo du réseau (GRAFIE, GESAT…). Affiché dans 'Besoin d'aide ?' (page groupement).",
     )
     is_active = models.BooleanField(verbose_name="Actif", default=True)
 
