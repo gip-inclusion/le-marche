@@ -42,6 +42,7 @@ from lemarche.tenders.models import (
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.utils import constants, settings_context_processors
+from lemarche.utils.constants import DEPARTMENT_TO_REGION
 from lemarche.utils.data import get_choice
 from lemarche.utils.emails import add_to_contact_list
 from lemarche.utils.export import generate_siae_row
@@ -1175,6 +1176,13 @@ GROUPEMENT_MISE_A_DISPO_KINDS = [
 ]
 
 
+def _get_siae_region(siae: Siae) -> str:
+    """Return the siae region, falling back to department-based lookup when region is blank."""
+    if siae.region:
+        return siae.region
+    return DEPARTMENT_TO_REGION.get(siae.department, "")
+
+
 def _score_siae(siae, tender_sector_ids: set) -> int:
     score = 0
     score += 3 if siae.super_badge else 0
@@ -1191,7 +1199,7 @@ def _get_partner_siaes(tender: Tender, initiating_siae: Siae, kind_list: list, m
     qs = (
         Siae.objects.is_live()
         .has_contact_email()
-        .filter(kind__in=kind_list, region=initiating_siae.region)
+        .filter(kind__in=kind_list, region=_get_siae_region(initiating_siae))
         .exclude(pk=initiating_siae.pk)
         .prefetch_related("activities")
     )
@@ -1293,7 +1301,7 @@ class TenderDetailGroupementReplyView(SiaeUserRequiredOrTenderSiaeUUIDParamMixin
         context["presta_service_siaes"] = _get_partner_siaes(tender, initiating_siae, GROUPEMENT_PRESTA_SERVICE_KINDS)
         context["mise_a_dispo_siaes"] = _get_partner_siaes(tender, initiating_siae, GROUPEMENT_MISE_A_DISPO_KINDS)
         context["referents"] = (
-            ReferentRegional.objects.is_active().for_region(initiating_siae.region).select_related("user")
+            ReferentRegional.objects.is_active().for_region(_get_siae_region(initiating_siae)).select_related("user")
         )
         tender_siae_uuid = self.request.GET.get("tender_siae_uuid", "")
         context["tender_siae_uuid"] = tender_siae_uuid
