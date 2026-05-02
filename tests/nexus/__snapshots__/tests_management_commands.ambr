@@ -101,6 +101,7 @@
                  "siaes_siae"."tender_email_link_click_count",
                  "siaes_siae"."tender_detail_display_count",
                  "siaes_siae"."tender_detail_contact_click_count",
+                 "siaes_siae"."tender_detail_not_interested_count",
                  "siaes_siae"."logs",
                  "siaes_siae"."source",
                  "siaes_siae"."extra_data",
