@@ -1,31 +1,31 @@
 <div class="fr-card fr-mt-2w">
     <div class="fr-card__body">
         <div class="fr-card__content">
-            <h3 class="fr-card__title fr-text--md">Répondre en groupement / cotraitance</h3>
+            <h3 class="fr-card__title">Répondre en groupement ou co-traitance</h3>
             <div class="fr-card__desc">
-                <p class="fr-text--sm fr-mb-2w">
-                    Vous n'avez pas toutes les compétences pour répondre seul ?
-                    Trouvez un partenaire inclusif pour répondre ensemble.
+                <p class="fr-mb-2w">
+                    Vous n'avez pas la taille critique ou toutes les compétences pour répondre seul ?
+                    Identifiez des structures complémentaires pour construire une réponse commune.
                 </p>
                 {% if user_can_click %}
                     {% url 'tenders:detail-groupement-reply' tender.slug as groupement_url %}
                     {% if tender_siae_uuid %}
                         <a href="{{ groupement_url }}?tender_siae_uuid={{ tender_siae_uuid }}"
-                           class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-team-line fr-btn--icon-left">
-                            Répondre en groupement
+                           class="fr-btn fr-btn--secondary fr-icon-team-line fr-btn--icon-left">
+                            Répondre en co-traitance
                         </a>
                     {% else %}
                         <a href="{{ groupement_url }}"
-                           class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-team-line fr-btn--icon-left">
-                            Répondre en groupement
+                           class="fr-btn fr-btn--secondary fr-icon-team-line fr-btn--icon-left">
+                            Répondre en co-traitance
                         </a>
                     {% endif %}
                 {% else %}
-                    <button class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-team-line fr-btn--icon-left"
+                    <button class="fr-btn fr-btn--secondary fr-icon-team-line fr-btn--icon-left"
                             data-fr-opened="false"
                             aria-controls="login_or_signup_siae_tender_modal"
                             data-next-params="{% url 'tenders:detail' tender.slug %}">
-                        Répondre en groupement
+                        Répondre en co-traitance
                     </button>
                 {% endif %}
             </div>

@@ -1416,6 +1416,13 @@ class ReferentRegional(models.Model):
         related_name="referent_regional_set",
     )
     region = models.CharField(verbose_name="Région", max_length=255, choices=REGION_CHOICES)
+    logo = models.FileField(
+        verbose_name="Logo du réseau régional",
+        upload_to="referents_regionaux/logos/",
+        null=True,
+        blank=True,
+        help_text="Logo du réseau régional (GRAFIE, GESAT…). Affiché dans 'Besoin d'aide ?' (page groupement).",
+    )
     is_active = models.BooleanField(verbose_name="Actif", default=True)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)

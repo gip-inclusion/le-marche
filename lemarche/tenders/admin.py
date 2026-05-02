@@ -1128,3 +1128,4 @@ class ReferentRegionalAdmin(admin.ModelAdmin):
     search_fields = ["user__first_name", "user__last_name", "user__email", "region"]
     raw_id_fields = ["user"]
     readonly_fields = ["created_at", "updated_at"]
+    fields = ["user", "region", "logo", "is_active", "created_at", "updated_at"]

@@ -1,6 +1,7 @@
 import csv
 import os
 from datetime import timedelta
+from urllib.parse import urlencode
 
 import openpyxl
 from django.conf import settings
@@ -15,7 +16,7 @@ from django.db.models import ExpressionWrapper, FloatField, OuterRef, Prefetch, 
 from django.forms import formset_factory
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, ListView, UpdateView, View
@@ -1298,4 +1299,11 @@ class TenderDetailGroupementReplyView(SiaeUserRequiredOrTenderSiaeUUIDParamMixin
         context["tender_siae_uuid"] = tender_siae_uuid
         uuid_suffix = f"?tender_siae_uuid={tender_siae_uuid}" if tender_siae_uuid else ""
         context["back_url"] = str(reverse_lazy("tenders:detail", args=[tender.slug])) + uuid_suffix
+        context["search_url"] = self._build_search_url(tender)
         return context
+
+    def _build_search_url(self, tender) -> str:
+        sector_ids = list(tender.sectors.values_list("id", flat=True))
+        params = {"sectors": sector_ids} if sector_ids else {}
+        base = reverse("siae:search_results")
+        return f"{base}?{urlencode(params, doseq=True)}" if params else base
