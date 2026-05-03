@@ -578,9 +578,13 @@
                                     <td style="text-align:right;">
                                         <a :href="p.search_urls.won_contract" target="_blank" rel="noopener" x-text="p.siaes_with_won_contract"></a>
                                     </td>
-                                    <td style="text-align:right;"
-                                        :style="p.eco_dependency !== null && p.eco_dependency > 30 ? 'color:#ce0500; font-weight:700;' : ''">
-                                        <span x-text="p.eco_dependency !== null ? p.eco_dependency + ' %' : '—'"></span>
+                                    <td style="text-align:right;">
+                                        <template x-if="p.eco_dependency !== null">
+                                            <span class="fr-badge fr-badge--sm"
+                                                  :class="ecoDepBadgeClass(p.eco_dependency)"
+                                                  x-text="p.eco_dependency + ' %'"></span>
+                                        </template>
+                                        <template x-if="p.eco_dependency === null"><span>—</span></template>
                                     </td>
                                     <td>
                                         <span class="ipa-reco"
@@ -602,9 +606,7 @@
                         <div class="ipa-group-hd" @click="toggleGroup(group.name)">
                             <span class="ipa-group-hd__name" x-text="group.name"></span>
                             <span class="ipa-group-hd__meta">
-                                <span x-text="group.projects.length + ' projet' + (group.projects.length > 1 ? 's' : '')"></span>
-                                &nbsp;·&nbsp;
-                                <strong x-text="group.total + ' structure' + (group.total > 1 ? 's' : '') + ' potentielle' + (group.total > 1 ? 's' : '')"></strong>
+                                <span x-text="group.withPotential + ' / ' + group.projects.length + ' projet' + (group.projects.length > 1 ? 's' : '') + ' avec potentiel inclusif'"></span>
                             </span>
                             <span class="ipa-group-hd__chevron" x-text="expandedGroups[group.name] ? '▲' : '▼'"></span>
                         </div>
@@ -659,9 +661,14 @@
                                                 <td style="text-align:right;">
                                                     <a :href="p.search_urls.won_contract" target="_blank" rel="noopener" x-text="p.siaes_with_won_contract"></a>
                                                 </td>
-                                                <td style="text-align:right;"
-                                                    :style="p.eco_dependency !== null && p.eco_dependency > 30 ? 'color:#ce0500; font-weight:700;' : ''"
-                                                    x-text="p.eco_dependency !== null ? p.eco_dependency + ' %' : '—'"></td>
+                                                <td style="text-align:right;">
+                                                    <template x-if="p.eco_dependency !== null">
+                                                        <span class="fr-badge fr-badge--sm"
+                                                              :class="ecoDepBadgeClass(p.eco_dependency)"
+                                                              x-text="p.eco_dependency + ' %'"></span>
+                                                    </template>
+                                                    <template x-if="p.eco_dependency === null"><span>—</span></template>
+                                                </td>
                                                 <td>
                                                     <span class="ipa-reco"
                                                           :class="recoClass(p.recommendation_title)"
@@ -831,6 +838,17 @@
                                     Dépendance économique
                                     <span class="ipa-tip" data-tip="Part que représente votre marché dans le CA moyen des structures potentielles. Au-delà de 30 %, le risque de dépendance économique est considéré comme élevé."><i class="ri-information-line" aria-hidden="true"></i></span>
                                 </div>
+                                {% if result.eco_dependency is not None %}
+                                <div class="fr-mt-1v">
+                                    {% if result.eco_dependency <= 30 %}
+                                        <span class="fr-badge fr-badge--sm fr-badge--success">Limitée</span>
+                                    {% elif result.eco_dependency <= 50 %}
+                                        <span class="fr-badge fr-badge--sm fr-badge--warning">Point de vigilance</span>
+                                    {% else %}
+                                        <span class="fr-badge fr-badge--sm fr-badge--error">Risque élevé</span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="fr-col-6 fr-col-md-3">
@@ -1323,11 +1341,17 @@
             _groupBy(key) {
                 const groups = {};
                 for (const p of this.filteredProjects) {
-                    if (!groups[p[key]]) groups[p[key]] = { name: p[key], projects: [], total: 0 };
+                    if (!groups[p[key]]) groups[p[key]] = { name: p[key], projects: [] };
                     groups[p[key]].projects.push(p);
-                    groups[p[key]].total += p.potential_siaes;
                 }
-                return Object.values(groups).sort((a, b) => b.total - a.total);
+                return Object.values(groups).sort((a, b) => b.projects.length - a.projects.length).map(g => ({
+                    ...g,
+                    withPotential: g.projects.filter(p =>
+                        p.recommendation_key === 'reservation' ||
+                        p.recommendation_key === 'lot' ||
+                        p.recommendation_key === 'clause'
+                    ).length,
+                }));
             },
 
             get uniqueSectors() {
@@ -1370,6 +1394,12 @@
 
             toggleGroup(name) {
                 this.expandedGroups[name] = !this.expandedGroups[name];
+            },
+
+            ecoDepBadgeClass(value) {
+                if (value <= 30) return 'fr-badge--success';
+                if (value <= 50) return 'fr-badge--warning';
+                return 'fr-badge--error';
             },
 
             recoClass(title) {

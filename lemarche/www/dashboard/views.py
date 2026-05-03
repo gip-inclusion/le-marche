@@ -17,7 +17,7 @@ from django.views.generic import DetailView, FormView, UpdateView
 from django_filters.views import FilterView
 
 from content_manager.models import ContentPage, Tag
-from lemarche.api.inclusive_potential.constants import PRESTA_MODE_DEFAULT, PRESTA_MODE_TO_SIAE_KINDS
+from lemarche.api.inclusive_potential.constants import PRESTA_MODE_DEFAULT, PRESTA_MODE_TO_SIAE_KINDS, RECOMMENDATIONS
 from lemarche.api.inclusive_potential.utils import get_inclusive_potential_data
 from lemarche.cms.models import ArticleList
 from lemarche.perimeters.models import Perimeter
@@ -343,7 +343,7 @@ def _build_search_urls(sector: Sector, perimeter: Perimeter | None, presta_mode:
 
     def url(kind_filter=None, extra_params=None):
         params = base_params + kind_params(kind_filter) + (extra_params or [])
-        return f"/prestataires/?{urlencode(params)}"
+        return f"/prestataires/?{urlencode(params)}#searchResults"
 
     return {
         "all": url(),
@@ -396,9 +396,12 @@ def _analyze_purchase_project(
         recommendation = analysis_data["recommendation"]
         result["recommendation_title"] = recommendation.get("title")
         result["recommendation_response"] = recommendation.get("response")
+        result["recommendation_key"] = _RECOMMENDATION_TITLE_TO_KEY.get(result["recommendation_title"])
 
     return result
 
+
+_RECOMMENDATION_TITLE_TO_KEY = {rec["title"]: key for key, rec in RECOMMENDATIONS.items()}
 
 INCLUSIVE_POTENTIAL_ANALYSIS_TEMPLATE = "dashboard/inclusive_potential_analysis.html"
 
