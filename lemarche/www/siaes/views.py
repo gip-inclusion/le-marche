@@ -59,8 +59,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
 
     def get_filter_form(self):
         if not self.filter_form:
-            user = self.request.user
-            self.filter_form = SiaeFilterForm(data=self.request.GET, advanced_search=user.is_authenticated)
+            self.filter_form = SiaeFilterForm(data=self.request.GET)
         return self.filter_form
 
     def get_queryset(self):
