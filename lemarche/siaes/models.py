@@ -1168,6 +1168,11 @@ class Siae(NexusModelMixin, models.Model):
             return "l'ASP"
 
     @property
+    def is_eligible_clause_sociale(self) -> bool:
+        """True for types eligible for clause sociale insertion (excludes EITI and SEP)."""
+        return self.kind in siae_constants.KIND_CLAUSE_SOCIALE_LIST
+
+    @property
     def super_badge_calculated(self):
         if (
             (self.user_count >= 1)
