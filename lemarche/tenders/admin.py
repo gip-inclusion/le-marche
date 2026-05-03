@@ -23,6 +23,7 @@ from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import (
     PartnerShareTender,
     QuestionAnswer,
+    ReferentRegional,
     SuggestedQuestion,
     Tender,
     TenderInstruction,
@@ -384,6 +385,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "siae_count_annotated_with_link",
         "siae_email_send_count_annotated_with_link",
         "siae_detail_contact_click_count_annotated_with_link",
+        "siae_detail_groupement_click_count_annotated_with_link",
         "siae_detail_not_interested_click_count_annotated_with_link",
         "siae_transactioned_source",
         "siae_transactioned_last_updated",
@@ -495,6 +497,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "siae_count_annotated_with_link",
                     "siae_email_send_count_annotated_with_link",
                     "siae_detail_contact_click_count_annotated_with_link",
+                    "siae_detail_groupement_click_count_annotated_with_link",
                     "siae_detail_not_interested_click_count_annotated_with_link",
                 )
             },
@@ -741,6 +744,17 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     siae_detail_contact_click_count_annotated_with_link_in_list.admin_order_field = (
         "siae_detail_contact_click_count_annotated"
     )
+
+    def siae_detail_groupement_click_count_annotated_with_link(self, tender):
+        url = (
+            reverse("admin:siaes_siae_changelist")
+            + f"?tenders__in={tender.id}&tendersiae__detail_groupement_click_date__isnull=False"
+        )
+        return format_html(
+            '<a href="{}">{}</a>', url, getattr(tender, "siae_detail_groupement_click_count_annotated", 0)
+        )
+
+    siae_detail_groupement_click_count_annotated_with_link.short_description = "S. groupement"
 
     def siae_detail_not_interested_click_count_annotated_with_link(self, tender):
         url = (
@@ -1105,3 +1119,13 @@ class TenderInstructionAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {"widget": CKEditorWidget},
     }
+
+
+@admin.register(ReferentRegional, site=admin_site)
+class ReferentRegionalAdmin(admin.ModelAdmin):
+    list_display = ["id", "user", "region", "is_active", "created_at"]
+    list_filter = ["region", "is_active"]
+    search_fields = ["user__first_name", "user__last_name", "user__email", "region"]
+    raw_id_fields = ["user"]
+    readonly_fields = ["created_at", "updated_at"]
+    fields = ["user", "region", "logo", "is_active", "created_at", "updated_at"]

@@ -1,0 +1,139 @@
+{% load static humanize %}
+
+<div class="fr-col-12 fr-col-md-6 fr-col-lg-6">
+    <div class="fr-card fr-card--shadow"
+         x-data="{ showContact: false }">
+
+        {# Logo + nom sur la même ligne #}
+        <div class="fr-card__header">
+            <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: #f9f9f9; border-bottom: 1px solid #e5e5e5;">
+                {% if siae.logo_url %}
+                    <img src="{{ siae.logo_url }}"
+                         style="flex-shrink:0; height: 36px; width: 36px; object-fit: contain;"
+                         alt="Logo {{ siae.name_display }}"
+                         loading="lazy" />
+                {% else %}
+                    <div style="flex-shrink:0; width:36px; height:36px; background:#e5e5e5; border-radius:4px; display:flex; align-items:center; justify-content:center;">
+                        <span class="fr-icon-building-line" aria-hidden="true" style="color:#999; font-size:1rem;"></span>
+                    </div>
+                {% endif %}
+                <h3 class="fr-text--sm fr-text--bold fr-mb-0" style="line-height:1.3;">{{ siae.name_display }}</h3>
+            </div>
+        </div>
+
+        <div class="fr-card__body">
+            <div class="fr-card__content">
+
+                {# Type de structure #}
+                <p class="fr-text--xs fr-text-mention--grey fr-mb-2w">
+                    <span class="fr-badge fr-badge--blue-cumulus fr-badge--sm fr-mr-1w">{{ siae.kind }}</span>
+                    {{ siae.get_kind_display }}
+                </p>
+
+                {# Badges statut #}
+                <div class="fr-mb-2w">
+                    {% if siae.is_eligible_clause_sociale %}
+                        <span class="fr-badge fr-badge--success fr-badge--no-icon fr-badge--sm fr-mr-1w"
+                              title="Cette structure peut être mobilisée dans le cadre de la mise en œuvre de vos clauses sociales d'insertion.">
+                            Éligible à la clause sociale
+                        </span>
+                    {% endif %}
+                    {% if siae.super_badge %}
+                        <span class="fr-badge fr-badge--success fr-badge--sm fr-mr-1w">Super-prestataire</span>
+                    {% endif %}
+                    {% if siae.is_interested_in_tender %}
+                        <span class="fr-badge fr-badge--info fr-badge--sm fr-mr-1w">Déjà intéressé par ce besoin</span>
+                    {% endif %}
+                    {% if siae.wants_groupement %}
+                        <span class="fr-badge fr-badge--purple-glycine fr-badge--sm">Cherche aussi un partenaire</span>
+                    {% endif %}
+                </div>
+
+                {# Localisation + distance #}
+                <p class="fr-text--sm fr-mb-2w">
+                    <span class="fr-icon-map-pin-2-line fr-icon--sm" aria-hidden="true"></span>
+                    {{ siae.city }}{% if siae.department %} ({{ siae.department }}){% endif %}
+                    {% if siae.distance_km is not None %}
+                        &mdash; à <strong>{{ siae.distance_km|floatformat:0 }} km</strong> de votre structure
+                    {% endif %}
+                </p>
+
+                {# Indicateurs clés #}
+                {% if siae.ca or siae.api_entreprise_ca or siae.employees_insertion_count or siae.employees_permanent_count or siae.has_won_contract_last_3_years %}
+                    <ul class="fr-text--sm fr-mb-2w" style="list-style: none; padding: 0; margin: 0;">
+                        {% if siae.ca or siae.api_entreprise_ca %}
+                            <li>
+                                <span class="fr-icon-money-euro-circle-line fr-icon--sm fr-mr-1w" aria-hidden="true"></span>
+                                CA : <strong>{{ siae.ca|default:siae.api_entreprise_ca|intcomma }} €</strong>
+                            </li>
+                        {% endif %}
+                        {% if siae.employees_insertion_count %}
+                            <li>
+                                <span class="fr-icon-team-line fr-icon--sm fr-mr-1w" aria-hidden="true"></span>
+                                <strong>{{ siae.employees_insertion_count }}</strong> salarié{{ siae.employees_insertion_count|pluralize }} en insertion
+                            </li>
+                        {% endif %}
+                        {% if siae.has_won_contract_last_3_years %}
+                            <li>
+                                <span class="fr-icon-award-line fr-icon--sm fr-mr-1w" aria-hidden="true"></span>
+                                Marchés publics remportés ces 3 ans
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+
+                {# CTA coordonnées #}
+                <div x-show="!showContact">
+                    <button type="button"
+                            class="fr-btn fr-btn--tertiary fr-btn--sm"
+                            @click="showContact = true">
+                        Voir les coordonnées du responsable
+                    </button>
+                </div>
+
+                <div x-show="showContact" x-cloak class="fr-mt-2w">
+                    <p class="fr-text--sm fr-text--bold fr-mb-2w">
+                        {{ siae.contact_full_name|default:"Responsable de la structure" }}
+                    </p>
+
+                    {# Email au survol #}
+                    <div class="fr-mb-1w"
+                         x-data="{ hovered: false, copied: false }"
+                         @mouseenter="hovered = true"
+                         @mouseleave="hovered = false"
+                         style="display: flex; align-items: center; gap: 0.35rem; line-height: 1.4;">
+                        <span class="fr-text--sm">{{ siae.contact_email }}</span>
+                        <button x-show="hovered || copied"
+                                type="button"
+                                title="Copier l'email"
+                                style="background: none; border: none; cursor: pointer; padding: 0 0.2rem; color: #666; line-height: 1; vertical-align: middle;"
+                                @click.stop="navigator.clipboard.writeText('{{ siae.contact_email }}'); copied = true; setTimeout(() => copied = false, 2000)">
+                            <span x-show="!copied" class="fr-icon-clipboard-line" aria-hidden="true" style="font-size: 0.875rem;"></span>
+                            <span x-show="copied" style="font-size: 0.75rem; color: #18753c;">✓</span>
+                        </button>
+                    </div>
+
+                    {# Téléphone au survol #}
+                    {% if siae.contact_phone %}
+                        <div class="fr-mb-0"
+                             x-data="{ hovered: false, copied: false }"
+                             @mouseenter="hovered = true"
+                             @mouseleave="hovered = false"
+                             style="display: flex; align-items: center; gap: 0.35rem; line-height: 1.4;">
+                            <span class="fr-text--sm">{{ siae.contact_phone_display }}</span>
+                            <button x-show="hovered || copied"
+                                    type="button"
+                                    title="Copier le téléphone"
+                                    style="background: none; border: none; cursor: pointer; padding: 0 0.2rem; color: #666; line-height: 1; vertical-align: middle;"
+                                    @click.stop="navigator.clipboard.writeText('{{ siae.contact_phone_display }}'); copied = true; setTimeout(() => copied = false, 2000)">
+                                <span x-show="!copied" class="fr-icon-clipboard-line" aria-hidden="true" style="font-size: 0.875rem;"></span>
+                                <span x-show="copied" style="font-size: 0.75rem; color: #18753c;">✓</span>
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

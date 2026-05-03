@@ -261,6 +261,13 @@ class TenderQuerySet(models.QuerySet):
                     output_field=IntegerField(),
                 )
             ),
+            siae_detail_groupement_click_count_annotated=Sum(
+                Case(
+                    When(tendersiae__detail_groupement_click_date__isnull=False, then=1),
+                    default=0,
+                    output_field=IntegerField(),
+                )
+            ),
             siae_detail_not_interested_click_count_annotated=Sum(
                 Case(
                     When(tendersiae__detail_not_interested_click_date__isnull=False, then=1),
@@ -1139,6 +1146,7 @@ class TenderSiae(models.Model):
         "email_link_click_date",
         "detail_display_date",
         "detail_contact_click_date",
+        "detail_groupement_click_date",
         "detail_not_interested_click_date",
         "detail_not_interested_feedback",
     ]
@@ -1183,6 +1191,9 @@ class TenderSiae(models.Model):
     )
     _detail_cocontracting_click_date = models.DateTimeField(
         verbose_name="Date de clic sur Répondre en co-traitance (Archivé)", blank=True, null=True
+    )
+    detail_groupement_click_date = models.DateTimeField(
+        verbose_name="Date de clic sur Répondre en groupement", blank=True, null=True
     )
     detail_not_interested_click_date = models.DateTimeField(
         verbose_name="Date de clic sur Pas intéressé", blank=True, null=True
@@ -1383,3 +1394,46 @@ class SuggestedQuestion(models.Model):
     class Meta:
         verbose_name = "Question suggérée"
         verbose_name_plural = "Questions suggérées"
+
+
+class ReferentRegionalQuerySet(models.QuerySet):
+    def is_active(self):
+        return self.filter(is_active=True)
+
+    def for_region(self, region: str):
+        return self.filter(region=region)
+
+
+class ReferentRegional(models.Model):
+    """Référent régional du Marché de l'inclusion — accompagne les SIAE dans la démarche de groupement."""
+
+    REGION_CHOICES = Siae.REGION_CHOICES
+
+    user = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        verbose_name="Utilisateur",
+        on_delete=models.CASCADE,
+        related_name="referent_regional_set",
+    )
+    region = models.CharField(verbose_name="Région", max_length=255, choices=REGION_CHOICES)
+    logo = models.FileField(
+        verbose_name="Logo du réseau régional",
+        upload_to="referents_regionaux/logos/",
+        null=True,
+        blank=True,
+        help_text="Logo du réseau (GRAFIE, GESAT…). Affiché dans 'Besoin d'aide ?' (page groupement).",
+    )
+    is_active = models.BooleanField(verbose_name="Actif", default=True)
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(ReferentRegionalQuerySet)()
+
+    class Meta:
+        verbose_name = "Référent régional"
+        verbose_name_plural = "Référents régionaux"
+        ordering = ["region", "user__last_name"]
+
+    def __str__(self) -> str:
+        return f"{self.user.full_name} — {self.region}"

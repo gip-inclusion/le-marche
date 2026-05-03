@@ -885,6 +885,7 @@ class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
         subject=None,
         from_email=settings.DEFAULT_FROM_EMAIL,
         from_name=settings.DEFAULT_FROM_NAME,
+        cc: list | None = None,
     ):
         """
         Send a transactional email using a Brevo template
@@ -918,6 +919,8 @@ class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
         # if subject empty, defaults to Brevo's template subject
         if subject:
             data["subject"] = EMAIL_SUBJECT_PREFIX + subject
+        if cc:
+            data["cc"] = cc
 
         return self._send_email_with_retry(data)
 

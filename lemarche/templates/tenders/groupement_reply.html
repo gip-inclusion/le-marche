@@ -1,0 +1,393 @@
+{% extends "layouts/base.html" %}
+{% load dsfr_tags static humanize %}
+
+{% block page_title %}Répondre en groupement — {{ tender.title }}{{ block.super }}{% endblock page_title %}
+
+{% block content %}
+<style>
+.groupement-hero {
+    background: #f5f5fe;
+    border: 1px solid #cecece;
+    border-radius: 8px;
+    padding: 2.5rem;
+}
+.groupement-benefit {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+}
+.groupement-sidebar-card {
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+}
+.groupement-stepper-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.875rem;
+}
+.groupement-stepper-item:last-child { border-bottom: none; }
+.groupement-stepper-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: bold; flex-shrink: 0;
+    background: #e5e5e5; color: #666;
+}
+/* Carousel */
+.groupement-carousel-wrap {
+    position: relative;
+    overflow: hidden;
+}
+.groupement-carousel-strip {
+    display: flex;
+    gap: 1rem;
+    transition: transform 0.3s ease;
+}
+.groupement-carousel-slide {
+    flex: 0 0 calc(50% - 0.5rem);
+    min-width: 0;
+}
+@media (max-width: 767px) {
+    .groupement-carousel-slide {
+        flex: 0 0 88%;
+    }
+}
+.groupement-carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    background: white;
+    border: 1px solid #cecece;
+    border-radius: 50%;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,.12);
+}
+.groupement-carousel-btn--prev { left: -18px; }
+.groupement-carousel-btn--next { right: -18px; }
+/* Force les cartes à occuper toute la largeur de leur slide (annule fr-col-md-6 hors grid-row) */
+.groupement-carousel-strip > .groupement-carousel-slide > [class*="fr-col-"] {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+/* Référent logo */
+.referent-logo-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    object-fit: contain;
+    border: 1px solid #e5e5e5;
+    background: #f9f9f9;
+    flex-shrink: 0;
+}
+.referent-logo-fallback {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: #e5e5e5;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+</style>
+
+<section>
+    <div class="fr-container fr-py-5w">
+
+        {# Hero #}
+        <div class="groupement-hero fr-mb-6w">
+            <div class="fr-mb-2w">
+                <a href="{{ back_url }}" class="fr-link fr-icon-arrow-left-line fr-link--icon-left fr-text--sm">
+                    Retour au besoin d'achat
+                </a>
+            </div>
+            <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+                <div class="fr-col-12 fr-col-lg-8">
+                    <p class="fr-text--sm fr-text-mention--grey fr-mb-1w">Répondre en groupement</p>
+                    <h1 class="fr-h3 fr-mb-1w">{{ tender.title }}</h1>
+                    <div class="fr-mb-2w">
+                        {% if tender.deadline_date_outdated %}
+                            <span class="fr-badge fr-badge--error fr-badge--sm">Clôturé</span>
+                        {% else %}
+                            <span class="fr-badge fr-badge--success fr-badge--sm">Ouvert</span>
+                        {% endif %}
+                    </div>
+                    <p class="fr-text--lead fr-mb-3w">
+                        Identifiez des partenaires complémentaires, prenez contact avec votre référent régional, et constituez une équipe pour répondre à ce marché.
+                    </p>
+                </div>
+                <div class="fr-col-12 fr-col-lg-4 fr-mt-4w fr-mt-lg-0">
+                    <div class="groupement-benefit fr-mb-2w">
+                        <span class="fr-icon-group-line fr-icon--sm" aria-hidden="true" style="color:#000091; flex-shrink:0;"></span>
+                        <div>
+                            <p class="fr-text--sm fr-text--bold fr-mb-0">Plus fort ensemble</p>
+                            <p class="fr-text--xs fr-text-mention--grey fr-mb-0">Augmentez vos chances de répondre au marché.</p>
+                        </div>
+                    </div>
+                    <div class="groupement-benefit fr-mb-2w">
+                        <span class="fr-icon-search-line fr-icon--sm" aria-hidden="true" style="color:#000091; flex-shrink:0;"></span>
+                        <div>
+                            <p class="fr-text--sm fr-text--bold fr-mb-0">Partenaires complémentaires</p>
+                            <p class="fr-text--xs fr-text-mention--grey fr-mb-0">Identifiez les structures adaptées à votre besoin.</p>
+                        </div>
+                    </div>
+                    <div class="groupement-benefit">
+                        <span class="fr-icon-customer-service-line fr-icon--sm" aria-hidden="true" style="color:#000091; flex-shrink:0;"></span>
+                        <div>
+                            <p class="fr-text--sm fr-text--bold fr-mb-0">Accompagnement inclus</p>
+                            <p class="fr-text--xs fr-text-mention--grey fr-mb-0">Un référent peut vous aider à cadrer la démarche.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Layout principal 2 colonnes #}
+        <div class="fr-grid-row fr-grid-row--gutters">
+
+            {# Colonne principale #}
+            <div class="fr-col-12 fr-col-lg-8">
+
+                {# Section A — Prestataires #}
+                <div class="fr-mb-5w">
+                    <h2 class="fr-h4 fr-mb-1w">Les meilleures structures pour répondre avec vous</h2>
+                    <p class="fr-text--sm fr-text-mention--grey fr-mb-3w">
+                        Sélectionnées parmi les structures les mieux classées sur votre secteur d'activité et votre périmètre géographique.
+                    </p>
+                    {% if presta_service_siaes %}
+                        {% with siaes=presta_service_siaes count=presta_service_siaes|length %}
+                        <div x-data="{
+                            idx: 0,
+                            max: {{ count }},
+                            get canPrev() { return this.idx > 0; },
+                            get canNext() { return this.idx < this.max - 2 && this.max > 2; }
+                        }" class="groupement-carousel-wrap" style="padding: 0 4px;">
+                            <div class="groupement-carousel-strip"
+                                 :style="'transform: translateX(calc(-' + idx + ' * (50% + 0.5rem)))'">
+                                {% for siae in siaes %}
+                                    <div class="groupement-carousel-slide">
+                                        {% include "tenders/_groupement_siae_card.html" with tender=tender initiating_siae=initiating_siae %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <button x-show="canPrev" @click="idx--"
+                                    class="groupement-carousel-btn groupement-carousel-btn--prev"
+                                    title="Précédent" type="button" style="display:none;">
+                                <span class="fr-icon-arrow-left-s-line" aria-hidden="true"></span>
+                            </button>
+                            <button x-show="canNext" @click="idx++"
+                                    class="groupement-carousel-btn groupement-carousel-btn--next"
+                                    title="Suivant" type="button" style="display:none;">
+                                <span class="fr-icon-arrow-right-s-line" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                        {% endwith %}
+                    {% else %}
+                        <div class="fr-callout fr-callout--brown-caramel">
+                            <h3 class="fr-callout__title fr-h6">Aucune structure recommandée pour ce besoin.</h3>
+                            <p class="fr-callout__text">Vous pouvez élargir votre recherche et identifier vous-même d'autres structures susceptibles de répondre avec vous.</p>
+                            <a href="{{ search_url }}" target="_blank" rel="noopener noreferrer"
+                               class="fr-btn fr-btn--sm fr-btn--secondary">Élargir ma recherche</a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Section B — Mise à disposition #}
+                <div class="fr-mb-5w">
+                    <h2 class="fr-h4 fr-mb-1w">Les meilleures structures de mise à disposition de personnel</h2>
+                    <p class="fr-text--sm fr-text-mention--grey fr-mb-3w">
+                        Sélectionnées parmi les structures les mieux classées sur votre secteur d'activité et votre périmètre géographique.
+                    </p>
+                    {% if mise_a_dispo_siaes %}
+                        {% with siaes=mise_a_dispo_siaes count=mise_a_dispo_siaes|length %}
+                        <div x-data="{
+                            idx: 0,
+                            max: {{ count }},
+                            get canPrev() { return this.idx > 0; },
+                            get canNext() { return this.idx < this.max - 2 && this.max > 2; }
+                        }" class="groupement-carousel-wrap" style="padding: 0 4px;">
+                            <div class="groupement-carousel-strip"
+                                 :style="'transform: translateX(calc(-' + idx + ' * (50% + 0.5rem)))'">
+                                {% for siae in siaes %}
+                                    <div class="groupement-carousel-slide">
+                                        {% include "tenders/_groupement_siae_card.html" with tender=tender initiating_siae=initiating_siae %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <button x-show="canPrev" @click="idx--"
+                                    class="groupement-carousel-btn groupement-carousel-btn--prev"
+                                    title="Précédent" type="button" style="display:none;">
+                                <span class="fr-icon-arrow-left-s-line" aria-hidden="true"></span>
+                            </button>
+                            <button x-show="canNext" @click="idx++"
+                                    class="groupement-carousel-btn groupement-carousel-btn--next"
+                                    title="Suivant" type="button" style="display:none;">
+                                <span class="fr-icon-arrow-right-s-line" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                        {% endwith %}
+                    {% else %}
+                        <div class="fr-callout fr-callout--brown-caramel">
+                            <h3 class="fr-callout__title fr-h6">Aucune structure recommandée pour ce besoin.</h3>
+                            <p class="fr-callout__text">Vous pouvez élargir votre recherche et identifier vous-même d'autres structures susceptibles de répondre avec vous.</p>
+                            <a href="{{ search_url }}" target="_blank" rel="noopener noreferrer"
+                               class="fr-btn fr-btn--sm fr-btn--secondary">Élargir ma recherche</a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Prise de contact #}
+                <div class="fr-callout fr-mb-5w"
+                     x-data="{
+                         copied: false,
+                         message: `Bonjour,\n\nJe suis {{ initiating_siae.name|escapejs }}, et je réponds actuellement au besoin d'achat suivant :\n« {{ tender.title|escapejs }} »\n\nJe pense que nous pourrions y répondre ensemble en groupement ou en sous-traitance. Nos compétences semblent complémentaires.\n\nSeriez-vous disponible pour en discuter rapidement ?\n\nCordialement,\n{{ initiating_siae.contact_full_name|escapejs }} — {{ initiating_siae.name|escapejs }}\n{% if initiating_siae.contact_phone %}{{ initiating_siae.contact_phone_display|escapejs }} — {% endif %}{{ initiating_siae.contact_email|escapejs }}`
+                     }">
+                    <h2 class="fr-callout__title fr-h5">Votre prise de contact facilitée</h2>
+                    <p class="fr-callout__text fr-mb-2w">
+                        Utilisez ce message type pour contacter les structures sélectionnées et leur proposer d'échanger sur une réponse en groupement.
+                    </p>
+                    <textarea class="fr-input fr-mb-2w"
+                              rows="8"
+                              readonly
+                              style="font-family: monospace; font-size: 0.8rem; background: white; resize: none;"
+                              x-text="message"></textarea>
+                    <button type="button"
+                            class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-clipboard-line fr-btn--icon-left"
+                            @click="navigator.clipboard.writeText(message); copied = true; setTimeout(() => copied = false, 3000)">
+                        <span x-text="copied ? '✓ Message copié !' : 'Copier le message type'">Copier le message type</span>
+                    </button>
+                </div>
+
+
+            </div>
+
+            {# Sidebar #}
+            <div class="fr-col-12 fr-col-lg-4">
+                <div style="position: sticky; top: 1.5rem;">
+
+                    {# Stepper progression — guide pédagogique neutre #}
+                    <div class="groupement-sidebar-card fr-mb-3w">
+                        <p class="fr-text--sm fr-text--bold fr-mb-2w" style="color:#000091;">
+                            <span class="fr-icon-checkbox-circle-line fr-icon--sm fr-mr-1w" aria-hidden="true"></span>
+                            Votre progression
+                        </p>
+                        <div class="groupement-stepper-item">
+                            <span class="groupement-stepper-num">1</span>
+                            <span>Identifier des structures partenaires</span>
+                        </div>
+                        <div class="groupement-stepper-item">
+                            <span class="groupement-stepper-num">2</span>
+                            <span>Prendre contact avec votre référent régional</span>
+                        </div>
+                        <div class="groupement-stepper-item">
+                            <span class="groupement-stepper-num">3</span>
+                            <span>Organiser une réunion avec vos futurs partenaires</span>
+                        </div>
+                        <div class="groupement-stepper-item">
+                            <span class="groupement-stepper-num">4</span>
+                            <span>Constituer le groupement</span>
+                        </div>
+                    </div>
+
+                    {# Besoin d'aide ? #}
+                    <div class="groupement-sidebar-card fr-mb-3w">
+                        <p class="fr-text--sm fr-text--bold fr-mb-1w">Besoin d'aide ?</p>
+                        <p class="fr-text--sm fr-mb-2w">
+                            L'équipe du Marché de l'inclusion peut vous accompagner dans votre démarche de groupement.
+                        </p>
+                        {% if referents %}
+                            {% for referent in referents %}
+                                <div class="fr-mb-2w">
+                                    {# Logo du réseau régional #}
+                                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                                        {% if referent.logo %}
+                                            <img src="{{ referent.logo.url }}"
+                                                 alt="Logo {{ referent.region }}"
+                                                 class="referent-logo-avatar" />
+                                        {% else %}
+                                            <div class="referent-logo-fallback">
+                                                <span class="fr-icon-community-line" aria-hidden="true" style="color:#999; font-size:1.1rem;"></span>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <p class="fr-text--sm fr-text--bold fr-mb-0">{{ referent.user.full_name }}</p>
+                                            <p class="fr-text--xs fr-text-mention--grey fr-mb-0">{{ referent.region }}</p>
+                                        </div>
+                                    </div>
+                                    <div x-data="{ hovered: false, copied: false }"
+                                         @mouseenter="hovered = true"
+                                         @mouseleave="hovered = false"
+                                         style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span class="fr-text--xs fr-text-mention--grey">{{ referent.user.email }}</span>
+                                        <button x-show="hovered || copied"
+                                                type="button"
+                                                class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-only fr-icon-clipboard-line"
+                                                style="padding: 0.1rem; min-height: auto; font-size: 0.7rem;"
+                                                title="Copier l'email"
+                                                @click.stop="navigator.clipboard.writeText('{{ referent.user.email }}'); copied = true; setTimeout(() => copied = false, 2000)">
+                                            <span x-show="copied" class="fr-text--xs">✓</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <p class="fr-text--xs fr-text-mention--grey fr-mt-1w fr-mb-2w">
+                                Le référent n'a pas accès aux coordonnées de l'acheteur.
+                            </p>
+                        {% else %}
+                            <div class="fr-mb-2w"
+                                 x-data="{ hovered: false, copied: false }"
+                                 @mouseenter="hovered = true"
+                                 @mouseleave="hovered = false">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span class="fr-text--xs">commercial@lemarche.inclusion.beta.gouv.fr</span>
+                                    <button x-show="hovered || copied"
+                                            type="button"
+                                            class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-only fr-icon-clipboard-line"
+                                            style="padding: 0.1rem; min-height: auto; font-size: 0.7rem;"
+                                            title="Copier l'email"
+                                            @click.stop="navigator.clipboard.writeText('commercial@lemarche.inclusion.beta.gouv.fr'); copied = true; setTimeout(() => copied = false, 2000)">
+                                        <span x-show="copied" class="fr-text--xs">✓</span>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <a href="mailto:commercial@lemarche.inclusion.beta.gouv.fr" class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--full-width">
+                            Contacter l'équipe
+                        </a>
+                    </div>
+
+                    {# Bon à savoir #}
+                    <div class="groupement-sidebar-card">
+                        <p class="fr-text--sm fr-text--bold fr-mb-1w">
+                            <span class="fr-icon-information-line fr-icon--sm fr-mr-1w" aria-hidden="true"></span>
+                            Bon à savoir
+                        </p>
+                        <p class="fr-text--sm fr-mb-2w">
+                            Le groupement permet à plusieurs structures de répondre ensemble à un marché, tout en répartissant les rôles et les responsabilités. Le référent peut vous aider à clarifier le cadre adapté.
+                        </p>
+                        <a href="https://lemarche.inclusion.gouv.fr/blog/groupement-cotraitance-exemple/"
+                           class="fr-link fr-text--sm fr-icon-article-line fr-link--icon-left"
+                           target="_blank" rel="noopener noreferrer">
+                            Ils l'ont fait — retour d'expérience
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock content %}

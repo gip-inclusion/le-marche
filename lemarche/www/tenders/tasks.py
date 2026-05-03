@@ -10,7 +10,7 @@ from sesame.utils import get_query_string as sesame_get_query_string
 from lemarche.conversations.models import TemplateTransactional
 from lemarche.siaes.models import Siae
 from lemarche.tenders.enums import TenderSourcesChoices
-from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
+from lemarche.tenders.models import PartnerShareTender, ReferentRegional, Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils import constants
 from lemarche.utils.data import date_to_string
@@ -746,3 +746,67 @@ def send_super_siaes_email_to_author(tender: Tender, top_siaes: list[Siae]):
                 recipient_content_object=tender.author,
                 parent_content_object=tender,
             )
+
+
+GROUPEMENT_REFERENT_TEMPLATE_CODE = "TENDERS_SIAE_GROUPEMENT_REFERENT"
+COMMERCIAL_CONTACT_EMAIL = "commercial@lemarche.inclusion.beta.gouv.fr"
+COMMERCIAL_CONTACT_NAME = "Équipe Marché de l'inclusion"
+
+
+def notify_referents_for_groupement(tender: Tender, initiating_siae: Siae):
+    """Send an email to each active regional referent when a SIAE clicks 'Répondre en groupement'.
+    The commercial team is always CC'd.
+    No referents for the region → silent no-op (referents are not mandatory).
+    """
+    from lemarche.utils.apis.api_brevo import BrevoTransactionalEmailApiClient
+
+    try:
+        email_template = TemplateTransactional.objects.get(code=GROUPEMENT_REFERENT_TEMPLATE_CODE)
+    except TemplateTransactional.DoesNotExist:
+        logger.warning(
+            "Template %s not found — groupement referent notification skipped", GROUPEMENT_REFERENT_TEMPLATE_CODE
+        )
+        return
+
+    if not email_template.is_active:
+        return
+
+    referents = list(ReferentRegional.objects.is_active().for_region(initiating_siae.region).select_related("user"))
+    if not referents:
+        return
+
+    tender_url = f"{get_domain_url()}{reverse('tenders:detail', args=[tender.slug])}"
+    buyer_name = tender.author.company_name or tender.author.full_name or tender.author.email
+
+    base_variables = {
+        "siae_name": initiating_siae.name,
+        "siae_contact_name": initiating_siae.contact_full_name or initiating_siae.contact_email,
+        "siae_contact_email": initiating_siae.contact_email,
+        "siae_contact_phone": initiating_siae.contact_phone_display,
+        "tender_title": tender.title,
+        "tender_url": tender_url,
+        "tender_buyer": buyer_name,
+    }
+    cc = [{"email": COMMERCIAL_CONTACT_EMAIL, "name": COMMERCIAL_CONTACT_NAME}]
+
+    brevo_client = BrevoTransactionalEmailApiClient()
+    for referent in referents:
+        variables = {**base_variables, "referent_first_name": referent.user.first_name}
+        try:
+            brevo_client.send_transactional_email_with_template(
+                template_id=email_template.brevo_id,
+                recipient_email=referent.user.email,
+                recipient_name=referent.user.full_name,
+                variables=variables,
+                cc=cc,
+            )
+            email_template.create_send_log(
+                extra_data={
+                    "source": "BREVO",
+                    "referent_id": referent.pk,
+                    "tender_id": tender.pk,
+                    "siae_id": initiating_siae.pk,
+                },
+            )
+        except Exception:
+            logger.exception("Failed to send groupement referent notification to %s", referent.user.email)

@@ -4,6 +4,7 @@ from django.views.generic import RedirectView
 from lemarche.www.tenders.views import (
     TenderCreateMultiStepView,
     TenderDetailContactClickStatView,
+    TenderDetailGroupementReplyView,
     TenderDetailNotInterestedClickView,
     TenderDetailSiaeSurveyTransactionedView,
     TenderDetailSurveyTransactionedView,
@@ -40,6 +41,11 @@ urlpatterns = [
         "<str:slug>/not-interested-click",
         TenderDetailNotInterestedClickView.as_view(),
         name="detail-not-interested-click",
+    ),
+    path(
+        "<str:slug>/groupement-cotraitance",
+        TenderDetailGroupementReplyView.as_view(),
+        name="detail-groupement-reply",
     ),
     path(
         "<str:slug>/cacher-depot-de-besoin",
