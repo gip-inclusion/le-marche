@@ -1,3 +1,6 @@
+from collections import defaultdict
+from decimal import Decimal
+
 from django.db import models
 from django.db.models import Case, CharField, Count, ExpressionWrapper, F, IntegerField, Q, Sum, Value, When
 from django.db.models.functions import Coalesce, Round
@@ -307,6 +310,66 @@ class Purchase(models.Model):
 
     def __str__(self):
         return f"{self.supplier_name} - {self.purchase_amount}€ ({self.purchase_year})"
+
+
+def get_sector_group_chart_data(queryset, top_n=10):
+    """
+    Returns chart data for inclusive purchases by sector group, using fractional attribution.
+
+    For each inclusive purchase, the amount is split equally across the distinct SectorGroups
+    of the matched SIAE (e.g. a SIAE in 2 groups → 50% to each). This prevents the total
+    from exceeding the real inclusive spend.
+
+    Returns a dict with keys: labels, amounts, supplier_counts.
+    """
+    # Query 1 — distinct (siae_id, group_name) pairs for SIAEs in this queryset
+    siae_group_rows = (
+        queryset.filter(siae__isnull=False, siae__activities__sector__group__isnull=False)
+        .values("siae_id", "siae__activities__sector__group__name")
+        .distinct()
+    )
+    siae_groups: dict[int, set[str]] = defaultdict(set)
+    for row in siae_group_rows:
+        siae_groups[row["siae_id"]].add(row["siae__activities__sector__group__name"])
+
+    if not siae_groups:
+        return {"labels": [], "amounts": [], "supplier_counts": []}
+
+    # Query 2 — all inclusive purchases
+    purchase_rows = queryset.filter(siae__isnull=False).values("purchase_amount", "supplier_siret", "siae_id")
+
+    sector_amounts: dict[str, Decimal] = defaultdict(Decimal)
+    sector_suppliers: dict[str, set[str]] = defaultdict(set)
+
+    for row in purchase_rows:
+        groups = siae_groups.get(row["siae_id"])
+        if not groups:
+            continue
+        fraction = Decimal(row["purchase_amount"]) / len(groups)
+        for group_name in groups:
+            sector_amounts[group_name] += fraction
+            sector_suppliers[group_name].add(row["supplier_siret"])
+
+    if not sector_amounts:
+        return {"labels": [], "amounts": [], "supplier_counts": []}
+
+    sorted_sectors = sorted(sector_amounts.items(), key=lambda x: x[1], reverse=True)
+    top = sorted_sectors[:top_n]
+    others = sorted_sectors[top_n:]
+
+    labels = [name for name, _ in top]
+    amounts = [int(round(amount)) for _, amount in top]
+    supplier_counts = [len(sector_suppliers[name]) for name, _ in top]
+
+    if others:
+        labels.append("Autres")
+        amounts.append(int(round(sum(amount for _, amount in others))))
+        other_suppliers: set[str] = set()
+        for name, _ in others:
+            other_suppliers.update(sector_suppliers[name])
+        supplier_counts.append(len(other_suppliers))
+
+    return {"labels": labels, "amounts": amounts, "supplier_counts": supplier_counts}
 
 
 class SlugMappingCacheQuerySet(models.QuerySet):
