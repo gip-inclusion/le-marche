@@ -82,6 +82,13 @@
         text-transform: uppercase; letter-spacing: .04em;
         color: #3a3a3a; margin-bottom: .5rem;
     }
+    .ipa-context-block {
+        background: #f0f0fb;
+        border-left: 3px solid #000091;
+        border-radius: 0 4px 4px 0;
+        padding: .625rem .875rem;
+        margin-bottom: 1rem;
+    }
 </style>
 
 <div x-data="ipaValidationWizard()" x-init="init()">
@@ -112,10 +119,6 @@
                 <div class="ipa-progress fr-mt-1w">
                     <div class="ipa-progress__fill" :style="`width:${progress}%`"></div>
                 </div>
-                <p class="fr-text--xs fr-mb-0 fr-mt-1w" style="color:#777;">
-                    Projet en cours :
-                    <strong x-text="currentItem.titre"></strong>
-                </p>
                 {% if unresolvable_count %}
                 <p class="fr-text--xs fr-mb-0 fr-mt-1w" style="color:#b34000;">
                     ⚠ {{ unresolvable_count }} projet(s) déjà ignoré(s) — correspondance introuvable.
@@ -130,10 +133,20 @@
                 <template x-if="needsSectorValidation">
                     <div class="fr-mb-3w">
                         <p class="ipa-section-label">Secteur d'achat</p>
-                        <p class="fr-text--sm fr-mb-2w">
-                            Votre fichier indique <span class="ipa-raw-value" x-text="currentItem.sector_raw || '(vide)'"></span>.
-                            À quel secteur d'activité cela correspond-il ?
-                        </p>
+                        <div class="ipa-context-block">
+                            <p class="fr-text--xs fr-mb-1v" style="color:#555; text-transform:uppercase; letter-spacing:.03em;">Valeur dans votre fichier</p>
+                            <p class="fr-mb-1v" style="font-weight:700; font-size:1rem;">
+                                <span class="ipa-raw-value" x-text="currentItem.sector_raw || '(vide)'"></span>
+                            </p>
+                            <p class="fr-text--sm fr-mb-0" style="font-weight:600;" x-text="currentItem.titre"></p>
+                            <template x-if="sameRawSectorCount > 0">
+                                <p class="fr-text--sm fr-mb-0 fr-mt-1v" style="color:#000091;">
+                                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                                    <span x-text="sameRawSectorWarning"></span>
+                                </p>
+                            </template>
+                        </div>
+                        <p class="fr-text--sm fr-mb-2w">À quel secteur d'activité cela correspond-il ?</p>
 
                         {# Candidats radio #}
                         <template x-if="currentItem.sector_result.candidates.length > 0">
@@ -186,10 +199,20 @@
                 <template x-if="needsPerimeterValidation">
                     <div>
                         <p class="ipa-section-label">Périmètre géographique</p>
-                        <p class="fr-text--sm fr-mb-2w">
-                            Votre fichier indique <span class="ipa-raw-value" x-text="currentItem.perimeter_raw || '(vide)'"></span>.
-                            À quelle zone géographique cela correspond-il ?
-                        </p>
+                        <div class="ipa-context-block">
+                            <p class="fr-text--xs fr-mb-1v" style="color:#555; text-transform:uppercase; letter-spacing:.03em;">Valeur dans votre fichier</p>
+                            <p class="fr-mb-1v" style="font-weight:700; font-size:1rem;">
+                                <span class="ipa-raw-value" x-text="currentItem.perimeter_raw || '(vide)'"></span>
+                            </p>
+                            <p class="fr-text--sm fr-mb-0" style="font-weight:600;" x-text="currentItem.titre"></p>
+                            <template x-if="sameRawPerimeterCount > 0">
+                                <p class="fr-text--sm fr-mb-0 fr-mt-1v" style="color:#000091;">
+                                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                                    <span x-text="sameRawPerimeterWarning"></span>
+                                </p>
+                            </template>
+                        </div>
+                        <p class="fr-text--sm fr-mb-2w">À quelle zone géographique cela correspond-il ?</p>
 
                         {# Candidats radio #}
                         <template x-if="currentItem.perimeter_result.candidates && currentItem.perimeter_result.candidates.length > 0">
@@ -325,6 +348,28 @@ function ipaValidationWizard() {
         get needsPerimeterValidation() {
             const p = this.currentItem?.perimeter_result;
             return p?.status === 'ambiguous' || p?.status === 'error';
+        },
+
+        get sameRawSectorCount() {
+            const raw = this.currentItem?.sector_raw;
+            if (!raw) return 0;
+            return this.items.filter(i => i.sector_raw === raw && i.row !== this.currentItem.row).length;
+        },
+
+        get sameRawPerimeterCount() {
+            const raw = this.currentItem?.perimeter_raw;
+            if (!raw) return 0;
+            return this.items.filter(i => i.perimeter_raw === raw && i.row !== this.currentItem.row).length;
+        },
+
+        get sameRawSectorWarning() {
+            const n = this.sameRawSectorCount;
+            return `Cette valeur apparaît dans ${n} autre${n > 1 ? 's' : ''} projet${n > 1 ? 's' : ''} de votre fichier.`;
+        },
+
+        get sameRawPerimeterWarning() {
+            const n = this.sameRawPerimeterCount;
+            return `Cette valeur apparaît dans ${n} autre${n > 1 ? 's' : ''} projet${n > 1 ? 's' : ''} de votre fichier.`;
         },
 
         initItem() {

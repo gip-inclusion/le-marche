@@ -4,6 +4,7 @@ from lemarche.www.dashboard.views import (
     DashboardHomeView,
     DisabledEmailEditView,
     InclusivePotentialAnalysisView,
+    InclusivePotentialProjectDetailView,
     InclusivePurchaseStatsDashboardView,
     ProfileEditView,
     SlugMappingValidationView,
@@ -29,6 +30,11 @@ urlpatterns = [
         "analyse-potentiel-inclusif/export-excel/",
         inclusive_potential_excel_export,
         name="inclusive_potential_analysis_export",
+    ),
+    path(
+        "analyse-potentiel-inclusif/projet/<int:index>/",
+        InclusivePotentialProjectDetailView.as_view(),
+        name="inclusive_potential_project_detail",
     ),
     path(
         "analyse-potentiel-inclusif/validation-matching/",
