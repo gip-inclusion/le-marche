@@ -6,6 +6,34 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2025.7.0](https://github.com/gip-inclusion/le-marche/compare/v2025.6.0...v2025.7.0) (2026-05-05)
+
+
+### Features
+
+* améliorations UX + export Excel de l'analyse du potentiel inclusif ([#2031](https://github.com/gip-inclusion/le-marche/issues/2031)) ([1962ff4](https://github.com/gip-inclusion/le-marche/commit/1962ff43cc6744be88077872d9aff46f494fc451))
+* badge Éligible à la clause sociale sur les structures inclusives ([#2053](https://github.com/gip-inclusion/le-marche/issues/2053)) ([221c645](https://github.com/gip-inclusion/le-marche/commit/221c6453b9800bdb2c35c91048fe3dee8edde124))
+* **dashboard:** export CSV, Excel et PDF des achats inclusifs ([#1988](https://github.com/gip-inclusion/le-marche/issues/1988)) ([81ea690](https://github.com/gip-inclusion/le-marche/commit/81ea690d66c33337c7161f30d22433d2bd540f88))
+* **dashboard:** graphique volume achats inclusifs par secteur d'activite ([#2059](https://github.com/gip-inclusion/le-marche/issues/2059)) ([d0dde5d](https://github.com/gip-inclusion/le-marche/commit/d0dde5d4c243ddf4b5adeb3198e9c78ec9578209))
+* **decp:** enrichissement des structures avec les données DECP (Commande Publique) ([#2038](https://github.com/gip-inclusion/le-marche/issues/2038)) ([9b8eb3d](https://github.com/gip-inclusion/le-marche/commit/9b8eb3d62b8197750acfa964cfdf4aeb13d80aae))
+* **decp:** refacto sync_siaes_decp_details — upsert batch + scheduling multi-cron ([#2043](https://github.com/gip-inclusion/le-marche/issues/2043)) ([6a40521](https://github.com/gip-inclusion/le-marche/commit/6a40521c64fbc84e18ffb4ab0d10cc705b577a53))
+* évolutions UX et nouveaux indicateurs — analyse potentiel inclusif ([#2029](https://github.com/gip-inclusion/le-marche/issues/2029)) ([f2573c1](https://github.com/gip-inclusion/le-marche/commit/f2573c16fdaa70d8dc12a2eb8a221442594fadc2))
+* filtrage par mode de prestation dans l'analyse du potentiel inclusif ([#2037](https://github.com/gip-inclusion/le-marche/issues/2037)) ([d25b0c5](https://github.com/gip-inclusion/le-marche/commit/d25b0c57e0dd1ddcbc9542b4d15dd7bb4a1b3371))
+* interface d'analyse du potentiel inclusif d'une programmation achat ([#2013](https://github.com/gip-inclusion/le-marche/issues/2013)) ([57cc4aa](https://github.com/gip-inclusion/le-marche/commit/57cc4aab75f69737b6acab0689e6fb863186946a))
+* **ipa:** matching texte libre → slug sur l'import Excel de programmation achat ([#2040](https://github.com/gip-inclusion/le-marche/issues/2040)) ([db41e46](https://github.com/gip-inclusion/le-marche/commit/db41e465cb2e2cd7abd57f2e88f0b3ffb12f30df))
+* **ipa:** page détail projet depuis les résultats d'import Excel ([#2049](https://github.com/gip-inclusion/le-marche/issues/2049)) ([fc20c92](https://github.com/gip-inclusion/le-marche/commit/fc20c920a0da2a2532b660317c3ee1683bd98d92))
+* **ipa:** refonte UX section import Excel — upload + CTA sur la même ligne ([#2048](https://github.com/gip-inclusion/le-marche/issues/2048)) ([a81fd15](https://github.com/gip-inclusion/le-marche/commit/a81fd15119211fa1a92b812c0e356f39fea6e2a6))
+* parcours Répondre en groupement / cotraitance ([#2052](https://github.com/gip-inclusion/le-marche/issues/2052)) ([2a66823](https://github.com/gip-inclusion/le-marche/commit/2a66823742e55313c5ce6ed319e03dbe279d3d65))
+* recherche avancée accessible aux visiteurs non connectés ([#2054](https://github.com/gip-inclusion/le-marche/issues/2054)) ([c92df31](https://github.com/gip-inclusion/le-marche/commit/c92df31aed1d1fdc61e2fd4c7f37524d4e906858))
+* super badge — taux d'engagement (contact + pas intéressé) ([#2056](https://github.com/gip-inclusion/le-marche/issues/2056)) ([c53ba04](https://github.com/gip-inclusion/le-marche/commit/c53ba04d4554edab9b15b63a61a139b65fc42c8a))
+
+
+### Bug Fixes
+
+* **admin:** autoriser le filtre detail_groupement_click_date dans SiaeAdmin ([#2058](https://github.com/gip-inclusion/le-marche/issues/2058)) ([4f77270](https://github.com/gip-inclusion/le-marche/commit/4f772706f475bf501ef0b0558ae458e56adabb67))
+* inclure les structures nationales dans la recherche par périmètre ([#2036](https://github.com/gip-inclusion/le-marche/issues/2036)) ([7870a3a](https://github.com/gip-inclusion/le-marche/commit/7870a3afe5db401a5253e953af3fa67945c48c98))
+* **ipa:** reanalyze Excel — sauvegarder ipa_raw_projects en session ([#2044](https://github.com/gip-inclusion/le-marche/issues/2044)) ([0eccb22](https://github.com/gip-inclusion/le-marche/commit/0eccb22625afb8a0afbfcbe72c298777d5af8716))
+
 ## [2025.6.0](https://github.com/gip-inclusion/le-marche/compare/v2025.5.0...v2025.6.0) (2026-04-23)
 
 
