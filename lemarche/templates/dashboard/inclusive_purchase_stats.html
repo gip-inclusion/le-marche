@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load static process_dict dsfr_tags l10n %}
+{% load static process_dict dsfr_tags l10n fr_number %}
 {% block page_title %}
     Ma part d'achat inclusif{{ block.super }}
 {% endblock page_title %}
@@ -43,275 +43,342 @@
                     </div>
                 </section>
                 {% if total_purchases > 0 %}
-                    <div class="fr-grid-row fr-grid-row--gutters fr-my-2w">
-                        <div class="fr-col-12 fr-col-lg-5">
-                            <div class="fr-card">
-                                <div class="fr-card__body">
-                                    <div class="fr-card__content">
-                                        <h3 class="fr-card__title">Vos statistiques d'achat</h3>
-                                        <div class="fr-card__desc">
-                                            <p class="fr-text--lead">
-                                                <strong>{{ total_purchases|floatformat:0 }} €</strong> d'achats réalisés
-                                            </p>
-                                            <p class="fr-text--lead">
-                                                <strong>{{ total_inclusive_purchases|floatformat:0 }} €</strong> d'achats inclusifs
-                                            </p>
-                                            <p class="fr-text--lead">
-                                                <strong>{{ total_inclusive_purchases_percentage|floatformat:1 }}%</strong> de vos achats sont inclusifs 👏
-                                            </p>
-                                            <hr class="fr-my-4v">
-                                            <p class="fr-text--lead">
-                                                <strong>{{ total_inclusive_suppliers }}</strong> fournisseur{{ total_inclusive_suppliers|pluralize }} sur les <strong>{{ total_suppliers }}</strong> fournisseur{{ total_suppliers|pluralize }} référencé{{ total_suppliers|pluralize }} sont inclusifs !
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="fr-col-12 fr-col-lg-7">
-                            <div class="fr-card">
-                                <div class="fr-card__body">
-                                    <div class="fr-card__content">
-                                        <h3 class="fr-card__title">Répartition de vos achats inclusifs</h3>
-                                        <div class="fr-card__desc">
-                                            <canvas id="inclusiveChart" width="400" height="300"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
-                        <div class="fr-col-12 fr-col-lg-4">
-                            <div class="fr-card">
-                                <div class="fr-card__body">
-                                    <div class="fr-card__content">
-                                        <h3 class="fr-card__title">Répartition Insertion/Handicap</h3>
-                                        <div class="fr-card__desc">
-                                            <canvas id="insertionHandicapChart" width="400" height="300"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="fr-col-12 fr-col-lg-4">
-                            <div class="fr-card">
-                                <div class="fr-card__body">
-                                    <div class="fr-card__content">
-                                        <h3 class="fr-card__title">Détails par type de structure</h3>
-                                        <div class="fr-card__desc">
-                                            <div class="fr-grid-row fr-grid-row--gutters">
-                                                <div class="fr-col-6">
-                                                    <p class="fr-text--lead">
-                                                        <strong>{{ total_insertion_purchases|floatformat:0 }} €</strong> pour les structures d'insertion
-                                                    </p>
-                                                    <p class="fr-text--lead">
-                                                        soit <strong>{{ total_insertion_purchases_percentage|floatformat:1 }}%</strong>
-                                                    </p>
-                                                </div>
-                                                <div class="fr-col-6">
-                                                    <p class="fr-text--lead">
-                                                        <strong>{{ total_handicap_purchases|floatformat:0 }} €</strong> pour les structures du Handicap
-                                                    </p>
-                                                    <p class="fr-text--lead">
-                                                        soit <strong>{{ total_handicap_purchases_percentage|floatformat:1 }}%</strong>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="fr-col-12 fr-col-lg-4">
-                            <div class="fr-card">
-                                <div class="fr-card__body">
-                                    <div class="fr-card__content">
-                                        <h3 class="fr-card__title">Répartition par type de structure</h3>
-                                        <div class="fr-card__desc">
-                                            <canvas id="structureKindChart" width="400" height="300"></canvas>
-                                        </div>
-                                        <div class="fr-card__footer">
-                                            <p>
-                                                <a href="/ressources/cest-quoi-linclusion/#:~:text=Les%20typologies%20de%20structures"
-                                                   target="_blank"
-                                                   class="fr-link">Découvrez la définition des acronymes EI, EA, ACI, ESAT...</a>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {# Bloc 2 — Taille de structure #}
-                    {% if chart_data_size %}
-                        <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
-                            <div class="fr-col-12">
-                                <h2 class="fr-h3">Répartition par taille de structure</h2>
-                            </div>
-                            <div class="fr-col-12 fr-col-lg-6">
-                                <div class="fr-card">
-                                    <div class="fr-card__body">
-                                        <div class="fr-card__content">
-                                            <h3 class="fr-card__title">Montant d'achats inclusifs par taille</h3>
-                                            <div class="fr-card__desc">
-                                                <canvas id="sizeAmountChart" width="400" height="300"></canvas>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="fr-col-12 fr-col-lg-6">
-                                <div class="fr-card">
-                                    <div class="fr-card__body">
-                                        <div class="fr-card__content">
-                                            <h3 class="fr-card__title">Nombre de fournisseurs inclusifs par taille</h3>
-                                            <div class="fr-card__desc">
-                                                <canvas id="sizeSupplierChart" width="400" height="300"></canvas>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
+                    {# Navigation interne #}
+                    <nav class="fr-mb-4w" aria-label="Sections du tableau de bord">
+                        <ul class="fr-tags-group">
+                            <li><a href="#vue-ensemble" class="fr-tag">Vue d'ensemble</a></li>
+                            <li><a href="#fournisseurs" class="fr-tag">Fournisseurs</a></li>
+                            {% if chart_data_region.labels %}<li><a href="#geographie" class="fr-tag">Géographie</a></li>{% endif %}
+                            <li><a href="#secteurs" class="fr-tag">Secteurs & catégories</a></li>
+                            <li><a href="#entites" class="fr-tag">Entités & impact territorial</a></li>
+                        </ul>
+                    </nav>
 
-                    {# Bloc 3 — Statut juridique #}
-                    {% if chart_data_legal_form.labels %}
+                    {# ── Section A — Vue d'ensemble ── #}
+                    <section id="vue-ensemble" class="fr-mb-6w">
+                        <h2 class="fr-h3 fr-mb-2w">Vue d'ensemble</h2>
                         <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
-                            <div class="fr-col-12">
-                                <h2 class="fr-h3">Répartition par statut juridique</h2>
-                            </div>
-                            <div class="fr-col-12 fr-col-lg-6">
+                            <div class="fr-col-12 fr-col-lg-5">
                                 <div class="fr-card">
                                     <div class="fr-card__body">
                                         <div class="fr-card__content">
-                                            <h3 class="fr-card__title">Montant d'achats inclusifs par statut juridique</h3>
+                                            <h3 class="fr-card__title">Vos statistiques d'achat</h3>
                                             <div class="fr-card__desc">
-                                                <canvas id="legalFormAmountChart" width="400" height="300"></canvas>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="fr-col-12 fr-col-lg-6">
-                                <div class="fr-card">
-                                    <div class="fr-card__body">
-                                        <div class="fr-card__content">
-                                            <h3 class="fr-card__title">Nombre de fournisseurs inclusifs par statut juridique</h3>
-                                            <div class="fr-card__desc">
-                                                <canvas id="legalFormSupplierChart" width="400" height="300"></canvas>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    {# Bloc 4 — Cartographie régionale #}
-                    {% if chart_data_region.labels %}
-                        <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
-                            <div class="fr-col-12">
-                                <h2 class="fr-h3">Répartition géographique par région</h2>
-                            </div>
-                            <div class="fr-col-12">
-                                <div class="fr-card">
-                                    <div class="fr-card__body">
-                                        <div class="fr-card__content">
-                                            <h3 class="fr-card__title">Montant d'achats inclusifs par région</h3>
-                                            <div class="fr-card__desc">
-                                                <canvas id="regionChart" width="400" height="400"></canvas>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="fr-col-12">
-                                <div class="fr-card">
-                                    <div class="fr-card__body">
-                                        <div class="fr-card__content">
-                                            <h3 class="fr-card__title">Détail par région</h3>
-                                            <div class="fr-card__desc">
-                                                <div class="fr-table fr-table--no-scroll" id="region-table">
-                                                    <table>
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Région</th>
-                                                                <th>Montant achats inclusifs</th>
-                                                                <th>Part du total</th>
-                                                                <th>Nb fournisseurs</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {% for label, amount, pct, count in chart_data_region.rows %}
-                                                                <tr>
-                                                                    <td>{{ label }}</td>
-                                                                    <td>{{ amount|floatformat:0 }} €</td>
-                                                                    <td>{{ pct|floatformat:1 }} %</td>
-                                                                    <td>{{ count }}</td>
-                                                                </tr>
-                                                            {% endfor %}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    <div class="fr-grid-row fr-grid-row--gutters fr-mb-6w">
-                        {% if chart_data_purchases_by_category.dataset %}
-                            <div class="fr-col-12">
-                                <div class="fr-card">
-                                    <div class="fr-card__body">
-                                        <div class="fr-card__content">
-                                            <h3 class="fr-card__title">Répartition par catégorie d'achat (top 40)</h3>
-                                            <div class="fr-card__desc">
-                                                <canvas id="purchaseCategoryChart" width="400" height="300"></canvas>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                        {% if chart_data_purchases_by_buying_entity.dataset %}
-                            <div class="fr-col-12 fr-col-lg-6">
-                                <div class="fr-card">
-                                    <div class="fr-card__body">
-                                        <div class="fr-card__content">
-                                            <h3 class="fr-card__title">Répartition par entité acheteuse</h3>
-                                            <div class="fr-card__desc">
-                                                <canvas id="buyingEntityChart" width="400" height="300"></canvas>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                        {% if chart_data_qpv_zrr.labels %}
-                            <div class="fr-col-12 fr-col-lg-6">
-                                <div class="fr-card">
-                                    <div class="fr-card__body">
-                                        <div class="fr-card__content">
-                                            <h3 class="fr-card__title">Répartition QPV / ZRR</h3>
-                                            <div class="fr-card__desc">
-                                                <canvas id="qpvZrrChart" width="400" height="300"></canvas>
-                                            </div>
-                                            <div class="fr-card__footer">
-                                                <p class="fr-text--sm fr-mt-2v">
-                                                    Part des achats vers des structures en QPV (Quartier prioritaire de la ville) et/ou en ZRR (Zone de revitalisation rurale).
+                                                <p class="fr-text--lead">
+                                                    <strong>{{ total_purchases|fr_number }} €</strong> d'achats réalisés
+                                                </p>
+                                                <p class="fr-text--lead">
+                                                    <strong>{{ total_inclusive_purchases|fr_number }} €</strong> d'achats inclusifs
+                                                </p>
+                                                <p class="fr-text--lead">
+                                                    <strong>{{ total_inclusive_purchases_percentage|floatformat:1 }}%</strong> de vos achats sont inclusifs 👏
+                                                </p>
+                                                <hr class="fr-my-4v">
+                                                <p class="fr-text--lead">
+                                                    <strong>{{ total_inclusive_suppliers }}</strong> fournisseur{{ total_inclusive_suppliers|pluralize }} sur les <strong>{{ total_suppliers }}</strong> fournisseur{{ total_suppliers|pluralize }} référencé{{ total_suppliers|pluralize }} sont inclusifs !
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        {% endif %}
-                    </div>
+                            <div class="fr-col-12 fr-col-lg-7">
+                                <div class="fr-card">
+                                    <div class="fr-card__body">
+                                        <div class="fr-card__content">
+                                            <h3 class="fr-card__title">Répartition de vos achats inclusifs</h3>
+                                            <div class="fr-card__desc">
+                                                <canvas id="inclusiveChart" width="400" height="300"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-grid-row fr-grid-row--gutters">
+                            <div class="fr-col-12 fr-col-lg-4">
+                                <div class="fr-card">
+                                    <div class="fr-card__body">
+                                        <div class="fr-card__content">
+                                            <h3 class="fr-card__title">Insertion / Handicap</h3>
+                                            <div class="fr-card__desc">
+                                                <canvas id="insertionHandicapChart" width="400" height="260"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fr-col-12 fr-col-lg-4">
+                                <div class="fr-card">
+                                    <div class="fr-card__body">
+                                        <div class="fr-card__content">
+                                            <h3 class="fr-card__title">Détails Insertion / Handicap</h3>
+                                            <div class="fr-card__desc">
+                                                <p class="fr-text--lead">
+                                                    <strong>{{ total_insertion_purchases|fr_number }} €</strong> structures d'insertion
+                                                </p>
+                                                <p>soit <strong>{{ total_insertion_purchases_percentage|floatformat:1 }}%</strong></p>
+                                                <hr class="fr-my-3v">
+                                                <p class="fr-text--lead">
+                                                    <strong>{{ total_handicap_purchases|fr_number }} €</strong> structures du Handicap
+                                                </p>
+                                                <p>soit <strong>{{ total_handicap_purchases_percentage|floatformat:1 }}%</strong></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fr-col-12 fr-col-lg-4">
+                                <div class="fr-card">
+                                    <div class="fr-card__body">
+                                        <div class="fr-card__content">
+                                            <h3 class="fr-card__title">Répartition par type de structure</h3>
+                                            <div class="fr-card__desc">
+                                                <canvas id="structureKindChart" width="400" height="260"></canvas>
+                                            </div>
+                                            <div class="fr-card__footer">
+                                                <a href="/ressources/cest-quoi-linclusion/#:~:text=Les%20typologies%20de%20structures"
+                                                   target="_blank"
+                                                   class="fr-link fr-text--sm">Définition des acronymes EI, EA, ACI, ESAT…</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {# ── Section B — Profil des fournisseurs ── #}
+                    {% if chart_data_size or chart_data_legal_form.labels %}
+                        <section id="fournisseurs" class="fr-mb-6w">
+                            <h2 class="fr-h3 fr-mb-2w">Profil des fournisseurs inclusifs</h2>
+                            {% if chart_data_size %}
+                                <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+                                    <div class="fr-col-12 fr-col-lg-6">
+                                        <div class="fr-card">
+                                            <div class="fr-card__body">
+                                                <div class="fr-card__content">
+                                                    <h3 class="fr-card__title">Montant d'achats inclusifs par taille</h3>
+                                                    <div class="fr-card__desc">
+                                                        <canvas id="sizeAmountChart" width="400" height="280"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="fr-col-12 fr-col-lg-6">
+                                        <div class="fr-card">
+                                            <div class="fr-card__body">
+                                                <div class="fr-card__content">
+                                                    <h3 class="fr-card__title">Nombre de fournisseurs inclusifs par taille</h3>
+                                                    <div class="fr-card__desc">
+                                                        <canvas id="sizeSupplierChart" width="400" height="280"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if chart_data_legal_form.labels %}
+                                <div class="fr-grid-row fr-grid-row--gutters">
+                                    <div class="fr-col-12 fr-col-lg-6">
+                                        <div class="fr-card">
+                                            <div class="fr-card__body">
+                                                <div class="fr-card__content">
+                                                    <h3 class="fr-card__title">Montant d'achats inclusifs par statut juridique</h3>
+                                                    <div class="fr-card__desc">
+                                                        <canvas id="legalFormAmountChart" width="400" height="280"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="fr-col-12 fr-col-lg-6">
+                                        <div class="fr-card">
+                                            <div class="fr-card__body">
+                                                <div class="fr-card__content">
+                                                    <h3 class="fr-card__title">Nombre de fournisseurs par statut juridique</h3>
+                                                    <div class="fr-card__desc">
+                                                        <canvas id="legalFormSupplierChart" width="400" height="280"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </section>
+                    {% endif %}
+
+                    {# ── Section C — Répartition géographique ── #}
+                    {% if chart_data_region.labels %}
+                        <section id="geographie" class="fr-mb-6w">
+                            <h2 class="fr-h3 fr-mb-2w">Répartition géographique</h2>
+                            <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+                                <div class="fr-col-12">
+                                    <div class="fr-card">
+                                        <div class="fr-card__body">
+                                            <div class="fr-card__content">
+                                                <h3 class="fr-card__title">Montant d'achats inclusifs par région</h3>
+                                                <div class="fr-card__desc">
+                                                    <canvas id="regionChart" width="400" height="280"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fr-grid-row fr-grid-row--gutters">
+                                <div class="fr-col-12">
+                                    <div class="fr-card">
+                                        <div class="fr-card__body">
+                                            <div class="fr-card__content">
+                                                <h3 class="fr-card__title">Détail par région</h3>
+                                                <div class="fr-card__desc">
+                                                    <div class="fr-table fr-table--no-scroll" id="region-table">
+                                                        <table>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Région</th>
+                                                                    <th>Montant achats inclusifs</th>
+                                                                    <th>Part du total</th>
+                                                                    <th>Nb fournisseurs</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for label, amount, pct, count in chart_data_region.rows %}
+                                                                    <tr>
+                                                                        <td>{{ label }}</td>
+                                                                        <td>{{ amount|fr_number }} €</td>
+                                                                        <td>{{ pct|floatformat:1 }} %</td>
+                                                                        <td>{{ count }}</td>
+                                                                    </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    {% endif %}
+
+                    {# ── Section D — Secteurs et catégories d'achat ── #}
+                    {% if chart_data_sector_group.labels or chart_data_purchases_by_category.dataset %}
+                        <section id="secteurs" class="fr-mb-6w">
+                            <h2 class="fr-h3 fr-mb-2w">Secteurs et catégories d'achat</h2>
+                            {% if chart_data_sector_group.labels %}
+                                <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+                                    <div class="fr-col-12">
+                                        <div class="fr-card">
+                                            <div class="fr-card__body">
+                                                <div class="fr-card__content">
+                                                    <h3 class="fr-card__title">Volume d'achats inclusifs par secteur d'activité (top {{ chart_data_sector_group.labels|length }})</h3>
+                                                    <div class="fr-card__desc">
+                                                        <canvas id="sectorGroupChart" width="400" height="280"></canvas>
+                                                    </div>
+                                                    <div class="fr-card__footer">
+                                                        <p class="fr-text--sm fr-mt-2v">
+                                                            Les fournisseurs inclusifs peuvent être rattachés à plusieurs secteurs d'activité. Lorsque c'est le cas, les montants sont répartis entre les secteurs concernés. Cette visualisation donne une indication des principaux secteurs d'achats inclusifs, mais ne remplace pas une catégorisation achats réalisée directement dans les données internes.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+                                    <div class="fr-col-12 fr-col-lg-6">
+                                        <div class="fr-card">
+                                            <div class="fr-card__body">
+                                                <div class="fr-card__content">
+                                                    <h3 class="fr-card__title">Répartition en % par secteur</h3>
+                                                    <div class="fr-card__desc">
+                                                        <canvas id="sectorGroupPieChart" width="400" height="300"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="fr-col-12 fr-col-lg-6">
+                                        <div class="fr-card">
+                                            <div class="fr-card__body">
+                                                <div class="fr-card__content">
+                                                    <h3 class="fr-card__title">Nombre de fournisseurs inclusifs par secteur</h3>
+                                                    <div class="fr-card__desc">
+                                                        <canvas id="sectorGroupSupplierChart" width="400" height="300"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if chart_data_purchases_by_category.dataset %}
+                                <div class="fr-grid-row fr-grid-row--gutters">
+                                    <div class="fr-col-12">
+                                        <div class="fr-card">
+                                            <div class="fr-card__body">
+                                                <div class="fr-card__content">
+                                                    <h3 class="fr-card__title">Répartition par catégorie d'achat (top 40)</h3>
+                                                    <div class="fr-card__desc">
+                                                        <canvas id="purchaseCategoryChart" width="400" height="500"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </section>
+                    {% endif %}
+
+                    {# ── Section E — Entités & impact territorial ── #}
+                    {% if chart_data_purchases_by_buying_entity.dataset or chart_data_qpv_zrr.labels %}
+                        <section id="entites" class="fr-mb-6w">
+                            <h2 class="fr-h3 fr-mb-2w">Entités & impact territorial</h2>
+                            <div class="fr-grid-row fr-grid-row--gutters">
+                                {% if chart_data_purchases_by_buying_entity.dataset %}
+                                    <div class="fr-col-12 fr-col-lg-6">
+                                        <div class="fr-card">
+                                            <div class="fr-card__body">
+                                                <div class="fr-card__content">
+                                                    <h3 class="fr-card__title">Répartition par entité acheteuse</h3>
+                                                    <div class="fr-card__desc">
+                                                        <canvas id="buyingEntityChart" width="400" height="260"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% if chart_data_qpv_zrr.labels %}
+                                    <div class="fr-col-12 fr-col-lg-6">
+                                        <div class="fr-card">
+                                            <div class="fr-card__body">
+                                                <div class="fr-card__content">
+                                                    <h3 class="fr-card__title">Répartition QPV / ZRR</h3>
+                                                    <div class="fr-card__desc">
+                                                        <canvas id="qpvZrrChart" width="400" height="260"></canvas>
+                                                    </div>
+                                                    <div class="fr-card__footer">
+                                                        <p class="fr-text--sm fr-mt-2v">
+                                                            Part des achats vers des structures en QPV (Quartier prioritaire de la ville) et/ou en ZRR (Zone de revitalisation rurale).
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </section>
+                    {% endif %}
+
                 {% else %}
                     <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w fr-mt-2w">
                         Il n'y a aucun résultat pour votre recherche avec ces filtres.
@@ -336,152 +403,97 @@
         <script type="text/javascript"
                 src="{% static 'vendor/chartjs-plugin-datalabels@2.2.0.min.js' %}"></script>
         <script>
-        document.addEventListener('DOMContentLoaded', function() {        
-            // Data for main chart (inclusive vs non inclusive)
+        document.addEventListener('DOMContentLoaded', function() {
             const inclusiveData = {
                 labels: {{ chart_data_inclusive.labels | safe }},
                 datasets: [{
                     data: {{ chart_data_inclusive.dataset | safe }},
-                    backgroundColor: [
-                        '#000091',
-                        '#e3e3fd'
-                    ],
+                    backgroundColor: ['#000091', '#e3e3fd'],
                     borderColor: '#ffffff',
                     borderWidth: 2
                 }]
             };
 
-            // Data for detailed chart (insertion vs handicap)
             const insertionHandicapData = {
                 labels: {{ chart_data_insertion_handicap.labels | safe }},
                 datasets: [{
                     data: {{ chart_data_insertion_handicap.dataset | safe }},
-                    backgroundColor: [
-                        '#ff9f40',
-                        '#4bc0c0'
-                    ],
+                    backgroundColor: ['#ff9f40', '#4bc0c0'],
                     borderColor: '#ffffff',
                     borderWidth: 2
                 }]
             };
 
-            // Data for doughnut chart (structure Kind)
             const structureKindData = {
                 labels: {{ chart_data_siae_type.labels | safe }},
                 datasets: [{
                     data: {{ chart_data_siae_type.dataset | safe }},
-                    backgroundColor: [
-                        '#1a92ec',
-                        '#ff3479',
-                        '#00c5c2',
-                        '#ff9f31',
-                        '#b200fe',
-                        '#ffd651',
-                        '#c8c9ce',
-                        '#a8e600',
-                        '#0b1e3d',
-                        '#f4b6c2',
-                    ],
+                    backgroundColor: ['#1a92ec','#ff3479','#00c5c2','#ff9f31','#b200fe','#ffd651','#c8c9ce','#a8e600','#0b1e3d','#f4b6c2'],
                     borderColor: '#ffffff',
                     borderWidth: 2
                 }]
             };
 
-            // For purchase category chart
             const purchaseCategoryData = {
                 labels: {{ chart_data_purchases_by_category.labels | safe }},
                 datasets: [{
                     data: {{ chart_data_purchases_by_category.dataset | safe }},
-                    backgroundColor: [
-                        '#1a92ec',
-                        '#ff3479',
-                        '#00c5c2',
-                        '#ff9f31',
-                        '#b200fe',
-                        '#ffd651',
-                    ],
-                    borderColor: '#ffffff',
-                    borderWidth: 2
-                }]
-            }
-
-            // For purchase category chart
-            const buyingEntityData = {
-                labels: {{ chart_data_purchases_by_buying_entity.labels | safe }},
-                datasets: [{
-                    data: {{ chart_data_purchases_by_buying_entity.dataset | safe }},
-                    backgroundColor: [
-                        '#1a92ec',
-                        '#ff3479',
-                        '#00c5c2',
-                        '#ff9f31',
-                        '#b200fe',
-                        '#ffd651',
-                    ],
-                    borderColor: '#ffffff',
-                    borderWidth: 2
-                }]
-            }
-
-            // Data for QPV / ZRR doughnut (QPV only, ZRR only, both, neither)
-            const qpvZrrData = {
-                labels: {{ chart_data_qpv_zrr.labels | safe }},
-                datasets: [{
-                    data: {{ chart_data_qpv_zrr.dataset | safe }},
-                    backgroundColor: [
-                        '#3558a2',
-                        '#6b4423',
-                        '#2f4077',
-                        '#c8c9ce',
-                    ],
+                    backgroundColor: ['#1a92ec','#ff3479','#00c5c2','#ff9f31','#b200fe','#ffd651'],
                     borderColor: '#ffffff',
                     borderWidth: 2
                 }]
             };
 
-            // Common configuration for charts
+            const buyingEntityData = {
+                labels: {{ chart_data_purchases_by_buying_entity.labels | safe }},
+                datasets: [{
+                    data: {{ chart_data_purchases_by_buying_entity.dataset | safe }},
+                    backgroundColor: ['#1a92ec','#ff3479','#00c5c2','#ff9f31','#b200fe','#ffd651'],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            };
+
+            const qpvZrrData = {
+                labels: {{ chart_data_qpv_zrr.labels | safe }},
+                datasets: [{
+                    data: {{ chart_data_qpv_zrr.dataset | safe }},
+                    backgroundColor: ['#3558a2','#6b4423','#2f4077','#c8c9ce'],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            };
+
             const commonOptions = {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         position: 'bottom',
-                        labels: {
-                            padding: 20,
-                            usePointStyle: true,
-                            font: {
-                                size: 14
-                            }
-                        }
+                        labels: { padding: 20, usePointStyle: true, font: { size: 14 } }
                     },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
-                                const amount = context.parsed.toLocaleString();
-                                return ' ' + amount + ' €';
+                                return ' ' + context.parsed.toLocaleString('fr-FR') + ' €';
                             }
-                        },
+                        }
                     },
                     datalabels: {
-                        formatter: (value, context) => {
-                            return getPercentage(value, context);
-                        },
+                        formatter: (value, context) => getPercentage(value, context),
                         color: '#fff',
-                        font: {
-                            weight: 'bold',
-                            size: 14
-                        }
+                        font: { weight: 'bold', size: 14 }
                     }
                 }
             };
+
             function getPercentage(value, context) {
                 const data = context.chart.data.datasets[0].data;
                 const total = data.reduce((acc, val) => acc + val, 0);
-                const percentage = (value / total * 100).toFixed(1);
-                return percentage + '%';
+                return (value / total * 100).toFixed(1) + '%';
             }
 
-            // Main chart (inclusive vs non inclusive)
+            // Main doughnut (inclusive vs non-inclusive)
             const labelColors = ['#e3e3fd', '#000091'];
             new Chart(document.getElementById('inclusiveChart'), {
                 type: 'doughnut',
@@ -490,65 +502,37 @@
                     ...commonOptions,
                     cutout: '50%',
                     plugins: {
-                        ...commonOptions.plugins,   
+                        ...commonOptions.plugins,
                         datalabels: {
-                            formatter: (value, context) => {
-                                return getPercentage(value, context);
-                            },
-                            color: (context) => {
-                                return labelColors[context.dataIndex];
-                            },
-                            font: {
-                                weight: 'bold',
-                                size: 14
-                            }
+                            formatter: (value, context) => getPercentage(value, context),
+                            color: (context) => labelColors[context.dataIndex],
+                            font: { weight: 'bold', size: 14 }
                         }
-                    }                            
+                    }
                 },
                 plugins: [ChartDataLabels]
             });
 
-            // Doughnut chart (insertion vs handicap)
             new Chart(document.getElementById('insertionHandicapChart'), {
                 type: 'doughnut',
                 data: insertionHandicapData,
-                options: {
-                    ...commonOptions,
-                    cutout: '50%',
-                    plugins: {
-                        ...commonOptions.plugins,
-                    }
-                },
+                options: { ...commonOptions, cutout: '50%' },
                 plugins: [ChartDataLabels]
             });
 
-            // Doughnut chart (structure Kind)
             new Chart(document.getElementById('structureKindChart'), {
                 type: 'doughnut',
                 data: structureKindData,
-                options: {
-                    ...commonOptions,
-                    cutout: '50%',
-                    plugins: {
-                        ...commonOptions.plugins,
-                    }
-                },
+                options: { ...commonOptions, cutout: '50%' },
                 plugins: [ChartDataLabels]
             });
 
-            // Doughnut chart (QPV / ZRR)
             const qpvZrrChartEl = document.getElementById('qpvZrrChart');
             if (qpvZrrChartEl && qpvZrrData.labels.length > 0) {
                 new Chart(qpvZrrChartEl, {
                     type: 'doughnut',
                     data: qpvZrrData,
-                    options: {
-                        ...commonOptions,
-                        cutout: '50%',
-                        plugins: {
-                            ...commonOptions.plugins,
-                        }
-                    },
+                    options: { ...commonOptions, cutout: '50%' },
                     plugins: [ChartDataLabels]
                 });
             }
@@ -557,24 +541,20 @@
                 type: 'bar',
                 data: purchaseCategoryData,
                 options: {
-                    plugins: {
-                        legend: {
-                            display: false
-                       }
-                   }
-               }
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: { x: { ticks: { callback: v => v.toLocaleString('fr-FR') + ' €' } } }
+                }
             });
 
             new Chart(document.getElementById('buyingEntityChart'), {
                 type: 'bar',
                 data: buyingEntityData,
                 options: {
-                    plugins: {
-                        legend: {
-                            display: false
-                       }
-                   }
-               }
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: { x: { ticks: { callback: v => v.toLocaleString('fr-FR') + ' €' } } }
+                }
             });
 
             // --- Taille de structure ---
@@ -589,12 +569,7 @@
                     type: 'doughnut',
                     data: {
                         labels: sizeLabels,
-                        datasets: [{
-                            data: sizeAmounts,
-                            backgroundColor: sizeColors,
-                            borderColor: '#ffffff',
-                            borderWidth: 2
-                        }]
+                        datasets: [{ data: sizeAmounts, backgroundColor: sizeColors, borderColor: '#ffffff', borderWidth: 2 }]
                     },
                     options: { ...commonOptions, cutout: '50%' },
                     plugins: [ChartDataLabels]
@@ -606,12 +581,7 @@
                     type: 'doughnut',
                     data: {
                         labels: sizeLabels,
-                        datasets: [{
-                            data: sizeSupplierCounts,
-                            backgroundColor: sizeColors,
-                            borderColor: '#ffffff',
-                            borderWidth: 2
-                        }]
+                        datasets: [{ data: sizeSupplierCounts, backgroundColor: sizeColors, borderColor: '#ffffff', borderWidth: 2 }]
                     },
                     options: {
                         ...commonOptions,
@@ -620,9 +590,7 @@
                             ...commonOptions.plugins,
                             tooltip: {
                                 callbacks: {
-                                    label: function(context) {
-                                        return ' ' + context.parsed + ' fournisseur(s)';
-                                    }
+                                    label: function(context) { return ' ' + context.parsed + ' fournisseur(s)'; }
                                 }
                             }
                         }
@@ -643,17 +611,12 @@
                 type: 'bar',
                 data: {
                     labels: legalFormLabels,
-                    datasets: [{
-                        data: legalFormAmounts,
-                        backgroundColor: barColors,
-                        borderColor: '#ffffff',
-                        borderWidth: 1
-                    }]
+                    datasets: [{ data: legalFormAmounts, backgroundColor: barColors, borderColor: '#ffffff', borderWidth: 1 }]
                 },
                 options: {
                     indexAxis: 'y',
                     plugins: { legend: { display: false } },
-                    scales: { x: { ticks: { callback: v => v.toLocaleString() + ' €' } } }
+                    scales: { x: { ticks: { callback: v => v.toLocaleString('fr-FR') + ' €' } } }
                 }
             });
 
@@ -661,12 +624,7 @@
                 type: 'bar',
                 data: {
                     labels: legalFormLabels,
-                    datasets: [{
-                        data: legalFormSupplierCounts,
-                        backgroundColor: barColors,
-                        borderColor: '#ffffff',
-                        borderWidth: 1
-                    }]
+                    datasets: [{ data: legalFormSupplierCounts, backgroundColor: barColors, borderColor: '#ffffff', borderWidth: 1 }]
                 },
                 options: {
                     indexAxis: 'y',
@@ -686,12 +644,7 @@
                 type: 'bar',
                 data: {
                     labels: regionLabels,
-                    datasets: [{
-                        data: regionAmounts,
-                        backgroundColor: '#000091',
-                        borderColor: '#ffffff',
-                        borderWidth: 1
-                    }]
+                    datasets: [{ data: regionAmounts, backgroundColor: '#000091', borderColor: '#ffffff', borderWidth: 1 }]
                 },
                 options: {
                     indexAxis: 'y',
@@ -701,14 +654,88 @@
                             callbacks: {
                                 label: function(context) {
                                     const idx = context.dataIndex;
-                                    const amount = context.parsed.x.toLocaleString();
+                                    const amount = context.parsed.x.toLocaleString('fr-FR');
                                     const nb = regionSupplierCounts[idx];
                                     return [' ' + amount + ' €', ' ' + nb + ' fournisseur(s)'];
                                 }
                             }
                         }
                     },
-                    scales: { x: { ticks: { callback: v => v.toLocaleString() + ' €' } } }
+                    scales: { x: { ticks: { callback: v => v.toLocaleString('fr-FR') + ' €' } } }
+                }
+            });
+            {% endif %}
+
+            // --- Secteurs d'activité ---
+            {% if chart_data_sector_group.labels %}
+            const sectorGroupLabels = {{ chart_data_sector_group.labels | safe }};
+            const sectorGroupAmounts = {{ chart_data_sector_group.amounts | safe }};
+            const sectorGroupSupplierCounts = {{ chart_data_sector_group.supplier_counts | safe }};
+            const sectorGroupColors = ['#000091','#1a92ec','#ff3479','#00c5c2','#ff9f31','#b200fe','#ffd651','#c8c9ce','#a8e600','#0b1e3d','#6b4423'];
+
+            new Chart(document.getElementById('sectorGroupChart'), {
+                type: 'bar',
+                data: {
+                    labels: sectorGroupLabels,
+                    datasets: [{ data: sectorGroupAmounts, backgroundColor: sectorGroupColors, borderColor: '#ffffff', borderWidth: 1 }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const idx = context.dataIndex;
+                                    const amount = context.parsed.x.toLocaleString('fr-FR');
+                                    const nb = sectorGroupSupplierCounts[idx];
+                                    return [' ' + amount + ' €', ' ' + nb + ' fournisseur(s)'];
+                                }
+                            }
+                        }
+                    },
+                    scales: { x: { ticks: { callback: v => v.toLocaleString('fr-FR') + ' €' } } }
+                }
+            });
+
+            new Chart(document.getElementById('sectorGroupPieChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: sectorGroupLabels,
+                    datasets: [{ data: sectorGroupAmounts, backgroundColor: sectorGroupColors, borderColor: '#ffffff', borderWidth: 2 }]
+                },
+                options: {
+                    ...commonOptions,
+                    cutout: '50%',
+                    plugins: {
+                        ...commonOptions.plugins,
+                        datalabels: {
+                            formatter: (value, context) => getPercentage(value, context),
+                            color: '#fff',
+                            font: { weight: 'bold', size: 12 }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            new Chart(document.getElementById('sectorGroupSupplierChart'), {
+                type: 'bar',
+                data: {
+                    labels: sectorGroupLabels,
+                    datasets: [{ data: sectorGroupSupplierCounts, backgroundColor: sectorGroupColors, borderColor: '#ffffff', borderWidth: 1 }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) { return ' ' + context.parsed.x + ' fournisseur(s)'; }
+                            }
+                        }
+                    },
+                    scales: { x: { ticks: { stepSize: 1 } } }
                 }
             });
             {% endif %}

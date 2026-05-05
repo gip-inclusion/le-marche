@@ -21,7 +21,7 @@ from lemarche.api.inclusive_potential.constants import PRESTA_MODE_DEFAULT, PRES
 from lemarche.api.inclusive_potential.utils import get_inclusive_potential_data
 from lemarche.cms.models import ArticleList
 from lemarche.perimeters.models import Perimeter
-from lemarche.purchases.models import Purchase
+from lemarche.purchases.models import Purchase, get_sector_group_chart_data
 from lemarche.sectors.models import Sector
 from lemarche.siaes.constants import KIND_HANDICAP_LIST, KIND_INSERTION_LIST, LEGAL_FORM_CHOICES
 from lemarche.siaes.models import Siae
@@ -247,6 +247,9 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
                 "supplier_counts": lf_supplier_counts,
             }
 
+            # --- Secteurs d'activité ---
+            chart_data_sector_group = get_sector_group_chart_data(self.filterset.qs)
+
             # --- Cartographie régionale ---
             region_rows = list(self.filterset.qs.with_region_stats())
             total_inclusive = purchases_stats["total_inclusive_amount_annotated"]
@@ -292,6 +295,7 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
                     "chart_data_size": chart_data_size,
                     "chart_data_legal_form": chart_data_legal_form,
                     "chart_data_region": chart_data_region,
+                    "chart_data_sector_group": chart_data_sector_group,
                 }
             )
         return context
