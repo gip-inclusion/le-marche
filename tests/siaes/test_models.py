@@ -207,9 +207,27 @@ class SiaeModelTest(TestCase):
             tender_email_link_click_count=3,
             tender_detail_contact_click_count=3,
         )
+        # Engagement via "pas intéressé" uniquement (2 refus / 10 = 20%)
+        siae_super_badge_3 = SiaeFactory(
+            user_count=1,
+            completion_rate=80,
+            tender_email_send_count=10,
+            tender_email_link_click_count=0,
+            tender_detail_contact_click_count=0,
+            tender_detail_not_interested_count=2,
+        )
+        # Engagement mixte : 1 contact + 1 refus = 20%
+        siae_super_badge_4 = SiaeFactory(
+            user_count=1,
+            completion_rate=80,
+            tender_email_send_count=10,
+            tender_email_link_click_count=0,
+            tender_detail_contact_click_count=1,
+            tender_detail_not_interested_count=1,
+        )
         for siae in [siae_1, siae_2, siae_3, siae_4]:
             self.assertFalse(siae.super_badge_calculated)
-        for siae in [siae_super_badge_1, siae_super_badge_2]:
+        for siae in [siae_super_badge_1, siae_super_badge_2, siae_super_badge_3, siae_super_badge_4]:
             self.assertTrue(siae.super_badge_calculated)
 
 

@@ -74,6 +74,7 @@ class Command(BaseCommand):
                 siae.tender_email_link_click_count = siae.tender_email_link_click_count_annotated
                 siae.tender_detail_display_count = siae.tender_detail_display_count_annotated
                 siae.tender_detail_contact_click_count = siae.tender_detail_contact_click_count_annotated
+                siae.tender_detail_not_interested_count = siae.tender_detail_not_interested_count_annotated
 
             Siae.objects.bulk_update(siaes, update_fields)
             batch_count += 1
