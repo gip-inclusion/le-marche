@@ -5,6 +5,7 @@ from lemarche.www.dashboard.views import (
     DisabledEmailEditView,
     InclusivePotentialAnalysisView,
     InclusivePotentialProjectDetailView,
+    InclusivePurchaseExportView,
     InclusivePurchaseStatsDashboardView,
     ProfileEditView,
     SlugMappingValidationView,
@@ -20,6 +21,7 @@ urlpatterns = [
     path("modifier/", ProfileEditView.as_view(), name="profile_edit"),
     path("notifications/", DisabledEmailEditView.as_view(), name="notifications_edit"),
     path("part-achat-inclusif/", InclusivePurchaseStatsDashboardView.as_view(), name="inclusive_purchase_stats"),
+    path("part-achat-inclusif/export/", InclusivePurchaseExportView.as_view(), name="inclusive_purchase_export"),
     path("analyse-potentiel-inclusif/", InclusivePotentialAnalysisView.as_view(), name="inclusive_potential_analysis"),
     path(
         "analyse-potentiel-inclusif/modele-excel/",

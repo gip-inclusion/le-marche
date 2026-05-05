@@ -10,10 +10,36 @@
 {% block content %}
     <div class="fr-container">
         <div class="fr-grid-row">
-            <div class="fr-col-12">
+            <div class="fr-col">
                 <h1>Ma part d'achat inclusif</h1>
                 <p class="fr-text--lead">Pilotez l'intégration des achats inclusifs dans votre politique achat.</p>
             </div>
+            {% if user.kind == "BUYER" and user.company %}
+            <div class="fr-col-auto no-print" style="position:relative;align-self:flex-start;" id="export-menu">
+                <button id="export-btn"
+                        style="display:flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid #000091;border-radius:4px;background:#fff;color:#000091;font-weight:600;cursor:pointer;font-size:14px;"
+                        onclick="toggleExportMenu()">
+                    <span class="fr-icon-download-line" aria-hidden="true"></span>
+                    Exporter
+                    <span id="export-chevron" style="font-size:10px;transition:transform .2s;">▼</span>
+                </button>
+                <div id="export-menu-list"
+                     style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#fff;border:1px solid #ddd;border-radius:4px;min-width:180px;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:200;">
+                    <button onclick="window.print();closeExportMenu()"
+                            style="width:100%;text-align:left;background:none;border:none;border-bottom:1px solid #eee;padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:14px;">
+                        <span class="fr-icon-file-pdf-line" aria-hidden="true"></span> PDF
+                    </button>
+                    <a href="{% url 'dashboard:inclusive_purchase_export' %}?format=csv&{{ request.GET.urlencode }}"
+                       style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #eee;text-decoration:none;color:inherit;font-size:14px;">
+                        <span class="fr-icon-download-line" aria-hidden="true"></span> CSV
+                    </a>
+                    <a href="{% url 'dashboard:inclusive_purchase_export' %}?format=excel&{{ request.GET.urlencode }}"
+                       style="display:flex;align-items:center;gap:10px;padding:12px 16px;text-decoration:none;color:inherit;font-size:14px;border:none;">
+                        <span class="fr-icon-download-line" aria-hidden="true"></span> Excel (.xls)
+                    </a>
+                </div>
+            </div>
+            {% endif %}
         </div>
         {% if user.kind == "BUYER" and user.company %}
             {% if unfiltered_qs_count > 0 %}
@@ -396,6 +422,20 @@
         {% endif %}
     </div>
 {% endblock content %}
+{% block extra_css %}
+    <style>
+        @media print {
+            .no-print,
+            .fr-accordion,
+            .fr-header,
+            .fr-footer,
+            .fr-breadcrumb,
+            nav { display: none !important; }
+            .fr-card { break-inside: avoid; }
+            canvas { max-height: 250px !important; }
+        }
+    </style>
+{% endblock extra_css %}
 {% block extra_js %}
     {% if chart_data_inclusive %}
         <script type="text/javascript"
@@ -743,5 +783,30 @@
         });
         </script>
     {% endif %}
+    <script>
+    function toggleExportMenu() {
+        const list = document.getElementById('export-menu-list');
+        const chevron = document.getElementById('export-chevron');
+        const open = list.style.display === 'block';
+        list.style.display = open ? 'none' : 'block';
+        chevron.style.transform = open ? '' : 'rotate(180deg)';
+        if (!open) {
+            setTimeout(() => {
+                document.addEventListener('click', function handler(e) {
+                    if (!document.getElementById('export-menu').contains(e.target)) {
+                        closeExportMenu();
+                        document.removeEventListener('click', handler);
+                    }
+                });
+            }, 0);
+        }
+    }
+    function closeExportMenu() {
+        const list = document.getElementById('export-menu-list');
+        if (list) list.style.display = 'none';
+        const chevron = document.getElementById('export-chevron');
+        if (chevron) chevron.style.transform = '';
+    }
+    </script>
     <script type="text/javascript" src="{% static 'js/multiselect.js' %}"></script>
 {% endblock extra_js %}

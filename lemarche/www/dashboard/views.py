@@ -1,9 +1,11 @@
+import csv
 import io
 import json
 import logging
 from urllib.parse import urlencode
 
 import openpyxl
+import xlwt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -299,6 +301,110 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
                 }
             )
         return context
+
+
+class InclusivePurchaseExportView(LoginRequiredMixin, View):
+    """
+    Export filtered purchase data as CSV or Excel (.xls).
+    Accepts the same query params as InclusivePurchaseStatsDashboardView.
+    Usage: ?format=csv  or  ?format=excel
+    """
+
+    LEGAL_FORM_LABELS = dict(LEGAL_FORM_CHOICES)
+
+    EXPORT_HEADERS = [
+        "Fournisseur",
+        "SIRET",
+        "Montant (€)",
+        "Année",
+        "Catégorie d'achat",
+        "Entité acheteuse",
+        "Structure inclusive",
+        "Type de structure",
+        "Statut juridique",
+        "Région",
+        "Taille",
+        "QPV",
+        "ZRR",
+    ]
+
+    def _get_size_label(self, siae):
+        if siae is None:
+            return ""
+        insertion = siae.employees_insertion_count
+        if insertion is None and siae.c2_etp_count is not None:
+            insertion = round(siae.c2_etp_count)
+        permanent = siae.employees_permanent_count or 0
+        if insertion is None and siae.employees_permanent_count is None:
+            return "Non renseigné"
+        total = (insertion or 0) + permanent
+        return "TPE (< 10 salariés)" if total < 10 else "PME (≥ 10 salariés)"
+
+    def _build_rows(self, purchases):
+        rows = []
+        for purchase in purchases.select_related("siae"):
+            siae = purchase.siae
+            rows.append(
+                [
+                    purchase.supplier_name,
+                    purchase.supplier_siret,
+                    float(purchase.purchase_amount),
+                    purchase.purchase_year,
+                    purchase.purchase_category or "",
+                    purchase.buying_entity or "",
+                    siae.name if siae else "",
+                    siae.kind if siae else "",
+                    self.LEGAL_FORM_LABELS.get(siae.legal_form, siae.legal_form or "") if siae else "",
+                    siae.region if siae else "",
+                    self._get_size_label(siae),
+                    "Oui" if siae and siae.is_qpv else ("Non" if siae else ""),
+                    "Oui" if siae and siae.is_zrr else ("Non" if siae else ""),
+                ]
+            )
+        return rows
+
+    def get(self, request):
+        filterset = PurchaseFilterSet(
+            data=request.GET,
+            queryset=Purchase.objects.get_purchase_for_user(request.user),
+        )
+        purchases = filterset.qs
+        export_format = request.GET.get("format", "csv")
+
+        if export_format == "excel":
+            return self._export_excel(purchases)
+        return self._export_csv(purchases)
+
+    def _export_csv(self, purchases):
+        response = HttpResponse(content_type="text/csv; charset=utf-8")
+        response["Content-Disposition"] = 'attachment; filename="achats_inclusifs.csv"'
+        response.write("\ufeff")  # BOM for Excel UTF-8 compatibility
+        writer = csv.writer(response, delimiter=";")
+        writer.writerow(self.EXPORT_HEADERS)
+        for row in self._build_rows(purchases):
+            writer.writerow(row)
+        return response
+
+    def _export_excel(self, purchases):
+        wb = xlwt.Workbook(encoding="utf-8")
+        ws = wb.add_sheet("Achats inclusifs")
+
+        bold = xlwt.XFStyle()
+        bold.font.bold = True
+        normal = xlwt.XFStyle()
+        normal.alignment.wrap = 1
+
+        for col, header in enumerate(self.EXPORT_HEADERS):
+            ws.write(0, col, header, bold)
+
+        for row_idx, row in enumerate(self._build_rows(purchases), start=1):
+            for col_idx, value in enumerate(row):
+                ws.write(row_idx, col_idx, value, normal)
+
+        response = HttpResponse(content_type="application/vnd.ms-excel")
+        response["Content-Disposition"] = 'attachment; filename="achats_inclusifs.xls"'
+        wb.save(response)
+        return response
 
 
 class ProfileEditView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
