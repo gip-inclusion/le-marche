@@ -201,9 +201,7 @@ class TenderMatchingActivitiesTest(TestCase):
 
         # set a department in location disable distance_location, perimeters is used instead
         tender = TenderFactory(
-            location=PerimeterFactory(
-                name="Indre-et-loire", kind=Perimeter.KIND_DEPARTMENT, insee_code="37", region_code="24"
-            ),
+            location=PerimeterFactory(name="Indre-et-loire", kind=Perimeter.KIND_DEPARTMENT, region_code="24"),
             distance_location=50,
             siae_kind=[siae_constants.KIND_ESAT, siae_constants.KIND_AI],
             sectors=self.sectors,
