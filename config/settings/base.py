@@ -723,7 +723,7 @@ DEFAULT_CKEDITOR_CONFIG = {
     ],
     # avoid special characters encoding
     "basicEntities": False,
-    "entities": False,
+    "entities": True,
 }
 
 DEFAULT_CKEDITOR_CONFIG_USER = {
