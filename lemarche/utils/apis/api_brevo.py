@@ -18,7 +18,7 @@ from lemarche.utils.urls import get_object_admin_url, get_object_share_url
 
 logger = logging.getLogger(__name__)
 
-ENV_NOT_ALLOWED = ("dev", "test")
+ENV_NOT_ALLOWED = ("dev", "test", "review_app")
 
 
 def get_valid_number_for_brevo(phone_number: PhoneNumberField):
@@ -46,11 +46,6 @@ class BrevoConfig:
     default_page_limit: int = 500
     contacts_default_since_days: int = 30
 
-    @property
-    def is_production_env(self) -> bool:
-        """Check if we're in production environment."""
-        return settings.BITOUBI_ENV not in ENV_NOT_ALLOWED
-
 
 class BrevoApiError(Exception):
     """Exception raised when contacts fetching fails after all retries"""
@@ -63,6 +58,7 @@ class BrevoApiError(Exception):
 
 class BrevoBaseApiClient:
     api_client: brevo_python.ApiClient
+    is_production_env = settings.BITOUBI_ENV not in ENV_NOT_ALLOWED
 
     def __init__(self, config: BrevoConfig = BrevoConfig()):
         """
@@ -198,6 +194,8 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When contact creation fails after all retries
         """
+        if not self.is_production_env:
+            return {}
 
         # If user already has a Brevo ID, no need to create a new contact
         if user.brevo_contact_id:
@@ -279,6 +277,9 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When contacts fetching fails after all retries
         """
+        if not self.is_production_env:
+            return {}
+
         # Use configuration defaults
         since_days = since_days or self.config.contacts_default_since_days
 
@@ -345,6 +346,9 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When contact retrieval fails after all retries
         """
+        if not self.is_production_env:
+            return {}
+
         # Use configuration defaults
         limit = limit or self.config.default_page_limit
 
@@ -393,6 +397,9 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When contact update fails after all retries
         """
+        if not self.is_production_env:
+            return {}
+
         update_contact_obj = brevo_python.UpdateContact(attributes=attributes_to_update)
         api_response = self.api_instance.update_contact(identifier=user_identifier, update_contact=update_contact_obj)
         self.logger.info(f"Success Brevo->ContactsApi->update_contact: {api_response}")
@@ -413,6 +420,9 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When contact update fails after all retries
         """
+        if not self.is_production_env:
+            return {}
+
         update_contact_obj = brevo_python.UpdateContact(email_blacklisted=email_blacklisted)
         api_response = self.api_instance.update_contact(identifier=user_identifier, update_contact=update_contact_obj)
         self.logger.info(f"Success Brevo->ContactsApi->update_contact to update email_blacklisted: {api_response}")
@@ -466,6 +476,9 @@ class BrevoContactsApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When contact removal fails after all retries
         """
+        if not self.is_production_env:
+            return {}
+
         contact_emails = brevo_python.RemoveContactFromList(emails=[user_email])
         try:
             api_response = self.api_instance.remove_contact_from_list(list_id=list_id, contact_emails=contact_emails)
@@ -638,6 +651,9 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         Raises:
             BrevoApiError: When company synchronization fails after all retries
         """
+        if not self.is_production_env:
+            return
+
         siae_brevo_company_body = brevo_python.Body7(name=siae.name, attributes=self._build_siae_attributes(siae))
 
         sync_log = self._create_sync_log(siae)
@@ -677,6 +693,8 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         Returns:
             bool: True if operation was successful, False otherwise
         """
+        if not self.is_production_env:
+            return False
 
         company_brevo_body = brevo_python.Body7(
             name=company.name,
@@ -726,16 +744,18 @@ class BrevoCompanyApiClient(BrevoBaseApiClient):
         Raises:
             ApiException: If an error occurs during the linking process in the Brevo API.
         """
-        if self.config.is_production_env:
-            try:
-                # cleanup
-                contact_list = self._cleanup_contact_list(contact_list)
-                # link company with contact_list
-                if len(contact_list):
-                    body_link_company_contact = brevo_python.Body8(link_contact_ids=contact_list)
-                    self.api_instance.companies_link_unlink_id_patch(brevo_company_id, body_link_company_contact)
-            except ApiException as e:
-                self.logger.exception(f"Exception when calling Brevo->DealApi->companies_link_unlink_id_patch \n {e}")
+        if not self.is_production_env:
+            return
+
+        try:
+            # cleanup
+            contact_list = self._cleanup_contact_list(contact_list)
+            # link company with contact_list
+            if len(contact_list):
+                body_link_company_contact = brevo_python.Body8(link_contact_ids=contact_list)
+                self.api_instance.companies_link_unlink_id_patch(brevo_company_id, body_link_company_contact)
+        except ApiException as e:
+            self.logger.exception(f"Exception when calling Brevo->DealApi->companies_link_unlink_id_patch \n {e}")
 
     # =============================================================================
     # PRIVATE METHODS - COMMON COMPANY SUPPORT
@@ -905,7 +925,7 @@ class BrevoTransactionalEmailApiClient(BrevoBaseApiClient):
             BrevoApiError: When email sending fails after all retries
         """
 
-        if not self.config.is_production_env:
+        if not self.is_production_env:
             self.logger.info("Brevo: email not sent (DEV or TEST environment detected)")
             return {"message": "Email not sent in development/test environment"}
 
@@ -949,6 +969,9 @@ def create_deal(tender, owner_email: str):
         ApiException: If the Brevo API encounters an error during deal creation.
     """
     c = BrevoBaseApiClient()
+    if not c.is_production_env:
+        return
+
     api_instance = brevo_python.DealsApi(c.api_client)
     body_deal = brevo_python.Body10(
         name=tender.title,
@@ -992,9 +1015,12 @@ def link_deal_with_contact_list(tender, contact_list: list = None):
         ApiException: If an error occurs during the linking process in the Brevo API.
     """
     brevo_client = BrevoBaseApiClient()
+    if not brevo_client.is_production_env:
+        return
+
     api_instance = brevo_python.DealsApi(brevo_client.api_client)
 
-    if brevo_client.config.is_production_env:
+    if brevo_client.is_production_env:
         try:
             # get brevo ids
             brevo_crm_deal_id = tender.brevo_deal_id
