@@ -3,7 +3,7 @@ from unittest import skip
 from unittest.mock import MagicMock, patch
 
 from brevo_python.rest import ApiException
-from django.test import TestCase, override_settings
+from django.test import TestCase
 
 from lemarche.utils.apis import api_brevo
 from lemarche.utils.apis.brevo_attributes import CONTACT_ATTRIBUTES
@@ -190,6 +190,7 @@ class BrevoBaseApiClientTest(TestCase):
 
 
 @patch("lemarche.utils.apis.api_brevo.time.sleep")
+@patch("lemarche.utils.apis.api_brevo.BrevoBaseApiClient.is_production_env", True)
 class BrevoContactsApiClientTest(TestCase):
     """
     Tests for the BrevoContactsApiClient class.
@@ -200,6 +201,7 @@ class BrevoContactsApiClientTest(TestCase):
     def setUp(self):
         self.user = UserFactory(email="test@example.com")
 
+    @patch("lemarche.utils.apis.api_brevo.BrevoBaseApiClient.is_production_env", True)
     def test_get_all_contacts_success(self, mock_sleep):
         """Test successful retrieval of contacts"""
         mock_api_instance = MagicMock()
@@ -789,6 +791,7 @@ class BrevoContactsApiClientTest(TestCase):
 
 
 @patch("lemarche.utils.apis.api_brevo.time.sleep")
+@patch("lemarche.utils.apis.api_brevo.BrevoBaseApiClient.is_production_env", True)
 class BrevoCompanyApiClientTest(TestCase):
     """
     Tests for the BrevoCompanyApiClient class.
@@ -1089,7 +1092,7 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertTrue(len(self.company.logs) > 0)
         self.assertEqual(self.company.logs[-1]["brevo_sync"]["status"], "error")
 
-    @override_settings(BITOUBI_ENV="prod")
+    @patch("lemarche.utils.apis.api_brevo.BrevoBaseApiClient.is_production_env", True)
     def test_link_company_with_contact_list_success(self, mock_sleep):
         """Test successful company-contact linking"""
         mock_api_instance = MagicMock()
@@ -1106,7 +1109,7 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertEqual(call_args[0][0], 12345)  # company_id
         self.assertEqual(call_args[0][1].link_contact_ids, [111, 222, 333])
 
-    @override_settings(BITOUBI_ENV="prod")
+    @patch("lemarche.utils.apis.api_brevo.BrevoBaseApiClient.is_production_env", True)
     def test_link_company_with_contact_list_filters_none_values(self, mock_sleep):
         """Test that None values are filtered out from contact list"""
         mock_api_instance = MagicMock()
@@ -1121,7 +1124,6 @@ class BrevoCompanyApiClientTest(TestCase):
         call_args = mock_api_instance.companies_link_unlink_id_patch.call_args
         self.assertEqual(call_args[0][1].link_contact_ids, [111, 222, 333])
 
-    @override_settings(BITOUBI_ENV="local")
     def test_link_company_with_contact_list_empty_list_no_api_call(self, mock_sleep):
         """Test that empty contact list doesn't trigger API call"""
         mock_api_instance = MagicMock()
@@ -1133,7 +1135,7 @@ class BrevoCompanyApiClientTest(TestCase):
         # Verify no API call was made
         mock_api_instance.companies_link_unlink_id_patch.assert_not_called()
 
-    @override_settings(BITOUBI_ENV="prod")
+    @patch("lemarche.utils.apis.api_brevo.BrevoBaseApiClient.is_production_env", True)
     def test_link_company_with_contact_list_only_none_values_no_api_call(self, mock_sleep):
         """Test that contact list with only None values doesn't trigger API call"""
         mock_api_instance = MagicMock()
@@ -1145,7 +1147,7 @@ class BrevoCompanyApiClientTest(TestCase):
         # Verify no API call was made
         mock_api_instance.companies_link_unlink_id_patch.assert_not_called()
 
-    @override_settings(BITOUBI_ENV="prod")
+    @patch("lemarche.utils.apis.api_brevo.BrevoBaseApiClient.is_production_env", True)
     def test_link_company_with_contact_list_api_exception_logged(self, mock_sleep):
         """Test that API exceptions are properly logged"""
         mock_api_instance = MagicMock()
@@ -1166,18 +1168,6 @@ class BrevoCompanyApiClientTest(TestCase):
                 mock_logger.exception.assert_called_once()
                 error_msg = mock_logger.exception.call_args[0][0]
                 self.assertIn("Exception when calling Brevo->DealApi->companies_link_unlink_id_patch", error_msg)
-
-    @override_settings(BITOUBI_ENV="dev")
-    def test_link_company_with_contact_list_env_not_allowed(self, mock_sleep):
-        """Test that method does nothing when environment is not allowed"""
-
-        # Mock an environment that's not allowed
-        with patch("brevo_python.CompaniesApi.companies_link_unlink_id_patch") as mock_api_link_unlink:
-            client = api_brevo.BrevoCompanyApiClient()
-            client.link_company_with_contact_list(12345, [111, 222])
-
-            # Verify no API client was even created
-            mock_api_link_unlink.assert_not_called()
 
     def test_create_sync_log_create_operation(self, mock_sleep):
         """Test _create_sync_log for create operation"""
@@ -1394,6 +1384,25 @@ class BrevoCompanyApiClientTest(TestCase):
         self.assertEqual(result[3], 333)
 
 
+class BrevoCompanyApiClientNotAllowedTest(TestCase):
+    """
+    Tests for the BrevoCompanyApiClient class.
+    This covers API interactions, retry mechanisms, and error handling
+    for company-related operations.
+    """
+
+    def test_link_company_with_contact_list_env_not_allowed(self):
+        """Test that method does nothing when environment is not allowed"""
+
+        # Mock an environment that's not allowed
+        with patch("brevo_python.CompaniesApi.companies_link_unlink_id_patch") as mock_api_link_unlink:
+            client = api_brevo.BrevoCompanyApiClient()
+            client.link_company_with_contact_list(12345, [111, 222])
+
+            # Verify no API client was even created
+            mock_api_link_unlink.assert_not_called()
+
+
 @patch("lemarche.utils.apis.api_brevo.time.sleep")
 class BrevoTransactionalEmailApiClientTest(TestCase):
     """
@@ -1404,7 +1413,7 @@ class BrevoTransactionalEmailApiClientTest(TestCase):
     def setUp(self):
         self.email_client = api_brevo.BrevoTransactionalEmailApiClient()
 
-    @override_settings(BITOUBI_ENV="prod")
+    @patch("lemarche.utils.apis.api_brevo.BrevoBaseApiClient.is_production_env", True)
     def test_send_transactional_email_with_template_success(self, mock_sleep):
         """Test successful email sending"""
         with patch.object(
@@ -1421,7 +1430,6 @@ class BrevoTransactionalEmailApiClientTest(TestCase):
         self.assertEqual(result["messageId"], "12345")
         mock_send.assert_called_once()
 
-    @override_settings(BITOUBI_ENV="dev")
     def test_send_transactional_email_development_environment(self, mock_sleep):
         """Test email sending in development environment"""
         result = self.email_client.send_transactional_email_with_template(
@@ -1434,7 +1442,7 @@ class BrevoTransactionalEmailApiClientTest(TestCase):
         # Should return development message without calling API
         self.assertEqual(result["message"], "Email not sent in development/test environment")
 
-    @override_settings(BITOUBI_ENV="prod")
+    @patch("lemarche.utils.apis.api_brevo.BrevoBaseApiClient.is_production_env", True)
     def test_send_transactional_email_without_custom_subject(self, mock_sleep):
         """Test email sending without custom subject"""
         with patch.object(
@@ -1454,7 +1462,7 @@ class BrevoTransactionalEmailApiClientTest(TestCase):
         call_args = mock_send.call_args[0][0]
         self.assertNotIn("subject", call_args)
 
-    @override_settings(BITOUBI_ENV="prod")
+    @patch("lemarche.utils.apis.api_brevo.BrevoBaseApiClient.is_production_env", True)
     def test_send_transactional_email_with_retry(self, mock_sleep):
         """Test email sending with retry mechanism"""
         mock_api_instance = MagicMock()
@@ -1482,7 +1490,7 @@ class BrevoTransactionalEmailApiClientTest(TestCase):
         self.assertEqual(mock_api_instance.send_transac_email.call_count, 2)
         mock_sleep.assert_called_once_with(5)
 
-    @override_settings(BITOUBI_ENV="prod")
+    @patch("lemarche.utils.apis.api_brevo.BrevoBaseApiClient.is_production_env", True)
     def test_send_transactional_email_max_retries_exceeded(self, mock_sleep):
         """Test email sending when max retries are exceeded"""
         mock_api_instance = MagicMock()
@@ -1513,20 +1521,6 @@ class BrevoUtilityFunctionsTest(TestCase):
     """
     Tests for utility functions (non-legacy).
     """
-
-    def test_brevo_config_is_production_env(self, mock_sleep):
-        """Test BrevoConfig.is_production_env property"""
-        with patch("lemarche.utils.apis.api_brevo.settings.BITOUBI_ENV", "prod"):
-            config = api_brevo.BrevoConfig()
-            self.assertTrue(config.is_production_env)
-
-        with patch("lemarche.utils.apis.api_brevo.settings.BITOUBI_ENV", "dev"):
-            config = api_brevo.BrevoConfig()
-            self.assertFalse(config.is_production_env)
-
-        with patch("lemarche.utils.apis.api_brevo.settings.BITOUBI_ENV", "test"):
-            config = api_brevo.BrevoConfig()
-            self.assertFalse(config.is_production_env)
 
     def test_brevo_api_error_initialization(self, mock_sleep):
         """Test BrevoApiError exception initialization"""

@@ -338,6 +338,7 @@ class TenderCreateViewTest(TestCase):
 
     @patch("lemarche.utils.apis.api_brevo.brevo_python.api.contacts_api.ContactsApi.create_contact")
     @patch("lemarche.utils.apis.api_brevo.brevo_python.CreateContact")
+    @patch("lemarche.utils.apis.api_brevo.BrevoBaseApiClient.is_production_env", True)
     def test_create_contact_call_has_user_buyer_attributes(self, mock_create_contact, mock_api_create_contact):
         """Test CreateContact call contains user buyer attributes"""
         mock_api_create_contact.return_value = CreateUpdateContactModel(id=123)
