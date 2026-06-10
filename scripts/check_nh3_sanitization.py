@@ -1,5 +1,5 @@
 """
-Dry-run : aperçu de ce que la migration nh3 ferait sur les besoins clôturés.
+Dry-run : aperçu de ce que la migration nh3 ferait sur les besoins.
 
 Usage (depuis la racine du projet, avec Django configuré) :
     python manage.py shell < scripts/check_nh3_sanitization.py
@@ -12,7 +12,6 @@ Ne touche à rien en base.
 
 import os
 import sys
-from datetime import date
 
 import django
 
@@ -36,58 +35,41 @@ def diff_summary(original: str, sanitized: str, max_len: int = 120) -> str:
     return f"  AVANT : {orig_short}\n  APRÈS : {sani_short}"
 
 
-def run():
-    qs = Tender.objects.filter(
-        deadline_date__isnull=False,
-        deadline_date__lt=date.today(),
-    ).only("id", "title", "description", "constraints")
+FIELD_LABELS = {"description": "DESCRIPTIONS", "constraints": "CONTRAINTES"}
 
-    total = qs.count()
-    affected_desc = []
-    affected_constr = []
+
+def run():
+    fields = tuple(FIELD_LABELS)
+    qs = Tender.objects.only("id", "title", *fields)
+
+    total = 0
+    affected = {field: [] for field in fields}
 
     for tender in qs.iterator(chunk_size=500):
-        if tender.description:
-            sanitized = sanitize_html(tender.description)
-            if sanitized != tender.description:
-                affected_desc.append(
-                    {
-                        "id": tender.id,
-                        "title": tender.title,
-                        "diff": diff_summary(tender.description, sanitized),
-                    }
-                )
-
-        if tender.constraints:
-            sanitized = sanitize_html(tender.constraints)
-            if sanitized != tender.constraints:
-                affected_constr.append(
-                    {
-                        "id": tender.id,
-                        "title": tender.title,
-                        "diff": diff_summary(tender.constraints, sanitized),
-                    }
-                )
+        total += 1
+        for field in fields:
+            raw = getattr(tender, field)
+            if not raw:
+                continue
+            sanitized = sanitize_html(raw)
+            if sanitized != raw:
+                affected[field].append({"id": tender.id, "title": tender.title, "diff": diff_summary(raw, sanitized)})
 
     print(f"\n{'=' * 60}")
-    print(f"Besoins clôturés analysés : {total}")
-    print(f"Descriptions modifiées    : {len(affected_desc)} / {total}")
-    print(f"Contraintes modifiées     : {len(affected_constr)} / {total}")
+    print(f"Besoins analysés          : {total}")
+    print(f"Descriptions modifiées    : {len(affected['description'])} / {total}")
+    print(f"Contraintes modifiées     : {len(affected['constraints'])} / {total}")
     print(f"{'=' * 60}\n")
 
-    if affected_desc:
-        print("── DESCRIPTIONS qui changeraient ──")
-        for item in affected_desc:
+    for field, label in FIELD_LABELS.items():
+        if not affected[field]:
+            continue
+        print(f"\n── {label} qui changeraient ──")
+        for item in affected[field]:
             print(f"\n[#{item['id']}] {item['title']}")
             print(item["diff"])
 
-    if affected_constr:
-        print("\n── CONTRAINTES qui changeraient ──")
-        for item in affected_constr:
-            print(f"\n[#{item['id']}] {item['title']}")
-            print(item["diff"])
-
-    if not affected_desc and not affected_constr:
+    if not any(affected.values()):
         print("✓ Aucun contenu ne serait modifié — l'allowlist est conforme.")
 
 
