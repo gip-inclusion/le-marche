@@ -1,4 +1,5 @@
 import csv
+import json
 from datetime import date
 from urllib.parse import quote
 
@@ -127,8 +128,8 @@ class SiaeSearchResultsView(FormMixin, ListView):
             max(context["page_obj"].number - 4, 1), min(context["page_obj"].number + 4, context["paginator"].num_pages)
         )
         # pass the results in json for javascript (leaflet map)
-        context["siaes_json"] = serialize(
-            "geojson", context["siaes"], geometry_field="coords", fields=("id", "name", "brand", "slug")
+        context["siaes_json"] = json.loads(
+            serialize("geojson", context["siaes"], geometry_field="coords", fields=("id", "name", "brand", "slug"))
         )
 
         if self.request.GET:  # form submitted or show_invite_colleagues_modal is in the GET params
