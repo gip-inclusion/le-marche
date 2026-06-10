@@ -12,7 +12,8 @@ from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.admin import TenderAdmin
-from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderSiae
+from lemarche.tenders.enums import TenderSourcesChoices
+from lemarche.tenders.models import PartnerShareTender, Tender, TenderInstruction, TenderQuestion, TenderSiae
 from lemarche.tenders.utils import find_amount_ranges
 from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import MarcheAdminSite, get_admin_change_view_url
@@ -1208,3 +1209,16 @@ class TenderUtilsFindAmountRangesTests(TestCase):
         """Test when no ranges match the criteria."""
         expected_keys = [tender_constants.AMOUNT_RANGE_0_1]
         self.assertListEqual(find_amount_ranges(100, "lte"), expected_keys)
+
+
+class TenderInstructionModelTest(TestCase):
+    def test_text_is_sanitized_on_save(self):
+        instruction = TenderInstruction.objects.create(
+            title="Notice",
+            text="<p>ok</p><script>alert('xss')</script>",
+            tender_type=tender_constants.KIND_TENDER,
+            tender_source=TenderSourcesChoices.SOURCE_API,
+        )
+        instruction.refresh_from_db()
+        self.assertNotIn("<script", instruction.text)
+        self.assertIn("<p>ok</p>", instruction.text)

@@ -4,6 +4,7 @@ from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.tenders.models import Tender
 from lemarche.users import constants as user_constants
+from lemarche.utils.sanitize import sanitize_html
 
 
 class TenderSerializer(serializers.ModelSerializer):
@@ -60,3 +61,10 @@ class TenderSerializer(serializers.ModelSerializer):
             "contact_kind",
             "contact_buyer_kind_detail",
         ]
+
+    def validate_description(self, value):
+        # rendu avec |safe côté front : sanitiser l'entrée non fiable (ex. partenaire APProch)
+        return sanitize_html(value)
+
+    def validate_constraints(self, value):
+        return sanitize_html(value)
