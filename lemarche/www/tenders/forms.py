@@ -11,6 +11,7 @@ from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.users.validators import professional_email_validator
 from lemarche.utils import constants
+from lemarche.utils.sanitize import sanitize_html
 
 
 logger = logging.getLogger(__name__)
@@ -50,6 +51,9 @@ class TenderCreateStepGeneralForm(forms.ModelForm):
         # label, placeholder & help_text
         self.fields["title"].widget.attrs["placeholder"] = "Ex : Demande de devis rénovation façade à Grenoble"
         self.fields["is_country_area"].help_text = None
+
+    def clean_description(self):
+        return sanitize_html(self.cleaned_data.get("description", ""))
 
     def clean(self):
         super().clean()
