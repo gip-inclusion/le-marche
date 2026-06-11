@@ -42,6 +42,37 @@
             {% endif %}
         </div>
         {% if user.kind == "BUYER" and user.company %}
+            {% if last_purchase_import %}
+                {% if last_purchase_import.status == "SUCCESS" %}
+                    <div class="fr-alert fr-alert--success fr-alert--sm fr-mb-3w no-print">
+                        <p>
+                            Analyse importée le {{ last_purchase_import.created_at|date:"d/m/Y" }}
+                            — {{ last_purchase_import.year }}
+                            — {{ last_purchase_import.total_rows }} ligne{{ last_purchase_import.total_rows|pluralize }}
+                            / {{ last_purchase_import.match_percentage }} % de structures reconnues.
+                            <a href="{% url 'dashboard:purchase_import' %}" class="fr-link fr-ml-2w">Réimporter</a>
+                        </p>
+                    </div>
+                {% elif last_purchase_import.status == "FAILED" %}
+                    <div class="fr-alert fr-alert--error fr-alert--sm fr-mb-3w no-print">
+                        <p>
+                            Le dernier import a échoué.
+                            <a href="{% url 'dashboard:purchase_import' %}" class="fr-link fr-ml-2w">Réessayer</a>
+                        </p>
+                    </div>
+                {% endif %}
+            {% endif %}
+            {% if unfiltered_qs_count == 0 %}
+                <div class="fr-callout fr-mb-3w">
+                    <h3 class="fr-callout__title">Aucune donnée disponible</h3>
+                    <p class="fr-callout__text">
+                        Importez votre fichier de dépenses achats pour calculer votre part d'achat inclusif.
+                    </p>
+                    <a href="{% url 'dashboard:purchase_import' %}" class="fr-btn fr-btn--sm fr-mt-1w">
+                        Importer mes dépenses
+                    </a>
+                </div>
+            {% endif %}
             {% if unfiltered_qs_count > 0 %}
                 <section class="fr-accordion fr-mb-2w">
                     <h3 class="fr-accordion__title">
@@ -410,10 +441,6 @@
                         Il n'y a aucun résultat pour votre recherche avec ces filtres.
                     </div>
                 {% endif %}
-            {% else %}
-                <div class="fr-alert fr-alert--warning">
-                    <p>Vous n'avez pas encore communiqué vos achats. Prenez contact avec notre équipe pour en savoir plus.</p>
-                </div>
             {% endif %}
         {% else %}
             <div class="fr-alert fr-alert--warning">

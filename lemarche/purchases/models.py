@@ -372,6 +372,76 @@ def get_sector_group_chart_data(queryset, top_n=10):
     return {"labels": labels, "amounts": amounts, "supplier_counts": supplier_counts}
 
 
+class PurchaseImportQuerySet(models.QuerySet):
+    def for_company(self, company):
+        return self.filter(company=company)
+
+    def latest_for_company(self, company):
+        return self.for_company(company).first()
+
+
+class PurchaseImport(models.Model):
+    """Tracks each Excel import of purchase data by a buyer organization."""
+
+    STATUS_PENDING = "PENDING"
+    STATUS_SUCCESS = "SUCCESS"
+    STATUS_FAILED = "FAILED"
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, "En attente"),
+        (STATUS_SUCCESS, "Terminée"),
+        (STATUS_FAILED, "Échouée"),
+    ]
+
+    company = models.ForeignKey(
+        "companies.Company",
+        verbose_name="Entreprise",
+        on_delete=models.CASCADE,
+        related_name="purchase_imports",
+    )
+    uploaded_by = models.ForeignKey(
+        User,
+        verbose_name="Importé par",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="purchase_imports",
+    )
+    file = models.FileField(
+        verbose_name="Fichier Excel",
+        upload_to="purchases/imports/",
+    )
+    status = models.CharField(
+        verbose_name="Statut",
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=STATUS_PENDING,
+    )
+    year = models.PositiveIntegerField(verbose_name="Année des achats")
+    total_rows = models.PositiveIntegerField(verbose_name="Lignes traitées", default=0)
+    matched_rows = models.PositiveIntegerField(verbose_name="Structures reconnues", default=0)
+    error_message = models.TextField(verbose_name="Message d'erreur", blank=True)
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(PurchaseImportQuerySet)()
+
+    class Meta:
+        verbose_name = "Import de dépenses"
+        verbose_name_plural = "Imports de dépenses"
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"Import {self.year} — {self.company} ({self.get_status_display()})"
+
+    @property
+    def match_percentage(self) -> int:
+        """Returns the percentage of rows matched to an inclusive structure."""
+        if not self.total_rows:
+            return 0
+        return round(self.matched_rows * 100 / self.total_rows)
+
+
 class SlugMappingCacheQuerySet(models.QuerySet):
     def validated(self):
         return self.filter(source=purchases_constants.SLUG_MAPPING_SOURCE_ADMIN_VALIDATED)
