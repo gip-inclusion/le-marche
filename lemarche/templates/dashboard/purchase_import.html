@@ -1,0 +1,133 @@
+{% extends "layouts/base.html" %}
+{% load static process_dict dsfr_tags %}
+
+{% block page_title %}Importer mes dépenses — Ma part d'achat inclusif{{ block.super }}{% endblock page_title %}
+
+{% block breadcrumb %}
+    {% process_dict root_dir=HOME_PAGE_PATH label_1="Ma part d'achat inclusif" url_1="/tableau-de-bord/part-achat-inclusif/" current="Importer mes dépenses" as breadcrumb_data %}
+    {% dsfr_breadcrumb breadcrumb_data %}
+{% endblock breadcrumb %}
+
+{% block content %}
+<div class="fr-container fr-mb-6w">
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+            <h1>Importer mes dépenses achats</h1>
+            <p class="fr-text--lead">
+                Importez votre fichier de dépenses annuelles pour calculer votre part d'achat inclusif.
+            </p>
+        </div>
+    </div>
+
+    {% if errors %}
+        <div class="fr-alert fr-alert--error fr-mb-3w">
+            <h3 class="fr-alert__title">Erreur lors de l'import</h3>
+            <ul>
+                {% for error in errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {% if last_purchase_import %}
+        {% if last_purchase_import.status == "SUCCESS" %}
+            <div class="fr-alert fr-alert--success fr-mb-3w">
+                <h3 class="fr-alert__title">Dernière analyse importée avec succès</h3>
+                <p>
+                    Import du {{ last_purchase_import.created_at|date:"d/m/Y" }} — année {{ last_purchase_import.year }} —
+                    {{ last_purchase_import.total_rows }} ligne{{ last_purchase_import.total_rows|pluralize }}
+                    / {{ last_purchase_import.matched_rows }} structure{{ last_purchase_import.matched_rows|pluralize }} reconnue{{ last_purchase_import.matched_rows|pluralize }}
+                    ({{ last_purchase_import.match_percentage }} %).
+                </p>
+                <p>
+                    <a href="{% url 'dashboard:inclusive_purchase_stats' %}" class="fr-btn fr-btn--sm fr-mt-1w">
+                        Voir mon tableau de bord
+                    </a>
+                </p>
+            </div>
+        {% elif last_purchase_import.status == "FAILED" %}
+            <div class="fr-alert fr-alert--error fr-mb-3w">
+                <h3 class="fr-alert__title">Dernier import échoué</h3>
+                {% if last_purchase_import.error_message %}
+                    <p>{{ last_purchase_import.error_message }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12 fr-col-md-8">
+            <div class="fr-card">
+                <div class="fr-card__body">
+                    <div class="fr-card__content">
+                        <h2 class="fr-card__title">Uploader votre fichier de dépenses</h2>
+                        <div class="fr-card__desc">
+
+                            <form method="post" enctype="multipart/form-data" novalidate>
+                                {% csrf_token %}
+
+                                <div class="fr-input-group fr-mb-3w">
+                                    <label class="fr-label" for="id_year">
+                                        Année des achats <span class="fr-hint-text">Obligatoire</span>
+                                    </label>
+                                    <input class="fr-input"
+                                           type="number"
+                                           id="id_year"
+                                           name="year"
+                                           min="2000"
+                                           max="{{ current_year }}"
+                                           value="{{ current_year }}"
+                                           required>
+                                </div>
+
+                                <div class="fr-upload-group fr-mb-3w">
+                                    <label class="fr-label" for="id_purchase_file">
+                                        Fichier Excel de dépenses (.xlsx)
+                                        <span class="fr-hint-text">Taille maximale : 10 Mo — Format .xlsx uniquement</span>
+                                    </label>
+                                    <input class="fr-upload"
+                                           type="file"
+                                           id="id_purchase_file"
+                                           name="purchase_file"
+                                           accept=".xlsx"
+                                           required>
+                                </div>
+
+                                <button type="submit" class="fr-btn fr-btn--icon-left fr-icon-upload-2-line">
+                                    Lancer l'analyse
+                                </button>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fr-col-12 fr-col-md-4">
+            <div class="fr-card fr-card--grey">
+                <div class="fr-card__body">
+                    <div class="fr-card__content">
+                        <h3 class="fr-card__title">Format attendu</h3>
+                        <div class="fr-card__desc">
+                            <p>Votre fichier Excel doit contenir les colonnes suivantes :</p>
+                            <ul class="fr-text--sm">
+                                <li><strong>Raison sociale du Fournisseur</strong> — obligatoire</li>
+                                <li><strong>SIRET</strong> — 14 chiffres, obligatoire</li>
+                                <li><strong>Dépense achat (€)</strong> — montant positif, obligatoire</li>
+                                <li>Catégorie d'achat — optionnelle</li>
+                                <li>Entité acheteuse — optionnelle</li>
+                            </ul>
+                            <p class="fr-mt-2w">
+                                <a href="{% url 'dashboard:purchase_import_template' %}"
+                                   class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-left fr-icon-download-line">
+                                    Télécharger le modèle Excel
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
