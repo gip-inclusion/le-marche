@@ -31,7 +31,7 @@ def remove_testimonial_templates(apps, schema_editor):
 class Migration(migrations.Migration):
     dependencies = [
         ("testimonials", "0001_initial"),
-        ("conversations", "0004_add_buyer_ao_email_template"),
+        ("conversations", "0003_add_user_deletion_warning_template"),
     ]
 
     operations = [
