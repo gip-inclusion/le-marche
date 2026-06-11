@@ -1,52 +1,9 @@
 from itertools import batched
 
-import nh3
 from django.db import migrations
 
+from lemarche.utils.sanitize import sanitize_html
 
-ALLOWED_TAGS = frozenset(
-    {
-        "p",
-        "br",
-        "strong",
-        "em",
-        "u",
-        "s",
-        "sub",
-        "sup",
-        "blockquote",
-        "pre",
-        "code",
-        "hr",
-        "h1",
-        "h2",
-        "h3",
-        "h4",
-        "h5",
-        "h6",
-        "ul",
-        "ol",
-        "li",
-        "div",
-        "span",
-        "table",
-        "thead",
-        "tbody",
-        "tfoot",
-        "tr",
-        "td",
-        "th",
-        "caption",
-        "a",
-    }
-)
-# "rel" est géré par nh3 (link_rel) ; l'autoriser ici lèverait une ValueError.
-ALLOWED_ATTRIBUTES = {
-    "a": {"href", "target"},
-    "td": {"colspan", "rowspan"},
-    "th": {"colspan", "rowspan", "scope"},
-}
-ALLOWED_URL_SCHEMES = frozenset({"http", "https", "mailto"})
 
 BATCH_SIZE = 1_000
 
@@ -54,6 +11,8 @@ BATCH_SIZE = 1_000
 def sanitize_tenders(apps, schema_editor):
     """Sanitise les champs HTML rendus avec |safe sur tous les besoins.
 
+    Applique la même allowlist que `sanitize_html` (utilisée à la saisie),
+    pour garantir que la migration et l'assainissement runtime restent alignés.
     nh3 ne retire que le balisage dangereux (script, iframe, gestionnaires
     d'événements, URL javascript:) et préserve la mise en forme légitime, donc
     l'opération est sûre y compris sur les besoins actifs.
@@ -71,12 +30,7 @@ def sanitize_tenders(apps, schema_editor):
                 raw = getattr(tender, field)
                 if not raw:
                     continue
-                sanitized = nh3.clean(
-                    raw,
-                    tags=ALLOWED_TAGS,
-                    attributes=ALLOWED_ATTRIBUTES,
-                    url_schemes=ALLOWED_URL_SCHEMES,
-                )
+                sanitized = sanitize_html(raw)
                 if sanitized != raw:
                     setattr(tender, field, sanitized)
                     changed = True
