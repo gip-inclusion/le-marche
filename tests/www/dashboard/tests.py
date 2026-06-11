@@ -97,7 +97,7 @@ class InclusivePurchaseStatsDashboardViewTest(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Vous n'avez pas encore communiqué vos achats.")
+        self.assertContains(response, "Importer mes dépenses")
 
     def test_view_should_display_stats_with_inclusive_purchases(self):
         self.client.force_login(self.user)

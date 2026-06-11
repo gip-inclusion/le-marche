@@ -8,9 +8,11 @@ from lemarche.www.dashboard.views import (
     InclusivePurchaseExportView,
     InclusivePurchaseStatsDashboardView,
     ProfileEditView,
+    PurchaseImportView,
     SlugMappingValidationView,
     inclusive_potential_excel_export,
     inclusive_potential_excel_template,
+    purchase_excel_template,
 )
 
 
@@ -22,6 +24,8 @@ urlpatterns = [
     path("notifications/", DisabledEmailEditView.as_view(), name="notifications_edit"),
     path("part-achat-inclusif/", InclusivePurchaseStatsDashboardView.as_view(), name="inclusive_purchase_stats"),
     path("part-achat-inclusif/export/", InclusivePurchaseExportView.as_view(), name="inclusive_purchase_export"),
+    path("part-achat-inclusif/importer/", PurchaseImportView.as_view(), name="purchase_import"),
+    path("part-achat-inclusif/modele-excel/", purchase_excel_template, name="purchase_import_template"),
     path("analyse-potentiel-inclusif/", InclusivePotentialAnalysisView.as_view(), name="inclusive_potential_analysis"),
     path(
         "analyse-potentiel-inclusif/modele-excel/",
