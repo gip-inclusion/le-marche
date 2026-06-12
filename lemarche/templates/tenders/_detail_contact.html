@@ -9,7 +9,7 @@
     {% if tender.contact_full_name %}
         <div class="fr-col-md-6">
             <span class="fr-icon-account-circle-line"></span>
-            {{ tender.contact_full_name|safe }}
+            {{ tender.contact_full_name }}
         </div>
     {% endif %}
     {% if tender.contact_company_name_display %}
@@ -54,7 +54,7 @@
             {% endif %}
             <a href="{{ tender.external_link }}"
                target="_blank"
-               class="btn btn-outline-primary float-right">{{ tender.external_link_title|safe }}</a>
+               class="btn btn-outline-primary float-right">{{ tender.external_link_title }}</a>
         </div>
     </div>
 {% endif %}

@@ -122,13 +122,13 @@
     </div>
 {% endblock content_form %}
 {% block extra_js %}
+    {{ questions_list_initial|json_script:"questions-list-data" }}
     <script type="text/javascript" defer>
     function TenderQuestionForm() {
         return {
             questions: [],
             init() {
-                // init component with django context variable (is null or object)
-                const questions_input = {{ form.questions_list.value|safe }};
+                const questions_input = JSON.parse(document.getElementById("questions-list-data").textContent);
                 if (questions_input){
                     this.questions = questions_input;
                 } else {

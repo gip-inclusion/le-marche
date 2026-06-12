@@ -38,6 +38,7 @@ from lemarche.users.models import User
 from lemarche.utils.constants import ADMIN_FIELD_HELP_TEXT, AUTO_FIELD_HELP_TEXT, RECALCULATED_FIELD_HELP_TEXT
 from lemarche.utils.data import phone_number_display
 from lemarche.utils.fields import ChoiceArrayField
+from lemarche.utils.sanitize import sanitize_html
 from lemarche.utils.urls import get_object_admin_url
 
 
@@ -48,6 +49,11 @@ class TenderInstruction(models.Model):
     text = models.TextField(verbose_name="Contenu")
     tender_type = models.CharField(choices=tender_constants.KIND_CHOICES, max_length=10)
     tender_source = models.CharField(choices=TenderSourcesChoices.choices, max_length=20)
+
+    def save(self, *args, **kwargs):
+        # `text` est recopié dans Tender.constraints, rendu avec |safe : on assainit à la source
+        self.text = sanitize_html(self.text)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Notice de réponse au besoin d'achat"

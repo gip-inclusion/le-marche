@@ -3,6 +3,7 @@ from datetime import date
 
 from ckeditor.widgets import CKEditorWidget
 from django import forms
+from django.utils.html import strip_tags
 
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
@@ -11,6 +12,7 @@ from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.users.validators import professional_email_validator
 from lemarche.utils import constants
+from lemarche.utils.sanitize import sanitize_html
 
 
 logger = logging.getLogger(__name__)
@@ -50,6 +52,14 @@ class TenderCreateStepGeneralForm(forms.ModelForm):
         # label, placeholder & help_text
         self.fields["title"].widget.attrs["placeholder"] = "Ex : Demande de devis rénovation façade à Grenoble"
         self.fields["is_country_area"].help_text = None
+
+    def clean_description(self):
+        sanitized = sanitize_html(self.cleaned_data.get("description", ""))
+        # la validation "required" porte sur l'entrée brute : un contenu composé
+        # uniquement de balises interdites devient vide après sanitisation
+        if self.fields["description"].required and not strip_tags(sanitized).strip():
+            raise forms.ValidationError(self.fields["description"].error_messages["required"], code="required")
+        return sanitized
 
     def clean(self):
         super().clean()

@@ -103,6 +103,21 @@ class TenderCreateApiTest(TestCase):
         self.assertEqual(response.status_code, 401)
 
     @patch("lemarche.api.tenders.views.add_to_contact_list")
+    def test_description_is_sanitized_on_create(self, mock_add_to_contact_list):
+        tender_data = TENDER_JSON.copy()
+        tender_data["title"] = "Test XSS"
+        tender_data["description"] = "<p>ok</p><script>alert('xss')</script>"
+        response = self.client.post(
+            self.url,
+            data=tender_data,
+            content_type="application/json",
+            headers={"authorization": f"Bearer {self.user_token}"},
+        )
+        self.assertEqual(response.status_code, 201)
+        tender = Tender.objects.get(title="Test XSS")
+        self.assertNotIn("<script", tender.description)
+
+    @patch("lemarche.api.tenders.views.add_to_contact_list")
     def test_user_with_valid_api_key_can_create_tender(self, mock_add_to_contact_list):
         # test with other email
         tender_data = TENDER_JSON.copy()

@@ -279,10 +279,11 @@ document.addEventListener("DOMContentLoaded", function() {
     {% endif %}
 });
     </script>
+    {{ siaes_json|json_script:"siaes-json-data" }}
     <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
     // Set listings markers on load
-    const siaeList = {{ siaes_json|safe }};
+    const siaeList = JSON.parse(document.getElementById("siaes-json-data").textContent);
 
     // init map
     var map = L.map('map-siae-list').setView([47.08333, 2.4], 5);

@@ -1,4 +1,5 @@
 import csv
+import json
 import os
 from datetime import timedelta
 from urllib.parse import urlencode
@@ -173,6 +174,13 @@ class TenderCreateMultiStepView(SessionWizardView):
         Pretty display of Tender at the last step
         """
         context = super().get_context_data(form=form, **kwargs)
+        if self.steps.current == self.STEP_DETAIL:
+            # Passe la valeur Python du JSONField pour json_script (évite l'injection via |safe)
+            raw = form["questions_list"].value()
+            try:
+                context["questions_list_initial"] = json.loads(raw) if raw else None
+            except (ValueError, TypeError):
+                context["questions_list_initial"] = None
         # needed to display the Tender preview template
         if self.steps.current == self.STEP_CONFIRMATION:
             tender_dict = self.get_all_cleaned_data()

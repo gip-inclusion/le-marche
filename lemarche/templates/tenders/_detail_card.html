@@ -19,12 +19,12 @@
             {% endif %}
             <div class="fr-col-md-3" title="Lieu d'intervention">
                 <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
-                {{ tender.location_display|safe }}
+                {{ tender.location_display }}
             </div>
             <div class="fr-col-md-3"
-                 title="Secteurs d'activité : {{ tender.sectors_full_list_string|safe }}">
+                 title="Secteurs d'activité : {{ tender.sectors_full_list_string }}">
                 <span class="fr-icon-award-line" aria-hidden="true"></span>
-                {{ tender.sectors_list_string|safe }}
+                {{ tender.sectors_list_string }}
             </div>
         </div>
         <div class="fr-grid-row fr-py-2w">

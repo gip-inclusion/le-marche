@@ -718,8 +718,8 @@ DEFAULT_CKEDITOR_CONFIG = {
         ["SpecialChar"],
         # ['HorizontalRule', 'Smiley'],
         ["Undo", "Redo"],
-        ["Image", "Flash", "Table", "HorizontalRule", "Smiley", "SpecialChar", "Iframe"],
-        ["RemoveFormat", "Source"],
+        ["Image", "Flash", "Table", "HorizontalRule", "Smiley", "SpecialChar"],
+        ["RemoveFormat"],
     ],
     # avoid special characters encoding
     "basicEntities": False,

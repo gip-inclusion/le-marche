@@ -4,9 +4,11 @@
 {% block page_title %}Confirmer les correspondances — Analyse du potentiel inclusif{{ block.super }}{% endblock page_title %}
 
 {% block content %}
+{{ sectors_json|json_script:"ipa-sectors-data" }}
+{{ ambiguous_items_json|json_script:"ipa-ambiguous-items-data" }}
 <script>
-    window.IPA_SECTORS = {{ sectors_json|safe }};
-    window.IPA_AMBIGUOUS_ITEMS = {{ ambiguous_items_json|safe }};
+    window.IPA_SECTORS = JSON.parse(document.getElementById("ipa-sectors-data").textContent);
+    window.IPA_AMBIGUOUS_ITEMS = JSON.parse(document.getElementById("ipa-ambiguous-items-data").textContent);
 </script>
 
 <style>

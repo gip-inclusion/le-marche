@@ -438,16 +438,33 @@
 {% endblock extra_css %}
 {% block extra_js %}
     {% if chart_data_inclusive %}
+        {{ chart_data_inclusive|json_script:"chart-data-inclusive" }}
+        {{ chart_data_insertion_handicap|json_script:"chart-data-insertion-handicap" }}
+        {{ chart_data_siae_type|json_script:"chart-data-siae-type" }}
+        {{ chart_data_purchases_by_category|json_script:"chart-data-purchases-by-category" }}
+        {{ chart_data_purchases_by_buying_entity|json_script:"chart-data-purchases-by-buying-entity" }}
+        {{ chart_data_qpv_zrr|json_script:"chart-data-qpv-zrr" }}
+        {{ chart_data_size|json_script:"chart-data-size" }}
+        {{ chart_data_legal_form|json_script:"chart-data-legal-form" }}
+        {{ chart_data_region|json_script:"chart-data-region" }}
+        {{ chart_data_sector_group|json_script:"chart-data-sector-group" }}
         <script type="text/javascript"
                 src="{% static 'vendor/chart.umd@4.5.0.min.js' %}"></script>
         <script type="text/javascript"
                 src="{% static 'vendor/chartjs-plugin-datalabels@2.2.0.min.js' %}"></script>
         <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const _inclusive = JSON.parse(document.getElementById("chart-data-inclusive").textContent);
+            const _insertionHandicap = JSON.parse(document.getElementById("chart-data-insertion-handicap").textContent);
+            const _siaeType = JSON.parse(document.getElementById("chart-data-siae-type").textContent);
+            const _purchaseCategory = JSON.parse(document.getElementById("chart-data-purchases-by-category").textContent);
+            const _buyingEntity = JSON.parse(document.getElementById("chart-data-purchases-by-buying-entity").textContent);
+            const _qpvZrr = JSON.parse(document.getElementById("chart-data-qpv-zrr").textContent);
+
             const inclusiveData = {
-                labels: {{ chart_data_inclusive.labels | safe }},
+                labels: _inclusive.labels,
                 datasets: [{
-                    data: {{ chart_data_inclusive.dataset | safe }},
+                    data: _inclusive.dataset,
                     backgroundColor: ['#000091', '#e3e3fd'],
                     borderColor: '#ffffff',
                     borderWidth: 2
@@ -455,9 +472,9 @@
             };
 
             const insertionHandicapData = {
-                labels: {{ chart_data_insertion_handicap.labels | safe }},
+                labels: _insertionHandicap.labels,
                 datasets: [{
-                    data: {{ chart_data_insertion_handicap.dataset | safe }},
+                    data: _insertionHandicap.dataset,
                     backgroundColor: ['#ff9f40', '#4bc0c0'],
                     borderColor: '#ffffff',
                     borderWidth: 2
@@ -465,9 +482,9 @@
             };
 
             const structureKindData = {
-                labels: {{ chart_data_siae_type.labels | safe }},
+                labels: _siaeType.labels,
                 datasets: [{
-                    data: {{ chart_data_siae_type.dataset | safe }},
+                    data: _siaeType.dataset,
                     backgroundColor: ['#1a92ec','#ff3479','#00c5c2','#ff9f31','#b200fe','#ffd651','#c8c9ce','#a8e600','#0b1e3d','#f4b6c2'],
                     borderColor: '#ffffff',
                     borderWidth: 2
@@ -475,9 +492,9 @@
             };
 
             const purchaseCategoryData = {
-                labels: {{ chart_data_purchases_by_category.labels | safe }},
+                labels: _purchaseCategory.labels,
                 datasets: [{
-                    data: {{ chart_data_purchases_by_category.dataset | safe }},
+                    data: _purchaseCategory.dataset,
                     backgroundColor: ['#1a92ec','#ff3479','#00c5c2','#ff9f31','#b200fe','#ffd651'],
                     borderColor: '#ffffff',
                     borderWidth: 2
@@ -485,9 +502,9 @@
             };
 
             const buyingEntityData = {
-                labels: {{ chart_data_purchases_by_buying_entity.labels | safe }},
+                labels: _buyingEntity.labels,
                 datasets: [{
-                    data: {{ chart_data_purchases_by_buying_entity.dataset | safe }},
+                    data: _buyingEntity.dataset,
                     backgroundColor: ['#1a92ec','#ff3479','#00c5c2','#ff9f31','#b200fe','#ffd651'],
                     borderColor: '#ffffff',
                     borderWidth: 2
@@ -495,9 +512,9 @@
             };
 
             const qpvZrrData = {
-                labels: {{ chart_data_qpv_zrr.labels | safe }},
+                labels: _qpvZrr.labels,
                 datasets: [{
-                    data: {{ chart_data_qpv_zrr.dataset | safe }},
+                    data: _qpvZrr.dataset,
                     backgroundColor: ['#3558a2','#6b4423','#2f4077','#c8c9ce'],
                     borderColor: '#ffffff',
                     borderWidth: 2
@@ -599,9 +616,10 @@
 
             // --- Taille de structure ---
             {% if chart_data_size %}
-            const sizeLabels = {{ chart_data_size.labels | safe }};
-            const sizeAmounts = {{ chart_data_size.amounts | safe }};
-            const sizeSupplierCounts = {{ chart_data_size.supplier_counts | safe }};
+            const _size = JSON.parse(document.getElementById("chart-data-size").textContent);
+            const sizeLabels = _size.labels;
+            const sizeAmounts = _size.amounts;
+            const sizeSupplierCounts = _size.supplier_counts;
             const sizeColors = ['#1a92ec', '#ff9f31', '#c8c9ce'];
 
             if (sizeAmounts.some(v => v > 0)) {
@@ -642,9 +660,10 @@
 
             // --- Statut juridique ---
             {% if chart_data_legal_form.labels %}
-            const legalFormLabels = {{ chart_data_legal_form.labels | safe }};
-            const legalFormAmounts = {{ chart_data_legal_form.amounts | safe }};
-            const legalFormSupplierCounts = {{ chart_data_legal_form.supplier_counts | safe }};
+            const _legalForm = JSON.parse(document.getElementById("chart-data-legal-form").textContent);
+            const legalFormLabels = _legalForm.labels;
+            const legalFormAmounts = _legalForm.amounts;
+            const legalFormSupplierCounts = _legalForm.supplier_counts;
             const barColors = ['#1a92ec','#ff3479','#00c5c2','#ff9f31','#b200fe','#ffd651','#c8c9ce','#a8e600','#0b1e3d','#f4b6c2','#6b4423'];
 
             new Chart(document.getElementById('legalFormAmountChart'), {
@@ -676,9 +695,10 @@
 
             // --- Cartographie régionale ---
             {% if chart_data_region.labels %}
-            const regionLabels = {{ chart_data_region.labels | safe }};
-            const regionAmounts = {{ chart_data_region.amounts | safe }};
-            const regionSupplierCounts = {{ chart_data_region.supplier_counts | safe }};
+            const _region = JSON.parse(document.getElementById("chart-data-region").textContent);
+            const regionLabels = _region.labels;
+            const regionAmounts = _region.amounts;
+            const regionSupplierCounts = _region.supplier_counts;
 
             new Chart(document.getElementById('regionChart'), {
                 type: 'bar',
@@ -708,9 +728,10 @@
 
             // --- Secteurs d'activité ---
             {% if chart_data_sector_group.labels %}
-            const sectorGroupLabels = {{ chart_data_sector_group.labels | safe }};
-            const sectorGroupAmounts = {{ chart_data_sector_group.amounts | safe }};
-            const sectorGroupSupplierCounts = {{ chart_data_sector_group.supplier_counts | safe }};
+            const _sectorGroup = JSON.parse(document.getElementById("chart-data-sector-group").textContent);
+            const sectorGroupLabels = _sectorGroup.labels;
+            const sectorGroupAmounts = _sectorGroup.amounts;
+            const sectorGroupSupplierCounts = _sectorGroup.supplier_counts;
             const sectorGroupColors = ['#000091','#1a92ec','#ff3479','#00c5c2','#ff9f31','#b200fe','#ffd651','#c8c9ce','#a8e600','#0b1e3d','#6b4423'];
 
             new Chart(document.getElementById('sectorGroupChart'), {
