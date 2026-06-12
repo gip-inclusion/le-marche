@@ -115,7 +115,7 @@ def parse_purchases_excel(file_obj, year: int, company) -> tuple[list, int, int]
             return str(val).strip() if val is not None else None
 
         supplier_name = get("supplier_name") or ""
-        supplier_siret = (get("supplier_siret") or "").replace(" ", "").replace("-", "")
+        supplier_siret = re.sub(r"[^\d]", "", str(get("supplier_siret") or "").split(".")[0])
         amount_raw = get("purchase_amount") or ""
         purchase_category = get("purchase_category") or None
         buying_entity = get("purchase_entity") or None
