@@ -489,6 +489,10 @@ class PurchaseImportView(LoginRequiredMixin, View):
         except ValueError as exc:
             purchase_import.status = PurchaseImport.STATUS_FAILED
             purchase_import.error_message = str(exc)
+        except Exception:
+            logger.exception("Erreur inattendue lors de l'import des achats (id=%s)", purchase_import.pk)
+            purchase_import.status = PurchaseImport.STATUS_FAILED
+            purchase_import.error_message = "Une erreur inattendue s'est produite. Veuillez réessayer."
 
         purchase_import.save(update_fields=["status", "total_rows", "matched_rows", "error_message", "updated_at"])
 

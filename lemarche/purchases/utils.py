@@ -1,4 +1,5 @@
 import logging
+import re
 from decimal import Decimal, InvalidOperation
 
 import openpyxl
@@ -11,11 +12,14 @@ logger = logging.getLogger(__name__)
 # Mapping from normalized header variants → canonical column name
 _HEADER_ALIASES = {
     "raison sociale": "supplier_name",
+    "raison social": "supplier_name",
     "raison sociale du fournisseur": "supplier_name",
     "fournisseur": "supplier_name",
     "nom du fournisseur": "supplier_name",
     "siret": "supplier_siret",
     "siret du fournisseur": "supplier_siret",
+    "depense": "purchase_amount",
+    "dépense": "purchase_amount",
     "depense achat": "purchase_amount",
     "dépense achat": "purchase_amount",
     "montant": "purchase_amount",
@@ -36,8 +40,6 @@ REQUIRED_COLUMNS = {"supplier_name", "supplier_siret", "purchase_amount"}
 
 def _normalize(text: str) -> str:
     """Lowercase, strip, remove parenthetical suffixes like '(€)' or '(optionnelle)'."""
-    import re
-
     text = text.lower().strip()
     text = re.sub(r"\s*\(.*?\)", "", text).strip()
     return text
@@ -131,7 +133,7 @@ def parse_purchases_excel(file_obj, year: int, company) -> tuple[list, int, int]
             continue
 
         try:
-            amount_str = str(amount_raw).replace(" ", "").replace("\xa0", "").replace(",", ".")
+            amount_str = re.sub(r"[^\d,.\-]", "", str(amount_raw)).replace(",", ".")
             purchase_amount = Decimal(amount_str)
             if purchase_amount <= 0:
                 raise ValueError
