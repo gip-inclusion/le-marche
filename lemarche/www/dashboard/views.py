@@ -471,9 +471,11 @@ class PurchaseImportView(LoginRequiredMixin, View):
         # Clean slate: delete existing purchases for this company before importing
         Purchase.objects.filter(company=user.company).delete()
 
+        # Use the in-memory upload rather than re-fetching from S3 (S3 streams are not seekable)
+        uploaded_file.seek(0)
         try:
             parse_errors, total_rows, matched_rows = parse_purchases_excel(
-                purchase_import.file.open("rb"),
+                uploaded_file,
                 year=year,
                 company=user.company,
             )
