@@ -1,3 +1,4 @@
+import io
 import logging
 import re
 from decimal import Decimal, InvalidOperation
@@ -58,11 +59,12 @@ def _detect_columns(header_row) -> dict[str, int]:
     return mapping
 
 
-def parse_purchases_excel(file_obj, year: int, company) -> tuple[list, int, int]:
+def parse_purchases_excel(file_obj, year: int, company) -> tuple[list, list, int]:
     """
-    Parse an Excel file of purchase data and create Purchase objects.
+    Parse an Excel file of purchase data. Does NOT write to DB.
 
-    Returns (errors, total_rows, matched_rows).
+    Returns (purchases, errors, matched_rows) where purchases is a list of
+    unsaved Purchase instances ready for bulk_create.
     Raises ValueError for unrecoverable format errors.
     """
     from lemarche.purchases.models import Purchase
@@ -115,6 +117,7 @@ def parse_purchases_excel(file_obj, year: int, company) -> tuple[list, int, int]
             return str(val).strip() if val is not None else None
 
         supplier_name = get("supplier_name") or ""
+        # Strip non-digit chars, and handle SIRETs stored as float by Excel (e.g. "12345678901234.0")
         supplier_siret = re.sub(r"[^\d]", "", str(get("supplier_siret") or "").split(".")[0])
         amount_raw = get("purchase_amount") or ""
         purchase_category = get("purchase_category") or None
@@ -160,14 +163,7 @@ def parse_purchases_excel(file_obj, year: int, company) -> tuple[list, int, int]
 
     wb.close()
 
-    if purchases:
-        from itertools import batched
-
-        BATCH_SIZE = 1_000
-        for batch in batched(purchases, BATCH_SIZE):
-            Purchase.objects.bulk_create(list(batch))
-
-    return errors, len(purchases), matched_rows
+    return purchases, errors, matched_rows
 
 
 def generate_purchases_excel_template() -> bytes:
@@ -206,8 +202,6 @@ def generate_purchases_excel_template() -> bytes:
     ws2.append(["Dépense achat (€)", "Oui", "Montant en euros (nombre positif)"])
     ws2.append(["Catégorie d'achat (optionnelle)", "Non", "Catégorie libre (ex : Travaux, SI, Nettoyage…)"])
     ws2.append(["Entité acheteuse (optionnelle)", "Non", "Service ou direction acheteuse"])
-
-    import io
 
     buffer = io.BytesIO()
     wb.save(buffer)
