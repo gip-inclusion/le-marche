@@ -410,6 +410,8 @@ class PurchaseImport(models.Model):
     file = models.FileField(
         verbose_name="Fichier Excel",
         upload_to="purchases/imports/",
+        blank=True,
+        null=True,
     )
     status = models.CharField(
         verbose_name="Statut",
