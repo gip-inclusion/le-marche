@@ -2,6 +2,7 @@ import csv
 import io
 import json
 import logging
+from itertools import batched
 from urllib.parse import urlencode
 
 import openpyxl
@@ -460,37 +461,63 @@ class PurchaseImportView(LoginRequiredMixin, View):
                 {"last_purchase_import": last_import, "errors": errors, "current_year": timezone.now().year},
             )
 
-        purchase_import = PurchaseImport.objects.create(
-            company=user.company,
-            uploaded_by=user,
-            file=uploaded_file,
-            status=PurchaseImport.STATUS_PENDING,
-            year=year,
-        )
-
-        # Clean slate: delete existing purchases for this company before importing
-        Purchase.objects.filter(company=user.company).delete()
+        # Step 1: Parse in memory FIRST — no S3 interaction, feedback immédiat si format invalide
+        status = PurchaseImport.STATUS_FAILED
+        error_msg = ""
+        new_purchases = []
+        total_rows = 0
+        matched_rows = 0
 
         try:
-            parse_errors, total_rows, matched_rows = parse_purchases_excel(
-                purchase_import.file.open("rb"),
+            new_purchases, parse_errors, matched_rows = parse_purchases_excel(
+                uploaded_file,
                 year=year,
                 company=user.company,
             )
-            purchase_import.total_rows = total_rows
-            purchase_import.matched_rows = matched_rows
+            total_rows = len(new_purchases)
             if total_rows == 0 and parse_errors:
-                purchase_import.status = PurchaseImport.STATUS_FAILED
-                purchase_import.error_message = "\n".join(parse_errors[:10])
+                error_msg = "\n".join(parse_errors[:10])
             else:
-                purchase_import.status = PurchaseImport.STATUS_SUCCESS
+                status = PurchaseImport.STATUS_SUCCESS
                 if parse_errors:
-                    purchase_import.error_message = "\n".join(parse_errors[:10])
+                    error_msg = "\n".join(parse_errors[:10])
         except ValueError as exc:
-            purchase_import.status = PurchaseImport.STATUS_FAILED
-            purchase_import.error_message = str(exc)
+            error_msg = str(exc)
+        except Exception:
+            logger.exception("Erreur inattendue lors du parsing des achats")
+            error_msg = "Une erreur inattendue s'est produite. Veuillez réessayer."
 
-        purchase_import.save(update_fields=["status", "total_rows", "matched_rows", "error_message", "updated_at"])
+        # Step 2: Écriture en base seulement si le parsing a réussi
+        if status == PurchaseImport.STATUS_SUCCESS and new_purchases:
+            Purchase.objects.filter(company=user.company).delete()
+            BATCH_SIZE = 1_000
+            for batch in batched(new_purchases, BATCH_SIZE):
+                Purchase.objects.bulk_create(list(batch))
+
+        # Step 3: Sauvegarde du PurchaseImport avec upload S3 du fichier
+        uploaded_file.seek(0)
+        try:
+            PurchaseImport.objects.create(
+                company=user.company,
+                uploaded_by=user,
+                file=uploaded_file,
+                status=status,
+                year=year,
+                total_rows=total_rows,
+                matched_rows=matched_rows,
+                error_message=error_msg,
+            )
+        except Exception:
+            logger.exception("Erreur lors de la sauvegarde du fichier sur S3 (import_id manquant)")
+            PurchaseImport.objects.create(
+                company=user.company,
+                uploaded_by=user,
+                status=status,
+                year=year,
+                total_rows=total_rows,
+                matched_rows=matched_rows,
+                error_message=error_msg,
+            )
 
         return HttpResponseRedirect(reverse("dashboard:inclusive_purchase_stats"))
 
