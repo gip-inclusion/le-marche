@@ -1,6 +1,7 @@
 import csv
 import io
 import logging
+from itertools import batched
 from urllib.parse import urlencode
 
 import openpyxl
@@ -22,7 +23,8 @@ from lemarche.api.inclusive_potential.constants import PRESTA_MODE_DEFAULT, PRES
 from lemarche.api.inclusive_potential.utils import get_inclusive_potential_data
 from lemarche.cms.models import ArticleList
 from lemarche.perimeters.models import Perimeter
-from lemarche.purchases.models import Purchase, get_sector_group_chart_data
+from lemarche.purchases.models import Purchase, PurchaseImport, get_sector_group_chart_data
+from lemarche.purchases.utils import generate_purchases_excel_template, parse_purchases_excel
 from lemarche.sectors.models import Sector
 from lemarche.siaes.constants import KIND_HANDICAP_LIST, KIND_INSERTION_LIST, LEGAL_FORM_CHOICES
 from lemarche.siaes.models import Siae
@@ -112,6 +114,8 @@ class DashboardHomeView(LoginRequiredMixin, DetailView):
             context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
             context["siae_count"] = Siae.objects.is_live().count()
             context["tender_count"] = Tender.objects.sent().count() + 30  # historic number (before form)
+            if user.company:
+                context["last_purchase_import"] = PurchaseImport.objects.latest_for_company(user.company)
         return context
 
 
@@ -299,6 +303,9 @@ class InclusivePurchaseStatsDashboardView(LoginRequiredMixin, FilterView):
                     "chart_data_sector_group": chart_data_sector_group,
                 }
             )
+
+        if user.company:
+            context["last_purchase_import"] = PurchaseImport.objects.latest_for_company(user.company)
         return context
 
 
@@ -404,6 +411,125 @@ class InclusivePurchaseExportView(LoginRequiredMixin, View):
         response["Content-Disposition"] = 'attachment; filename="achats_inclusifs.xls"'
         wb.save(response)
         return response
+
+
+class PurchaseImportView(LoginRequiredMixin, View):
+    template_name = "dashboard/purchase_import.html"
+
+    def _check_access(self, user):
+        return user.kind == User.KIND_BUYER and user.company is not None
+
+    def get(self, request, *args, **kwargs):
+        if not self._check_access(request.user):
+            return HttpResponseRedirect(reverse("dashboard:home"))
+        last_import = PurchaseImport.objects.latest_for_company(request.user.company)
+        return render(
+            request,
+            self.template_name,
+            {"last_purchase_import": last_import, "current_year": timezone.now().year},
+        )
+
+    def post(self, request, *args, **kwargs):
+        if not self._check_access(request.user):
+            return HttpResponseRedirect(reverse("dashboard:home"))
+
+        user = request.user
+        uploaded_file = request.FILES.get("purchase_file")
+        year_raw = request.POST.get("year", "").strip()
+
+        errors = []
+
+        if not uploaded_file:
+            errors.append("Veuillez sélectionner un fichier Excel (.xlsx).")
+        elif not uploaded_file.name.endswith(".xlsx"):
+            errors.append("Le fichier doit être au format Excel (.xlsx).")
+
+        if not year_raw or not year_raw.isdigit():
+            errors.append("Veuillez saisir une année valide.")
+        else:
+            year = int(year_raw)
+            current_year = timezone.now().year
+            if year < 2000 or year > current_year:
+                errors.append(f"L'année doit être comprise entre 2000 et {current_year}.")
+
+        if errors:
+            last_import = PurchaseImport.objects.latest_for_company(user.company)
+            return render(
+                request,
+                self.template_name,
+                {"last_purchase_import": last_import, "errors": errors, "current_year": timezone.now().year},
+            )
+
+        # Step 1: Parse in memory FIRST — no S3 interaction, feedback immédiat si format invalide
+        status = PurchaseImport.STATUS_FAILED
+        error_msg = ""
+        new_purchases = []
+        total_rows = 0
+        matched_rows = 0
+
+        try:
+            new_purchases, parse_errors, matched_rows = parse_purchases_excel(
+                uploaded_file,
+                year=year,
+                company=user.company,
+            )
+            total_rows = len(new_purchases)
+            if total_rows == 0 and parse_errors:
+                error_msg = "\n".join(parse_errors[:10])
+            else:
+                status = PurchaseImport.STATUS_SUCCESS
+                if parse_errors:
+                    error_msg = "\n".join(parse_errors[:10])
+        except ValueError as exc:
+            error_msg = str(exc)
+        except Exception:
+            logger.exception("Erreur inattendue lors du parsing des achats")
+            error_msg = "Une erreur inattendue s'est produite. Veuillez réessayer."
+
+        # Step 2: Écriture en base seulement si le parsing a réussi
+        if status == PurchaseImport.STATUS_SUCCESS and new_purchases:
+            Purchase.objects.filter(company=user.company).delete()
+            BATCH_SIZE = 1_000
+            for batch in batched(new_purchases, BATCH_SIZE):
+                Purchase.objects.bulk_create(list(batch))
+
+        # Step 3: Sauvegarde du PurchaseImport avec upload S3 du fichier
+        uploaded_file.seek(0)
+        try:
+            PurchaseImport.objects.create(
+                company=user.company,
+                uploaded_by=user,
+                file=uploaded_file,
+                status=status,
+                year=year,
+                total_rows=total_rows,
+                matched_rows=matched_rows,
+                error_message=error_msg,
+            )
+        except Exception:
+            logger.exception("Erreur lors de la sauvegarde du fichier sur S3 (import_id manquant)")
+            PurchaseImport.objects.create(
+                company=user.company,
+                uploaded_by=user,
+                status=status,
+                year=year,
+                total_rows=total_rows,
+                matched_rows=matched_rows,
+                error_message=error_msg,
+            )
+
+        return HttpResponseRedirect(reverse("dashboard:inclusive_purchase_stats"))
+
+
+@login_required
+def purchase_excel_template(request):
+    content = generate_purchases_excel_template()
+    response = HttpResponse(
+        content,
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response["Content-Disposition"] = 'attachment; filename="modele_import_depenses.xlsx"'
+    return response
 
 
 class ProfileEditView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):

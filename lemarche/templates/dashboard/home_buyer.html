@@ -64,15 +64,31 @@
                                     <div class="fr-card__content">
                                         <h3 class="fr-card__title">Ma part d'achat inclusif</h3>
                                         <div class="fr-card__desc">
-                                            <p>Pilotez l'intégration des achats inclusifs dans votre politique achat.</p>
+                                            {% if last_purchase_import and last_purchase_import.status == "SUCCESS" %}
+                                                <p>
+                                                    Analyse {{ last_purchase_import.year }} —
+                                                    {{ last_purchase_import.match_percentage }} % de structures inclusives reconnues.
+                                                </p>
+                                            {% elif last_purchase_import and last_purchase_import.status == "FAILED" %}
+                                                <p>Le dernier import a échoué. Réessayez en important un nouveau fichier.</p>
+                                            {% else %}
+                                                <p>Pilotez l'intégration des achats inclusifs dans votre politique achat.</p>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="fr-card__footer">
                                         <ul class="fr-btns-group fr-btns-group--icon-right fr-btns-group--right fr-btns-group--inline">
-                                            <li>
-                                                <a class="fr-btn fr-icon-arrow-right-s-line fr-btn--tertiary-no-outline"
-                                                   href="{% url 'dashboard:inclusive_purchase_stats' %}">Voir mes statistiques</a>
-                                            </li>
+                                            {% if last_purchase_import and last_purchase_import.status == "SUCCESS" %}
+                                                <li>
+                                                    <a class="fr-btn fr-icon-arrow-right-s-line fr-btn--tertiary-no-outline"
+                                                       href="{% url 'dashboard:inclusive_purchase_stats' %}">Voir mes statistiques</a>
+                                                </li>
+                                            {% else %}
+                                                <li>
+                                                    <a class="fr-btn fr-icon-arrow-right-s-line fr-btn--tertiary-no-outline"
+                                                       href="{% url 'dashboard:purchase_import' %}">Importer mes dépenses</a>
+                                                </li>
+                                            {% endif %}
                                         </ul>
                                     </div>
                                 </div>

@@ -149,6 +149,42 @@
                         </div>
                     {% endif %}
                 </div>
+                {% if published_testimonials %}
+                    <hr />
+                    <div class="fr-grid-row fr-mb-4v">
+                        <div class="fr-col-12"
+                             x-data="{ current: 0, total: {{ published_testimonials|length }} }">
+                            <h2>Témoignages clients</h2>
+                            {% for testimonial in published_testimonials %}
+                                <div x-show="current === {{ forloop.counter0 }}">
+                                    {% dsfr_quote text=testimonial.content author=testimonial.author_display_name source=testimonial.author_organization %}
+                                </div>
+                            {% endfor %}
+                            {% if published_testimonials|length > 1 %}
+                                <div class="fr-grid-row fr-grid-row--middle fr-mt-2w">
+                                    <div class="fr-col-auto">
+                                        <button class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-only fr-icon-arrow-left-s-line"
+                                                @click="current = (current - 1 + total) % total"
+                                                aria-label="Témoignage précédent"></button>
+                                    </div>
+                                    <div class="fr-col-auto">
+                                        <template x-for="i in total" :key="i">
+                                            <span class="fr-mx-1w"
+                                                  style="display:inline-block; width:8px; height:8px; border-radius:50%; cursor:pointer;"
+                                                  :style="current === i - 1 ? 'background:var(--blue-france-sun-113-625)' : 'background:var(--grey-625-425)'"
+                                                  @click="current = i - 1"></span>
+                                        </template>
+                                    </div>
+                                    <div class="fr-col-auto">
+                                        <button class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-only fr-icon-arrow-right-s-line"
+                                                @click="current = (current + 1) % total"
+                                                aria-label="Témoignage suivant"></button>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
                 <hr />
                 <div class="fr-grid-row fr-mb-4v">
                     <div class="fr-col-sm-12">
