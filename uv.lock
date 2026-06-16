@@ -863,11 +863,11 @@ wheels = [
 
 [[package]]
 name = "huey"
-version = "3.0.1"
+version = "3.0.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/e1/01/5f0fb711585af22412baee31a9a6a88975c33a58c57ec618e09be20bcc88/huey-3.0.1.tar.gz", hash = "sha256:83ca54fa77c4ee27349393212fc13088142244f491be903f620a9e46e8fca4ce", size = 253328, upload-time = "2026-05-14T15:35:02.809Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/22/36/130c9aa13dd41059f4792265e92f32f073387f372baefe1b4bca8ea2a79f/huey-3.0.2.tar.gz", hash = "sha256:648a534208ee4a4d80169418fdbd808fc1006807b1cfdf6b3da5870dcf1e05f7", size = 257588, upload-time = "2026-06-11T13:33:49.815Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/20/37/1056e57ffb9d0fa1b859e02c9e5f7cf1e8276c8f5b610050e2a755f5c060/huey-3.0.1-py3-none-any.whl", hash = "sha256:5de8ff852021da670efe8d4d78db8719c0255ebbde0772766a0114f997ea61f6", size = 86331, upload-time = "2026-05-14T15:35:01.314Z" },
+    { url = "https://files.pythonhosted.org/packages/f5/f1/1c26ad7929043aa1025b545c21914c378649917dd65c976fd9597b9e7200/huey-3.0.2-py3-none-any.whl", hash = "sha256:4ec8d9cd74b249a8cb875fdef158a877ec5e34615e9663cbeee757759f4c00d1", size = 89543, upload-time = "2026-06-11T13:33:48.739Z" },
 ]
 
 [[package]]
