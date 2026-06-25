@@ -1,0 +1,24 @@
+<div class="fr-mb-2w" id="sector-appellations-container">
+    {% if appellations %}
+        <div class="fr-callout fr-callout--green-emeraude">
+            <h4 class="fr-callout__title fr-text--sm">
+                <span class="fr-icon-checkbox-circle-line" aria-hidden="true"></span>
+                Métier{{ appellations.count|pluralize }} concerné{{ appellations.count|pluralize }} ({{ appellations.count }})
+            </h4>
+            <div class="fr-callout__text">
+                <ul class="fr-mb-0">
+                    {% for appellation in appellations %}
+                        <li>{{ appellation.name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% else %}
+        <div class="fr-callout fr-callout--purple-glycine">
+            <p class="fr-callout__text fr-mb-0">
+                <span class="fr-icon-arrow-up-line" aria-hidden="true"></span>
+                Sélectionnez des secteurs ci-dessus pour voir les métiers correspondants
+            </p>
+        </div>
+    {% endif %}
+</div>
