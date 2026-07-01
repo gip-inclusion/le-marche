@@ -1259,7 +1259,7 @@ class SiaeDetailTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Les Traiteurs Engagés")
-        self.assertContains(response, "traiteurs-engages.inclusion.gouv.fr")
+        self.assertContains(response, "traiteurs-engages.inclusion.gouv.fr/?mtm_campaign=Source%20Marche")
 
     def test_traiteurs_engages_promo_not_displayed_for_non_traiteur_siae(self):
         url = reverse("siae:detail", args=[self.siae.slug])
