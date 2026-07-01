@@ -285,9 +285,12 @@ class SiaeDetailView(FormMixin, DetailView):
             ],
             "current": self.get_object().name_display,
         }
-        context["published_testimonials"] = self.get_object().testimonials.filter(
-            status=testimonial_constants.STATUS_PUBLISHED
-        ).order_by("published_at")
+        context["published_testimonials"] = (
+            self.get_object()
+            .testimonials.filter(status=testimonial_constants.STATUS_PUBLISHED)
+            .order_by("published_at")
+        )
+        context["siae_is_traiteur"] = self.get_object().activities.filter(sector__slug=SECTOR_TRAITEUR_SLUG).exists()
         return context
 
 
