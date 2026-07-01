@@ -284,6 +284,7 @@ class SiaeDetailView(FormMixin, DetailView):
             ],
             "current": self.get_object().name_display,
         }
+        context["siae_is_traiteur"] = self.get_object().activities.filter(sector__slug=SECTOR_TRAITEUR_SLUG).exists()
         return context
 
 

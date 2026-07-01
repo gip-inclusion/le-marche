@@ -41,6 +41,11 @@
                         <div class="fr-col-12">
                             {% include "siaes/_detail_partner_cta.html" with siae=siae %}
                         </div>
+                        {% if siae_is_traiteur %}
+                            <div class="fr-col-12">
+                                {% include "includes/_traiteurs_engages_promo.html" %}
+                            </div>
+                        {% endif %}
                     </div>
                 </aside>
             </div>

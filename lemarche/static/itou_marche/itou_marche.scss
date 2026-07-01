@@ -337,6 +337,14 @@ p.fr-tag--green-bourgeon {
     }
 }
 
+/* Box partenaire (itou-theme) */
+.c-box--promo-partenaire {
+    background-color: var(--background-action-low-blue-france);
+    border-left: 4px solid var(--border-action-high-blue-france);
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
 /* client references */
 .client-reference-logo {
     filter: grayscale(100%);
