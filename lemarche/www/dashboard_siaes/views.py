@@ -1,3 +1,6 @@
+from datetime import timedelta
+
+from django import forms
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -13,6 +16,9 @@ from django.views.generic.edit import FormMixin
 
 from lemarche.sectors.models import Sector, SectorGroup
 from lemarche.siaes.models import Siae, SiaeActivity, SiaeUser, SiaeUserRequest
+from lemarche.testimonials import constants as testimonial_constants
+from lemarche.testimonials.models import SiaeTestimonial
+from lemarche.testimonials.tasks import send_testimonial_request_email
 from lemarche.utils import settings_context_processors
 from lemarche.utils.apis import api_brevo
 from lemarche.utils.mixins import SiaeMemberRequiredMixin, SiaeUserAndNotMemberRequiredMixin, SiaeUserRequiredMixin
@@ -550,3 +556,151 @@ class SiaeUserDeleteView(SiaeMemberRequiredMixin, SuccessMessageMixin, DeleteVie
         return mark_safe(
             f"L'utilisateur <strong>{self.object.user.full_name}</strong> a été supprimé de votre structure avec succès."  # noqa
         )
+
+
+class SiaeTestimonialRequestForm(forms.Form):
+    client_email = forms.EmailField(label="Email du client")
+    custom_message = forms.CharField(
+        label="Message personnalisé (optionnel)",
+        widget=forms.Textarea(attrs={"rows": 3}),
+        required=False,
+    )
+
+
+class SiaeTestimonialListView(SiaeMemberRequiredMixin, ListView):
+    template_name = "testimonials/list.html"
+    context_object_name = "testimonials"
+
+    def get_queryset(self):
+        self.siae = get_object_or_404(Siae, slug=self.kwargs["slug"])
+        return SiaeTestimonial.objects.filter_by_siae(self.siae).order_by("-created_at")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["siae"] = self.siae
+        context["published_count"] = self.get_queryset().is_published().count()
+        context["max_published"] = testimonial_constants.MAX_PUBLISHED
+        return context
+
+
+class SiaeTestimonialRequestView(SiaeMemberRequiredMixin, ListView):
+    template_name = "testimonials/request.html"
+    context_object_name = "testimonials"
+
+    def get_queryset(self):
+        self.siae = get_object_or_404(Siae, slug=self.kwargs["slug"])
+        return SiaeTestimonial.objects.filter_by_siae(self.siae).order_by("-created_at")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["siae"] = self.siae
+        if "form" not in kwargs:
+            context["form"] = SiaeTestimonialRequestForm()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.siae = get_object_or_404(Siae, slug=self.kwargs["slug"])
+        form = SiaeTestimonialRequestForm(request.POST)
+        if not form.is_valid():
+            return self.render_to_response(self.get_context_data(form=form))
+
+        client_email = form.cleaned_data["client_email"]
+        custom_message = form.cleaned_data.get("custom_message", "")
+
+        sent_this_week = SiaeTestimonial.objects.sent_this_week(self.siae).count()
+        if sent_this_week >= testimonial_constants.MAX_PER_WEEK:
+            messages.error(
+                request,
+                f"Vous avez atteint la limite de {testimonial_constants.MAX_PER_WEEK} invitations par semaine.",
+            )
+            return self.render_to_response(self.get_context_data(form=form))
+
+        testimonial, created = SiaeTestimonial.objects.get_or_create(
+            siae=self.siae,
+            client_email=client_email,
+            defaults={
+                "custom_message": custom_message,
+                "status": testimonial_constants.STATUS_SENT,
+                "sent_at": timezone.now(),
+                "token_expires_at": timezone.now() + timedelta(days=testimonial_constants.TOKEN_EXPIRY_DAYS),
+            },
+        )
+        if not created:
+            messages.warning(
+                request,
+                f"Un témoignage a déjà été demandé à {client_email} pour cette structure.",
+            )
+            return HttpResponseRedirect(
+                reverse_lazy("dashboard_siaes:siae_testimonial_list", kwargs={"slug": self.siae.slug})
+            )
+
+        sender_name = f"{request.user.first_name} {request.user.last_name}".strip() or request.user.email
+        send_testimonial_request_email(testimonial, sender_name=sender_name)
+
+        messages.success(request, f"Invitation envoyée à {client_email}.")
+        return HttpResponseRedirect(
+            reverse_lazy("dashboard_siaes:siae_testimonial_list", kwargs={"slug": self.siae.slug})
+        )
+
+
+class SiaeTestimonialPublishView(SiaeMemberRequiredMixin, UpdateView):
+    model = SiaeTestimonial
+    fields = []
+    http_method_names = ["post"]
+
+    def get_object(self):
+        siae = get_object_or_404(Siae, slug=self.kwargs["slug"])
+        return get_object_or_404(SiaeTestimonial, pk=self.kwargs["pk"], siae=siae)
+
+    def post(self, request, *args, **kwargs):
+        testimonial = self.get_object()
+        siae = testimonial.siae
+        published_count = SiaeTestimonial.objects.filter_by_siae(siae).is_published().count()
+        if published_count >= testimonial_constants.MAX_PUBLISHED:
+            messages.error(
+                request,
+                f"Vous avez atteint la limite de {testimonial_constants.MAX_PUBLISHED} témoignages publiés. Dépubliez-en un pour publier celui-ci.",  # noqa
+            )
+            return HttpResponseRedirect(
+                reverse_lazy("dashboard_siaes:siae_testimonial_list", kwargs={"slug": siae.slug})
+            )
+        if testimonial.status != testimonial_constants.STATUS_SUBMITTED:
+            messages.error(request, "Ce témoignage ne peut pas être publié.")
+            return HttpResponseRedirect(
+                reverse_lazy("dashboard_siaes:siae_testimonial_list", kwargs={"slug": siae.slug})
+            )
+        testimonial.publish()
+        messages.success(request, "Témoignage publié avec succès.")
+        return HttpResponseRedirect(
+            reverse_lazy("dashboard_siaes:siae_testimonial_list", kwargs={"slug": siae.slug})
+        )
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard_siaes:siae_testimonial_list", kwargs={"slug": self.kwargs["slug"]})
+
+
+class SiaeTestimonialRejectView(SiaeMemberRequiredMixin, UpdateView):
+    model = SiaeTestimonial
+    fields = []
+    http_method_names = ["post"]
+
+    def get_object(self):
+        siae = get_object_or_404(Siae, slug=self.kwargs["slug"])
+        return get_object_or_404(SiaeTestimonial, pk=self.kwargs["pk"], siae=siae)
+
+    def post(self, request, *args, **kwargs):
+        testimonial = self.get_object()
+        siae = testimonial.siae
+        if testimonial.status != testimonial_constants.STATUS_SUBMITTED:
+            messages.error(request, "Ce témoignage ne peut pas être rejeté.")
+            return HttpResponseRedirect(
+                reverse_lazy("dashboard_siaes:siae_testimonial_list", kwargs={"slug": siae.slug})
+            )
+        testimonial.reject()
+        messages.success(request, "Témoignage rejeté.")
+        return HttpResponseRedirect(
+            reverse_lazy("dashboard_siaes:siae_testimonial_list", kwargs={"slug": siae.slug})
+        )
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard_siaes:siae_testimonial_list", kwargs={"slug": self.kwargs["slug"]})

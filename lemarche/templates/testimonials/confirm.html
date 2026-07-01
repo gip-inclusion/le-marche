@@ -1,0 +1,25 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block page_title %}Merci pour votre témoignage{{ block.super }}{% endblock page_title %}
+
+{% block content %}
+<section>
+    <div class="fr-container fr-pb-8v">
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-md-8 fr-col-offset-md-2 fr-text--center fr-pt-8w">
+                <span class="fr-icon-checkbox-circle-fill fr-icon--xl" aria-hidden="true"
+                      style="color: var(--success-425-625);"></span>
+                <h1 class="fr-mt-3w">Merci pour votre témoignage&nbsp;!</h1>
+                <p class="fr-text--lead">
+                    Votre témoignage a bien été transmis à <strong>{{ testimonial.siae.name }}</strong>.
+                    Ils pourront le valider et le publier sur leur fiche commerciale.
+                </p>
+                <a href="/" class="fr-btn fr-btn--secondary fr-mt-3w">
+                    Retour à l'accueil
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
