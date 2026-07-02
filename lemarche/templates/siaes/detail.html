@@ -131,9 +131,9 @@
         document.addEventListener("DOMContentLoaded", function() {
             const buyerModal = document.getElementById('contact_details_buyer_modal');
             if (!buyerModal) return;
-            buyerModal.addEventListener('dsfr.disclose', function(event) {
-                const button = event.explicitOriginalTarget;
-                const contactUrl = button.dataset['contactUrl'];
+            buyerModal.addEventListener('dsfr.disclose', function() {
+                const button = document.getElementById('contact-details-btn');
+                const contactUrl = button ? button.dataset['contactUrl'] : null;
 
                 // reset modal state
                 document.getElementById('contact-details-loading').classList.remove('fr-hidden');
@@ -144,6 +144,12 @@
                     siae_kind: '{{ siae.kind }}',
                     coordonnees_affichees: false,
                 });
+
+                if (!contactUrl) {
+                    document.getElementById('contact-details-loading').classList.add('fr-hidden');
+                    document.getElementById('contact-details-empty').classList.remove('fr-hidden');
+                    return;
+                }
 
                 fetch(contactUrl)
                     .then(function(r) { return r.json(); })
