@@ -29,7 +29,6 @@ from lemarche.utils.apis.api_recherche_entreprises import (
 )
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
-from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
 from lemarche.www.conversations.forms import ContactForm
 from lemarche.www.siaes.forms import InviteColleaguesFormSet, SiaeFavoriteForm, SiaeFilterForm, SiaeSiretFilterForm
 from lemarche.www.siaes.tasks import send_user_invite_colleagues_email
@@ -77,22 +76,6 @@ class SiaeSearchResultsView(FormMixin, ListView):
             results_ordered = results_ordered.with_in_user_favorite_list_stats(user)
         return results_ordered
 
-    def get_mailto_share_url(self):
-        """
-        Function to generate url for share search with url
-        """
-        user = self.request.user
-        user_full_name = "" if not user.is_authenticated else user.full_name
-        params = {
-            "subject": "Voici une liste de prestataires inclusifs",
-            "bcc": settings.CONTACT_EMAIL,
-            "body": "Bonjour,\n\n"
-            + "Vous pouvez consulter cette liste de prestataires inclusifs dans le cadre de votre besoin de sous-traitance "  # noqa
-            + f"à l'adresse suivante : https://{get_domain_url()}{self.request.get_full_path()} \n\n"
-            + user_full_name,
-        }
-        return get_encoded_url_from_params(params)  # encode to avoid spam from mailto
-
     def get_context_data(self, **kwargs):
         """
         - initialize the form with the query parameters (only if they are present)
@@ -103,7 +86,6 @@ class SiaeSearchResultsView(FormMixin, ListView):
         context["position_promote_tenders"] = [5, 15]
         siae_search_form = self.get_filter_form()
         context["form"] = siae_search_form
-        context["url_share_list"] = self.get_mailto_share_url()
         if len(self.request.GET.keys()):
             context["is_advanced_search"] = siae_search_form.is_advanced_search()
             if siae_search_form.is_valid():
@@ -146,7 +128,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         """
         filter_form = SiaeFilterForm(data=self.request.GET)
         results = filter_form.filter_queryset()
-        return results
+        return results.prefetch_related("client_references")
 
     def get(self, request, *args, **kwargs):
         """
