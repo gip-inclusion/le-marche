@@ -6,4 +6,19 @@
             <span class="text-decoration-none ml-0">Partager la liste</span>
         </button>
     </li>
+    <li>
+        {% if user.is_authenticated %}
+            <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}"
+               class="fr-btn fr-btn--sm fr-btn--secondary fr-icon-download-fill fr-btn--icon-left">
+                Télécharger la liste
+            </a>
+        {% else %}
+            <button class="fr-btn fr-btn--sm fr-btn--secondary fr-icon-download-fill fr-btn--icon-left"
+                    aria-controls="login_to_download_modal"
+                    data-fr-opened="false"
+                    data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}">
+                Télécharger la liste
+            </button>
+        {% endif %}
+    </li>
 </ul>
