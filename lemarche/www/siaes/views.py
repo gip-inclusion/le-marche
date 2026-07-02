@@ -10,7 +10,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.core.serializers import serialize
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.db.models import F
+from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.html import format_html
@@ -168,6 +169,33 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         # HttpResponse doesn't have a context. so we pass the data via the response header
         response["Context-Data-Results-Count"] = siae_list.count()
         return response
+
+
+class SiaeContactDetailsView(View):
+    http_method_names = ["get"]
+
+    def get(self, request, slug, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Authentification requise"}, status=401)
+        if not request.user.is_buyer:
+            return JsonResponse({"error": "Accès réservé aux acheteurs"}, status=403)
+
+        siae = get_object_or_404(Siae, slug=slug)
+        # Select the most recently logged-in active user linked to this siae.
+        # Fallback order: last_login desc (nulls last), date_joined desc, id asc for stability.
+        contact_user = (
+            siae.users.filter(is_active=True)
+            .order_by(F("last_login").desc(nulls_last=True), "-date_joined", "id")
+            .first()
+        )
+        if not contact_user:
+            return JsonResponse({"email": "", "phone": ""})
+        return JsonResponse(
+            {
+                "email": contact_user.email or "",
+                "phone": contact_user.phone_display or "",
+            }
+        )
 
 
 class SiaeDetailView(FormMixin, DetailView):

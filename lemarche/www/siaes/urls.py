@@ -2,6 +2,7 @@ from django.urls import path
 
 from lemarche.www.siaes.views import (
     InviteColleaguesView,
+    SiaeContactDetailsView,
     SiaeDetailView,
     SiaeFavoriteView,
     SiaeSearchResultsDownloadView,
@@ -19,5 +20,6 @@ urlpatterns = [
     path("download/", SiaeSearchResultsDownloadView.as_view(), name="search_results_download"),
     path("inviter-collegues/", InviteColleaguesView.as_view(), name="invite_colleagues"),
     path("<str:slug>/", SiaeDetailView.as_view(), name="detail"),
+    path("<str:slug>/coordonnees/", SiaeContactDetailsView.as_view(), name="contact_details"),
     path("<str:slug>/favoris/", SiaeFavoriteView.as_view(), name="favorite_lists"),
 ]

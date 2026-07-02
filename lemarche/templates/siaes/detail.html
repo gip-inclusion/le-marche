@@ -36,6 +36,7 @@
                             </div>
                         {% endif %}
                         <div class="fr-col-12">
+                            {% include "siaes/_contact_details_cta.html" with siae=siae %}
                             {% if inbound_email_is_activated %}
                                 {% include "siaes/_detail_cta_v2.html" with siae=siae %}
                             {% else %}
@@ -57,6 +58,9 @@
 {% endblock content %}
 {% block modals %}
     {% include "auth/_login_or_signup_modal.html" %}
+    {% include "auth/_login_or_signup_contact_modal.html" %}
+    {% include "siaes/_contact_details_not_buyer_modal.html" with siae=siae %}
+    {% include "siaes/_contact_details_buyer_modal.html" with siae=siae %}
     {% include "conversations/_form_contact_modal.html" %}
     {% include "favorites/_favorite_item_add_modal.html" with siae=siae %}
     {% include "favorites/_favorite_item_remove_modal.html" with siae=siae %}
@@ -121,5 +125,49 @@
     {% endif %}
     {% if user.is_authenticated %}
         <script type="text/javascript" src="{% static 'js/favorite_item.js' %}"></script>
+    {% endif %}
+    {% if user.is_authenticated and user.is_buyer %}
+        <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+            const buyerModal = document.getElementById('contact_details_buyer_modal');
+            if (!buyerModal) return;
+            buyerModal.addEventListener('dsfr.disclose', function(event) {
+                const button = event.explicitOriginalTarget;
+                const contactUrl = button.dataset['contactUrl'];
+
+                // reset modal state
+                document.getElementById('contact-details-loading').classList.remove('fr-hidden');
+                document.getElementById('contact-details-empty').classList.add('fr-hidden');
+                document.getElementById('contact-details-data').classList.add('fr-hidden');
+
+                track('siae-detail', 'contact_details_clicked', {
+                    siae_kind: '{{ siae.kind }}',
+                    coordonnees_affichees: false,
+                });
+
+                fetch(contactUrl)
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        document.getElementById('contact-details-loading').classList.add('fr-hidden');
+                        if (!data.email && !data.phone) {
+                            document.getElementById('contact-details-empty').classList.remove('fr-hidden');
+                        } else {
+                            document.getElementById('contact-details-email').textContent = data.email || 'non renseigné';
+                            document.getElementById('contact-details-phone').textContent = data.phone || 'non renseigné';
+                            document.getElementById('contact-details-data').classList.remove('fr-hidden');
+                        }
+                        track('siae-detail', 'contact_details_displayed', {
+                            siae_kind: '{{ siae.kind }}',
+                            email_disponible: !!data.email,
+                            telephone_disponible: !!data.phone,
+                        });
+                    })
+                    .catch(function() {
+                        document.getElementById('contact-details-loading').classList.add('fr-hidden');
+                        document.getElementById('contact-details-empty').classList.remove('fr-hidden');
+                    });
+            });
+        });
+        </script>
     {% endif %}
 {% endblock extra_js %}

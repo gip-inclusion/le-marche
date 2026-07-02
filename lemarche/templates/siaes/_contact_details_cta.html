@@ -1,0 +1,24 @@
+<div class="fr-mb-3w">
+    {% if not user.is_authenticated %}
+        <button class="fr-btn fr-btn--icon-right fr-icon-phone-line"
+                aria-controls="contact_details_login_modal"
+                data-fr-opened="false"
+                data-next-params="{{ request.path }}">
+            Voir les coordonnées de la structure
+        </button>
+    {% elif not user.is_buyer %}
+        <button class="fr-btn fr-btn--icon-right fr-icon-phone-line"
+                aria-controls="contact_details_not_buyer_modal"
+                data-fr-opened="false">
+            Voir les coordonnées de la structure
+        </button>
+    {% else %}
+        <button class="fr-btn fr-btn--icon-right fr-icon-phone-line"
+                id="contact-details-btn"
+                aria-controls="contact_details_buyer_modal"
+                data-fr-opened="false"
+                data-contact-url="{% url 'siae:contact_details' siae.slug %}">
+            Voir les coordonnées de la structure
+        </button>
+    {% endif %}
+</div>

@@ -1,0 +1,36 @@
+{% if user.is_authenticated and not user.is_buyer %}
+    <dialog aria-labelledby="contact_details_not_buyer_modal_title"
+            role="dialog"
+            id="contact_details_not_buyer_modal"
+            class="fr-modal">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                            <button class="fr-btn--close fr-btn"
+                                    title="Fermer la fenêtre modale"
+                                    aria-controls="contact_details_not_buyer_modal">Fermer</button>
+                        </div>
+                        <div class="fr-modal__content">
+                            <h3 id="contact_details_not_buyer_modal_title" class="fr-modal__title">
+                                Accès réservé aux acheteurs
+                            </h3>
+                            <p>
+                                Les coordonnées des structures sont accessibles uniquement aux utilisateurs
+                                inscrits en tant qu'acheteurs sur Le Marché de l'inclusion.
+                            </p>
+                            <ul class="fr-btns-group">
+                                <li>
+                                    <button class="fr-btn"
+                                            aria-controls="contact_details_not_buyer_modal"
+                                            type="button">Compris</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
+{% endif %}

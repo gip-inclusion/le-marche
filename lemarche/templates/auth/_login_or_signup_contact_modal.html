@@ -1,0 +1,64 @@
+{% if not user.is_authenticated %}
+    <dialog aria-labelledby="contact_details_login_modal_title"
+            role="dialog"
+            id="contact_details_login_modal"
+            class="fr-modal">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                            <button class="fr-btn--close fr-btn"
+                                    title="Fermer la fenêtre modale"
+                                    aria-controls="contact_details_login_modal">Fermer</button>
+                        </div>
+                        <div class="fr-modal__content">
+                            <h3 id="contact_details_login_modal_title" class="fr-modal__title">
+                                Connectez-vous pour voir les coordonnées
+                            </h3>
+                            <p>
+                                L'accès aux coordonnées des structures est réservé aux acheteurs inscrits sur
+                                Le Marché de l'inclusion. Connectez-vous ou créez un compte acheteur pour
+                                consulter ces informations.
+                            </p>
+                            <ul class="fr-btns-group">
+                                <li>
+                                    <a href="{% url 'account_login' %}?next=next-params-to-replace"
+                                       id="contact-auth-link"
+                                       class="fr-btn">Se connecter</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'account_signup' %}?next=next-params-to-replace"
+                                       id="contact-auth-link"
+                                       class="fr-btn fr-btn--secondary">Créer un compte acheteur</a>
+                                </li>
+                            </ul>
+                            <ul class="fr-btns-group fr-btns-group--inline">
+                                <li>
+                                    <button class="fr-btn fr-btn--tertiary-no-outline"
+                                            aria-controls="contact_details_login_modal"
+                                            type="button">Annuler</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        const modal = document.getElementById('contact_details_login_modal');
+        if (!modal) return;
+        modal.addEventListener('dsfr.disclose', (event) => {
+            var button = event.explicitOriginalTarget;
+            var nextParams = button.dataset['nextParams'];
+            modal.querySelectorAll('#contact-auth-link').forEach(link => {
+                var linkUrl = link.getAttribute('href');
+                link.setAttribute('href', linkUrl.replace('next-params-to-replace', nextParams));
+            });
+        });
+    });
+    </script>
+{% endif %}
