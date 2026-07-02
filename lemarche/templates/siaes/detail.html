@@ -14,6 +14,13 @@
 
 {% block content %}
     <div class="fr-container">
+        {% if siae_is_traiteur %}
+            <div class="fr-grid-row">
+                <div class="fr-col-12">
+                    {% include "includes/_traiteurs_engages_promo.html" %}
+                </div>
+            </div>
+        {% endif %}
         <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
             <div class="fr-col-12 fr-col-md-8">
                 <!-- siae basic info & details -->
@@ -41,11 +48,6 @@
                         <div class="fr-col-12">
                             {% include "siaes/_detail_partner_cta.html" with siae=siae %}
                         </div>
-                        {% if siae_is_traiteur %}
-                            <div class="fr-col-12">
-                                {% include "includes/_traiteurs_engages_promo.html" %}
-                            </div>
-                        {% endif %}
                     </div>
                 </aside>
             </div>
