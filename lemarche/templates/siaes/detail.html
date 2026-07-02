@@ -158,6 +158,8 @@
                         if (!data.email && !data.phone) {
                             document.getElementById('contact-details-empty').classList.remove('fr-hidden');
                         } else {
+                            const fullName = [data.first_name, data.last_name].filter(Boolean).join(' ');
+                            document.getElementById('contact-details-name').textContent = fullName || 'non renseigné';
                             document.getElementById('contact-details-email').textContent = data.email || 'non renseigné';
                             document.getElementById('contact-details-phone').textContent = data.phone || 'non renseigné';
                             document.getElementById('contact-details-data').classList.remove('fr-hidden');

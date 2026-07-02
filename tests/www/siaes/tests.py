@@ -1662,7 +1662,13 @@ class SiaeContactDetailsViewTest(TestCase):
         cls.user_partner = UserFactory(kind="PARTNER")
         cls.user_siae = UserFactory(kind="SIAE")
         cls.siae = SiaeFactory(is_active=True)
-        cls.siae_user = UserFactory(kind="SIAE", is_active=True, email="contact@structure.fr")
+        cls.siae_user = UserFactory(
+            kind="SIAE",
+            is_active=True,
+            email="contact@structure.fr",
+            first_name="Jean",
+            last_name="Dupont",
+        )
         cls.siae_user.phone = "+33612345678"
         cls.siae_user.save(update_fields=["phone"])
         cls.siae.users.add(cls.siae_user)
@@ -1693,6 +1699,8 @@ class SiaeContactDetailsViewTest(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         data = response.json()
+        self.assertEqual(data["first_name"], "Jean")
+        self.assertEqual(data["last_name"], "Dupont")
         self.assertEqual(data["email"], "contact@structure.fr")
         self.assertIn("06", data["phone"].replace(" ", "").replace("+33", "0"))
 

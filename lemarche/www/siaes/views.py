@@ -189,9 +189,11 @@ class SiaeContactDetailsView(View):
             .first()
         )
         if not contact_user:
-            return JsonResponse({"email": "", "phone": ""})
+            return JsonResponse({"first_name": "", "last_name": "", "email": "", "phone": ""})
         return JsonResponse(
             {
+                "first_name": contact_user.first_name or "",
+                "last_name": contact_user.last_name or "",
                 "email": contact_user.email or "",
                 "phone": contact_user.phone_display or "",
             }
