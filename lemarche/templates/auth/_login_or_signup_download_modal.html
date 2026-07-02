@@ -52,9 +52,10 @@
         const MODAL_ID = 'login_to_download_modal';
         const modal = document.getElementById(MODAL_ID);
         if (!modal) return;
-        modal.addEventListener('dsfr.disclose', (event) => {
-            var button = event.explicitOriginalTarget;
-            var nextParams = button.dataset['nextParams'];
+        modal.addEventListener('dsfr.disclose', () => {
+            var button = document.querySelector('[aria-controls="' + MODAL_ID + '"]');
+            var nextParams = button ? button.dataset['nextParams'] : '';
+            if (!nextParams) return;
             modal.querySelectorAll('#download-auth-link').forEach(link => {
                 var linkUrl = link.getAttribute('href');
                 link.setAttribute('href', linkUrl.replace('next-params-to-replace', nextParams));
