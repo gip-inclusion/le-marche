@@ -1668,9 +1668,8 @@ class SiaeContactDetailsViewTest(TestCase):
             email="contact@structure.fr",
             first_name="Jean",
             last_name="Dupont",
+            phone="+33612345678",
         )
-        cls.siae_user.phone = "+33612345678"
-        cls.siae_user.save(update_fields=["phone"])
         cls.siae.users.add(cls.siae_user)
         cls.url = reverse("siae:contact_details", args=[cls.siae.slug])
         cls.detail_url = reverse("siae:detail", args=[cls.siae.slug])
@@ -1705,7 +1704,7 @@ class SiaeContactDetailsViewTest(TestCase):
         self.assertIn("06", data["phone"].replace(" ", "").replace("+33", "0"))
 
     def test_buyer_gets_email_only(self):
-        user_no_phone = UserFactory(kind="SIAE", is_active=True, email="nophone@structure.fr")
+        user_no_phone = UserFactory(kind="SIAE", is_active=True, email="nophone@structure.fr", phone="")
         siae = SiaeFactory(is_active=True)
         siae.users.add(user_no_phone)
         self.client.force_login(self.user_buyer)
