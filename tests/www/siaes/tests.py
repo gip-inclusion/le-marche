@@ -1252,6 +1252,21 @@ class SiaeDetailTest(TestCase):
         response = self.client.get(url)
         self.assertContains(response, "Hosmoz")
 
+    def test_traiteurs_engages_promo_displayed_for_traiteur_siae(self):
+        sector_traiteur = SectorFactory(slug="traiteur")
+        SiaeActivityFactory(siae=self.siae, sector=sector_traiteur)
+        url = reverse("siae:detail", args=[self.siae.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Les Traiteurs Engagés")
+        self.assertContains(response, "traiteurs-engages.inclusion.gouv.fr/?mtm_campaign=Source%20Marche")
+
+    def test_traiteurs_engages_promo_not_displayed_for_non_traiteur_siae(self):
+        url = reverse("siae:detail", args=[self.siae.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "traiteurs-engages.inclusion.gouv.fr")
+
     def test_sectors_are_displayed_and_grouped(self):
         # Create two sector groups and one sector for first group and two sectors for second group
         group_a = SectorFactory().group

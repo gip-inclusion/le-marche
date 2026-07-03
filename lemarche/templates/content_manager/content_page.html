@@ -47,5 +47,10 @@
             {% endfor %}
         </div>
     {% endif %}
+    {% if "Accueil" in page.title %}
+        <div class="fr-container">
+            {% include "includes/_traiteurs_engages_promo.html" %}
+        </div>
+    {% endif %}
     {% include "content_manager/blocks/blocks_stream.html" with stream=page.body %}
 {% endblock content %}
