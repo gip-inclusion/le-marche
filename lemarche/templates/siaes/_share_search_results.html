@@ -1,9 +1,13 @@
-<ul class="fr-btns-group fr-btns-group--sm fr-btns-group--center fr-btns-group--icon-right">
-    <li>
-        <button id="share-siae-list"
-                class="fr-btn fr-btn--sm fr-btn--secondary fr-icon-send-plane-fill btn_mail_encrypt"
-                data-next-url="{{ url_share_list }}">
-            <span class="text-decoration-none ml-0">Partager la liste</span>
-        </button>
-    </li>
-</ul>
+{% if user.is_authenticated %}
+    <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}"
+       class="fr-btn fr-btn--sm fr-btn--secondary fr-icon-download-fill fr-btn--icon-left">
+        Télécharger la liste
+    </a>
+{% else %}
+    <button class="fr-btn fr-btn--sm fr-btn--secondary fr-icon-download-fill fr-btn--icon-left"
+            aria-controls="login_to_download_modal"
+            data-fr-opened="false"
+            data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}">
+        Télécharger la liste
+    </button>
+{% endif %}

@@ -1,0 +1,65 @@
+{% if not user.is_authenticated %}
+    <dialog aria-labelledby="login_to_download_modal_title"
+            role="dialog"
+            id="login_to_download_modal"
+            class="fr-modal">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                            <button class="fr-btn--close fr-btn"
+                                    title="Fermer la fenêtre modale"
+                                    aria-controls="login_to_download_modal">Fermer</button>
+                        </div>
+                        <div class="fr-modal__content">
+                            <h3 id="login_to_download_modal_title" class="fr-modal__title">
+                                Connectez-vous pour télécharger cette liste
+                            </h3>
+                            <p>
+                                Le téléchargement des listes de structures est réservé aux utilisateurs inscrits
+                                sur Le Marché de l'inclusion. Connectez-vous ou créez un compte pour accéder
+                                à l'export Excel.
+                            </p>
+                            <ul class="fr-btns-group">
+                                <li>
+                                    <a href="{% url 'account_login' %}?next=next-params-to-replace"
+                                       id="download-auth-link"
+                                       class="fr-btn">Se connecter</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'account_signup' %}?next=next-params-to-replace"
+                                       id="download-auth-link"
+                                       class="fr-btn fr-btn--secondary">Créer un compte</a>
+                                </li>
+                            </ul>
+                            <ul class="fr-btns-group fr-btns-group--inline">
+                                <li>
+                                    <button class="fr-btn fr-btn--tertiary-no-outline"
+                                            aria-controls="login_to_download_modal"
+                                            type="button">Annuler</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        const MODAL_ID = 'login_to_download_modal';
+        const modal = document.getElementById(MODAL_ID);
+        if (!modal) return;
+        modal.addEventListener('dsfr.disclose', (event) => {
+            var button = event.explicitOriginalTarget;
+            var nextParams = button.dataset['nextParams'];
+            modal.querySelectorAll('#download-auth-link').forEach(link => {
+                var linkUrl = link.getAttribute('href');
+                link.setAttribute('href', linkUrl.replace('next-params-to-replace', nextParams));
+            });
+        });
+    });
+    </script>
+{% endif %}

@@ -1598,3 +1598,58 @@ class InviteColleaguesAddFieldViewTest(TestCase):
 
         self.assertContains(response, "4 invitations envoyées avec succès")
         self.assertEqual(mock_send_email.call_count, 4)
+
+
+class SiaeSearchResultsDownloadAuthTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = UserFactory(kind="BUYER")
+        SiaeFactory(is_active=True, kind=siae_constants.KIND_EI)
+        cls.download_url = reverse("siae:search_results_download")
+        cls.search_url = reverse("siae:search_results")
+
+    def test_anonymous_download_redirects_to_login(self):
+        response = self.client.get(self.download_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/accounts/login/", response["Location"])
+
+    def test_authenticated_download_returns_file(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.download_url + f"?kind={siae_constants.KIND_EI}")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("application/", response["Content-Type"])
+
+    def test_download_button_visible_for_anonymous(self):
+        response = self.client.get(self.search_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Télécharger la liste")
+
+    def test_download_button_visible_for_authenticated(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.search_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Télécharger la liste")
+
+    def test_anonymous_sees_modal_trigger_not_direct_link(self):
+        response = self.client.get(self.search_url)
+        self.assertContains(response, 'aria-controls="login_to_download_modal"')
+        self.assertNotContains(response, f'href="{self.download_url}')
+
+    def test_authenticated_sees_direct_link_not_modal_trigger(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.search_url)
+        self.assertContains(response, self.download_url)
+        self.assertNotContains(response, 'aria-controls="login_to_download_modal"')
+
+    def test_modal_rendered_for_anonymous_with_correct_ctas(self):
+        response = self.client.get(self.search_url)
+        self.assertContains(response, "login_to_download_modal")
+        self.assertContains(response, "Connectez-vous pour télécharger cette liste")
+        self.assertContains(response, "Se connecter")
+        self.assertContains(response, "Créer un compte")
+        self.assertContains(response, "Annuler")
+
+    def test_modal_not_rendered_for_authenticated(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.search_url)
+        self.assertNotContains(response, "login_to_download_modal")
