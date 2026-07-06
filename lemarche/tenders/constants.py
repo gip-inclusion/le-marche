@@ -152,6 +152,6 @@ SURVEY_TRANSACTIONED_ANSWER_CHOICES = (
 SURVEY_TRANSACTIONED_ANSWER_CHOICE_LIST = [choice[0] for choice in SURVEY_TRANSACTIONED_ANSWER_CHOICES]
 
 
-# Nombre minimum de structures intéressées pour qu'un besoin soit affiché dans la page "Besoins inspirants".
+# Nombre minimum de structures intéressées pour qu'un besoin soit affiché dans la page "Projets d'achats inspirants".
 # Centralisé ici pour être ajusté facilement.
 MIN_INTERESTED_SIAE_COUNT = 3

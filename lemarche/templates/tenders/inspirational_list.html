@@ -1,10 +1,10 @@
 {% extends BASE_TEMPLATE %}
 {% load static dsfr_tags process_dict %}
 
-{% block page_title %}Besoins inspirants{{ block.super }}{% endblock page_title %}
+{% block page_title %}Découvrir les projets d'achats inspirants{{ block.super }}{% endblock page_title %}
 
 {% block breadcrumb %}
-    {% process_dict root_dir=HOME_PAGE_PATH links=breadcrumb_links current="Besoins inspirants" as breadcrumb_data %}
+    {% process_dict root_dir=HOME_PAGE_PATH links=breadcrumb_links current="Projets d'achats inspirants" as breadcrumb_data %}
     {% dsfr_breadcrumb breadcrumb_data %}
 {% endblock breadcrumb %}
 
@@ -13,12 +13,11 @@
         <div class="fr-container fr-py-4w">
             <div class="fr-grid-row fr-mb-4w">
                 <div class="fr-col-12 fr-col-md-8">
-                    <h1>Besoins inspirants</h1>
+                    <h1>Découvrir les projets d'achats inspirants</h1>
                     <p class="fr-text--lead">
-                        Inspirez-vous de projets d'achat déjà publiés sur le Marché de l'inclusion.
-                        Cette page référence des sourcings et appels d'offres ayant suscité l'intérêt d'au moins
-                        {{ min_interested_siae_count }} structures inclusives. Les acheteurs sont
-                        anonymisés : seules les informations utiles à la compréhension du projet sont affichées.
+                        Retrouvez ici des projets d'achat publiés par des acheteurs publics et privés via le
+                        Marché de l'inclusion. Recherchez des exemples proches de vos besoins et inspirez-vous
+                        de projets ayant suscité l'intérêt de structures inclusives.
                     </p>
                 </div>
             </div>

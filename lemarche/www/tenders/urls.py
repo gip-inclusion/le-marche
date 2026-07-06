@@ -27,7 +27,7 @@ urlpatterns = [
     path("ajouter", RedirectView.as_view(pattern_name="tenders:create", permanent=True), name="create_without_slash"),
     path("ajouter/", TenderCreateMultiStepView.as_view(), name="create"),
     path("modifier/<str:slug>", TenderCreateMultiStepView.as_view(), name="update"),
-    # "Besoins inspirants" : à déclarer avant le catch-all <str:slug> pour éviter tout conflit de route
+    # "Projets d'achats inspirants" : à déclarer avant le catch-all <str:slug> pour éviter tout conflit de route
     path("inspirants", InspirationalTenderListView.as_view(), name="inspiration-list"),
     path("inspirants/<str:slug>", InspirationalTenderDetailView.as_view(), name="inspiration-detail"),
     path("<str:slug>", TenderDetailView.as_view(), name="detail"),

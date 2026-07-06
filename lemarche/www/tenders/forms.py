@@ -449,7 +449,7 @@ class TenderFilterForm(forms.Form):
 
 
 class InspirationalTenderFilterForm(forms.Form):
-    """Filtres de la page "Besoins inspirants" : secteur, type de projet, public/privé."""
+    """Filtres de la page "Projets d'achats inspirants" : secteur, type de projet, public/privé."""
 
     KIND_CHOICES = (
         ("", "Tous les types"),

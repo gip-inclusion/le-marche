@@ -425,7 +425,7 @@ class TenderListView(LoginRequiredMixin, ListView):
 
 class InspirationalTenderListView(LoginRequiredMixin, ListView):
     """
-    Page "Besoins inspirants" : liste anonymisée des besoins d'achat ayant suscité de l'intérêt.
+    Page "Projets d'achats inspirants" : liste anonymisée des besoins d'achat ayant suscité de l'intérêt.
     Accessible à tout utilisateur connecté. L'identité de l'acheteur n'est jamais exposée
     (on n'affiche que le type d'acheteur public/privé et le type d'organisation).
     """
@@ -447,7 +447,6 @@ class InspirationalTenderListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["filter_form"] = self.filter_form
-        context["min_interested_siae_count"] = tender_constants.MIN_INTERESTED_SIAE_COUNT
         context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
         return context
 
@@ -475,7 +474,7 @@ class InspirationalTenderDetailView(LoginRequiredMixin, DetailView):
         context["interest_rate"] = interest_rate
         context["breadcrumb_links"] = [
             {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
-            {"title": "Besoins inspirants", "url": reverse_lazy("tenders:inspiration-list")},
+            {"title": "Projets d'achats inspirants", "url": reverse_lazy("tenders:inspiration-list")},
         ]
         return context
 

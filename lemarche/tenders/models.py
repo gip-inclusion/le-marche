@@ -215,7 +215,7 @@ class TenderQuerySet(models.QuerySet):
 
     def filter_inspirational(self):
         """
-        Return the tenders that can be shown as inspiration to buyers ("Besoins inspirants").
+        Return the tenders that can be shown as inspiration to buyers ("Projets d'achats inspirants").
         Eligibility rules (kept simple, based on existing denormalized fields):
         - the tender has been sent to siaes (status SENT)
         - at least MIN_INTERESTED_SIAE_COUNT siaes showed interest
