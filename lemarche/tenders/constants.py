@@ -150,3 +150,8 @@ SURVEY_TRANSACTIONED_ANSWER_CHOICES = (
     (constants.DONT_KNOW, "Pas encore"),
 )
 SURVEY_TRANSACTIONED_ANSWER_CHOICE_LIST = [choice[0] for choice in SURVEY_TRANSACTIONED_ANSWER_CHOICES]
+
+
+# Nombre minimum de structures intéressées pour qu'un besoin soit affiché dans la page "Besoins inspirants".
+# Centralisé ici pour être ajusté facilement.
+MIN_INTERESTED_SIAE_COUNT = 3

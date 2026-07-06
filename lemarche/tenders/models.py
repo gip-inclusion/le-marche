@@ -213,6 +213,20 @@ class TenderQuerySet(models.QuerySet):
             .distinct()
         )
 
+    def filter_inspirational(self):
+        """
+        Return the tenders that can be shown as inspiration to buyers ("Besoins inspirants").
+        Eligibility rules (kept simple, based on existing denormalized fields):
+        - the tender has been sent to siaes (status SENT)
+        - at least MIN_INTERESTED_SIAE_COUNT siaes showed interest
+        - the buyer did not ask to stay anonymous
+        """
+        return self.filter(
+            status=Tender.StatusChoices.STATUS_SENT,
+            siae_detail_contact_click_count__gte=tender_constants.MIN_INTERESTED_SIAE_COUNT,
+            response_is_anonymous=False,
+        )
+
     def with_deadline_date_is_outdated(self, limit_date=datetime.today()):
         return self.annotate(
             deadline_date_is_outdated_annotated=ExpressionWrapper(

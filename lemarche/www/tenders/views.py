@@ -57,6 +57,7 @@ from lemarche.utils.mixins import (
 from lemarche.utils.urls import get_domain_url
 from lemarche.www.siaes.forms import SiaeFilterForm
 from lemarche.www.tenders.forms import (
+    InspirationalTenderFilterForm,
     SiaeSelectFieldsForm,
     TenderCreateStepConfirmationForm,
     TenderCreateStepContactForm,
@@ -419,6 +420,63 @@ class TenderListView(LoginRequiredMixin, ListView):
         context["tender_statuses"] = Tender.StatusChoices
         context["filter_form"] = self.filter_form
         context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
+        return context
+
+
+class InspirationalTenderListView(LoginRequiredMixin, ListView):
+    """
+    Page "Besoins inspirants" : liste anonymisée des besoins d'achat ayant suscité de l'intérêt.
+    Accessible à tout utilisateur connecté. L'identité de l'acheteur n'est jamais exposée
+    (on n'affiche que le type d'acheteur public/privé et le type d'organisation).
+    """
+
+    template_name = "tenders/inspirational_list.html"
+    model = Tender
+    context_object_name = "tenders"
+    paginate_by = 12
+    paginator_class = Paginator
+    filter_form = None
+
+    def get_queryset(self):
+        qs = Tender.objects.filter_inspirational()
+        self.filter_form = InspirationalTenderFilterForm(data=self.request.GET)
+        qs = self.filter_form.filter_queryset(qs)
+        qs = qs.select_related("author").prefetch_related("sectors").distinct()
+        return qs.order_by_last_published()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["filter_form"] = self.filter_form
+        context["min_interested_siae_count"] = tender_constants.MIN_INTERESTED_SIAE_COUNT
+        context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
+        return context
+
+
+class InspirationalTenderDetailView(LoginRequiredMixin, DetailView):
+    """
+    Fiche détail anonymisée d'un besoin inspirant.
+    Seuls les besoins éligibles (filter_inspirational) sont accessibles ici.
+    """
+
+    template_name = "tenders/inspirational_detail.html"
+    model = Tender
+    context_object_name = "tender"
+
+    def get_queryset(self):
+        return Tender.objects.filter_inspirational().select_related("author").prefetch_related("sectors")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tender = self.object
+        # taux d'intérêt = structures intéressées / structures ciblées (arrondi, en %)
+        interest_rate = None
+        if tender.siae_count:
+            interest_rate = round(100 * tender.siae_detail_contact_click_count / tender.siae_count)
+        context["interest_rate"] = interest_rate
+        context["breadcrumb_links"] = [
+            {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
+            {"title": "Besoins inspirants", "url": reverse_lazy("tenders:inspiration-list")},
+        ]
         return context
 
 

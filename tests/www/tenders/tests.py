@@ -25,6 +25,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.constants import KIND_QUOTE
 from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices, TenderSourcesChoices
 from lemarche.tenders.models import QuestionAnswer, Tender, TenderInstruction, TenderSiae, TenderStepsData
+from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.utils import constants
 from lemarche.utils.apis.brevo_attributes import CONTACT_ATTRIBUTES
@@ -2775,3 +2776,131 @@ class TenderReminderViewTestCase(TestCase):
             response_post = self.client.post(url, data={"reminder_message": "Blabla"})
             self.assertEqual(send_reminder_email_to_siae_mock.call_count, 2)
         self.assertEqual(response_post.status_code, 302)
+
+
+class InspirationalTenderListViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.url = reverse("tenders:inspiration-list")
+        cls.user = UserFactory(kind=User.KIND_SIAE)
+        # Acheteur avec une identité volontairement reconnaissable pour vérifier l'anonymisation
+        cls.buyer = UserFactory(
+            kind=User.KIND_BUYER,
+            first_name="Zorglubprenom",
+            last_name="Zorglubnom",
+            email="zorglub-secret@example.com",
+            company_name="Entreprise Zorglub Secrete",
+            buyer_kind=user_constants.BUYER_KIND_PUBLIC,
+            buyer_kind_detail=user_constants.BUYER_KIND_DETAIL_PUBLIC_COLLECTIVITY,
+        )
+        cls.sector = SectorFactory()
+        # Besoin éligible : envoyé, >= 3 intéressées, non anonyme
+        cls.tender_eligible = TenderFactory(
+            title="Besoin inspirant eligible",
+            kind=tender_constants.KIND_PROJECT,
+            author=cls.buyer,
+            sectors=[cls.sector],
+            siae_count=10,
+            siae_detail_contact_click_count=tender_constants.MIN_INTERESTED_SIAE_COUNT,
+            response_is_anonymous=False,
+        )
+        # Besoin non éligible : pas assez d'intéressées
+        cls.tender_not_enough = TenderFactory(
+            title="Besoin pas assez interesse",
+            author=cls.buyer,
+            siae_count=10,
+            siae_detail_contact_click_count=tender_constants.MIN_INTERESTED_SIAE_COUNT - 1,
+            response_is_anonymous=False,
+        )
+        # Besoin non éligible : acheteur anonyme
+        cls.tender_anonymous = TenderFactory(
+            title="Besoin acheteur anonyme",
+            author=cls.buyer,
+            siae_count=10,
+            siae_detail_contact_click_count=tender_constants.MIN_INTERESTED_SIAE_COUNT,
+            response_is_anonymous=True,
+        )
+
+    def test_anonymous_user_is_redirected(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/accounts/login/", response.url)
+
+    def test_only_eligible_tenders_are_listed(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Besoin inspirant eligible")
+        self.assertNotContains(response, "Besoin pas assez interesse")
+        self.assertNotContains(response, "Besoin acheteur anonyme")
+
+    def test_buyer_identity_is_not_exposed(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        # Aucune donnée personnelle de l'acheteur ne doit apparaître
+        self.assertNotContains(response, "Zorglubprenom")
+        self.assertNotContains(response, "Zorglubnom")
+        self.assertNotContains(response, "zorglub-secret@example.com")
+        self.assertNotContains(response, "Entreprise Zorglub Secrete")
+        # Seul le type d'acheteur (anonymisé) est affiché
+        self.assertContains(response, "Collectivité")
+
+    def test_filter_by_kind(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.url, data={"kind": tender_constants.KIND_TENDER})
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Besoin inspirant eligible")
+
+
+class InspirationalTenderDetailViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = UserFactory(kind=User.KIND_SIAE)
+        cls.buyer = UserFactory(
+            kind=User.KIND_BUYER,
+            first_name="Marieprenom",
+            last_name="Confidentiellenom",
+            email="secret-buyer@example.com",
+            company_name="Entreprise Confidentielle",
+            buyer_kind=user_constants.BUYER_KIND_PUBLIC,
+            buyer_kind_detail=user_constants.BUYER_KIND_DETAIL_PUBLIC_COLLECTIVITY,
+        )
+        cls.tender_eligible = TenderFactory(
+            title="Besoin detail eligible",
+            author=cls.buyer,
+            siae_count=10,
+            siae_detail_contact_click_count=tender_constants.MIN_INTERESTED_SIAE_COUNT,
+            response_is_anonymous=False,
+        )
+        cls.tender_hidden = TenderFactory(
+            title="Besoin detail cache",
+            author=cls.buyer,
+            siae_count=10,
+            siae_detail_contact_click_count=tender_constants.MIN_INTERESTED_SIAE_COUNT - 1,
+            response_is_anonymous=False,
+        )
+
+    def test_eligible_tender_detail_is_accessible(self):
+        self.client.force_login(self.user)
+        url = reverse("tenders:inspiration-detail", kwargs={"slug": self.tender_eligible.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Besoin detail eligible")
+
+    def test_non_eligible_tender_detail_is_hidden(self):
+        self.client.force_login(self.user)
+        url = reverse("tenders:inspiration-detail", kwargs={"slug": self.tender_hidden.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_buyer_identity_is_not_exposed(self):
+        self.client.force_login(self.user)
+        url = reverse("tenders:inspiration-detail", kwargs={"slug": self.tender_eligible.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Marieprenom")
+        self.assertNotContains(response, "Confidentiellenom")
+        self.assertNotContains(response, "secret-buyer@example.com")
+        self.assertNotContains(response, "Entreprise Confidentielle")
+        self.assertContains(response, "Collectivité")

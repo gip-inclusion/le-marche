@@ -5,10 +5,12 @@ from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.utils.html import strip_tags
 
+from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
 from lemarche.tenders.models import Tender, TenderSiae
+from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.users.validators import professional_email_validator
 from lemarche.utils import constants
@@ -444,6 +446,55 @@ class TenderFilterForm(forms.Form):
                 new_choices.append((kind_key, kind_label))
 
         self.fields["kind"].choices = new_choices
+
+
+class InspirationalTenderFilterForm(forms.Form):
+    """Filtres de la page "Besoins inspirants" : secteur, type de projet, public/privé."""
+
+    KIND_CHOICES = (
+        ("", "Tous les types"),
+        (tender_constants.KIND_PROJECT, tender_constants.KIND_PROJECT_DISPLAY),
+        (tender_constants.KIND_TENDER, tender_constants.KIND_TENDER_DISPLAY),
+        (tender_constants.KIND_QUOTE, tender_constants.KIND_QUOTE_DISPLAY),
+    )
+
+    BUYER_KIND_CHOICES = (("", "Public et privé"),) + user_constants.BUYER_KIND_CHOICES
+
+    sector = forms.ModelChoiceField(
+        label="Secteur d'activité",
+        queryset=Sector.objects.form_filter_queryset(),
+        to_field_name="slug",
+        empty_label="Tous les secteurs",
+        required=False,
+        widget=forms.Select(attrs={"class": "fr-select", "onchange": "this.form.submit()"}),
+    )
+    kind = forms.ChoiceField(
+        label="Type de projet d'achat",
+        choices=KIND_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={"class": "fr-select", "onchange": "this.form.submit()"}),
+    )
+    buyer_kind = forms.ChoiceField(
+        label="Type d'acheteur",
+        choices=BUYER_KIND_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={"class": "fr-select", "onchange": "this.form.submit()"}),
+    )
+
+    def filter_queryset(self, queryset):
+        """Applique les filtres sélectionnés au queryset (filtres facultatifs et combinables)."""
+        if not self.is_valid():
+            return queryset
+        sector = self.cleaned_data.get("sector")
+        if sector:
+            queryset = queryset.filter(sectors=sector)
+        kind = self.cleaned_data.get("kind")
+        if kind:
+            queryset = queryset.filter(kind=kind)
+        buyer_kind = self.cleaned_data.get("buyer_kind")
+        if buyer_kind:
+            queryset = queryset.filter(author__buyer_kind=buyer_kind)
+        return queryset
 
 
 class TenderDetailGetParams(forms.Form):

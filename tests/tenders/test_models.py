@@ -1222,3 +1222,40 @@ class TenderInstructionModelTest(TestCase):
         instruction.refresh_from_db()
         self.assertNotIn("<script", instruction.text)
         self.assertIn("<p>ok</p>", instruction.text)
+
+
+class TenderQuerysetInspirationalTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        min_count = tender_constants.MIN_INTERESTED_SIAE_COUNT
+        # éligible : envoyé, assez de structures intéressées, non anonyme
+        cls.tender_eligible = TenderFactory(
+            status=Tender.StatusChoices.STATUS_SENT,
+            siae_detail_contact_click_count=min_count,
+            response_is_anonymous=False,
+        )
+        # pas assez de structures intéressées
+        cls.tender_not_enough_interested = TenderFactory(
+            status=Tender.StatusChoices.STATUS_SENT,
+            siae_detail_contact_click_count=min_count - 1,
+            response_is_anonymous=False,
+        )
+        # acheteur anonyme
+        cls.tender_anonymous = TenderFactory(
+            status=Tender.StatusChoices.STATUS_SENT,
+            siae_detail_contact_click_count=min_count,
+            response_is_anonymous=True,
+        )
+        # pas encore envoyé
+        cls.tender_not_sent = TenderFactory(
+            status=Tender.StatusChoices.STATUS_DRAFT,
+            siae_detail_contact_click_count=min_count,
+            response_is_anonymous=False,
+        )
+
+    def test_filter_inspirational_keeps_only_eligible_tenders(self):
+        results = Tender.objects.filter_inspirational()
+        self.assertIn(self.tender_eligible, results)
+        self.assertNotIn(self.tender_not_enough_interested, results)
+        self.assertNotIn(self.tender_anonymous, results)
+        self.assertNotIn(self.tender_not_sent, results)
