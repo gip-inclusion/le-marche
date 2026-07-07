@@ -60,7 +60,8 @@ def generate_siae_row(siae: Siae, siae_field_list):
             col_value = siae.contact_phone_display
         elif field_name in ["Référence client 1", "Référence client 2", "Référence client 3"]:
             if client_refs is None:
-                client_refs = list(siae.client_references.order_by("order")[:3])
+                # rely on the prefetched (and ordered) client_references to avoid an extra query per Siae
+                client_refs = list(siae.client_references.all())[:3]
             index = int(field_name[-1]) - 1
             col_value = client_refs[index].name if index < len(client_refs) else ""
         else:

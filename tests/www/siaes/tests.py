@@ -1619,6 +1619,23 @@ class SiaeSearchResultsDownloadAuthTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("application/", response["Content-Type"])
 
+    def test_authenticated_download_whole_list_returns_generated_file(self):
+        # Regression: with no search filter, the whole list must be generated on the fly.
+        # Previously the view redirected (302) to a pre-generated S3 file that is no longer
+        # produced, which returned an AccessDenied error to the user.
+        self.client.force_login(self.user)
+        response = self.client.get(self.download_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("application/", response["Content-Type"])
+        self.assertIn("attachment", response["Content-Disposition"])
+
+    def test_authenticated_download_whole_list_csv_format(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.download_url + "?format=csv")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("text/csv", response["Content-Type"])
+        self.assertIn("attachment", response["Content-Disposition"])
+
     def test_download_button_visible_for_anonymous(self):
         response = self.client.get(self.search_url)
         self.assertEqual(response.status_code, 200)
