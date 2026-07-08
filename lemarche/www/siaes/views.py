@@ -10,7 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.core.serializers import serialize
-from django.db.models import F
+from django.db.models import F, Prefetch
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
@@ -22,14 +22,13 @@ from django.views.generic.edit import FormMixin
 from lemarche.conversations.models import Conversation
 from lemarche.favorites.models import FavoriteList
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.models import Siae, SiaeESUS
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeESUS
 from lemarche.utils import settings_context_processors
 from lemarche.utils.apis.api_recherche_entreprises import (
     RechercheEntreprisesAPIException,
     recherche_entreprises_get_or_error,
 )
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
-from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.www.conversations.forms import ContactForm
 from lemarche.www.siaes.forms import InviteColleaguesFormSet, SiaeFavoriteForm, SiaeFilterForm, SiaeSiretFilterForm
 from lemarche.www.siaes.tasks import send_user_invite_colleagues_email
@@ -129,11 +128,16 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         """
         filter_form = SiaeFilterForm(data=self.request.GET)
         results = filter_form.filter_queryset()
-        return results.prefetch_related("client_references")
+        # Prefetch the client references already ordered so export_siae_to_excel/csv reuse the cache
+        # instead of firing an extra query per Siae (N+1 that would time out on the full list export)
+        return results.prefetch_related(
+            Prefetch("client_references", queryset=SiaeClientReference.objects.order_by("order"))
+        )
 
     def get(self, request, *args, **kwargs):
         """
         Build and return a CSV or XLS.
+        The whole list (no search filter) is generated on the fly, like a filtered export.
         """
         siae_list = self.get_queryset()
         format = self.request.GET.get("format", "xls")
@@ -141,30 +145,19 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         filename = f"liste_structures_{date.today()}"
         filename_with_extension = f"{filename}.{format}"
 
-        # we check if there are any search filters
-        request_params = [
-            value for (key, value) in self.request.GET.items() if ((key not in ["page", "format"]) and value)
-        ]
+        if format == "csv":
+            response = HttpResponse(content_type="text/csv", charset="utf-8")
+            response["Content-Disposition"] = f'attachment; filename="{filename_with_extension}"'
 
-        # no search filters -> the user wants to download the whole list -> serve the generated file stored on S3
-        if not len(request_params):
-            file_path = f"{API_CONNECTION_DICT['endpoint_url']}/{settings.S3_STORAGE_BUCKET_NAME}/{settings.SIAE_EXPORT_FOLDER_NAME}/{filename_with_extension}"  # noqa
-            response = HttpResponseRedirect(file_path)
+            writer = csv.writer(response)
+            export_siae_to_csv(writer, siae_list, with_contact_info)
 
-        else:
-            if format == "csv":
-                response = HttpResponse(content_type="text/csv", charset="utf-8")
-                response["Content-Disposition"] = f'attachment; filename="{filename_with_extension}"'
+        else:  # "xls"
+            response = HttpResponse(content_type="application/ms-excel")
+            response["Content-Disposition"] = f'attachment; filename="{filename_with_extension}"'
 
-                writer = csv.writer(response)
-                export_siae_to_csv(writer, siae_list, with_contact_info)
-
-            else:  # "xls"
-                response = HttpResponse(content_type="application/ms-excel")
-                response["Content-Disposition"] = f'attachment; filename="{filename_with_extension}"'
-
-                wb = export_siae_to_excel(siae_list, with_contact_info)
-                wb.save(response)
+            wb = export_siae_to_excel(siae_list, with_contact_info)
+            wb.save(response)
 
         # HttpResponse doesn't have a context. so we pass the data via the response header
         response["Context-Data-Results-Count"] = siae_list.count()
