@@ -1,0 +1,45 @@
+{% if user.is_authenticated and user.is_buyer %}
+    <dialog aria-labelledby="contact_details_buyer_modal_title"
+            role="dialog"
+            id="contact_details_buyer_modal"
+            class="fr-modal">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                            <button class="fr-btn--close fr-btn"
+                                    title="Fermer la fenêtre modale"
+                                    aria-controls="contact_details_buyer_modal">Fermer</button>
+                        </div>
+                        <div class="fr-modal__content">
+                            <h3 id="contact_details_buyer_modal_title" class="fr-modal__title">
+                                Coordonnées de la structure
+                            </h3>
+                            <div id="contact-details-loading" class="fr-py-1w">
+                                <p class="fr-text--sm">Chargement en cours…</p>
+                            </div>
+                            <div id="contact-details-empty" class="fr-hidden">
+                                <p>Les coordonnées de cette structure ne sont pas encore renseignées.</p>
+                            </div>
+                            <div id="contact-details-data" class="fr-hidden">
+                                <p class="fr-mb-1w">
+                                    <strong>Contact :</strong>
+                                    <span id="contact-details-name"></span>
+                                </p>
+                                <p class="fr-mb-1w">
+                                    <strong>Email :</strong>
+                                    <span id="contact-details-email"></span>
+                                </p>
+                                <p class="fr-mb-1w">
+                                    <strong>Téléphone :</strong>
+                                    <span id="contact-details-phone"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
+{% endif %}

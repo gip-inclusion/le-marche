@@ -1653,3 +1653,120 @@ class SiaeSearchResultsDownloadAuthTest(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(self.search_url)
         self.assertNotContains(response, "login_to_download_modal")
+
+
+class SiaeContactDetailsViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_buyer = UserFactory(kind="BUYER")
+        cls.user_partner = UserFactory(kind="PARTNER")
+        cls.user_siae = UserFactory(kind="SIAE")
+        cls.siae = SiaeFactory(is_active=True)
+        cls.siae_user = UserFactory(
+            kind="SIAE",
+            is_active=True,
+            email="contact@structure.fr",
+            first_name="Jean",
+            last_name="Dupont",
+            phone="+33612345678",
+        )
+        cls.siae.users.add(cls.siae_user)
+        cls.url = reverse("siae:contact_details", args=[cls.siae.slug])
+        cls.detail_url = reverse("siae:detail", args=[cls.siae.slug])
+
+    def test_button_visible_on_siae_detail(self):
+        response = self.client.get(self.detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Voir les coordonnées de la structure")
+
+    def test_existing_contact_encart_preserved(self):
+        response = self.client.get(self.detail_url)
+        self.assertContains(response, "Contacter la structure")
+
+    def test_anonymous_gets_401(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 401)
+
+    def test_non_buyer_gets_403(self):
+        for user in [self.user_partner, self.user_siae]:
+            self.client.force_login(user)
+            response = self.client.get(self.url)
+            self.assertEqual(response.status_code, 403)
+
+    def test_buyer_gets_email_and_phone(self):
+        self.client.force_login(self.user_buyer)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["first_name"], "Jean")
+        self.assertEqual(data["last_name"], "Dupont")
+        self.assertEqual(data["email"], "contact@structure.fr")
+        self.assertIn("06", data["phone"].replace(" ", "").replace("+33", "0"))
+
+    def test_buyer_gets_email_only(self):
+        user_no_phone = UserFactory(kind="SIAE", is_active=True, email="nophone@structure.fr", phone="")
+        siae = SiaeFactory(is_active=True)
+        siae.users.add(user_no_phone)
+        self.client.force_login(self.user_buyer)
+        response = self.client.get(reverse("siae:contact_details", args=[siae.slug]))
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["email"], "nophone@structure.fr")
+        self.assertEqual(data["phone"], "")
+
+    def test_buyer_gets_phone_only(self):
+        user_no_email = UserFactory(kind="SIAE", is_active=True)
+        user_no_email.phone = "+33699887766"
+        user_no_email.save(update_fields=["phone"])
+        siae = SiaeFactory(is_active=True)
+        siae.users.add(user_no_email)
+        self.client.force_login(self.user_buyer)
+        response = self.client.get(reverse("siae:contact_details", args=[siae.slug]))
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertNotEqual(data["phone"], "")
+
+    def test_buyer_gets_empty_when_no_contact_data(self):
+        siae_no_user = SiaeFactory(is_active=True)
+        self.client.force_login(self.user_buyer)
+        response = self.client.get(reverse("siae:contact_details", args=[siae_no_user.slug]))
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["email"], "")
+        self.assertEqual(data["phone"], "")
+
+    def test_most_recently_logged_in_user_selected(self):
+        from datetime import UTC, datetime
+
+        user_old = UserFactory(kind="SIAE", is_active=True, email="old@structure.fr")
+        user_new = UserFactory(kind="SIAE", is_active=True, email="new@structure.fr")
+        siae = SiaeFactory(is_active=True)
+        siae.users.add(user_old)
+        siae.users.add(user_new)
+
+        user_old.last_login = datetime(2024, 1, 1, tzinfo=UTC)
+        user_old.save(update_fields=["last_login"])
+        user_new.last_login = datetime(2024, 6, 1, tzinfo=UTC)
+        user_new.save(update_fields=["last_login"])
+
+        self.client.force_login(self.user_buyer)
+        response = self.client.get(reverse("siae:contact_details", args=[siae.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["email"], "new@structure.fr")
+
+    def test_anonymous_sees_login_modal_on_detail(self):
+        response = self.client.get(self.detail_url)
+        self.assertContains(response, "contact_details_login_modal")
+        self.assertContains(response, "Connectez-vous pour voir les coordonnées")
+
+    def test_non_buyer_sees_not_buyer_modal_on_detail(self):
+        self.client.force_login(self.user_partner)
+        response = self.client.get(self.detail_url)
+        self.assertContains(response, "contact_details_not_buyer_modal")
+        self.assertContains(response, "Accès réservé aux acheteurs")
+
+    def test_buyer_sees_buyer_modal_on_detail(self):
+        self.client.force_login(self.user_buyer)
+        response = self.client.get(self.detail_url)
+        self.assertContains(response, "contact_details_buyer_modal")
+        self.assertContains(response, "Coordonnées de la structure")
