@@ -7,6 +7,10 @@
 			Qu'est-ce qu'un fournisseur inclusif ?
 		</a>
 	</li>
+	{% url 'tenders:inspiration-list' as inspiration_list_url %}
+	<li class="fr-nav__item">
+		<a href="{{ inspiration_list_url }}" id="header-inspirational-tenders" class="fr-nav__link"{% if request.path == inspiration_list_url %} aria-current="page"{% endif %}>Projets d'achats inspirants</a>
+	</li>
 	<li class="fr-nav__item">
 		<button class="fr-nav__btn" aria-expanded="false" aria-controls="menu-solutions">Solutions</button>
 		<div class="fr-collapse fr-menu" id="menu-solutions">
