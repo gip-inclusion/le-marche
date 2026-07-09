@@ -423,10 +423,10 @@ class TenderListView(LoginRequiredMixin, ListView):
         return context
 
 
-class InspirationalTenderListView(LoginRequiredMixin, ListView):
+class InspirationalTenderListView(ListView):
     """
     Page "Projets d'achats inspirants" : liste anonymisée des besoins d'achat ayant suscité de l'intérêt.
-    Accessible à tout utilisateur connecté. L'identité de l'acheteur n'est jamais exposée
+    Accessible publiquement (sans connexion). L'identité de l'acheteur n'est jamais exposée
     (on n'affiche que le type d'acheteur public/privé et le type d'organisation).
     """
 
@@ -447,7 +447,11 @@ class InspirationalTenderListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["filter_form"] = self.filter_form
-        context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
+        # page publique : le lien vers le tableau de bord n'a de sens que pour un utilisateur connecté
+        breadcrumb_links = []
+        if self.request.user.is_authenticated:
+            breadcrumb_links.append({"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")})
+        context["breadcrumb_links"] = breadcrumb_links
         # provide the page number range used by includes/_pagination.html to display the page links
         page_obj = context.get("page_obj")
         if page_obj is not None:
@@ -458,9 +462,10 @@ class InspirationalTenderListView(LoginRequiredMixin, ListView):
         return context
 
 
-class InspirationalTenderDetailView(LoginRequiredMixin, DetailView):
+class InspirationalTenderDetailView(DetailView):
     """
     Fiche détail anonymisée d'un besoin inspirant.
+    Accessible publiquement (sans connexion).
     Seuls les besoins éligibles (filter_inspirational) sont accessibles ici.
     """
 
@@ -479,10 +484,14 @@ class InspirationalTenderDetailView(LoginRequiredMixin, DetailView):
         if tender.siae_count:
             interest_rate = round(100 * tender.siae_detail_contact_click_count / tender.siae_count)
         context["interest_rate"] = interest_rate
-        context["breadcrumb_links"] = [
-            {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
-            {"title": "Projets d'achats inspirants", "url": reverse_lazy("tenders:inspiration-list")},
-        ]
+        # page publique : le lien vers le tableau de bord n'a de sens que pour un utilisateur connecté
+        breadcrumb_links = []
+        if self.request.user.is_authenticated:
+            breadcrumb_links.append({"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")})
+        breadcrumb_links.append(
+            {"title": "Projets d'achats inspirants", "url": reverse_lazy("tenders:inspiration-list")}
+        )
+        context["breadcrumb_links"] = breadcrumb_links
         return context
 
 
