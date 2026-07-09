@@ -442,7 +442,8 @@ class InspirationalTenderListView(ListView):
         self.filter_form = InspirationalTenderFilterForm(data=self.request.GET)
         qs = self.filter_form.filter_queryset(qs)
         qs = qs.select_related("author").prefetch_related("sectors").distinct()
-        return qs.order_by_last_published()
+        # tri chronologique : du plus récent au plus ancien (id en tie-break pour une pagination stable)
+        return qs.order_by("-published_at", "-id")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

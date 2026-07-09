@@ -2853,6 +2853,30 @@ class InspirationalTenderListViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Besoin inspirant eligible")
 
+    def test_tenders_are_ordered_by_published_at_desc(self):
+        # Tri chronologique pur : du plus récemment publié au plus ancien
+        older = TenderFactory(
+            title="Besoin publie ancien",
+            author=self.buyer,
+            siae_count=10,
+            siae_detail_contact_click_count=tender_constants.MIN_INTERESTED_SIAE_COUNT,
+            response_is_anonymous=False,
+            published_at=timezone.now() - timedelta(days=10),
+        )
+        newer = TenderFactory(
+            title="Besoin publie recent",
+            author=self.buyer,
+            siae_count=10,
+            siae_detail_contact_click_count=tender_constants.MIN_INTERESTED_SIAE_COUNT,
+            response_is_anonymous=False,
+            published_at=timezone.now() - timedelta(days=1),
+        )
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertLess(content.index(newer.title), content.index(older.title))
+
 
 class InspirationalTenderDetailViewTest(TestCase):
     @classmethod
