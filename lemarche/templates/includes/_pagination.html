@@ -1,33 +1,63 @@
 {% load url_add_query %}
 
-{% if is_paginated %}
-    <nav role="navigation" class="fr-pagination justify-content-center" aria-label="Pagination">
-        {% if paginator.num_pages > 1 %}
+{% if is_paginated and paginator.num_pages > 1 %}
+    <div class="fr-grid-row fr-grid-row--center fr-mt-4w">
+        <nav role="navigation" class="fr-pagination" aria-label="Pagination">
             <ul class="fr-pagination__list">
-                {% if page_obj.number > 1 %}
-                    <li>
-                        <a href="{% url_add_query page=page_obj.previous_page_number %}" class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" title="Page précédente">
-                            <i class="ri-arrow-left-s-line"></i>
-                        </a>
-                    </li>
+            <li>
+                {% if page_obj.has_previous %}
+                    <a class="fr-pagination__link fr-pagination__link--first" href="{% url_add_query page=1 %}" title="Première page">
+                        Première page
+                    </a>
+                {% else %}
+                    <a class="fr-pagination__link fr-pagination__link--first" aria-disabled="true" role="link">
+                        Première page
+                    </a>
                 {% endif %}
-
-                {% for p in paginator_range %}
-                    <li>
-                        <a href="{% url_add_query page=p %}" class="fr-pagination__link" {% if p == page_obj.number %}aria-current="page"{% endif %} title="Page {{ p }}">
-                            {{ p }}
-                        </a>
-                    </li>
-                {% endfor %}
-
-                {% if page_obj.number < paginator.num_pages %}
-                    <li>
-                        <a href="{% url_add_query page=page_obj.next_page_number %}" class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" title="Page suivante">
-                            <i class="ri-arrow-right-s-line"></i>
-                        </a>
-                    </li>
+            </li>
+            <li>
+                {% if page_obj.has_previous %}
+                    <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="{% url_add_query page=page_obj.previous_page_number %}" title="Page précédente">
+                        Page précédente
+                    </a>
+                {% else %}
+                    <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" aria-disabled="true" role="link">
+                        Page précédente
+                    </a>
                 {% endif %}
-            </ul>
-        {% endif %}
-    </nav>
+            </li>
+
+            {% for p in paginator_range %}
+                <li>
+                    <a class="fr-pagination__link" href="{% url_add_query page=p %}" {% if p == page_obj.number %}aria-current="page"{% endif %} title="Page {{ p }}">
+                        {{ p }}
+                    </a>
+                </li>
+            {% endfor %}
+
+            <li>
+                {% if page_obj.has_next %}
+                    <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="{% url_add_query page=page_obj.next_page_number %}" title="Page suivante">
+                        Page suivante
+                    </a>
+                {% else %}
+                    <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" aria-disabled="true" role="link">
+                        Page suivante
+                    </a>
+                {% endif %}
+            </li>
+            <li>
+                {% if page_obj.has_next %}
+                    <a class="fr-pagination__link fr-pagination__link--last" href="{% url_add_query page=paginator.num_pages %}" title="Dernière page">
+                        Dernière page
+                    </a>
+                {% else %}
+                    <a class="fr-pagination__link fr-pagination__link--last" aria-disabled="true" role="link">
+                        Dernière page
+                    </a>
+                {% endif %}
+            </li>
+        </ul>
+        </nav>
+    </div>
 {% endif %}

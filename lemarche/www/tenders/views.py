@@ -448,6 +448,13 @@ class InspirationalTenderListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["filter_form"] = self.filter_form
         context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
+        # provide the page number range used by includes/_pagination.html to display the page links
+        page_obj = context.get("page_obj")
+        if page_obj is not None:
+            paginator = context["paginator"]
+            context["paginator_range"] = range(
+                max(page_obj.number - 4, 1), min(page_obj.number + 4, paginator.num_pages) + 1
+            )
         return context
 
 
