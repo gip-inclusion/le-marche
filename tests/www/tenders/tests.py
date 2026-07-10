@@ -2821,10 +2821,11 @@ class InspirationalTenderListViewTest(TestCase):
             response_is_anonymous=True,
         )
 
-    def test_anonymous_user_is_redirected(self):
+    def test_anonymous_user_can_access(self):
+        # page publique : accessible sans connexion
         response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
-        self.assertIn("/accounts/login/", response.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Besoin inspirant eligible")
 
     def test_only_eligible_tenders_are_listed(self):
         self.client.force_login(self.user)
@@ -2851,6 +2852,30 @@ class InspirationalTenderListViewTest(TestCase):
         response = self.client.get(self.url, data={"kind": tender_constants.KIND_TENDER})
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Besoin inspirant eligible")
+
+    def test_tenders_are_ordered_by_published_at_desc(self):
+        # Tri chronologique pur : du plus récemment publié au plus ancien
+        older = TenderFactory(
+            title="Besoin publie ancien",
+            author=self.buyer,
+            siae_count=10,
+            siae_detail_contact_click_count=tender_constants.MIN_INTERESTED_SIAE_COUNT,
+            response_is_anonymous=False,
+            published_at=timezone.now() - timedelta(days=10),
+        )
+        newer = TenderFactory(
+            title="Besoin publie recent",
+            author=self.buyer,
+            siae_count=10,
+            siae_detail_contact_click_count=tender_constants.MIN_INTERESTED_SIAE_COUNT,
+            response_is_anonymous=False,
+            published_at=timezone.now() - timedelta(days=1),
+        )
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertLess(content.index(newer.title), content.index(older.title))
 
 
 class InspirationalTenderDetailViewTest(TestCase):
@@ -2883,6 +2908,13 @@ class InspirationalTenderDetailViewTest(TestCase):
 
     def test_eligible_tender_detail_is_accessible(self):
         self.client.force_login(self.user)
+        url = reverse("tenders:inspiration-detail", kwargs={"slug": self.tender_eligible.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Besoin detail eligible")
+
+    def test_anonymous_user_can_access_detail(self):
+        # page publique : la fiche détail est accessible sans connexion
         url = reverse("tenders:inspiration-detail", kwargs={"slug": self.tender_eligible.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
