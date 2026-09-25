@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 
+from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -138,6 +139,17 @@ class PagesHeaderLinkTest(TestCase):
 
         self.assertContains(response, "Déconnexion")
         self.assertContains(response, reverse("account_logout"))
+
+
+class PagesStatsTest(TestCase):
+    def test_anonymous_user_stats_displays_public_metabase_dashboard(self):
+        response = self.client.get(reverse("pages:stats"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f'src="{settings.METABASE_PUBLIC_DASHBOARD_URL}"')
+        self.assertContains(response, f"/public/dashboard/{settings.METABASE_PUBLIC_DASHBOARD_UUID}")
+        # l'URL /embed/ attend un jeton signé : Metabase renvoie une page blanche avec un UUID public
+        self.assertNotContains(response, "/embed/dashboard/")
 
 
 class SitemapTests(TestCase):
