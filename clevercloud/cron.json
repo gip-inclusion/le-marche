@@ -1,6 +1,5 @@
 [
     "*/10 * * * * $ROOT/clevercloud/utils_antivirus_scan.sh",
-    "35 0 * * * $ROOT/clevercloud/run_management_command.sh populate_metabase_nexus",
     "50 0 * * * $ROOT/clevercloud/run_management_command.sh nexus_full_sync",
     "0 1 * * * $ROOT/clevercloud/tenders_update_count_fields.sh",
     "15 1 * * * $ROOT/clevercloud/run_management_command.sh clean_old_history --days 180 --auto",
