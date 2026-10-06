@@ -6,9 +6,14 @@ from itoutils.django.testing import assertSnapshotQueries
 
 from lemarche.users.models import User
 from lemarche.utils.urls import get_object_share_url
-from tests.nexus.test_sync import assert_call_content
 from tests.siaes.factories import SiaeFactory, SiaeUserFactory
 from tests.users.factories import UserFactory
+
+
+def assert_call_content(call, expected_data):
+    # the order doesn't matter
+    data = json.loads(call.request.content.decode())
+    assert sorted(data, key=lambda d: d["id"]) == sorted(expected_data, key=lambda d: d["id"])
 
 
 @freeze_time()
