@@ -34,13 +34,11 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.text import slugify
-from itoutils.django.nexus.models import NexusModelMixin, NexusQuerySetMixin
 from phonenumber_field.modelfields import PhoneNumberField
 from simple_history.models import HistoricalRecords
 
 from lemarche.companies.models import CompanySiaeClientReferenceMatch
 from lemarche.networks.models import Network
-from lemarche.nexus import sync, tasks
 from lemarche.perimeters.models import Perimeter
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.tasks import set_siae_coords
@@ -198,7 +196,7 @@ class SiaeGroup(models.Model):
         return phone_number_display(self.contact_phone)
 
 
-class SiaeQuerySet(NexusQuerySetMixin, models.QuerySet):
+class SiaeQuerySet(models.QuerySet):
     def is_live(self):
         return self.filter(is_active=True).filter(is_delisted=False)
 
@@ -563,11 +561,7 @@ class SiaeQuerySet(NexusQuerySetMixin, models.QuerySet):
         )
 
 
-class Siae(NexusModelMixin, models.Model):
-    nexus_tracked_fields = sync.SIAE_TRACKED_FIELDS
-    nexus_sync = staticmethod(tasks.async_sync_siaes)
-    nexus_delete = staticmethod(tasks.async_delete_siaes)
-
+class Siae(models.Model):
     FIELDS_FROM_C1 = [
         "name",
         "slug",  # generated from 'name'
@@ -1014,9 +1008,6 @@ class Siae(NexusModelMixin, models.Model):
             else:
                 raise e
 
-    def should_sync_to_nexus(self):
-        return self.is_live and self.siret
-
     @property
     def is_live(self) -> bool:
         return self.is_active and not self.is_delisted
@@ -1372,25 +1363,14 @@ def siae_groups_changed(sender, instance, action, **kwargs):
             instance.save()
 
 
-class SiaeUserQuerySet(NexusQuerySetMixin, models.QuerySet):
-    def _get_nexus_queryset(self):
-        return super()._get_nexus_queryset().select_related("siae", "user")
-
-
-class SiaeUser(NexusModelMixin, models.Model):
+class SiaeUser(models.Model):
     """A membership"""
-
-    nexus_tracked_fields = sync.SIAEUSER_TRACKED_FIELDS
-    nexus_sync = staticmethod(tasks.async_sync_siaeusers)
-    nexus_delete = staticmethod(tasks.async_delete_siaeusers)
 
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Utilisateur", on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
-
-    objects = models.Manager.from_queryset(SiaeUserQuerySet)()
 
     class Meta:
         verbose_name = "Gestionnaire"
@@ -1399,9 +1379,6 @@ class SiaeUser(NexusModelMixin, models.Model):
         constraints = [
             models.UniqueConstraint("siae", "user", name="unique_siae_user_for_siaeuser"),
         ]
-
-    def should_sync_to_nexus(self):
-        return self.user.should_sync_to_nexus() and self.siae.should_sync_to_nexus()
 
 
 @receiver(post_save, sender=SiaeUser)

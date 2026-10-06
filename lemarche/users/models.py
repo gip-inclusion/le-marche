@@ -8,17 +8,15 @@ from django.db.models.functions import Greatest, Lower
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils import timezone
-from itoutils.django.nexus.models import NexusModelMixin, NexusQuerySetMixin
 from phonenumber_field.modelfields import PhoneNumberField
 
-from lemarche.nexus import sync, tasks
 from lemarche.users import constants as user_constants
 from lemarche.users.tasks import notify_user_onboarded
 from lemarche.utils.data import phone_number_display
 from lemarche.utils.emails import anonymize_email
 
 
-class UserQueryset(NexusQuerySetMixin, models.QuerySet):
+class UserQueryset(models.QuerySet):
     def is_admin_bizdev(self):
         return self.filter(kind=user_constants.KIND_ADMIN, position__iexact="Bizdev", is_staff=True)
 
@@ -126,11 +124,7 @@ class UserManager(BaseUserManager):
         return self.get_queryset().with_tender_stats()
 
 
-class User(NexusModelMixin, AbstractUser):
-    nexus_tracked_fields = sync.USER_TRACKED_FIELDS
-    nexus_sync = staticmethod(tasks.async_sync_users)
-    nexus_delete = staticmethod(tasks.async_delete_users)
-
+class User(AbstractUser):
     objects = UserManager()
 
     USERNAME_FIELD = "email"
@@ -332,9 +326,6 @@ class User(NexusModelMixin, AbstractUser):
         """
         self.set_last_updated_fields()
         super().save(*args, **kwargs)
-
-    def should_sync_to_nexus(self):
-        return self.is_active and self.email and self.kind == user_constants.KIND_SIAE
 
     def set_onboarded_and_send_email(self):
         """Set have_followed_onboarding and send email"""
