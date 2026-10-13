@@ -51,8 +51,3 @@ CACHES = {
         "LOCATION": "django_cache",
     }
 }
-
-
-# Itoutils
-# ---------------------------------------
-ASSERT_SNAPSHOT_QUERIES_EXTRA_PACKAGES_ALLOWLIST = []
