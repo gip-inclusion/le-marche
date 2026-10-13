@@ -152,8 +152,6 @@ LOCAL_APPS = [
     # Brevo CRM
     "lemarche.crm",
     "lemarche.django_shepherd",
-    # Nexus data sync
-    "lemarche.nexus",
 ]
 
 WAGTAIL_APPS = [
@@ -890,11 +888,6 @@ FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 MTCAPTCHA_PRIVATE_KEY = env.str("MTCAPTCHA_PRIVATE_KEY", "")
 MTCAPTCHA_PUBLIC_KEY = env.str("MTCAPTCHA_PUBLIC_KEY", "")
 
-
-# Nexus
-# ---------------------------------------
-NEXUS_API_BASE_URL = os.getenv("NEXUS_API_BASE_URL")
-NEXUS_API_TOKEN = os.getenv("NEXUS_API_TOKEN")
 
 # Stats
 # ------------------------------------------------------------------------------
