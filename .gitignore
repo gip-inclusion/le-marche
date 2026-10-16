@@ -20,8 +20,6 @@ envs/staging.env
 config/settings/dev.py
 docker-compose-prod.yml
 docker-compose-staging.yml
-docker/prod/
-docker/staging/
 
 # Project specific
 lemarche/staticfiles/
