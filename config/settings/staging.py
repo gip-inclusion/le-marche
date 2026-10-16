@@ -29,6 +29,12 @@ SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", True)
 
 MEDIA_URL = f"https://{S3_STORAGE_ENDPOINT_DOMAIN}/"  # noqa
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = env.str("EMAIL_HOST")
+EMAIL_PORT = env.str("EMAIL_PORT")
+EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD")
+
 
 # Sentry
 # ------------------------------------------------------------------------------
