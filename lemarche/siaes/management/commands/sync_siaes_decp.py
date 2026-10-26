@@ -79,8 +79,7 @@ class Command(BaseCommand):
                 success_count += 1
                 if count > 0:
                     won_count += 1
-            except requests.exceptions.RequestException as e:
-                logger.error("Erreur DECP SIRET %s : %s", siae.siret, e)
+            except requests.exceptions.RequestException:
                 error_count += 1
 
             if i % 100 == 0:
@@ -102,5 +101,7 @@ class Command(BaseCommand):
             "Mode : " + ("wet-run (changements appliqués)" if options["wet_run"] else "dry-run (aucun changement)"),
         ]
         self.stdout_messages_success(msg_success)
+        if error_count:
+            logger.error("Erreur DECP SIRET : got %d errors", error_count)
         if options["wet_run"]:
             api_slack.send_message_to_channel("\n".join(msg_success))
