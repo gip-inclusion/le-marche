@@ -10,7 +10,7 @@ classifiers = [
 ]
 dependencies = [
     "boto3",
-    "brevo-python",
+    "brevo-python<=1.2.0",
     "crawlerdetect",
     "django>=5.2,<6",
     "django-admin-list-filters",
