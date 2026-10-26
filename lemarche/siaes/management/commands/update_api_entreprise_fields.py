@@ -13,7 +13,7 @@ from lemarche.utils.apis.api_recherche_entreprises import (
     recherche_entreprises_get_or_error,
 )
 from lemarche.utils.commands import BaseCommand
-from lemarche.utils.slack.tasks import send_message_to_channel
+from lemarche.utils.tasks import send_slack_message
 
 
 SIAE_LEGAL_FORM_MAPPING_FILE_NAME = "data/mapping_api_entreprise_forme_juridique.csv"
@@ -96,7 +96,7 @@ class Command(BaseCommand):
             f"error count: {results['error']}/{total_count} (voir les logs)",
         ]
         self.stdout_messages_success(msg_success)
-        send_message_to_channel("\n".join(msg_success))
+        send_slack_message("\n".join(msg_success))
 
     def _process_single_siae(self, siae, mapping_file_row_list, wet_run):
         try:

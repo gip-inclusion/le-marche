@@ -2,11 +2,8 @@ import logging
 import re
 
 from django.conf import settings
-from django.core.mail import send_mail
-from huey.contrib.djhuey import task
 
 from lemarche.utils.apis import api_brevo
-from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 
 
 logger = logging.getLogger(__name__)
@@ -92,22 +89,3 @@ def update_contact_email_blacklisted(email, email_blacklisted: bool):
     """
     brevo_contacts_client = api_brevo.BrevoContactsApiClient()
     brevo_contacts_client.update_contact_email_blacklisted(email, email_blacklisted)
-
-
-@task()
-def send_mail_async(
-    email_subject,
-    email_body,
-    recipient_list,
-    from_email=settings.DEFAULT_FROM_EMAIL,
-    email_body_html=None,
-    fail_silently=False,
-):
-    send_mail(
-        subject=f"{EMAIL_SUBJECT_PREFIX}{email_subject}",
-        message=email_body,
-        html_message=email_body_html,
-        from_email=from_email,
-        recipient_list=recipient_list,
-        fail_silently=fail_silently,
-    )

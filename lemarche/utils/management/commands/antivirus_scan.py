@@ -13,7 +13,7 @@ from sentry_sdk.crons import monitor
 
 from lemarche.tenders.models import Tender
 from lemarche.utils.commands import BaseCommand
-from lemarche.utils.slack.tasks import send_message_to_channel
+from lemarche.utils.tasks import send_slack_message
 
 
 class Command(BaseCommand):
@@ -76,7 +76,7 @@ class Command(BaseCommand):
                                 msg_error.append(f"Attachment {attachment} deleted")
 
                             self.stdout_messages_error(msg_error)
-                            send_message_to_channel("\n".join(msg_error))
+                            send_slack_message("\n".join(msg_error))
 
                 except FileNotFoundError:
                     attachments_not_found_count += 1

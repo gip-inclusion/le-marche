@@ -5,7 +5,7 @@ from sentry_sdk.crons import monitor
 from lemarche.siaes import utils as siae_utils
 from lemarche.siaes.models import Siae
 from lemarche.utils.commands import BaseCommand
-from lemarche.utils.slack.tasks import send_message_to_channel
+from lemarche.utils.tasks import send_slack_message
 
 
 class Command(BaseCommand):
@@ -86,4 +86,4 @@ class Command(BaseCommand):
             f"Fields updated: {update_fields}",
         ]
         self.stdout_messages_success(msg_success)
-        send_message_to_channel("\n".join(msg_success))
+        send_slack_message("\n".join(msg_success))
