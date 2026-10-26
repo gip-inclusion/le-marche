@@ -14,7 +14,8 @@ from lemarche.tenders.models import PartnerShareTender, ReferentRegional, Tender
 from lemarche.users.models import User
 from lemarche.utils import constants
 from lemarche.utils.data import date_to_string
-from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
+from lemarche.utils.emails import whitelist_recipient_list
+from lemarche.utils.tasks import send_mail_async
 from lemarche.utils.urls import (
     get_domain_url,
     get_object_admin_url,

@@ -7,7 +7,7 @@ from sentry_sdk.crons import monitor
 from lemarche.siaes.models import Siae
 from lemarche.siaes.tasks import send_completion_reminder_email_to_siae
 from lemarche.utils.commands import BaseCommand
-from lemarche.utils.slack.tasks import send_message_to_channel
+from lemarche.utils.tasks import send_slack_message
 
 
 class Command(BaseCommand):
@@ -74,4 +74,4 @@ class Command(BaseCommand):
             f"Siae contacted: {siae_reminder_list.count()}",
         ]
         self.stdout_messages_success(msg_success)
-        send_message_to_channel("\n".join(msg_success))
+        send_slack_message("\n".join(msg_success))

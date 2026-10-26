@@ -5,7 +5,7 @@ from sentry_sdk.crons import monitor
 
 from lemarche.siaes.models import Siae
 from lemarche.utils.commands import BaseCommand
-from lemarche.utils.slack.tasks import send_message_to_channel
+from lemarche.utils.tasks import send_slack_message
 
 
 class Command(BaseCommand):
@@ -52,4 +52,4 @@ class Command(BaseCommand):
             f"Siaes with badge: before {siae_with_super_badge_count_before} / after {siae_with_super_badge_count_after}",  # noqa
         ]
         self.stdout_messages_success(msg_success)
-        send_message_to_channel("\n".join(msg_success), service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL)
+        send_slack_message("\n".join(msg_success), service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL)

@@ -23,7 +23,7 @@ from sentry_sdk.crons import monitor
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis import api_decp
 from lemarche.utils.commands import BaseCommand
-from lemarche.utils.slack.tasks import send_message_to_channel
+from lemarche.utils.tasks import send_slack_message
 
 
 logger = logging.getLogger(__name__)
@@ -105,4 +105,4 @@ class Command(BaseCommand):
         if error_count:
             logger.error("Erreur DECP SIRET : got %d errors", error_count)
         if options["wet_run"]:
-            send_message_to_channel("\n".join(msg_success))
+            send_slack_message("\n".join(msg_success))

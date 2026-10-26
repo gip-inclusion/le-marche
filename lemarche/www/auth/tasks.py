@@ -7,7 +7,8 @@ from django.utils.http import urlsafe_base64_encode
 
 from lemarche.conversations.models import TemplateTransactional
 from lemarche.users.models import User
-from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
+from lemarche.utils.emails import whitelist_recipient_list
+from lemarche.utils.tasks import send_mail_async
 from lemarche.utils.urls import get_domain_url
 
 

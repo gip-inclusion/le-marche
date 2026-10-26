@@ -1,6 +1,7 @@
 from lemarche.conversations.models import Conversation
 from lemarche.siaes.models import Siae
-from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
+from lemarche.utils.emails import whitelist_recipient_list
+from lemarche.utils.tasks import send_mail_async
 
 
 DISCLAIMER_ATTACHMENTS = (
