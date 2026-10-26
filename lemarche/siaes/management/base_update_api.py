@@ -7,8 +7,8 @@ from django.db.models import Q
 from django.utils import timezone
 
 from lemarche.siaes.models import Siae
-from lemarche.utils.apis import api_slack
 from lemarche.utils.commands import BaseCommand
+from lemarche.utils.slack.tasks import send_message_to_channel
 
 
 class UpdateAPICommand(BaseCommand):
@@ -91,4 +91,4 @@ class UpdateAPICommand(BaseCommand):
                 f"True count: {self.success_count['etablissement_target']}/{len(siaes_to_update)}",
             ]
             self.stdout_messages_success(msg_success)
-            api_slack.send_message_to_channel("\n".join(msg_success))
+            send_message_to_channel("\n".join(msg_success))

@@ -1,7 +1,7 @@
 from lemarche.companies.models import Company
 from lemarche.users.models import User
-from lemarche.utils.apis import api_slack
 from lemarche.utils.commands import BaseCommand
+from lemarche.utils.slack.tasks import send_message_to_channel
 
 
 class Command(BaseCommand):
@@ -69,4 +69,4 @@ class Command(BaseCommand):
         ]
 
         self.stdout_messages_success(msg_success)
-        api_slack.send_message_to_channel("\n".join(msg_success))
+        send_message_to_channel("\n".join(msg_success))

@@ -12,10 +12,11 @@ from stdnum.fr import siret
 
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
-from lemarche.utils.apis import api_emplois_inclusion, api_slack
+from lemarche.utils.apis import api_emplois_inclusion
 from lemarche.utils.commands import BaseCommand
 from lemarche.utils.constants import DEPARTMENT_TO_REGION
 from lemarche.utils.data import rename_dict_key
+from lemarche.utils.slack.tasks import send_message_to_channel
 
 
 logger = logging.getLogger(__name__)
@@ -138,7 +139,7 @@ class Command(BaseCommand):
             f"Siae inactive: before {siae_total_before - siae_active_before} / after {siae_total_after - siae_active_after}",  # noqa
         ]
         self.stdout_messages_success(msg_success)
-        api_slack.send_message_to_channel("\n".join(msg_success), service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL)
+        send_message_to_channel("\n".join(msg_success), service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL)
 
     def c1_export(self):  # noqa C901
         try:
@@ -194,7 +195,7 @@ class Command(BaseCommand):
             self.stdout_info(f"Found {len(c1_list_cleaned)} Siae in les-emplois")
             return c1_list_cleaned
         except Exception as e:
-            api_slack.send_message_to_channel("Erreur lors de la synchronisation emplois <-> marché")
+            send_message_to_channel("Erreur lors de la synchronisation emplois <-> marché")
             self.stdout_error(str(e))
             raise Exception(e)
 

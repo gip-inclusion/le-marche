@@ -142,7 +142,7 @@ class SyncSiaesDecpCommandTest(TestCase):
     def setUpTestData(cls):
         cls.siae = SiaeFactory(siret="12345678901234", siret_is_valid=True, is_active=True, is_delisted=False)
 
-    @patch("lemarche.utils.apis.api_slack.send_message_to_channel")
+    @patch("lemarche.utils.slack.tasks.send_message_to_channel")
     @patch("lemarche.utils.apis.api_decp.fetch_contracts_count")
     def test_wet_run_met_a_jour_has_won_contract(self, mocked_fetch, mocked_slack):
         mocked_fetch.return_value = 3
@@ -194,7 +194,7 @@ class SyncSiaesDecpDetailsCommandTest(TestCase):
             has_won_contract_last_3_years=True,
         )
 
-    @patch("lemarche.utils.apis.api_slack.send_message_to_channel")
+    @patch("lemarche.utils.slack.tasks.send_message_to_channel")
     @patch("lemarche.utils.apis.api_decp.fetch_recent_contracts")
     def test_wet_run_stocke_les_marchés(self, mocked_fetch, mocked_slack):
         mocked_fetch.return_value = [
@@ -235,7 +235,7 @@ class SyncSiaesDecpDetailsCommandTest(TestCase):
 
         self.assertEqual(SiaePublicMarket.objects.filter(siae=self.siae).count(), 0)
 
-    @patch("lemarche.utils.apis.api_slack.send_message_to_channel")
+    @patch("lemarche.utils.slack.tasks.send_message_to_channel")
     @patch("lemarche.utils.apis.api_decp.fetch_recent_contracts")
     def test_wet_run_met_a_jour_decp_details_last_sync_date(self, mocked_fetch, mocked_slack):
         mocked_fetch.return_value = [{"uid": "uid-001", "acheteur_nom": "Mairie", "objet": "Travaux", "montant": None}]
@@ -259,7 +259,7 @@ class SyncSiaesDecpDetailsCommandTest(TestCase):
 
         mocked_fetch.assert_not_called()
 
-    @patch("lemarche.utils.apis.api_slack.send_message_to_channel")
+    @patch("lemarche.utils.slack.tasks.send_message_to_channel")
     @patch("lemarche.utils.apis.api_decp.fetch_recent_contracts")
     def test_wet_run_remplace_les_marchés_existants(self, mocked_fetch, mocked_slack):
         SiaePublicMarket.objects.create(
