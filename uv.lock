@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = "==3.13.*"
 
 [[package]]
@@ -474,14 +474,14 @@ wheels = [
 
 [[package]]
 name = "django-js-asset"
-version = "3.1.2"
+version = "4.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e6/91/c63f136f553ec24fc46ccf20ac7292a8df04815b383975b6f3f7f0060217/django_js_asset-3.1.2.tar.gz", hash = "sha256:1fc7584199ed1941ed7c8e7b87ca5524bb0f2ba941561d2a104e88ee9f07bedd", size = 9471, upload-time = "2025-03-04T15:22:49.789Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/0f/36/cb9448f35d7e0727c90ca110a16fc506811292853ee7083f03aaf389f7a1/django_js_asset-4.2.0.tar.gz", hash = "sha256:73fdf6f65cf725b538c75c8996d0f19a862649b8add0a6fdc5517af17e194dc0", size = 39532, upload-time = "2026-09-24T08:39:26.633Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a6/cf/b208767db5e56b5189829f753eec6a14ee75d074922dc2bd19220b22a34d/django_js_asset-3.1.2-py3-none-any.whl", hash = "sha256:b5ffe376aebbd73b7af886d675ac9f43ca63b39540190fa8409c9f8e79145f68", size = 5905, upload-time = "2025-03-04T15:22:51.152Z" },
+    { url = "https://files.pythonhosted.org/packages/e2/0d/5c37278ff870a99c9bfc2bcd6397cf1f998c7b2cf267eda0d211143aa554/django_js_asset-4.2.0-py3-none-any.whl", hash = "sha256:1013213eaee948fbfe32f8b575bafa299da3049f6bb777d0c1c9c0ae656133f6", size = 16157, upload-time = "2026-09-24T08:39:24.997Z" },
 ]
 
 [[package]]
