@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = "==3.13.*"
 
 [[package]]
@@ -102,15 +102,18 @@ wheels = [
 
 [[package]]
 name = "brevo-python"
-version = "1.2.0"
+version = "5.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "certifi" },
-    { name = "python-dateutil" },
-    { name = "six" },
-    { name = "urllib3" },
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "pydantic-core" },
+    { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a8/13/9c5fcc8be41af68273e3861e84eef48f655392b51d55a69f9c05a2fc9ba2/brevo_python-1.2.0.tar.gz", hash = "sha256:50d2a1aecfea81a0c162a43f78a7032b4917ba59f64fa0bee4758e45321c6d00", size = 445121, upload-time = "2025-07-13T15:15:04Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c1/c6/d12adf1cff3f9a0e1c2fd40418c597a7b0b7e5cf55a0302e07dab5c598f8/brevo_python-5.1.0.tar.gz", hash = "sha256:2dfafc749fe2ff7122355ea3c3f13879442f50a7b44f997769c2d90e1c462298", size = 527064, upload-time = "2026-10-13T16:51:57.611Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/17/93/18e0473d18e814afb8f91c9598e041b44813305b12a410fd487b523fdc3a/brevo_python-5.1.0-py3-none-any.whl", hash = "sha256:f52dba6ca8d784ff2b6250ff8dacfc58fe55143158bf97f5df3cada5d36507b3", size = 1013953, upload-time = "2026-10-13T16:51:56.087Z" },
+]
 
 [[package]]
 name = "certifi"
