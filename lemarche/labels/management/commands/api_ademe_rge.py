@@ -5,8 +5,8 @@ from django.utils import timezone
 
 from lemarche.labels.models import Label
 from lemarche.siaes.models import Siae, SiaeLabel
-from lemarche.utils.apis import api_slack
 from lemarche.utils.commands import BaseCommand
+from lemarche.utils.slack.tasks import send_message_to_channel
 
 
 LABEL_NAME = "ADEME RGE"
@@ -96,4 +96,4 @@ class Command(BaseCommand):
             label.logs.append(log_item)
             label.save()
 
-            api_slack.send_message_to_channel("\n".join(msg_success))
+            send_message_to_channel("\n".join(msg_success))

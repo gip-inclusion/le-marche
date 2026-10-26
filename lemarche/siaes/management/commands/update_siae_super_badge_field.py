@@ -4,8 +4,8 @@ from django.conf import settings
 from sentry_sdk.crons import monitor
 
 from lemarche.siaes.models import Siae
-from lemarche.utils.apis import api_slack
 from lemarche.utils.commands import BaseCommand
+from lemarche.utils.slack.tasks import send_message_to_channel
 
 
 class Command(BaseCommand):
@@ -52,4 +52,4 @@ class Command(BaseCommand):
             f"Siaes with badge: before {siae_with_super_badge_count_before} / after {siae_with_super_badge_count_after}",  # noqa
         ]
         self.stdout_messages_success(msg_success)
-        api_slack.send_message_to_channel("\n".join(msg_success), service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL)
+        send_message_to_channel("\n".join(msg_success), service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL)

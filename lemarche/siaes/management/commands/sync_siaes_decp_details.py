@@ -31,8 +31,9 @@ from django.utils import timezone
 from sentry_sdk.crons import monitor
 
 from lemarche.siaes.models import Siae, SiaePublicMarket
-from lemarche.utils.apis import api_decp, api_slack
+from lemarche.utils.apis import api_decp
 from lemarche.utils.commands import BaseCommand
+from lemarche.utils.slack.tasks import send_message_to_channel
 
 
 logger = logging.getLogger(__name__)
@@ -211,4 +212,4 @@ class Command(BaseCommand):
         ]
         self.stdout_messages_success(msg_success)
         if options["wet_run"]:
-            api_slack.send_message_to_channel("\n".join(msg_success))
+            send_message_to_channel("\n".join(msg_success))
