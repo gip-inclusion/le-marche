@@ -16,6 +16,9 @@ updates:
     commit-message:
       prefix: "chore(deps): "
       prefix-development: "chore(dev-deps): "
+    # Only allow updates to the lockfile for pip and
+    # ignore any version updates that affect the manifest
+    versioning-strategy: lockfile-only
     # Allow up to 20 concurrent open PRs
     open-pull-requests-limit: 20
     allow:
