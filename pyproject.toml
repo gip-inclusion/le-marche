@@ -21,7 +21,7 @@ dependencies = [
     "django-compressor",
     "django-cors-headers",
     "django-datadog-logger",
-    "django-dsfr==1.4.3",
+    "django-dsfr==3.6.1",
     "django-environ",
     "django-extensions",
     "django-filter",
