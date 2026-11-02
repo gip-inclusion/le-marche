@@ -2,10 +2,6 @@ version = 1
 revision = 5
 requires-python = "==3.13.*"
 
-[options]
-exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for backwards compatibility when using relative exclude-newer values.
-exclude-newer-span = "P5D"
-
 [[package]]
 name = "annotated-types"
 version = "0.8.0"
@@ -502,14 +498,14 @@ wheels = [
 
 [[package]]
 name = "django-js-asset"
-version = "4.2.0"
+version = "5.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/0f/36/cb9448f35d7e0727c90ca110a16fc506811292853ee7083f03aaf389f7a1/django_js_asset-4.2.0.tar.gz", hash = "sha256:73fdf6f65cf725b538c75c8996d0f19a862649b8add0a6fdc5517af17e194dc0", size = 39532, upload-time = "2026-09-24T08:39:26.633Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/eb/26/3ee84cd766d8abb0685cec3eef6dbbe7aa1ae2ad39999ffa725452fd70d5/django_js_asset-5.0.0.tar.gz", hash = "sha256:06ce0ab4746575ac62e3b91f1a6a5457e8bec8adbce44eb831074bf80d67ab40", size = 39584, upload-time = "2026-10-26T13:32:28.629Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e2/0d/5c37278ff870a99c9bfc2bcd6397cf1f998c7b2cf267eda0d211143aa554/django_js_asset-4.2.0-py3-none-any.whl", hash = "sha256:1013213eaee948fbfe32f8b575bafa299da3049f6bb777d0c1c9c0ae656133f6", size = 16157, upload-time = "2026-09-24T08:39:24.997Z" },
+    { url = "https://files.pythonhosted.org/packages/9a/f0/7672844ad66764c68eae0b0854d1f03f39f561c7a538079cddc551eb16ab/django_js_asset-5.0.0-py3-none-any.whl", hash = "sha256:d8de7e074dc8fa87e9354e642c0d78238f8967752a4617c2a2b9df752a86f5bf", size = 18547, upload-time = "2026-10-26T13:32:27.416Z" },
 ]
 
 [[package]]
