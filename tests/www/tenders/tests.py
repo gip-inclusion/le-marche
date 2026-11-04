@@ -439,6 +439,99 @@ class TenderCreateViewTest(TestCase):
                 raise e
 
 
+class TenderUpdateViewTest(TestCase):
+    """
+    Draft edition via the wizard (tenders:update) must be restricted to the Tender's author,
+    on every step (GET and POST), and only while the Tender is a draft.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_buyer = UserFactory(kind=User.KIND_BUYER)
+        cls.other_buyer = UserFactory(kind=User.KIND_BUYER)
+        cls.sectors = [SectorFactory().slug for _ in range(2)]
+        cls.location_slug = PerimeterFactory(insee_code="06195").slug
+        TenderInstruction.objects.create(
+            title="instruction_title",
+            text="tender instruction text",
+            tender_type=KIND_QUOTE,
+            tender_source=TenderSourcesChoices.SOURCE_FORM,
+        )
+
+    def setUp(self):
+        self.tender = TenderFactory(
+            author=self.user_buyer,
+            kind=KIND_QUOTE,
+            title="Original title",
+            status=Tender.StatusChoices.STATUS_DRAFT,
+        )
+        self.url = reverse("tenders:update", kwargs={"slug": self.tender.slug})
+
+    def _step_general_data(self, title="Overwritten title"):
+        return {
+            "tender_create_multi_step_view-current_step": "general",
+            "general-kind": KIND_QUOTE,
+            "general-title": title,
+            "general-description": "<p>Overwritten description</p>",
+            "general-sectors": self.sectors,
+            "general-location": self.location_slug,
+            "general-is_country_area": False,
+        }
+
+    def _assert_tender_unchanged(self):
+        self.tender.refresh_from_db()
+        self.assertEqual(self.tender.title, "Original title")
+        self.assertEqual(self.tender.status, Tender.StatusChoices.STATUS_DRAFT)
+
+    def test_anonymous_user_is_redirected_to_login(self):
+        for method in ("get", "post"):
+            with self.subTest(method=method):
+                response = getattr(self.client, method)(self.url, data=self._step_general_data())
+                self.assertEqual(response.status_code, 302)
+                self.assertTrue(response.url.startswith(reverse("account_login")))
+        self.assertEqual(TenderStepsData.objects.count(), 0)
+        self._assert_tender_unchanged()
+
+    def test_anonymous_user_cannot_submit_final_step(self):
+        response = self.client.post(self.url, data={"tender_create_multi_step_view-current_step": "confirmation"})
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith(reverse("account_login")))
+        self._assert_tender_unchanged()
+
+    def test_other_user_gets_404(self):
+        self.client.force_login(self.other_buyer)
+        for method in ("get", "post"):
+            with self.subTest(method=method):
+                response = getattr(self.client, method)(self.url, data=self._step_general_data())
+                self.assertEqual(response.status_code, 404)
+        self.assertEqual(TenderStepsData.objects.count(), 0)
+        self._assert_tender_unchanged()
+
+    def test_author_cannot_edit_non_draft_tender(self):
+        self.tender.status = Tender.StatusChoices.STATUS_SUBMITTED
+        self.tender.save()
+        self.client.force_login(self.user_buyer)
+        for method in ("get", "post"):
+            with self.subTest(method=method):
+                response = getattr(self.client, method)(self.url, data=self._step_general_data())
+                self.assertRedirects(
+                    response,
+                    reverse("tenders:detail", kwargs={"slug": self.tender.slug}),
+                    fetch_redirect_response=False,
+                )
+        self.tender.refresh_from_db()
+        self.assertEqual(self.tender.title, "Original title")
+
+    def test_author_can_access_and_post_step(self):
+        self.client.force_login(self.user_buyer)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post(self.url, data=self._step_general_data())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context_data["form"].errors, {})
+        self.assertEqual(response.context_data["view"].steps.current, "detail")
+
+
 class TenderListViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
