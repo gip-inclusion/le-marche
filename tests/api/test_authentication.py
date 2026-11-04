@@ -97,3 +97,18 @@ class CustomBearerAuthenticationTest(TestCase):
         result = self.authentication.authenticate(request)
 
         self.assertIsNone(result)
+
+    def test_authentication_with_inactive_user(self):
+        """
+        An inactive user must not be able to authenticate with its (non revoked) API key.
+        """
+        self.user.is_active = False
+        self.user.save(update_fields=["is_active"])
+
+        request = self.factory.get(self.url)
+        request.headers = {"Authorization": "Bearer " + self.user_token}
+
+        with self.assertRaises(AuthenticationFailed) as context:
+            self.authentication.authenticate(request)
+
+        self.assertEqual(str(context.exception), "Invalid or expired token")
