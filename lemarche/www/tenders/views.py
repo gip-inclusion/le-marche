@@ -8,6 +8,7 @@ import openpyxl
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import redirect_to_login
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import FileSystemStorage
@@ -126,15 +127,21 @@ class TenderCreateMultiStepView(SessionWizardView):
     def get_template_names(self):
         return [self.TEMPLATES[self.steps.current]]
 
-    def get(self, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         """
-        Manage case when slug is sent (Tender draft edition)
+        Manage case when slug is sent (Tender draft edition).
+        Checked on every request (GET and each POST step, including the final one):
+        - the user must be authenticated
+        - the Tender must belong to the user
+        - the Tender must still be a draft
         """
-        if "slug" in self.kwargs:
-            self.instance = get_object_or_404(Tender, slug=self.kwargs.get("slug"))
+        if "slug" in kwargs:
+            if not request.user.is_authenticated:
+                return redirect_to_login(request.get_full_path())
+            self.instance = get_object_or_404(Tender, slug=kwargs.get("slug"), author=request.user)
             if self.instance.status != Tender.StatusChoices.STATUS_DRAFT:
                 return redirect("tenders:detail", slug=self.instance.slug)
-        return super().get(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self, step):
         """
@@ -162,10 +169,8 @@ class TenderCreateMultiStepView(SessionWizardView):
 
     def get_form_instance(self, step):
         """
-        Manage case when slug is sent (Tender draft edition)
+        Manage case when slug is sent (Tender draft edition): self.instance is loaded (with access checks) in dispatch
         """
-        if "slug" in self.kwargs:
-            self.instance = get_object_or_404(Tender, slug=self.kwargs.get("slug"))
         if self.instance is None:
             self.instance = Tender()
         return self.instance
