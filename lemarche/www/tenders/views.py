@@ -1395,7 +1395,26 @@ class TenderDetailGroupementReplyView(SiaeUserRequiredOrTenderSiaeUUIDParamMixin
         uuid_suffix = f"?tender_siae_uuid={tender_siae_uuid}" if tender_siae_uuid else ""
         context["back_url"] = str(reverse_lazy("tenders:detail", args=[tender.slug])) + uuid_suffix
         context["search_url"] = self._build_search_url(tender)
+        context["contact_message"] = self._build_contact_message(tender, initiating_siae)
         return context
+
+    @staticmethod
+    def _build_contact_message(tender: Tender, initiating_siae: Siae) -> str:
+        """Plain-text message; must be rendered auto-escaped as text, never interpolated into JS."""
+        contact_line = initiating_siae.contact_email or ""
+        if initiating_siae.contact_phone:
+            contact_line = f"{initiating_siae.contact_phone_display} — {contact_line}"
+        return (
+            f"Bonjour,\n\n"
+            f"Je suis {initiating_siae.name}, et je réponds actuellement au besoin d'achat suivant :\n"
+            f"« {tender.title} »\n\n"
+            "Je pense que nous pourrions y répondre ensemble en groupement ou en sous-traitance. "
+            "Nos compétences semblent complémentaires.\n\n"
+            "Seriez-vous disponible pour en discuter rapidement ?\n\n"
+            "Cordialement,\n"
+            f"{initiating_siae.contact_full_name} — {initiating_siae.name}\n"
+            f"{contact_line}"
+        )
 
     def _build_search_url(self, tender) -> str:
         sector_slugs = list(tender.sectors.values_list("slug", flat=True))

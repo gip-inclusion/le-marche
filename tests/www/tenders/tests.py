@@ -3029,3 +3029,37 @@ class InspirationalTenderDetailViewTest(TestCase):
         self.assertNotContains(response, "secret-buyer@example.com")
         self.assertNotContains(response, "Entreprise Confidentielle")
         self.assertContains(response, "Collectivité")
+
+
+class TenderDetailGroupementReplyViewTest(TestCase):
+    """V02 (pentest 2026-10): user-controlled fields must never reach a JS/Alpine expression."""
+
+    PAYLOAD = "${console.log(location)}`</textarea><script>alert(1)</script>"
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae = SiaeFactory(
+            name="Structure groupement",
+            contact_first_name=cls.PAYLOAD,
+            contact_last_name="Nom",
+            contact_email="contact@example.com",
+        )
+        cls.siae_user = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae])
+        cls.tender = TenderFactory(title=cls.PAYLOAD)
+        cls.url = reverse("tenders:detail-groupement-reply", kwargs={"slug": cls.tender.slug})
+
+    @patch("lemarche.www.tenders.views.notify_referents_for_groupement")
+    def test_user_content_is_not_rendered_in_js_context(self, _mock_notify):
+        self.client.force_login(self.siae_user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+
+        # The message is rendered as escaped text inside the textarea
+        escaped_payload = "${console.log(location)}`&lt;/textarea&gt;&lt;script&gt;alert(1)&lt;/script&gt;"
+        self.assertIn(f"« {escaped_payload} »", content)
+        self.assertIn(f"{escaped_payload} Nom — Structure groupement", content)
+        self.assertNotIn("<script>alert(1)</script>", content)
+        # No Alpine template literal built from user data anymore
+        self.assertNotIn("message: `", content)
+        self.assertIn('x-data="{ copied: false }"', content)
