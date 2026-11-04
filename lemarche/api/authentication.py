@@ -36,7 +36,7 @@ class CustomBearerAuthentication(BaseAuthentication):
 
         # Validate the token
         try:
-            user = User.objects.has_api_key().get(api_key=token)
+            user = User.objects.has_api_key().get(api_key=token, is_active=True)
         except User.DoesNotExist:
             raise AuthenticationFailed("Invalid or expired token")
 
