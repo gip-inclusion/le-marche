@@ -249,11 +249,8 @@
                 </div>
 
                 {# Prise de contact #}
-                <div class="fr-callout fr-mb-5w"
-                     x-data="{
-                         copied: false,
-                         message: `Bonjour,\n\nJe suis {{ initiating_siae.name|escapejs }}, et je réponds actuellement au besoin d'achat suivant :\n« {{ tender.title|escapejs }} »\n\nJe pense que nous pourrions y répondre ensemble en groupement ou en sous-traitance. Nos compétences semblent complémentaires.\n\nSeriez-vous disponible pour en discuter rapidement ?\n\nCordialement,\n{{ initiating_siae.contact_full_name|escapejs }} — {{ initiating_siae.name|escapejs }}\n{% if initiating_siae.contact_phone %}{{ initiating_siae.contact_phone_display|escapejs }} — {% endif %}{{ initiating_siae.contact_email|escapejs }}`
-                     }">
+                {# User-controlled content is rendered as auto-escaped text, never inside a JS expression #}
+                <div class="fr-callout fr-mb-5w" x-data="{ copied: false }">
                     <h2 class="fr-callout__title fr-h5">Votre prise de contact facilitée</h2>
                     <p class="fr-callout__text fr-mb-2w">
                         Utilisez ce message type pour contacter les structures sélectionnées et leur proposer d'échanger sur une réponse en groupement.
@@ -261,11 +258,11 @@
                     <textarea class="fr-input fr-mb-2w"
                               rows="8"
                               readonly
-                              style="font-family: monospace; font-size: 0.8rem; background: white; resize: none;"
-                              x-text="message"></textarea>
+                              x-ref="contactMessage"
+                              style="font-family: monospace; font-size: 0.8rem; background: white; resize: none;">{{ contact_message }}</textarea>
                     <button type="button"
                             class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-clipboard-line fr-btn--icon-left"
-                            @click="navigator.clipboard.writeText(message); copied = true; setTimeout(() => copied = false, 3000)">
+                            @click="navigator.clipboard.writeText($refs.contactMessage.value); copied = true; setTimeout(() => copied = false, 3000)">
                         <span x-text="copied ? '✓ Message copié !' : 'Copier le message type'">Copier le message type</span>
                     </button>
                 </div>
