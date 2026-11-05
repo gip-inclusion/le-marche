@@ -1877,6 +1877,18 @@ class SiaeContactDetailsViewTest(TestCase):
         self.assertEqual(data["email"], "")
         self.assertEqual(data["phone"], "")
 
+    def test_buyer_gets_404_for_siae_not_live(self):
+        siae_inactive = SiaeFactory(is_active=False)
+        siae_delisted = SiaeFactory(is_active=True, is_delisted=True)
+        for siae in [siae_inactive, siae_delisted]:
+            siae.users.add(UserFactory(kind="SIAE", is_active=True, email=f"contact-{siae.id}@structure.fr"))
+        self.client.force_login(self.user_buyer)
+        for siae in [siae_inactive, siae_delisted]:
+            with self.subTest(siae=siae):
+                response = self.client.get(reverse("siae:contact_details", args=[siae.slug]))
+                self.assertEqual(response.status_code, 404)
+                self.assertNotContains(response, "@structure.fr", status_code=404)
+
     def test_most_recently_logged_in_user_selected(self):
         from datetime import UTC, datetime
 

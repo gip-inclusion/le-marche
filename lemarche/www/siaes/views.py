@@ -179,7 +179,8 @@ class SiaeContactDetailsView(View):
         if not request.user.is_buyer:
             return JsonResponse({"error": "Accès réservé aux acheteurs"}, status=403)
 
-        siae = get_object_or_404(Siae, slug=slug)
+        # only expose contact details of siaes visible in the public catalog
+        siae = get_object_or_404(Siae.objects.is_live(), slug=slug)
         # Select the most recently logged-in active user linked to this siae.
         # Fallback order: last_login desc (nulls last), date_joined desc, id asc for stability.
         contact_user = (
