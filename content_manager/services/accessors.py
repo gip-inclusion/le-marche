@@ -9,6 +9,7 @@ from content_manager.constants import HEADER_FIELDS
 from content_manager.models import CatalogIndexPage, ContentPage
 from content_manager.utils import get_default_site
 
+
 style = color_style()
 
 """

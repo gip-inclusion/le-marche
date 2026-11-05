@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.urls import reverse
+from forms.models import FormField, FormPage
 from wagtail.images.models import Image
 from wagtail.models import Page
 from wagtail.rich_text import RichText
@@ -10,7 +11,7 @@ from wagtailmenus.models.menuitems import FlatMenuItem, MainMenuItem
 from content_manager.models import ContentPage
 from content_manager.services.accessors import get_or_create_footer_menu, get_or_create_main_menu
 from content_manager.utils import get_default_site
-from forms.models import FormField, FormPage
+
 
 ALL_ALLOWED_SLUGS = ["home", "mentions-legales", "accessibilite", "contact"]
 
