@@ -65,12 +65,11 @@ class SiaeSearchBySiretView(SiaeUserRequiredMixin, FormMixin, ListView):
         return context
 
 
-class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, UpdateView):
     form_class = SiaeSearchAdoptConfirmForm
     template_name = "dashboard/siae_search_adopt_confirm.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
-    success_message = "Rattachement confirmé ! Vous pouvez dès à présent mettre à jour sa fiche."
 
     def get_context_data(self, **kwargs):
         """
@@ -91,14 +90,17 @@ class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, SuccessMessa
 
     def form_valid(self, form):
         """
-        - Siae with user? add the User to the Siae
+        - Siae without user? no proof of ownership: the attachment must be validated by the support team
         - Siae with existing user(s)? go through the invitation workflow
         """
-        if not self.object.users.count():
-            self.object.users.add(self.request.user)
-            c = api_brevo.BrevoCompanyApiClient()
-            c.link_company_with_contact_list(self.object.brevo_company_id, [self.request.user.email])
-            return super().form_valid(form)
+        if not self.object.users.exists():
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                "Cette structure n'a pas encore de gestionnaire : votre rattachement doit être vérifié "
+                "par notre équipe. Merci de contacter le support.",
+            )
+            return HttpResponseRedirect(f"{reverse_lazy('pages:contact')}?siret={self.object.siret}")
         else:
             # create SiaeUserRequest + send request email to assignee
             for assignee in self.object.users.all():
@@ -112,9 +114,6 @@ class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, SuccessMessa
             success_message = "La demande a été envoyée aux gestionnaires de la strucure."
             messages.add_message(self.request, messages.SUCCESS, success_message)
             return HttpResponseRedirect(reverse_lazy("dashboard:home"))
-
-    def get_success_url(self):
-        return reverse_lazy("dashboard_siaes:siae_edit", args=[self.kwargs.get("slug")])
 
 
 class SiaeUsersView(SiaeMemberRequiredMixin, DetailView):

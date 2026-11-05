@@ -80,14 +80,16 @@ class DashboardSiaeSearchAdoptViewTest(TestCase):
         url = reverse("dashboard_siaes:siae_search_adopt_confirm", args=[self.siae_without_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Je confirme")
+        self.assertContains(response, "Contacter le support")
+        self.assertNotContains(response, "Je confirme")
 
+        # no proof of ownership: the user must not be attached automatically
         url = reverse("dashboard_siaes:siae_search_adopt_confirm", args=[self.siae_without_user.slug])
         response = self.client.post(url)  # data={}
-        self.assertEqual(response.status_code, 302)  # redirect to success_url
-        self.assertEqual(response.url, f"/profil/prestataires/{self.siae_without_user.slug}/modifier/")
-        self.assertEqual(self.siae_without_user.users.count(), 1)
-        self.assertEqual(self.user_siae.siaes.count(), 1 + 1)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"{reverse('pages:contact')}?siret={self.siae_without_user.siret}")
+        self.assertEqual(self.siae_without_user.users.count(), 0)
+        self.assertEqual(self.user_siae.siaes.count(), 1)
 
     def test_siae_with_existing_user_adopt_confirm(self):
         self.client.force_login(self.user_siae_2)
