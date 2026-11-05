@@ -64,6 +64,18 @@ class SiaeSearchDisplayResultsTest(TestCase):
         self.assertContains(response, "invite-colleagues-modal")
         self.assertContains(response, "invite-colleagues-form")
 
+    def test_search_map_popup_does_not_render_brand_as_html(self):
+        SiaeFactory(is_active=True, brand="<img src=x onerror=alert(1)>", coords=Point(2.35, 48.85))
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # brand is serialized safely in the json_script block
+        self.assertNotContains(response, "<img src=x onerror=alert(1)>")
+        self.assertContains(response, "\\u003Cimg src=x onerror=alert(1)\\u003E")
+        # popup content is built with textContent, not an HTML string
+        self.assertContains(response, "popupTitle.textContent = featureDisplayName;")
+        self.assertNotContains(response, "bindPopup(`")
+
 
 class SiaeSearchHosmozNetworkTest(TestCase):
     @classmethod
@@ -1251,6 +1263,17 @@ class SiaeDetailTest(TestCase):
         NetworkFactory(slug="hosmoz", siaes=[self.siae])
         response = self.client.get(url)
         self.assertContains(response, "Hosmoz")
+
+    def test_map_popup_does_not_render_brand_as_html(self):
+        siae = SiaeFactory(name="Structure XSS", brand="\\x3cimg src=x onerror=alert(1)>")
+        url = reverse("siae:detail", args=[siae.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # the backslash is escaped so the JS string literal cannot decode it into "<"
+        self.assertContains(response, 'const siaeBrand = "\\u005Cx3cimg src\\u003Dx onerror\\u003Dalert(1)\\u003E";')
+        # popup content is built with textContent, not an HTML string
+        self.assertContains(response, ".bindPopup(popupTitle)")
+        self.assertNotContains(response, "bindPopup(`")
 
     def test_traiteurs_engages_promo_displayed_for_traiteur_siae(self):
         sector_traiteur = SectorFactory(slug="traiteur")
