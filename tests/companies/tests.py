@@ -2,6 +2,7 @@ from datetime import timedelta
 from decimal import Decimal
 from io import StringIO
 
+from allauth.account.models import EmailAddress
 from django.core.management import call_command
 from django.db.models import Q
 from django.test import TestCase
@@ -44,6 +45,28 @@ class CompanyQuerysetTest(TestCase):
         # user_tender_count
         self.assertEqual(company_queryset.get(id=self.company.id).user_tender_count_annotated, 0)
         self.assertEqual(company_queryset.get(id=self.company_with_users.id).user_tender_count_annotated, 2)
+
+
+class SetCompanyUsersCommandTest(TestCase):
+    def setUp(self):
+        self.company = CompanyFactory(email_domain_list=["entreprise.example"])
+        self.user_verified = UserFactory(email="verified@entreprise.example")
+        EmailAddress.objects.create(user=self.user_verified, email=self.user_verified.email, verified=True)
+        self.user_unverified = UserFactory(email="unverified@entreprise.example")
+        EmailAddress.objects.create(user=self.user_unverified, email=self.user_unverified.email, verified=False)
+        self.user_without_email_address = UserFactory(email="no-email-address@entreprise.example")
+        self.user_inactive = UserFactory(email="inactive@entreprise.example", is_active=False)
+        EmailAddress.objects.create(user=self.user_inactive, email=self.user_inactive.email, verified=True)
+        self.user_other_domain = UserFactory(email="verified@autre.example")
+        EmailAddress.objects.create(user=self.user_other_domain, email=self.user_other_domain.email, verified=True)
+
+    def test_only_users_with_verified_email_are_attached(self):
+        call_command("set_company_users", "--only-add", stdout=StringIO())
+
+        self.assertQuerySetEqual(self.company.users.all(), [self.user_verified])
+        for user in [self.user_unverified, self.user_without_email_address, self.user_inactive]:
+            user.refresh_from_db()
+            self.assertIsNone(user.company)
 
 
 class CompanySiaeClientReferenceMatchCommandTest(TestCase):
