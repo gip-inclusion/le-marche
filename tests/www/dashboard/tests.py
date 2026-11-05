@@ -3,7 +3,7 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.urls import reverse
 
-from lemarche.conversations.models import EmailGroup
+from lemarche.conversations.models import DisabledEmail, EmailGroup
 from lemarche.siaes.constants import KIND_HANDICAP_LIST, KIND_INSERTION_LIST
 from lemarche.users.models import User
 from tests.companies.factories import CompanyFactory
@@ -451,3 +451,24 @@ class DisabledEmailEditViewTest(TestCase):
         self.assertContains(response, "Vos préférences de notifications ont été mises à jour.")
         self.user.refresh_from_db()
         self.assertEqual(self.user.disabled_emails.count(), 0)
+
+    @patch("lemarche.utils.apis.api_brevo.brevo_python.ContactsApi")
+    @patch("lemarche.utils.apis.api_brevo.BrevoBaseApiClient.is_production_env", True)
+    def test_form_submission_does_not_delete_other_users_preferences(self, mock_contacts_api):
+        other_user = UserFactory(kind=User.KIND_BUYER)
+        other_disabled_email = DisabledEmail.objects.create(user=other_user, group=self.email_group_1)
+        DisabledEmail.objects.create(user=self.user, group=self.email_group_1)
+
+        self.client.force_login(self.user)
+        self.client.post(
+            self.url,
+            {
+                f"email_group_{self.email_group_1.pk}": True,
+                f"email_group_{self.email_group_2.pk}": False,
+            },
+            follow=True,
+        )
+
+        self.assertEqual(self.user.disabled_emails.count(), 1)
+        self.assertIsNotNone(self.user.disabled_emails.get(group=self.email_group_2))
+        self.assertTrue(DisabledEmail.objects.filter(pk=other_disabled_email.pk).exists())
