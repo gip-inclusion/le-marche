@@ -12,7 +12,7 @@ dependencies = [
     "boto3",
     "brevo-python<=1.2.0",
     "crawlerdetect",
-    "django>=5.2,<6",
+    "django>=6.0,<6.1",
     "django-admin-list-filters",
     "django-allauth",
     "django-anymail",
