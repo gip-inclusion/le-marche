@@ -10,19 +10,6 @@
 
 {% block content %}
 <div class="fr-container fr-container--fluid fr-mb-md-14v">
-    {% if new_user_without_password %}
-        <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center fr-mb-6v">
-            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                <div id="new-user-without-password-login-message" class="fr-alert fr-alert--warning">
-                    <h3 class="fr-alert__title">Bienvenue sur le marché de l'inclusion !</h3>
-                    <p>
-                        Vous n'avez pas encore défini de mot de passe.<br />
-                        Pour le faire, veuillez cliquer <a href="{% url 'auth:password_reset' %}"><strong>ici</strong></a>.
-                    </p>
-                </div>
-            </div>
-        </div>
-    {% endif %}
     <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
         <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
             <div class="fr-container fr-background-alt--grey fr-px-md-0 fr-py-10v fr-py-md-14v">
@@ -32,12 +19,10 @@
                         <div>
                             <form method="post" id="login-form">
                                 {% csrf_token %}
-                                {% if not new_user_without_password %}
-                                    {% if form.non_field_errors %}
-                                        <section class="fr-my-4v fr-input-group fr-input-group--error">
-                                            {{ form.non_field_errors }}
-                                        </section>
-                                    {% endif %}
+                                {% if form.non_field_errors %}
+                                    <section class="fr-my-4v fr-input-group fr-input-group--error">
+                                        {{ form.non_field_errors }}
+                                    </section>
                                 {% endif %}
                                 <fieldset class="fr-fieldset" id="login-1760-fieldset" aria-labelledby="login-1760-fieldset-messages">
                                     <div class="fr-fieldset__element">

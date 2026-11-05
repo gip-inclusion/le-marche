@@ -340,6 +340,26 @@ class SignupFormTestcase(TestCase):
         self.assertTrue(form.is_valid())
 
 
+class LoginViewEnumerationTest(TestCase):
+    def test_failed_login_response_does_not_depend_on_account_state(self):
+        """
+        A failed login should display the same generic error, whether the account exists
+        (with or without a password) or not: no user enumeration.
+        """
+        user_with_password = UserFactory(email="user-with-password@example.com")
+        user_without_password = UserFactory(email="user-without-password@example.com")
+        # only way to have an empty password field
+        User.objects.filter(id=user_without_password.id).update(password="")
+
+        for email in [user_with_password.email, user_without_password.email, "unknown-user@example.com"]:
+            with self.subTest(email=email):
+                response = self.client.post(reverse("account_login"), {"login": email, "password": "wrong-password"})
+                self.assertEqual(response.status_code, 200)
+                self.assertNotIn("new_user_without_password", response.context)
+                self.assertContains(response, "L’adresse e-mail ou le mot de passe sont incorrects.")
+                self.assertNotContains(response, "pas encore défini de mot de passe")
+
+
 class LoginFormTest(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
@@ -406,24 +426,6 @@ class LoginFormTest(StaticLiveServerTestCase):
         # error message should be displayed
         messages = driver.find_element(By.CSS_SELECTOR, "section.fr-input-group--error")
         self.assertTrue("L’adresse e-mail ou le mot de passe sont incorrects." in messages.text)
-
-    def test_user_empty_credentials_should_see_password_reset_message(self):
-        existing_user = UserFactory(email="existing-user@example.com", password="")
-        # only way to have an empty password field
-        User.objects.filter(id=existing_user.id).update(password="")
-        driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('account_login')}")
-
-        driver.find_element(By.CSS_SELECTOR, "input#id_login").send_keys("existing-user@example.com")
-        driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys("password")
-
-        driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
-
-        # should not submit form
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('account_login')}")
-        # # new-user-without-password-login-message message should be displayed
-        messages = driver.find_element(By.CSS_SELECTOR, "div#new-user-without-password-login-message")
-        self.assertTrue("pas encore défini de mot de passe" in messages.text)
 
     @classmethod
     def tearDownClass(cls):
