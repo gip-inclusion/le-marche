@@ -1,4 +1,4 @@
-from allauth.account.views import LoginView, SignupView
+from allauth.account.views import ConfirmEmailView, LoginView, SignupView
 from django.contrib.auth import views as auth_views
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
@@ -42,6 +42,17 @@ class CustomSignupView(SuccessMessageMixin, SignupView):
             )
 
         return success_message
+
+
+class CustomConfirmEmailView(ConfirmEmailView):
+    def logout_other_user(self, confirmation):
+        """
+        allauth logs out the current user when the confirmation link belongs to another account,
+        including on GET: any (cross-site) link would log out the user.
+        Only do it on POST (CSRF protected), i.e. once the user explicitly confirmed.
+        """
+        if self.request.method == "POST":
+            super().logout_other_user(confirmation)
 
 
 class PasswordResetView(auth_views.PasswordResetView):
