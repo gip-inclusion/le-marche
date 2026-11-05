@@ -70,8 +70,8 @@
         document.addEventListener("DOMContentLoaded", function() {
             // map
             // siae coords output as floats with commas. We need to transform them into floats.
-            const siaeName = "{{ siae.name }}";
-            const siaeBrand = "{{ siae.brand|default:'' }}";
+            const siaeName = "{{ siae.name|escapejs }}";
+            const siaeBrand = "{{ siae.brand|default:''|escapejs }}";
             const siaeLatitudeString = "{{ siae.coords.x }}";
             const siaeLongitudeString = "{{ siae.coords.y }}";
             const siaeLatitudeFloat = parseFloat(siaeLatitudeString.replace(',', '.'));
@@ -100,9 +100,12 @@
             });
 
             // add marker (with popup on click)
-            var siaeDisplayName = siaeBrand ? siaeBrand : siaeName;
+            // build the popup with DOM nodes (textContent) to avoid HTML injection
+            var popupTitle = document.createElement("p");
+            popupTitle.className = "h6";
+            popupTitle.textContent = siaeBrand ? siaeBrand : siaeName;
             L.marker([siaeLongitudeFloat, siaeLatitudeFloat], {icon: customLeafletIcon})
-            .bindPopup(`<p class="h6">${siaeDisplayName}</p></a>`)
+            .bindPopup(popupTitle)
             .addTo(map);
 
             {% if form.errors %}
