@@ -72,8 +72,8 @@ class DisabledEmailEditForm(forms.Form):
 
         self.user.disabled_emails.set(disabled_emails)
 
-        # remove old disabled_emails
-        DisabledEmail.objects.exclude(pk__in=[de.pk for de in disabled_emails]).delete()
+        # remove old disabled_emails (only those of the current user)
+        DisabledEmail.objects.filter(user=self.user).exclude(pk__in=[de.pk for de in disabled_emails]).delete()
 
         update_contact_email_blacklisted(self.user.email, disabled_emails_marketing)
 
