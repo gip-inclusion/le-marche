@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import locale
 import os
-import warnings
 
 import environ
 from botocore.config import Config
@@ -100,6 +99,7 @@ DJANGO_APPS = [
     "django.contrib.flatpages",
     "django.contrib.gis",
     "django.contrib.humanize",
+    "django.contrib.postgres",
 ]
 
 DJANGO_DSFR_APPS = [
@@ -242,10 +242,6 @@ WSGI_APPLICATION = "config.wsgi.application"
 # for review apps
 # if none, will use Site.objects.get_current().domain instead
 DEPLOY_URL = env.str("DEPLOY_URL", None)
-
-# TODO: Remove with Django 6.0
-warnings.filterwarnings("ignore", "The FORMS_URLFIELD_ASSUME_HTTPS transitional setting is deprecated.")
-FORMS_URLFIELD_ASSUME_HTTPS = True
 
 # Database
 # ------------------------------------------------------------------------------
