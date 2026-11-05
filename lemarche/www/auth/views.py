@@ -14,15 +14,11 @@ class CustomLoginView(LoginView):
 
     def get_context_data(self, **kwargs):
         """
-        - Show post-migration message to existing users (they need to reset their password).
         - Get next param to append to the signup url
+        Note: do not expose any account-specific state here (e.g. "user without password"),
+        to avoid user enumeration through the login form.
         """
         context = super().get_context_data(**kwargs)
-        email = self.request.POST.get("login", "")
-        if email:
-            user = User.objects.filter(email=email.lower()).first()
-            if user:
-                context["new_user_without_password"] = True if not getattr(user, "password", "") else False
         next_url = self.request.GET.get("next", None)
         if next_url:
             context["next_param"] = f"?next={next_url}"
