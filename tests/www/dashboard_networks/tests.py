@@ -90,6 +90,35 @@ class DashboardNetworkViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, f"/profil/reseaux/{self.network_1.slug}/prestataires/")
 
+    def test_network_siae_tender_list_status_filters(self):
+        tender_not_sent = TenderFactory(title="Besoin non distribué")
+        TenderSiae.objects.create(tender=tender_not_sent, siae=self.siae_1)
+        self.client.force_login(self.user_network_1)
+        # default: only tenders sent to the siae
+        url = reverse("dashboard_networks:siae_tender_list", args=[self.network_1.slug, self.siae_1.slug])
+        response = self.client.get(url)
+        self.assertContains(response, self.tender_1.title)
+        self.assertNotContains(response, tender_not_sent.title)
+        # known statuses
+        for status in ["DISPLAY", "CONTACT-CLICK"]:
+            with self.subTest(status=status):
+                url = reverse(
+                    "dashboard_networks:siae_tender_list", args=[self.network_1.slug, self.siae_1.slug, status]
+                )
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200)
+                self.assertNotContains(response, tender_not_sent.title)
+        # unknown status must not bypass the default filter
+        url = reverse("dashboard_networks:siae_tender_list", args=[self.network_1.slug, self.siae_1.slug, "UNKNOWN"])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_network_tender_siae_list_unknown_status(self):
+        self.client.force_login(self.user_network_1)
+        url = reverse("dashboard_networks:tender_siae_list", args=[self.network_1.slug, self.tender_1.slug, "UNKNOWN"])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
     def test_tender_list_in_network_tender_list(self):
         self.client.force_login(self.user_network_1)
         url = reverse("dashboard_networks:tender_list", args=[self.network_1.slug])

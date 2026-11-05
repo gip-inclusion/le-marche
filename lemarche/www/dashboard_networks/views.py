@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.paginator import Paginator
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.text import Truncator
@@ -70,12 +71,20 @@ class DashboardNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
     queryset = TenderSiae.objects.select_related("tender", "siae").all()
     context_object_name = "tendersiaes"
     status = None
+    STATUS_FILTERS = {
+        None: {"email_send_date__isnull": False},  # default
+        "DISPLAY": {"detail_display_date__isnull": False},
+        "CONTACT-CLICK": {"detail_contact_click_date__isnull": False},
+    }
 
     def get(self, request, status=None, *args, **kwargs):
         """
+        - check that the status is allowed
         - check that both the Siae & the Network exist
         - check that the Siae belongs to the Network
         """
+        if status not in self.STATUS_FILTERS:
+            raise Http404
         self.status = status
         if "slug" in self.kwargs:
             self.network = get_object_or_404(Network, slug=self.kwargs.get("slug"))
@@ -88,13 +97,7 @@ class DashboardNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         qs = qs.filter(siae=self.siae)
-        if self.status:
-            if self.status == "DISPLAY":
-                qs = qs.filter(detail_display_date__isnull=False)
-            elif self.status == "CONTACT-CLICK":
-                qs = qs.filter(detail_contact_click_date__isnull=False)
-        else:  # default
-            qs = qs.filter(email_send_date__isnull=False)
+        qs = qs.filter(**self.STATUS_FILTERS[self.status])
         return qs
 
     def get_context_data(self, **kwargs):
@@ -203,8 +206,11 @@ class DashboardNetworkTenderSiaeListView(NetworkMemberRequiredMixin, ListView):
 
     def get(self, request, status=None, *args, **kwargs):
         """
+        - check that the status is allowed
         - fetch the Network & the Tender
         """
+        if status not in (None, "CONTACT-CLICK"):
+            raise Http404
         self.status = status
         if "slug" in self.kwargs:
             self.network = get_object_or_404(Network, slug=self.kwargs.get("slug"))
