@@ -260,6 +260,21 @@ class TenderCreateViewTest(TestCase):
             ),
         )
 
+    def test_tender_wizard_form_anonymous_with_existing_user_email(self):
+        tenders_step_data = self._generate_fake_data_form(
+            _step_3={"contact-contact_email": self.user_buyer.email.upper()}
+        )
+        for data_step in tenders_step_data[:2]:
+            self.client.post(reverse("tenders:create"), data=data_step)
+        response = self.client.post(reverse("tenders:create"), data=tenders_step_data[2])
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("contact_email", response.context_data["form"].errors)
+        # the wizard is stuck on the contact step: no tender is attributed to the existing account
+        for data_step in tenders_step_data[3:]:
+            self.client.post(reverse("tenders:create"), data=data_step)
+        self.assertFalse(Tender.objects.filter(title=tenders_step_data[0].get("general-title")).exists())
+        self.assertEqual(self.user_buyer.tenders.count(), 0)
+
     @patch("lemarche.www.tenders.views.add_to_contact_list", lambda user, contact_type, tender: None)
     def test_tender_wizard_form_all_good_perimeters(self):
         self.client.force_login(self.user_buyer)
