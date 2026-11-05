@@ -5,9 +5,7 @@ from io import BytesIO
 from bs4 import BeautifulSoup
 from django.core.files.images import ImageFile
 from wagtail.images.models import Image
-from wagtail.models import Collection, Site
-from wagtailmenus.models.menuitems import MainMenuItem
-from wagtailmenus.models.menus import FlatMenu, MainMenu
+from wagtail.models import Site
 
 
 def import_image(full_path: str, title: str) -> Image:
@@ -23,57 +21,15 @@ def import_image(full_path: str, title: str) -> Image:
         return image
 
 
-def get_or_create_collection(col_name: str) -> Collection:
-    qs = Collection.objects.filter(name=col_name)
-    if qs.count():
-        return qs.first()
-    else:
-        root_coll = Collection.get_first_root_node()
-        result = root_coll.add_child(name=col_name)
-        return result
-
-
-def get_or_create_footer_menu() -> FlatMenu:
+def get_default_site() -> Site:
     """
-    Get the footer menu or create it if it doesn't already exist
-
-    In any case, return it.
+    Returns the default site, or the first one if none is set.
     """
+    site = Site.objects.filter(is_default_site=True).first()
+    if not site:
+        site = Site.objects.filter().first()
 
-    default_site = Site.objects.filter(is_default_site=True).first()
-    footer_menu = FlatMenu.objects.filter(handle="footer", site=default_site).first()
-
-    if not footer_menu:
-        footer_menu = FlatMenu.objects.create(title="Pied de page", handle="footer", site=default_site)
-
-    return footer_menu
-
-
-def get_or_create_main_menu() -> MainMenu:
-    """
-    Get the main menu or create it if it doesn't already exist
-
-    In any case, return it.
-    """
-
-    default_site = Site.objects.filter(is_default_site=True).first()
-    main_menu = MainMenu.objects.filter(site=default_site).first()
-
-    if not main_menu:
-        main_menu = MainMenu.objects.create(site=default_site, max_levels=2)
-
-        # Init the main menu with the home page
-        home_page = default_site.root_page
-
-        menu_item = {
-            "sort_order": 0,
-            "link_page": home_page,
-            "link_text": "Accueil",
-            "menu": main_menu,
-        }
-        MainMenuItem.objects.create(**menu_item)
-
-    return main_menu
+    return site
 
 
 def get_streamblock_raw_text(block) -> str:

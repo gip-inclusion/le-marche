@@ -2,23 +2,22 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.urls import reverse
-from forms.models import FormField, FormPage
 from wagtail.images.models import Image
-from wagtail.models import Page, Site
+from wagtail.models import Page
 from wagtail.rich_text import RichText
 from wagtailmenus.models.menuitems import FlatMenuItem, MainMenuItem
 
 from content_manager.models import ContentPage
-from content_manager.utils import get_or_create_footer_menu, get_or_create_main_menu
-
+from content_manager.services.accessors import get_or_create_footer_menu, get_or_create_main_menu
+from content_manager.utils import get_default_site
+from forms.models import FormField, FormPage
 
 ALL_ALLOWED_SLUGS = ["home", "mentions-legales", "accessibilite", "contact"]
 
 
 class Command(BaseCommand):
     help = """
-    Creates a series of starter pages, in order to avoid new sites having only a
-    blank "Welcome to Wagtail" page.
+    Creates a series of starter pages, in order to avoid new sites having only a blank "Welcome to Wagtail" page.
     """
 
     def add_arguments(self, parser):
@@ -27,14 +26,26 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **kwargs):
-        pictograms_exist = Image.objects.filter(title__contains="Pictogrammes DSFR").count()
-        if not pictograms_exist:
-            call_command("import_dsfr_pictograms")
-
         slugs = kwargs.get("slug")
 
         if not slugs:
+            # Only run the script on a new site or for specific slugs
+            if Page.objects.last().id > 2:
+                self.stdout.write(
+                    self.style.NOTICE(
+                        "The site appears to already have pages, so this script won't run without params."
+                    )
+                )
+                self.stdout.write(
+                    self.style.NOTICE("Please run this script on a new site, or with the 'slug' parameter.")
+                )
+                return
+
             slugs = ALL_ALLOWED_SLUGS
+
+        pictograms_exist = Image.objects.filter(title__contains="Pictogrammes DSFR").count()
+        if not pictograms_exist:
+            call_command("import_dsfr_pictograms")
 
         for slug in slugs:
             if slug == "home":
@@ -135,7 +146,7 @@ class Command(BaseCommand):
         home_page = root.add_child(instance=ContentPage(title=title, body=body, show_in_menus=True))
 
         # Define it as default for the default site
-        site = Site.objects.filter(is_default_site=True).first()
+        site = get_default_site()
 
         site.root_page_id = home_page.id
         site.save()
@@ -160,7 +171,7 @@ class Command(BaseCommand):
             self.stdout.write(f"The {slug} page seem to already exist with id {already_exists.id}")
             return
 
-        home_page = Site.objects.filter(is_default_site=True).first().root_page
+        home_page = get_default_site().root_page
         new_page = home_page.add_child(instance=ContentPage(title=title, body=body, slug=slug, show_in_menus=True))
 
         footer_menu = get_or_create_footer_menu()
@@ -200,7 +211,7 @@ class Command(BaseCommand):
 
         thank_you_text = RichText("<p>Merci pour votre message ! Nous reviendrons vers vous rapidement.</p>")
 
-        default_site = Site.objects.filter(is_default_site=True).first()
+        default_site = get_default_site()
         home_page = default_site.root_page
         contact_page = home_page.add_child(
             instance=FormPage(title=title, slug=slug, intro=intro, thank_you_text=thank_you_text, show_in_menus=True)
