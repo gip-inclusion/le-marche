@@ -3,6 +3,8 @@ Useful functions to interact with an S3 bucket.
 https://github.com/betagouv/itou/blob/master/itou/utils/storage/s3.py
 """
 
+import uuid
+
 import boto3
 from django.conf import settings
 
@@ -21,6 +23,9 @@ API_CONNECTION_DICT = {
 class S3Upload:
     def __init__(self, kind="default"):
         self.config = self.get_config(kind)
+        # Each signed policy is restricted to a random, server-generated prefix,
+        # so that it cannot be reused to overwrite existing objects (e.g. another siae's logo)
+        self.config["key_path"] = f"{self.config['key_path']}/{uuid.uuid4().hex}"
 
     @property
     def form_values(self):
@@ -45,7 +50,10 @@ class S3Upload:
             settings.S3_STORAGE_BUCKET_NAME,
             key_path,
             ExpiresIn=expiration,
-            Conditions=[["starts-with", "$Content-Type", "image/"]],
+            Conditions=[
+                ["starts-with", "$Content-Type", "image/"],
+                ["content-length-range", 1, self.config["max_file_size"] * 1024 * 1024],
+            ],
         )
         values_dict["fields"].pop("key")
         return values_dict
