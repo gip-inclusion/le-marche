@@ -594,10 +594,11 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.GISModelAdmin, SimpleHistoryAdmi
 
     def logo_url_display(self, siae):
         if siae.logo_url:
-            return mark_safe(
-                f'<a href="{siae.logo_url}" target="_blank">'
-                f'<img src="{siae.logo_url}" title="{siae.logo_url}" style="max-height:300px" />'
-                f"</a>"
+            return format_html(
+                '<a href="{}" target="_blank"><img src="{}" title="{}" style="max-height:300px" /></a>',
+                siae.logo_url,
+                siae.logo_url,
+                siae.logo_url,
             )
         return mark_safe("<div>-</div>")
 
@@ -868,10 +869,11 @@ class SiaeClientReferenceAdmin(admin.ModelAdmin):
 
     def logo_url_display(self, siae_client_reference):
         if siae_client_reference.logo_url:
-            return mark_safe(
-                f'<a href="{siae_client_reference.logo_url}" target="_blank">'
-                f'<img src="{siae_client_reference.logo_url}" title="{siae_client_reference.logo_url}" style="max-height:300px" />'  # noqa
-                f"</a>"
+            return format_html(
+                '<a href="{}" target="_blank"><img src="{}" title="{}" style="max-height:300px" /></a>',
+                siae_client_reference.logo_url,
+                siae_client_reference.logo_url,
+                siae_client_reference.logo_url,
             )
         return mark_safe("<div>-</div>")
 
@@ -896,10 +898,11 @@ class SiaeImageAdmin(admin.ModelAdmin):
 
     def image_url_display(self, siae_image):
         if siae_image.image_url:
-            return mark_safe(
-                f'<a href="{siae_image.image_url}" target="_blank">'
-                f'<img src="{siae_image.image_url}" title="{siae_image.image_url}" style="max-height:300px" />'
-                f"</a>"
+            return format_html(
+                '<a href="{}" target="_blank"><img src="{}" title="{}" style="max-height:300px" /></a>',
+                siae_image.image_url,
+                siae_image.image_url,
+                siae_image.image_url,
             )
         return mark_safe("<div>-</div>")
 
@@ -985,10 +988,11 @@ class SiaeGroupAdmin(admin.ModelAdmin):
 
     def logo_url_display(self, siae_group):
         if siae_group.logo_url:
-            return mark_safe(
-                f'<a href="{siae_group.logo_url}" target="_blank">'
-                f'<img src="{siae_group.logo_url}" title="{siae_group.logo_url}" style="max-height:300px" />'
-                f"</a>"
+            return format_html(
+                '<a href="{}" target="_blank"><img src="{}" title="{}" style="max-height:300px" /></a>',
+                siae_group.logo_url,
+                siae_group.logo_url,
+                siae_group.logo_url,
             )
         return mark_safe("<div>-</div>")
 

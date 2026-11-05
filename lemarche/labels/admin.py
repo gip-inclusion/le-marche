@@ -87,10 +87,11 @@ class LabelAdmin(admin.ModelAdmin):
 
     def logo_url_display(self, instance):
         if instance.logo_url:
-            return mark_safe(
-                f'<a href="{instance.logo_url}" target="_blank">'
-                f'<img src="{instance.logo_url}" title="{instance.logo_url}" style="max-height:300px" />'
-                f"</a>"
+            return format_html(
+                '<a href="{}" target="_blank"><img src="{}" title="{}" style="max-height:300px" /></a>',
+                instance.logo_url,
+                instance.logo_url,
+                instance.logo_url,
             )
         return mark_safe("<div>-</div>")
 
