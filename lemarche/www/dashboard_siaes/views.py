@@ -487,7 +487,9 @@ class SiaeUserRequestConfirmView(SiaeMemberRequiredMixin, SuccessMessageMixin, U
     # success_url = reverse_lazy("dashboard_siaes:siae_users")
 
     def get_object(self):
-        return get_object_or_404(SiaeUserRequest, id=self.kwargs.get("siaeuserrequest_id"))
+        return get_object_or_404(
+            SiaeUserRequest, id=self.kwargs.get("siaeuserrequest_id"), siae__slug=self.kwargs.get("slug")
+        )
 
     def form_valid(self, form):
         """
@@ -516,7 +518,9 @@ class SiaeUserRequestCancelView(SiaeMemberRequiredMixin, SuccessMessageMixin, Up
     # success_url = reverse_lazy("dashboard_siaes:siae_users")
 
     def get_object(self):
-        return get_object_or_404(SiaeUserRequest, id=self.kwargs.get("siaeuserrequest_id"))
+        return get_object_or_404(
+            SiaeUserRequest, id=self.kwargs.get("siaeuserrequest_id"), siae__slug=self.kwargs.get("slug")
+        )
 
     def form_valid(self, form):
         """
