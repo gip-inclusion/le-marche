@@ -1,5 +1,14 @@
 from django.utils.translation import gettext_lazy as _
 
+HEADER_FIELDS = [
+    "header_image",
+    "header_with_title",
+    "header_color_class",
+    "header_large",
+    "header_darken",
+    "header_cta_text",
+    "header_cta_buttons",
+]
 
 BUTTON_TYPE_CHOICES = (
     ("fr-btn", _("Primary")),
@@ -12,6 +21,31 @@ BUTTON_ICON_SIDE = (
     ("fr-btn--icon-left", _("Left")),
     ("fr-btn--icon-right", _("Right")),
 )
+
+BUTTONS_ALIGN_CHOICES = (
+    ("", _("Left")),
+    ("fr-btns-group--center", _("Center")),
+    ("fr-btns-group--right", _("Right")),
+    ("fr-btns-group--right fr-btns-group--inline-reverse", _("Right (reverse order on desktop)")),
+)
+
+GRID_3_4_6_CHOICES = [
+    ("3", "3/12"),
+    ("4", "4/12"),
+    ("6", "6/12"),
+]
+
+GRID_HORIZONTAL_ALIGN_CHOICES = [
+    ("left", _("Left")),
+    ("center", _("Center")),
+    ("right", _("Right")),
+]
+
+GRID_VERTICAL_ALIGN_CHOICES = [
+    ("top", _("Top")),
+    ("middle", _("Middle")),
+    ("bottom", _("Bottom")),
+]
 
 HEADING_CHOICES = [
     ("h2", _("Heading 2")),

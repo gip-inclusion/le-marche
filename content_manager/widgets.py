@@ -13,13 +13,6 @@ class DsfrIconPickerWidget(widgets.TextInput):
     @property
     def media(self):
         return Media(
-            js=[
-                "django-dsfr/icon-picker/assets/js/universal-icon-picker-fix.js",
-            ],
-            css={
-                "all": [
-                    "django-dsfr/icon-picker/assets/css/icon-picker.css",
-                    "dsfr/dist/utility/utility.min.css",
-                ]
-            },
+            css={"all": ["css/icon-picker.css", "dsfr/dist/utility/utility.min.css"]},
+            js=["django-dsfr/icon-picker/assets/js/universal-icon-picker.min.js"],
         )
