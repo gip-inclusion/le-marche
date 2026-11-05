@@ -196,12 +196,15 @@ class SiaeFilterForm(forms.Form):
     )
     tendersiae_status = forms.CharField(required=False, widget=forms.HiddenInput())
     favorite_list = forms.ModelChoiceField(
-        queryset=FavoriteList.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
+        queryset=FavoriteList.objects.none(), to_field_name="slug", required=False, widget=forms.HiddenInput()
     )
     local = forms.BooleanField(required=False, widget=forms.HiddenInput())
 
-    def __init__(self, advanced_search=True, *args, **kwargs):
+    def __init__(self, advanced_search=True, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
+        # a favorite list is private: only its owner can filter on it
+        if user and user.is_authenticated:
+            self.fields["favorite_list"].queryset = FavoriteList.objects.filter(user=user)
         self.fields["has_groups"].help_text = None
         self.fields["has_client_references"].help_text = None
         # these fields are autocompletes
