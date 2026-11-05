@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinLengthValidator
 from django.db import models
-from django.db.models import Count
+from django.db.models import Count, F
 from django.db.models.functions import Greatest, Lower
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
@@ -42,6 +42,12 @@ class UserQueryset(models.QuerySet):
         if not email_domain.startswith("@"):
             email_domain = f"@{email_domain}"
         return self.filter(email__iendswith=email_domain)
+
+    def has_verified_email(self):
+        """Active users whose current email address has been verified (allauth)"""
+        return self.filter(
+            is_active=True, emailaddress__verified=True, emailaddress__email__iexact=F("email")
+        ).distinct()
 
     def with_siae_stats(self):
         return self.prefetch_related("siaes").annotate(siae_count_annotated=Count("siaes", distinct=True))

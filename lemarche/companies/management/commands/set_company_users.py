@@ -8,6 +8,7 @@ class Command(BaseCommand):
     """
     Command to attach users to their company, depending on their e-mail address
     Only for companies that have their 'email_domain_list' field set
+    Only active users with a verified e-mail address are attached (an unverified address proves nothing)
 
     Usage:
     - ./manage.py set_company_users --dry-run
@@ -46,7 +47,7 @@ class Command(BaseCommand):
         for company in companies_with_email_domain_list:
             company_email_domain_list_users = list()
             for company_email_domain in company.email_domain_list:
-                company_email_domain_users = User.objects.has_email_domain(company_email_domain)
+                company_email_domain_users = User.objects.has_email_domain(company_email_domain).has_verified_email()
                 company_email_domain_list_users += company_email_domain_users
             if not options["dry_run"]:
                 if options["only_add"]:
