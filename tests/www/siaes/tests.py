@@ -1,3 +1,4 @@
+import csv
 from unittest.mock import patch
 
 from django.contrib.gis.geos import Point
@@ -9,6 +10,7 @@ from requests.exceptions import RequestException
 from lemarche.perimeters.models import Perimeter
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae, SiaeESUS
+from lemarche.utils.export import generate_header, get_siae_fields
 from lemarche.www.siaes.forms import SiaeFilterForm, SiaeSiretFilterForm
 from lemarche.www.siaes.views import SiaeSiretSearchView
 from tests.conversations.factories import TemplateTransactionalFactory
@@ -18,6 +20,7 @@ from tests.networks.factories import NetworkFactory
 from tests.perimeters.factories import PerimeterFactory
 from tests.sectors.factories import SectorFactory
 from tests.siaes.factories import SiaeActivityFactory, SiaeClientReferenceFactory, SiaeFactory, SiaeOfferFactory
+from tests.tenders.factories import TenderFactory
 from tests.users.factories import UserFactory
 
 
@@ -1736,6 +1739,27 @@ class SiaeSearchResultsDownloadAuthTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("text/csv", response["Content-Type"])
         self.assertIn("attachment", response["Content-Disposition"])
+
+    def _get_csv_header(self, query_string):
+        response = self.client.get(self.download_url + f"?format=csv&{query_string}")
+        self.assertEqual(response.status_code, 200)
+        return next(csv.reader(response.content.decode("utf-8").splitlines()))
+
+    def test_download_contact_info_only_for_own_tender(self):
+        header_without_contact_info = generate_header(get_siae_fields(with_contact_info=False))
+        header_with_contact_info = generate_header(get_siae_fields(with_contact_info=True))
+        own_tender = TenderFactory(author=self.user)
+        other_tender = TenderFactory(author=UserFactory(kind="BUYER"))
+        self.client.force_login(self.user)
+
+        with self.subTest("no tender"):
+            self.assertEqual(self._get_csv_header(""), header_without_contact_info)
+        with self.subTest("arbitrary tender value"):
+            self.assertEqual(self._get_csv_header("tender=1"), header_without_contact_info)
+        with self.subTest("tender of another user"):
+            self.assertEqual(self._get_csv_header(f"tender={other_tender.slug}"), header_without_contact_info)
+        with self.subTest("own tender"):
+            self.assertEqual(self._get_csv_header(f"tender={own_tender.slug}"), header_with_contact_info)
 
     def test_download_button_visible_for_anonymous(self):
         response = self.client.get(self.search_url)

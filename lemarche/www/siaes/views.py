@@ -23,6 +23,7 @@ from lemarche.conversations.models import Conversation
 from lemarche.favorites.models import FavoriteList
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae, SiaeClientReference, SiaeESUS
+from lemarche.tenders.models import Tender
 from lemarche.utils import settings_context_processors
 from lemarche.utils.apis.api_recherche_entreprises import (
     RechercheEntreprisesAPIException,
@@ -127,8 +128,12 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         """
         Filter results.
         """
-        filter_form = SiaeFilterForm(data=self.request.GET, user=self.request.user)
-        results = filter_form.filter_queryset()
+        user = self.request.user
+        self.filter_form = SiaeFilterForm(data=self.request.GET, user=user)
+        # only the tender's author (or an admin) can filter on a tender (and get the contact info)
+        if user.kind != user.KIND_ADMIN:
+            self.filter_form.fields["tender"].queryset = Tender.objects.by_user(user)
+        results = self.filter_form.filter_queryset()
         # Prefetch the client references already ordered so export_siae_to_excel/csv reuse the cache
         # instead of firing an extra query per Siae (N+1 that would time out on the full list export)
         return results.prefetch_related(
@@ -142,7 +147,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         """
         siae_list = self.get_queryset()
         format = self.request.GET.get("format", "xls")
-        with_contact_info = True if self.request.GET.get("tender", None) else False
+        with_contact_info = bool(self.filter_form.cleaned_data.get("tender"))
         filename = f"liste_structures_{date.today()}"
         filename_with_extension = f"{filename}.{format}"
 
