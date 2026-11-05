@@ -1639,6 +1639,69 @@ class TenderDetailContactClickStatViewTest(TestCase):
             self.tender.tendersiae_set.first().detail_contact_click_date, siae_2_detail_contact_click_date
         )
 
+    def _answers_data(self, answers):
+        data = {
+            "form-TOTAL_FORMS": len(answers),
+            "form-INITIAL_FORMS": len(answers),
+            "form-MIN_NUM_FORMS": 0,
+            "form-MAX_NUM_FORMS": 1000,
+        }
+        for index, (question, answer) in enumerate(answers):
+            data[f"form-{index}-question"] = question.id
+            data[f"form-{index}-answer"] = answer
+        return data
+
+    def test_cannot_answer_for_siae_of_another_user(self):
+        question = TenderQuestionFactory(tender=self.tender)
+        foreign_siae = SiaeFactory(name="Foreign Siae")
+        self.tender.siaes.add(foreign_siae)
+
+        self.client.force_login(self.siae_user_1)
+        response = self.client.post(
+            self.tender_contact_click_stat_url,
+            data=self._answers_data([(question, "Réponse")]) | {"siae": [self.siae.id, foreign_siae.id]},
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(QuestionAnswer.objects.filter(siae=foreign_siae).exists())
+        self.assertIsNone(TenderSiae.objects.get(tender=self.tender, siae=foreign_siae).detail_contact_click_date)
+
+    def test_cannot_answer_question_of_another_tender(self):
+        question = TenderQuestionFactory(tender=self.tender)
+        foreign_question = TenderQuestionFactory(tender=TenderFactory())
+
+        self.client.force_login(self.siae_user_1)
+        response = self.client.post(
+            self.tender_contact_click_stat_url,
+            data=self._answers_data([(question, "Réponse"), (foreign_question, "Réponse étrangère")]),
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(QuestionAnswer.objects.exists())
+        self.assertIsNone(TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_contact_click_date)
+
+    def test_cannot_skip_tender_questions(self):
+        TenderQuestionFactory(tender=self.tender)
+
+        self.client.force_login(self.siae_user_1)
+        response = self.client.post(self.tender_contact_click_stat_url, data=self._answers_data([]))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIsNone(TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_contact_click_date)
+
+    def test_answer_tender_questions(self):
+        question = TenderQuestionFactory(tender=self.tender)
+
+        self.client.force_login(self.siae_user_1)
+        response = self.client.post(
+            self.tender_contact_click_stat_url,
+            data=self._answers_data([(question, "Réponse")]) | {"siae": [self.siae.id]},
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(QuestionAnswer.objects.get(siae=self.siae, question=question).answer, "Réponse")
+        self.assertIsNotNone(TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_contact_click_date)
+
 
 class TenderDetailNotInterestedClickView(TestCase):
     @classmethod
