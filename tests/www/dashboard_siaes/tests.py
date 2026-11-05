@@ -10,7 +10,7 @@ from lemarche.users.models import User
 from tests.conversations.factories import TemplateTransactionalFactory
 from tests.perimeters.factories import PerimeterFactory
 from tests.sectors.factories import SectorFactory, SectorGroupFactory
-from tests.siaes.factories import SiaeActivityFactory, SiaeFactory
+from tests.siaes.factories import SiaeActivityFactory, SiaeFactory, SiaeUserRequestFactory
 from tests.users.factories import UserFactory
 
 
@@ -270,6 +270,22 @@ class DashboardSiaeUserViewTest(TestCase):
         self.assertEqual(len(messages), 1)
         self.assertNotIn("<img", messages[0])
         self.assertIn("&lt;img src=x onerror=&quot;alert(1)&quot;&gt; Doe", messages[0])
+
+    def test_siae_user_cannot_answer_request_of_another_siae(self):
+        initiator = UserFactory(kind=User.KIND_SIAE)
+        other_siae = SiaeFactory()
+        siae_user_request = SiaeUserRequestFactory(siae=other_siae, initiator=initiator)
+
+        self.client.force_login(self.user_siae)
+        for url_name in ["dashboard_siaes:siae_user_request_confirm", "dashboard_siaes:siae_user_request_cancel"]:
+            url = reverse(url_name, args=[self.siae_with_users.slug, siae_user_request.id])
+            response = self.client.post(url)
+            self.assertEqual(response.status_code, 404)
+
+        siae_user_request.refresh_from_db()
+        self.assertIsNone(siae_user_request.response)
+        self.assertFalse(other_siae.users.filter(pk=initiator.pk).exists())
+        self.assertFalse(self.siae_with_users.users.filter(pk=initiator.pk).exists())
 
 
 class DashboardSiaeEditActivitiesViewTest(TestCase):
