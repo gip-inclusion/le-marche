@@ -65,6 +65,13 @@
                         Cet utilisateur ne fait plus partie de la structure ? <a href="{% url 'pages:contact' %}?siret={{ siae.siret }}">Contactez le support</a>
                     </p>
                 </div>
+            {% else %}
+                <div class="fr-alert fr-alert--info" role="alert">
+                    <h3 class="fr-alert__title">Cette structure n'a pas encore de gestionnaire sur le marché.</h3>
+                    <p>
+                        Afin de vérifier que vous la représentez bien, le rattachement doit être validé par notre équipe. <a href="{% url 'pages:contact' %}?siret={{ siae.siret }}">Contactez le support</a>
+                    </p>
+                </div>
             {% endif %}
 
             {% if siae_user_pending_request %}
@@ -89,7 +96,9 @@
                                         Demander le rattachement
                                     </button>
                                 {% else %}
-                                    {% dsfr_button label="Je confirme" %}
+                                    <a href="{% url 'pages:contact' %}?siret={{ siae.siret }}" class="fr-btn">
+                                        Contacter le support
+                                    </a>
                                 {% endif %}
                             </li>
                         </ul>
