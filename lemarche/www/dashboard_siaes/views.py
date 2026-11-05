@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView
 from django.views.generic.edit import FormMixin
 
@@ -160,7 +160,7 @@ class SiaeEditActivitiesDeleteView(SiaeMemberRequiredMixin, SuccessMessageMixin,
         return reverse_lazy("dashboard_siaes:siae_edit_activities", args=[self.kwargs.get("slug")])
 
     def get_success_message(self, cleaned_data):
-        return mark_safe(f"Votre activité <strong>{self.object.sector}</strong> a été supprimée avec succès.")
+        return format_html("Votre activité <strong>{}</strong> a été supprimée avec succès.", self.object.sector)
 
 
 class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, TemplateView):
@@ -547,6 +547,7 @@ class SiaeUserDeleteView(SiaeMemberRequiredMixin, SuccessMessageMixin, DeleteVie
         return reverse_lazy("dashboard_siaes:siae_users", args=[self.kwargs.get("slug")])
 
     def get_success_message(self, cleaned_data):
-        return mark_safe(
-            f"L'utilisateur <strong>{self.object.user.full_name}</strong> a été supprimé de votre structure avec succès."  # noqa
+        return format_html(
+            "L'utilisateur <strong>{}</strong> a été supprimé de votre structure avec succès.",
+            self.object.user.full_name,
         )

@@ -1,3 +1,4 @@
+from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 
@@ -254,6 +255,21 @@ class DashboardSiaeUserViewTest(TestCase):
         self.assertEqual(response.url, reverse("dashboard_siaes:siae_users", args=[self.siae_with_users.slug]))
         self.assertEqual(self.siae_with_users.users.count(), 1)
         # TODO: user should not be able to delete itself
+
+    def test_delete_collaborator_success_message_escapes_user_name(self):
+        user_xss = UserFactory(kind=User.KIND_SIAE, first_name='<img src=x onerror="alert(1)">', last_name="Doe")
+        self.siae_with_users.users.add(user_xss)
+        siaeuser = SiaeUser.objects.get(siae=self.siae_with_users, user=user_xss)
+
+        self.client.force_login(self.user_siae)
+        url = reverse("dashboard_siaes:siae_user_delete", args=[self.siae_with_users.slug, siaeuser.id])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+
+        messages = [str(m) for m in get_messages(response.wsgi_request)]
+        self.assertEqual(len(messages), 1)
+        self.assertNotIn("<img", messages[0])
+        self.assertIn("&lt;img src=x onerror=&quot;alert(1)&quot;&gt; Doe", messages[0])
 
 
 class DashboardSiaeEditActivitiesViewTest(TestCase):
