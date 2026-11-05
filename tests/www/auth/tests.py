@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from allauth.account.models import EmailAddress, EmailConfirmationHMAC
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import TestCase
 from django.urls import reverse
@@ -358,6 +359,22 @@ class LoginViewEnumerationTest(TestCase):
                 self.assertNotIn("new_user_without_password", response.context)
                 self.assertContains(response, "L’adresse e-mail ou le mot de passe sont incorrects.")
                 self.assertNotContains(response, "pas encore défini de mot de passe")
+
+
+class ConfirmEmailViewTest(TestCase):
+    def test_get_confirmation_link_of_another_account_does_not_logout_user(self):
+        user = UserFactory()
+        other_user = UserFactory()
+        email_address = EmailAddress.objects.create(user=other_user, email=other_user.email, primary=True)
+        key = EmailConfirmationHMAC(email_address).key
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("account_confirm_email", args=[key]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(int(self.client.session["_auth_user_id"]), user.id)
+        email_address.refresh_from_db()
+        self.assertFalse(email_address.verified)
 
 
 class LoginFormTest(StaticLiveServerTestCase):
