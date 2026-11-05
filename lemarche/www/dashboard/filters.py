@@ -7,16 +7,9 @@ from lemarche.siaes.constants import KIND_CHOICES_WITH_EXTRA, KIND_HANDICAP_LIST
 from lemarche.utils.widgets import CustomSelectMultiple
 
 
-def get_purchase_category_choices():
-    purchase_categories = (
-        Purchase.objects.values_list("purchase_category", flat=True).order_by("purchase_category").distinct()
-    )
-    return [(purchase_category, purchase_category) for purchase_category in purchase_categories]
-
-
-def get_buying_entities_choices():
-    buying_entities = Purchase.objects.values_list("buying_entity", flat=True).order_by("buying_entity").distinct()
-    return [(buying_entity, buying_entity) for buying_entity in buying_entities]
+def get_distinct_choices(queryset, field_name):
+    values = queryset.values_list(field_name, flat=True).order_by(field_name).distinct()
+    return [(value, value) for value in values]
 
 
 class PurchaseFilterSet(django_filters.FilterSet):
@@ -36,12 +29,9 @@ class PurchaseFilterSet(django_filters.FilterSet):
         method="filter_siae_type",
         choices=KIND_CHOICES_WITH_EXTRA,
     )
-    purchase_category = django_filters.MultipleChoiceFilter(
-        choices=get_purchase_category_choices, widget=CustomSelectMultiple()
-    )
-    buying_entity = django_filters.MultipleChoiceFilter(
-        choices=get_buying_entities_choices, widget=CustomSelectMultiple()
-    )
+    # choices are set in __init__, from the (company-scoped) queryset
+    purchase_category = django_filters.MultipleChoiceFilter(choices=[], widget=CustomSelectMultiple())
+    buying_entity = django_filters.MultipleChoiceFilter(choices=[], widget=CustomSelectMultiple())
     is_qpv = django_filters.BooleanFilter(
         label="Uniquement structures QPV",
         widget=forms.CheckboxInput(),
@@ -63,6 +53,12 @@ class PurchaseFilterSet(django_filters.FilterSet):
             "is_qpv",
             "is_zrr",
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # only expose the values of the purchases the user has access to
+        for field_name in ["purchase_category", "buying_entity"]:
+            self.filters[field_name].extra["choices"] = get_distinct_choices(self.queryset, field_name)
 
     def filter_inclusive_sector_type(self, queryset, name, value):
         kind_list = []
