@@ -60,6 +60,10 @@ class SiaeSearchDisplayResultsTest(TestCase):
         response = self.client.get(url)
         self.assertNotContains(response, "invite-colleagues-modal")
         self.assertNotContains(response, "invite-colleagues-form")
+        # anonymous users cannot send invitations
+        response = self.client.get(url + "?show_invite_colleagues_modal=true")
+        self.assertNotContains(response, "invite-colleagues-modal")
+        self.client.force_login(self.user_buyer)
         response = self.client.get(url + "?show_invite_colleagues_modal=true")
         self.assertContains(response, "invite-colleagues-modal")
         self.assertContains(response, "invite-colleagues-form")
@@ -1450,6 +1454,7 @@ class InviteColleaguesViewTest(TestCase):
     def setUp(self):
         self.url = reverse("siae:invite_colleagues")
         TemplateTransactionalFactory(code="USER_INVITE_COLLEAGUES")
+        self.client.force_login(UserFactory(kind="BUYER"))
 
     @patch("lemarche.conversations.models.TemplateTransactional.send_transactional_email")
     def test_invite_colleagues_with_no_emails(self, mock_send_email):
@@ -1549,11 +1554,43 @@ class InviteColleaguesViewTest(TestCase):
         self.assertContains(response, "Seules les adresses professionnelles sont autoris")
         self.assertEqual(mock_send_email.call_count, 0)
 
+    @patch("lemarche.conversations.models.TemplateTransactional.send_transactional_email")
+    def test_anonymous_user_cannot_invite_colleagues(self, mock_send_email):
+        self.client.logout()
+        data = {
+            "form-TOTAL_FORMS": "1",
+            "form-INITIAL_FORMS": "0",
+            "form-MIN_NUM_FORMS": "0",
+            "form-MAX_NUM_FORMS": "10",
+            "form-0-email": "colleague1@example.com",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith("/accounts/login/"))
+        self.assertEqual(mock_send_email.call_count, 0)
+
+    @patch("lemarche.www.siaes.views.send_user_invite_colleagues_email")
+    def test_invite_colleagues_deduplicates_emails(self, mock_send_invite):
+        data = {
+            "form-TOTAL_FORMS": "3",
+            "form-INITIAL_FORMS": "0",
+            "form-MIN_NUM_FORMS": "0",
+            "form-MAX_NUM_FORMS": "10",
+            "form-0-email": "colleague1@example.com",
+            "form-1-email": "COLLEAGUE1@example.com",
+            "form-2-email": "",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "1 invitation envoyée avec succès")
+        mock_send_invite.assert_called_once_with("colleague1@example.com")
+
 
 class InviteColleaguesAddFieldViewTest(TestCase):
     def setUp(self):
         self.url = reverse("siae:invite_colleagues")
         TemplateTransactionalFactory(code="USER_INVITE_COLLEAGUES")
+        self.client.force_login(UserFactory(kind="BUYER"))
 
     @patch("lemarche.conversations.models.TemplateTransactional.send_transactional_email")
     @patch(

@@ -114,7 +114,8 @@ class SiaeSearchResultsView(FormMixin, ListView):
             serialize("geojson", context["siaes"], geometry_field="coords", fields=("id", "name", "brand", "slug"))
         )
 
-        if self.request.GET:  # form submitted or show_invite_colleagues_modal is in the GET params
+        # form submitted or show_invite_colleagues_modal is in the GET params
+        if self.request.GET and self.request.user.is_authenticated:
             context["invite_colleagues_email_formset"] = InviteColleaguesFormSet()
         return context
 
@@ -440,7 +441,7 @@ class SiaeSiretSearchView(TemplateView):
         return ctx
 
 
-class InviteColleaguesView(View):
+class InviteColleaguesView(LoginRequiredMixin, View):
     """
     View to handle colleague invitations for buyer accounts.
     Sends transactional emails via Brevo to invited colleagues.
@@ -463,8 +464,8 @@ class InviteColleaguesView(View):
 
         formset = InviteColleaguesFormSet(request.POST)
         if formset.is_valid():
-            # Get all non-empty emails
-            emails = [form.cleaned_data["email"] for form in formset if form.cleaned_data.get("email")]
+            # Get all non-empty and unique emails
+            emails = {form.cleaned_data["email"].lower() for form in formset if form.cleaned_data.get("email")}
 
             if not emails:
                 # If no emails provided, return formset with a general error
