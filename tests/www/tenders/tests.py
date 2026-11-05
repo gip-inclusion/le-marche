@@ -2657,6 +2657,31 @@ class TenderSiaeDownloadViewTestCase(TestCase):
         self.assertEqual(sheet["C2"].value, "answer_for_q2_from_siae_1")
         self.assertEqual(sheet["C3"].value, "answer_for_q2_from_siae_2")
 
+    def test_download_neutralizes_spreadsheet_formulas(self):
+        QuestionAnswer.objects.filter(answer="answer_for_q1_from_siae_1").update(answer="=1+1")
+        QuestionAnswer.objects.filter(answer="answer_for_q2_from_siae_1").update(answer="+cmd|calc")
+        url = reverse("tenders:download-siae-list", kwargs={"slug": self.tender.slug})
+        query = (
+            "&tendersiae_status=INTERESTED"
+            "&download_form-selected_fields=name&download_form-selected_fields=siae_answers"
+        )
+
+        with self.subTest(format="csv"):
+            response = self.client.get(url + "?download_form-format=csv" + query)
+            rows = list(csv.DictReader(response.content.decode("utf-8").splitlines()))
+            self.assertEqual(rows[0]["Raison sociale"], "siae_1")
+            self.assertEqual(rows[0]["question_1_title"], "'=1+1")
+            self.assertEqual(rows[0]["question_2_title"], "'+cmd|calc")
+            self.assertEqual(rows[1]["question_1_title"], "answer_for_q1_from_siae_2")
+
+        with self.subTest(format="xlsx"):
+            response = self.client.get(url + "?download_form-format=xlsx" + query)
+            sheet = openpyxl.load_workbook(BytesIO(response.content)).active
+            self.assertEqual(sheet["B2"].value, "=1+1")
+            self.assertEqual(sheet["B2"].data_type, "s")
+            self.assertEqual(sheet["C2"].value, "+cmd|calc")
+            self.assertEqual(sheet["C2"].data_type, "s")
+
     def test_get_tender_siae_download_url(self):
         with self.subTest(status="ALL"):
             url = get_tender_siae_download_url(self.tender)
