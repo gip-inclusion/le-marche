@@ -830,9 +830,13 @@ class Tender(models.Model):
 
     @property
     def can_send_reminder(self):
-        """A reminder can be sent to siaes if it does not exceed 2 reminders in total and has a cooldown of 24h"""
+        """
+        A reminder can be sent to siaes if the tender has been sent, is not outdated,
+        does not exceed 2 reminders in total and has a cooldown of 24h
+        """
         return (
-            self.reminder_count < 2
+            self.is_sent
+            and self.reminder_count < 2
             and (not self.reminder_last_update or (timezone.now() - self.reminder_last_update) > timedelta(hours=24))
             and not self.deadline_date_outdated
         )

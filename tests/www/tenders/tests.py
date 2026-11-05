@@ -2853,7 +2853,7 @@ class TenderReminderViewTestCase(TestCase):
         self.tender = TenderFactory(author=buyer)
 
     def test_send_reminder_message_TARGETTED(self):
-        TenderSiaeFactory(tender=self.tender)
+        TenderSiaeFactory(tender=self.tender, email_send_date=timezone.now())
 
         url = reverse("tenders:send-reminder", kwargs={"slug": self.tender.slug, "status": "None"})
         response_get = self.client.get(url)
@@ -2866,8 +2866,8 @@ class TenderReminderViewTestCase(TestCase):
         self.assertEqual(response_post.status_code, 302)
 
     def test_send_reminder_message_TARGETTED_plural(self):
-        TenderSiaeFactory(tender=self.tender)
-        TenderSiaeFactory(tender=self.tender)
+        TenderSiaeFactory(tender=self.tender, email_send_date=timezone.now())
+        TenderSiaeFactory(tender=self.tender, email_send_date=timezone.now())
 
         url = reverse("tenders:send-reminder", kwargs={"slug": self.tender.slug, "status": "None"})
         response_get = self.client.get(url)
@@ -2880,7 +2880,7 @@ class TenderReminderViewTestCase(TestCase):
         self.assertEqual(response_post.status_code, 302)
 
     def test_send_reminder_message_VIEWED(self):
-        TenderSiaeFactory(tender=self.tender, email_link_click_date=timezone.now())
+        TenderSiaeFactory(tender=self.tender, email_send_date=timezone.now(), email_link_click_date=timezone.now())
 
         url = reverse("tenders:send-reminder", kwargs={"slug": self.tender.slug, "status": "VIEWED"})
         response_get = self.client.get(url)
@@ -2893,8 +2893,8 @@ class TenderReminderViewTestCase(TestCase):
         self.assertEqual(response_post.status_code, 302)
 
     def test_send_reminder_message_VIEWED_plural(self):
-        TenderSiaeFactory(tender=self.tender, email_link_click_date=timezone.now())
-        TenderSiaeFactory(tender=self.tender, email_link_click_date=timezone.now())
+        TenderSiaeFactory(tender=self.tender, email_send_date=timezone.now(), email_link_click_date=timezone.now())
+        TenderSiaeFactory(tender=self.tender, email_send_date=timezone.now(), email_link_click_date=timezone.now())
 
         url = reverse("tenders:send-reminder", kwargs={"slug": self.tender.slug, "status": "VIEWED"})
         response_get = self.client.get(url)
@@ -2905,6 +2905,49 @@ class TenderReminderViewTestCase(TestCase):
             response_post = self.client.post(url, data={"reminder_message": "Blabla"})
             self.assertEqual(send_reminder_email_to_siae_mock.call_count, 2)
         self.assertEqual(response_post.status_code, 302)
+
+    def test_send_reminder_refused_when_tender_cannot_be_reminded(self):
+        TenderSiaeFactory(tender=self.tender, email_send_date=timezone.now())
+        url = reverse("tenders:send-reminder", kwargs={"slug": self.tender.slug, "status": "ALL"})
+
+        refused_states = {
+            "draft": {"status": Tender.StatusChoices.STATUS_DRAFT, "validated_at": None, "first_sent_at": None},
+            "validated_not_sent": {"status": Tender.StatusChoices.STATUS_VALIDATED, "first_sent_at": None},
+            "outdated": {"deadline_date": timezone.now().date() - timedelta(days=1)},
+            "max_reminders": {"reminder_count": 2},
+            "cooldown": {"reminder_last_update": timezone.now() - timedelta(hours=1)},
+        }
+        # a tender that can be reminded: each refused state overrides some of these fields
+        remindable_fields = {
+            "status": Tender.StatusChoices.STATUS_SENT,
+            "validated_at": timezone.now(),
+            "first_sent_at": timezone.now(),
+            "deadline_date": timezone.now().date() + timedelta(days=10),
+            "reminder_count": 0,
+            "reminder_last_update": None,
+        }
+        for state, fields in refused_states.items():
+            with self.subTest(state=state):
+                Tender.objects.filter(pk=self.tender.pk).update(**(remindable_fields | fields))
+                with mock.patch(
+                    "lemarche.www.tenders.views.send_reminder_email_to_siae"
+                ) as send_reminder_email_to_siae_mock:
+                    response = self.client.post(url, data={"reminder_message": "Blabla"})
+                    send_reminder_email_to_siae_mock.assert_not_called()
+                self.assertEqual(response.status_code, 302)
+                self.tender.refresh_from_db()
+                self.assertEqual(self.tender.reminder_count, fields.get("reminder_count", 0))
+
+    def test_send_reminder_only_to_siaes_that_received_the_tender(self):
+        tendersiae_sent = TenderSiaeFactory(tender=self.tender, email_send_date=timezone.now())
+        TenderSiaeFactory(tender=self.tender, email_send_date=None)
+        url = reverse("tenders:send-reminder", kwargs={"slug": self.tender.slug, "status": "ALL"})
+
+        with mock.patch("lemarche.www.tenders.views.send_reminder_email_to_siae") as send_reminder_email_to_siae_mock:
+            response = self.client.post(url, data={"reminder_message": "Blabla"})
+            send_reminder_email_to_siae_mock.assert_called_once()
+            self.assertEqual(send_reminder_email_to_siae_mock.call_args.args[0], tendersiae_sent.siae)
+        self.assertEqual(response.status_code, 302)
 
 
 class InspirationalTenderListViewTest(TestCase):
