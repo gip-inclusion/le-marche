@@ -3142,3 +3142,39 @@ class TenderDetailGroupementReplyViewTest(TestCase):
         # No Alpine template literal built from user data anymore
         self.assertNotIn("message: `", content)
         self.assertIn('x-data="{ copied: false }"', content)
+
+
+class TenderDetailGroupementReplyNotificationTest(TestCase):
+    """V29 (pentest 2026-10): referents are notified only on the first groupement click."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae_user = UserFactory(kind=User.KIND_SIAE)
+        cls.siae = SiaeFactory(users=[cls.siae_user])
+        cls.tender = TenderFactory()
+        cls.tender_siae = TenderSiaeFactory(tender=cls.tender, siae=cls.siae)
+        cls.url = reverse("tenders:detail-groupement-reply", kwargs={"slug": cls.tender.slug})
+
+    @patch("lemarche.www.tenders.views.notify_referents_for_groupement")
+    def test_authenticated_siae_notifies_referents_only_once(self, mock_notify):
+        self.client.force_login(self.siae_user)
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+        mock_notify.assert_called_once_with(self.tender, self.siae)
+        self.tender_siae.refresh_from_db()
+        self.assertIsNotNone(self.tender_siae.detail_groupement_click_date)
+
+    @patch("lemarche.www.tenders.views.notify_referents_for_groupement")
+    def test_tender_siae_uuid_notifies_referents_only_once(self, mock_notify):
+        url = f"{self.url}?tender_siae_uuid={self.tender_siae.uuid}"
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        mock_notify.assert_called_once_with(self.tender, self.siae)

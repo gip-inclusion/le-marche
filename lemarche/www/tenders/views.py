@@ -1369,7 +1369,7 @@ class TenderDetailGroupementReplyView(SiaeUserRequiredOrTenderSiaeUUIDParamMixin
         # Track click — only once, same pattern as detail_display_date
         tender_siae_uuid = request.GET.get("tender_siae_uuid")
         if request.user.is_authenticated:
-            TenderSiae.objects.filter(
+            updated = TenderSiae.objects.filter(
                 tender=self.object,
                 siae__in=request.user.siaes.all(),
                 detail_groupement_click_date__isnull=True,
@@ -1378,7 +1378,7 @@ class TenderDetailGroupementReplyView(SiaeUserRequiredOrTenderSiaeUUIDParamMixin
                 detail_groupement_click_date=timezone.now(),
                 updated_at=timezone.now(),
             )
-            is_first_click = True  # simplified — notification sent on every first-time GET
+            is_first_click = updated > 0
         elif tender_siae_uuid:
             updated = TenderSiae.objects.filter(
                 uuid=tender_siae_uuid,
