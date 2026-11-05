@@ -99,6 +99,18 @@ class InclusivePurchaseStatsDashboardViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Vous n'avez pas encore communiqué vos achats.")
 
+    def test_filter_choices_only_contain_values_of_user_company(self):
+        PurchaseFactory(company=self.user.company, purchase_category="category_a", buying_entity="entity_a")
+        PurchaseFactory(company=CompanyFactory(), purchase_category="category_b", buying_entity="entity_b")
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        form = response.context["filter"].form
+        self.assertEqual(list(form.fields["purchase_category"].choices), [("category_a", "category_a")])
+        self.assertEqual(list(form.fields["buying_entity"].choices), [("entity_a", "entity_a")])
+        self.assertNotContains(response, "category_b")
+        self.assertNotContains(response, "entity_b")
+
     def test_view_should_display_stats_with_inclusive_purchases(self):
         self.client.force_login(self.user)
 
