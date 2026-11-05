@@ -1049,6 +1049,7 @@ class Migration(migrations.Migration):
                         on_delete=django.db.models.deletion.PROTECT,
                         related_name="+",
                         to="wagtailcore.locale",
+                        verbose_name="locale",
                     ),
                 ),
                 (
