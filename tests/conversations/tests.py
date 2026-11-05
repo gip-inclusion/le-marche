@@ -56,6 +56,17 @@ class ConversationModelSaveTest(TestCase):
         self.assertTrue("prenom_nom" in self.conversation_1.siae_encoded)
         self.assertTrue("une_autre_structure" in self.conversation_2.siae_encoded)
 
+    def test_encoded_aliases_are_unpredictable(self):
+        conversation = ConversationFactory(
+            sender_first_name="Prénom très très très long",
+            sender_last_name="Nom de famille encore plus long que le prénom",
+        )
+        for encoded in [conversation.sender_encoded, conversation.siae_encoded]:
+            token = encoded.split("_")[-1]
+            self.assertRegex(token, r"^[0-9a-f]{32}$")  # 128 bits
+            self.assertLessEqual(len(encoded), 64)  # max length of an email local part
+        self.assertNotEqual(conversation.sender_encoded.split("_")[-1], conversation.siae_encoded.split("_")[-1])
+
 
 class ConversationQuerysetTest(TestCase):
     @classmethod

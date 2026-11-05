@@ -74,14 +74,24 @@ class InboundParsingEmailView(APIView):
                     interlocutor_encoded=inbound_email_prefix
                 )
 
+            # find user_kind
+            if version >= 1:
+                user_kind = conv.get_user_kind(conv_uuid)
+
+            # the reply alias only identifies the conversation: check that the sender is the expected interlocutor
+            if not conv.is_expected_sender(user_kind, inbound_email["From"].get("Address") or ""):
+                logger.warning(
+                    "InboundParsingEmailView: unexpected sender for conversation %s (user_kind %s), email ignored",
+                    conv.uuid,
+                    user_kind,
+                )
+                return Response(status=status.HTTP_403_FORBIDDEN)
+
             # save the input data
             data_inbound_clean = clean_saved_data_of_inbound(data_inbound=serializer.data.get("items")[0])
             conv.data.append(data_inbound_clean)
             conv.save()
             logger.info("InboundParsingEmailView saved data for conversation %s", conv.uuid)
-            # find user_kind
-            if version >= 1:
-                user_kind = conv.get_user_kind(conv_uuid)
             # make the transfer of emails
             send_email_from_conversation(
                 conv=conv,
