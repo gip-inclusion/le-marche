@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import locale
 import os
+from pathlib import Path
 
 import environ
 from botocore.config import Config
@@ -37,6 +38,8 @@ env = environ.Env(DEBUG=(bool, False))
 # Build paths inside the project like this: ROOT_DIR / 'subdir'.
 ROOT_DIR = environ.Path(__file__) - 3  # (ROOT/config/settings/base.py - 3 = ROOT )
 APPS_DIR = os.path.abspath(os.path.join(ROOT_DIR, "lemarche"))
+# used by sites-conformes (content_manager page templates import/export)
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -160,6 +163,7 @@ WAGTAIL_APPS = [
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.contrib.settings",
+    "wagtail.contrib.typed_table_block",
     "wagtail.embeds",
     "wagtail.sites",
     "wagtail.users",
@@ -801,6 +805,10 @@ WAGTAIL_FRONTEND_LOGIN_URL = LOGIN_URL
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 # WAGTAILADMIN_BASE_URL = f"{os.getenv('HOST_PROTO', 'https')}://{HOST_URL}"
+
+# used by sites-conformes (content_manager): canonical URL template tag and set_config command
+HOST_PROTO = os.getenv("HOST_PROTO", "https")
+HOST_URL = os.getenv("HOST_URL", "localhost")
 
 HOST_PORT = os.getenv("HOST_PORT", "")
 if HOST_PORT != "":

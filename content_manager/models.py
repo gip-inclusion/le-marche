@@ -6,9 +6,9 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from dsfr.constants import NOTICE_TYPE_CHOICES
+from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
-from modelcluster.tags import ClusterTaggableManager
 from taggit.models import Tag as TaggitTag, TaggedItemBase
 from unidecode import unidecode
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, ObjectList, TabbedInterface
@@ -76,7 +76,7 @@ class CatalogIndexPage(RoutablePageMixin, SitesFacilesBasePage):
         return ContentPage.objects.child_of(self).live().specific().prefetch_related("tags")
 
     def get_context(self, request, *args, **kwargs):
-        context = super(CatalogIndexPage, self).get_context(request, *args, **kwargs)
+        context = super().get_context(request, *args, **kwargs)
         entries = self.entries
 
         extra_breadcrumbs = None

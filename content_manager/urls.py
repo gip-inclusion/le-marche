@@ -4,6 +4,7 @@ from wagtail import urls as wagtail_urls
 
 from content_manager.views import SearchResultsView, SiteMapView, TagsListView, TagView
 
+
 urlpatterns = [
     path(_("search/"), SearchResultsView.as_view(), name="cms_search"),
     path(_("sitemap/"), SiteMapView.as_view(), name="readable_sitemap"),

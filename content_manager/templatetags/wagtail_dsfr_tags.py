@@ -8,6 +8,7 @@ from wagtail.rich_text import RichText
 
 from content_manager.models import MegaMenu
 
+
 register = template.Library()
 
 
@@ -109,7 +110,7 @@ def toggle_url_filter(context, *_, **kwargs):
         elif val and val == current_val:
             url_params.pop(param, None)
 
-    url_string = "&".join(["{}={}".format(x[0], x[1]) for x in url_params.items()])
+    url_string = "&".join([f"{x[0]}={x[1]}" for x in url_params.items()])
 
     if url_string:
         return f"?{url_string}"

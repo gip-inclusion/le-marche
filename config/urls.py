@@ -25,7 +25,6 @@ urlpatterns = [
     path("sitemap.xml", sitemap, name="sitemap"),  # appears above the default Wagtail page serving route
     # admin blog
     path("cms/", include(wagtailadmin_urls)),
-    path("blog/", include("blog.urls")),
     # url docuemnts of glog
     path("documents/", include(wagtaildocs_urls)),
     # urls pages blog
