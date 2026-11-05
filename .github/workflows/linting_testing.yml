@@ -2,6 +2,9 @@ name: Test & Lint tasks
 
 on: [push]
 
+permissions:
+  contents: read
+
 jobs:
   linting_check:
 
