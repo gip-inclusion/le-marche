@@ -111,6 +111,18 @@ class DashboardNetworkViewTest(TestCase):
         self.assertContains(response, "0 adhérents intéressés")
         self.assertNotContains(response, self.tender_2.title)
 
+    def test_network_member_cannot_view_tender_outside_network_or_withdrawn(self):
+        tender_withdrawn = TenderFactory(status=Tender.StatusChoices.STATUS_DRAFT, first_sent_at=timezone.now())
+        TenderSiae.objects.create(tender=tender_withdrawn, siae=self.siae_1, email_send_date=timezone.now())
+        self.client.force_login(self.user_network_1)
+        # tender_2: sent, but not linked to any network siae / tender_withdrawn: linked but not sent anymore
+        for tender in [self.tender_2, tender_withdrawn]:
+            for url_name in ["dashboard_networks:tender_detail", "dashboard_networks:tender_siae_list"]:
+                with self.subTest(tender=tender.slug, url_name=url_name):
+                    url = reverse(url_name, args=[self.network_1.slug, tender.slug])
+                    response = self.client.get(url)
+                    self.assertEqual(response.status_code, 404)
+
     def test_network_siae_list_in_network_tender_siae_list(self):
         self.client.force_login(self.user_network_1)
         url = reverse("dashboard_networks:tender_siae_list", args=[self.network_1.slug, self.tender_1.slug])

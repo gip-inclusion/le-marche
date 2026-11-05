@@ -169,7 +169,7 @@ class DashboardNetworkTenderDetailView(NetworkMemberRequiredMixin, DetailView):
         self.network = Network.objects.prefetch_related("siaes").get(slug=self.kwargs.get("slug"))
         self.network_siaes = self.network.siaes.all()
         self.tender = get_object_or_404(
-            Tender.objects.sent().with_network_siae_stats(self.network_siaes),
+            Tender.objects.filter_with_siaes(self.network_siaes).with_network_siae_stats(self.network_siaes),
             slug=self.kwargs.get("tender_slug"),
         )
         return self.tender
@@ -211,7 +211,7 @@ class DashboardNetworkTenderSiaeListView(NetworkMemberRequiredMixin, ListView):
             if "tender_slug" in self.kwargs:
                 self.network_siaes = self.network.siaes.all()
                 self.tender = get_object_or_404(
-                    Tender.objects.sent().with_network_siae_stats(self.network_siaes),
+                    Tender.objects.filter_with_siaes(self.network_siaes).with_network_siae_stats(self.network_siaes),
                     slug=self.kwargs.get("tender_slug"),
                 )
         return super().get(request, *args, **kwargs)
