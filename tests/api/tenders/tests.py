@@ -411,7 +411,9 @@ class TenderCreateApiPartnerTest(TestCase):
                 "description": "Description",
                 "deadline_date": "2024-06-30",
             }
-            TenderFactory(**{**TENDER_JSON.copy(), **existing_tender_partner_data})
+            TenderFactory(
+                **{**TENDER_JSON.copy(), **existing_tender_partner_data}, author=self.user_partner_with_token
+            )
             self.assertEqual(Tender.objects.count(), 1)
             self.assertEqual(Tender.objects.first().title, "Test")
             self.assertEqual(Tender.objects.first().deadline_date.strftime("%Y-%m-%d"), "2024-06-30")
@@ -444,7 +446,9 @@ class TenderCreateApiPartnerTest(TestCase):
                 "description": "Description",
                 "deadline_date": "2024-06-30",
             }
-            TenderFactory(**{**TENDER_JSON.copy(), **existing_tender_partner_data})
+            TenderFactory(
+                **{**TENDER_JSON.copy(), **existing_tender_partner_data}, author=self.user_partner_with_token
+            )
             self.assertEqual(Tender.objects.count(), 1)
             self.assertEqual(Tender.objects.first().title, "Test")
             self.assertEqual(Tender.objects.first().deadline_date.strftime("%Y-%m-%d"), "2024-06-30")
@@ -467,6 +471,38 @@ class TenderCreateApiPartnerTest(TestCase):
             self.assertEqual(Tender.objects.last().deadline_date.strftime("%Y-%m-%d"), "2024-06-30")
             self.assertEqual(Tender.objects.first().title, "Test changed")
             self.assertEqual(Tender.objects.first().deadline_date.strftime("%Y-%m-%d"), "2024-12-31")
+
+    @patch("lemarche.api.tenders.views.add_to_contact_list")
+    def test_other_api_user_cannot_update_partner_approch_tender(self, mock_add_to_contact_list):
+        other_api_token = "b" * 64
+        UserFactory(api_key=other_api_token)
+        with self.settings(PARTNER_APPROCH_USER_ID=self.user_partner_with_token.id):
+            existing_tender_partner_data = {
+                "contact_email": self.user_partner_with_token.email,
+                "extra_data": {"id": 123},
+                "partner_approch_id": 123,
+                "kind": tender_constants.KIND_PROJECT,
+                "title": "Test",
+                "description": "Description",
+                "deadline_date": "2024-06-30",
+            }
+            existing_tender = TenderFactory(
+                **{**TENDER_JSON.copy(), **existing_tender_partner_data}, author=self.user_partner_with_token
+            )
+            # another API user impersonates the partner through the contact email
+            response = self.client.post(
+                self.url,
+                data={**TENDER_JSON.copy(), **existing_tender_partner_data, "title": "Test changed"},
+                content_type="application/json",
+                headers={"authorization": f"Bearer {other_api_token}"},
+            )
+            self.assertEqual(response.status_code, 201)
+            existing_tender.refresh_from_db()
+            self.assertEqual(existing_tender.title, "Test")
+            self.assertEqual(existing_tender.deadline_date.strftime("%Y-%m-%d"), "2024-06-30")
+            # a new tender is created, not linked to the partner tender
+            self.assertEqual(Tender.objects.count(), 2)
+            self.assertFalse(Tender.objects.exclude(id=existing_tender.id).filter(partner_approch_id=123).exists())
 
 
 class TenderChoicesApiTest(TestCase):
