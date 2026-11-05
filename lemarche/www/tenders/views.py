@@ -661,7 +661,9 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrTenderSiaeUUIDParamMixi
             for question in self.questions
         ]
 
-        self.answers_formset = self.answers_formset_class(initial=initial_data)
+        self.answers_formset = self.answers_formset_class(
+            initial=initial_data, form_kwargs={"questions": self.questions}
+        )
 
         # Display select form only for accounts that have multiple siaes
         if siae_total_count > 1:
@@ -675,15 +677,26 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrTenderSiaeUUIDParamMixi
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
-        self.answers_formset = self.answers_formset_class(data=self.request.POST)
+        self.answers_formset = self.answers_formset_class(
+            data=self.request.POST, form_kwargs={"questions": self.questions}
+        )
         if user.is_authenticated:
+            siae_qs = Siae.objects.filter(users=self.request.user, tendersiae__tender=self.object)
             if siae_list := self.request.POST.getlist("siae"):
-                siae_qs = Siae.objects.filter(id__in=siae_list)
-            else:  # No siae select, mean only one matched siae
-                siae_qs = Siae.objects.filter(users=self.request.user, tendersiae__tender=self.object)
+                siae_qs = siae_qs.filter(id__in=siae_list)
+                if siae_qs.count() != len(set(siae_list)):
+                    return self.redirect_on_error()
         else:
             siae_qs = Siae.objects.filter(tendersiae__uuid=self.tender_siae_uuid, tendersiae__tender=self.object)
         if self.answers_formset.is_valid():
+            # Exactly one answer is expected for each question of the tender
+            answered_question_ids = sorted(
+                answer_form.cleaned_data["question"].id
+                for answer_form in self.answers_formset
+                if answer_form.cleaned_data.get("question")
+            )
+            if answered_question_ids != sorted(question.id for question in self.questions):
+                return self.redirect_on_error()
             with transaction.atomic():  # Rollback all answers if any problem appears, e.g. when going back in browser
                 for answer_form in self.answers_formset:
                     for siae in siae_qs:  # We copy the answer for each selected siae

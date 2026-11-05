@@ -17,8 +17,13 @@ class TenderAdminForm(forms.ModelForm):
 class QuestionAnswerForm(forms.Form):
     answer = forms.CharField(label="Réponse", widget=forms.Textarea(attrs={"required": "required"}))
     question = forms.ModelChoiceField(
-        label="Question", queryset=TenderQuestion.objects.all(), widget=forms.HiddenInput()
+        label="Question", queryset=TenderQuestion.objects.none(), widget=forms.HiddenInput()
     )
+
+    def __init__(self, *args, questions, **kwargs):
+        super().__init__(*args, **kwargs)
+        # only the questions of the tender being answered are accepted
+        self.fields["question"].queryset = questions
 
 
 class SiaeSelectionForm(forms.Form):
