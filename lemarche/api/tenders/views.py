@@ -66,8 +66,9 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             )
 
         # Manage Partner APProch
+        # the partner must be identified by the authenticated API key, not by the (client-provided) contact email
         if tender_source == TenderSourcesChoices.SOURCE_API:
-            if user.id == settings.PARTNER_APPROCH_USER_ID:
+            if self.request.user.id == settings.PARTNER_APPROCH_USER_ID == user.id:
                 tender_partner_approch_id = serializer.validated_data.get("extra_data", {}).get("id", None)
                 if tender_partner_approch_id:
                     # try to find an existing tender (same id + kind)
@@ -75,7 +76,9 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
                     # if not found, create it !
                     try:
                         tender = Tender.objects.get(
-                            partner_approch_id=tender_partner_approch_id, kind=serializer.validated_data.get("kind")
+                            author=self.request.user,
+                            partner_approch_id=tender_partner_approch_id,
+                            kind=serializer.validated_data.get("kind"),
                         )
                         for field in PARTNER_APPROCH_UPDATE_FIELDS:
                             setattr(tender, field, serializer.validated_data.get(field))
