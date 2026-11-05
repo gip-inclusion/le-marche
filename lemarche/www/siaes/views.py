@@ -59,7 +59,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
 
     def get_filter_form(self):
         if not self.filter_form:
-            self.filter_form = SiaeFilterForm(data=self.request.GET)
+            self.filter_form = SiaeFilterForm(data=self.request.GET, user=self.request.user)
         return self.filter_form
 
     def get_queryset(self):
@@ -127,7 +127,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         """
         Filter results.
         """
-        filter_form = SiaeFilterForm(data=self.request.GET)
+        filter_form = SiaeFilterForm(data=self.request.GET, user=self.request.user)
         results = filter_form.filter_queryset()
         # Prefetch the client references already ordered so export_siae_to_excel/csv reuse the cache
         # instead of firing an extra query per Siae (N+1 that would time out on the full list export)

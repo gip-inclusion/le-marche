@@ -1343,6 +1343,47 @@ class SiaeFavoriteViewTestCase(TestCase):
         )
 
 
+class SiaeFavoriteListSearchFilterTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.owner = UserFactory(kind="BUYER")
+        cls.other_user = UserFactory(kind="BUYER")
+        cls.siae_in_list = SiaeFactory(is_active=True)
+        cls.siae_not_in_list = SiaeFactory(is_active=True)
+        cls.favorite_list = FavoriteListFactory(user=cls.owner, siaes=[cls.siae_in_list])
+        cls.search_url = reverse("siae:search_results") + f"?favorite_list={cls.favorite_list.slug}"
+        cls.download_url = (
+            reverse("siae:search_results_download") + f"?favorite_list={cls.favorite_list.slug}&format=csv"
+        )
+
+    def test_form_favorite_list_restricted_to_owner(self):
+        data = {"favorite_list": self.favorite_list.slug}
+        self.assertTrue(SiaeFilterForm(data=data, user=self.owner).is_valid())
+        self.assertFalse(SiaeFilterForm(data=data, user=self.other_user).is_valid())
+        self.assertFalse(SiaeFilterForm(data=data).is_valid())
+
+    def test_owner_can_filter_on_own_favorite_list(self):
+        self.client.force_login(self.owner)
+        response = self.client.get(self.search_url)
+        self.assertEqual(list(response.context["siaes"]), [self.siae_in_list])
+
+        response = self.client.get(self.download_url)
+        self.assertEqual(response["Context-Data-Results-Count"], "1")
+
+    def test_anonymous_cannot_filter_on_favorite_list(self):
+        response = self.client.get(self.search_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.siae_not_in_list, list(response.context["siaes"]))
+
+    def test_other_user_cannot_filter_on_favorite_list(self):
+        self.client.force_login(self.other_user)
+        response = self.client.get(self.search_url)
+        self.assertIn(self.siae_not_in_list, list(response.context["siaes"]))
+
+        response = self.client.get(self.download_url)
+        self.assertEqual(response["Context-Data-Results-Count"], "2")
+
+
 class SiaeSiretSearchTestCase(TestCase):
     def setUp(self):
         self.url = reverse("siae:siret_search")
