@@ -1210,6 +1210,27 @@ class TenderDetailViewTest(TestCase):
         self.assertNotContains(response, "Voir l&#x27;appel d&#x27;offres")
         self.assertContains(response, "Lien partagé")
 
+    def test_tender_siae_uuid_of_another_tender_is_rejected(self):
+        tender_source = TenderFactory(kind=tender_constants.KIND_TENDER, author=self.user_buyer_2)
+        tender_target = TenderFactory(kind=tender_constants.KIND_TENDER, author=self.user_buyer_2)
+        tender_siae_source = TenderSiaeFactory(
+            tender=tender_source, siae=self.siae_1, detail_contact_click_date=timezone.now()
+        )
+        # the token works on its own tender
+        response = self.client.get(
+            reverse("tenders:detail", kwargs={"slug": tender_source.slug})
+            + f"?tender_siae_uuid={tender_siae_source.uuid}"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, tender_source.contact_email)
+        # but cannot be reused on another tender
+        response = self.client.get(
+            reverse("tenders:detail", kwargs={"slug": tender_target.slug})
+            + f"?tender_siae_uuid={tender_siae_source.uuid}"
+        )
+        self.assertEqual(response.status_code, 404)
+        self.assertNotContains(response, tender_target.contact_email, status_code=404)
+
     def test_update_tendersiae_stats_on_tender_view_with_siae_id(self):
         self.tender_1.siaes.add(self.siae_2)  # create new tendersiae
         self.assertEqual(self.tender_1.tendersiae_set.count(), 3 + 1)

@@ -515,7 +515,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
         """
         self.object = self.get_object()
         user = self.request.user
-        get_params_form = TenderDetailGetParams(request.GET)
+        get_params_form = TenderDetailGetParams(request.GET, tender=self.object)
         if get_params_form.is_valid():
             self.tender_siae = get_params_form.cleaned_data["tender_siae_uuid"]
             self.user_from_get = get_params_form.cleaned_data["user_id"]
@@ -651,7 +651,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrTenderSiaeUUIDParamMixi
             siae_total_count = Siae.objects.filter(users=self.request.user, tendersiae__tender=self.object).count()
 
         else:  # has tender_siae_uuid
-            siae_qs = Siae.objects.filter(tendersiae__uuid=self.tender_siae_uuid)
+            siae_qs = Siae.objects.filter(tendersiae__uuid=self.tender_siae_uuid, tendersiae__tender=self.object)
             siae_total_count = 1
 
         initial_data = [
@@ -682,7 +682,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrTenderSiaeUUIDParamMixi
             else:  # No siae select, mean only one matched siae
                 siae_qs = Siae.objects.filter(users=self.request.user, tendersiae__tender=self.object)
         else:
-            siae_qs = Siae.objects.filter(tendersiae__uuid=self.tender_siae_uuid)
+            siae_qs = Siae.objects.filter(tendersiae__uuid=self.tender_siae_uuid, tendersiae__tender=self.object)
         if self.answers_formset.is_valid():
             with transaction.atomic():  # Rollback all answers if any problem appears, e.g. when going back in browser
                 for answer_form in self.answers_formset:
