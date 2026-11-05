@@ -512,6 +512,11 @@ class TenderDetailGetParams(forms.Form):
     tender_siae_uuid = forms.ModelChoiceField(queryset=TenderSiae.objects.all(), required=False, to_field_name="uuid")
     user_id = forms.ModelChoiceField(queryset=User.objects.all(), required=False)
 
+    def __init__(self, *args, tender, **kwargs):
+        super().__init__(*args, **kwargs)
+        # only accept a TenderSiae token belonging to the displayed tender
+        self.fields["tender_siae_uuid"].queryset = TenderSiae.objects.filter(tender=tender)
+
 
 class SiaeSelectFieldsForm(forms.Form):
     """Form used to select fields to appear in the downloaded file"""
