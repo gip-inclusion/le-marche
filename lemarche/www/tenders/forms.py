@@ -287,6 +287,15 @@ class TenderCreateStepContactForm(forms.ModelForm):
         else:
             self.initial["contact_company_name"] = user.company_name
 
+    def clean_contact_email(self):
+        contact_email = self.cleaned_data.get("contact_email")
+        # an anonymous user must not be able to attribute a tender to an existing account
+        if contact_email and User.objects.filter(email__iexact=contact_email).exists():
+            raise forms.ValidationError(
+                "Un compte existe déjà avec cette adresse e-mail. Veuillez vous connecter pour déposer votre besoin."
+            )
+        return contact_email
+
     def clean(self):
         super().clean()
         if not self.cleaned_data.get("response_kind") and not self.cleaned_data.get("response_is_anonymous"):
