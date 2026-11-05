@@ -158,6 +158,14 @@ class TenderCreateStepDetailForm(forms.ModelForm):
                 raise ValueError("Bad format")
             if not question.get("text"):
                 questions.pop(index)
+        # existing questions must belong to the edited tender
+        submitted_ids = {str(question["id"]) for question in questions if question.get("id")}
+        if submitted_ids:
+            tender_question_ids = (
+                {str(pk) for pk in self.instance.questions.values_list("id", flat=True)} if self.instance.pk else set()
+            )
+            if not submitted_ids <= tender_question_ids:
+                raise forms.ValidationError("Question invalide.")
         return questions
 
     def clean_attachment(self, attachment_field):

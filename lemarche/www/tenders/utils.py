@@ -26,6 +26,9 @@ def update_or_create_questions_list(tender, questions_list):
         if questions_to_create:
             create_questions_list(tender, questions_list=questions_to_create)
         if questions_to_update:
+            # only update questions belonging to this tender
+            tender_question_ids = {str(pk) for pk in tender.questions.values_list("id", flat=True)}
+            questions_to_update = [q for q in questions_to_update if str(q.get("id")) in tender_question_ids]
             TenderQuestion.objects.bulk_update(
                 [
                     TenderQuestion(id=values.get("id"), tender=tender, text=values.get("text"))
