@@ -1,4 +1,4 @@
-from uuid import uuid4
+import secrets
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -14,6 +14,18 @@ from shortuuid import uuid
 from lemarche.conversations.tasks import send_transactional_email
 from lemarche.users import constants as user_constants
 from lemarche.utils.data import add_validation_error
+
+
+# email local parts are limited to 64 characters (RFC 5321)
+INTERLOCUTOR_ENCODED_SLUG_MAX_LENGTH = 31
+
+
+def generate_interlocutor_encoded(full_name: str) -> str:
+    """
+    Build the reply alias of an interlocutor: a readable slug followed by an unguessable 128-bit token.
+    """
+    slug = slugify(full_name).replace("-", "_")[:INTERLOCUTOR_ENCODED_SLUG_MAX_LENGTH].strip("_")
+    return f"{slug}_{secrets.token_hex(16)}"
 
 
 class ConversationQuerySet(models.QuerySet):
@@ -109,19 +121,14 @@ class Conversation(models.Model):
         The UUID of sender.
         """
         if not self.sender_encoded:
-            slug_sender_full_name = slugify(self.sender_full_name).replace("-", "_")
-            self.sender_encoded = f"{slug_sender_full_name}_{str(uuid4())[:4]}"
+            self.sender_encoded = generate_interlocutor_encoded(self.sender_full_name)
 
     def set_siae_encoded(self):
         """
         The UUID of siae.
         """
         if not self.siae_encoded:
-            if self.siae.contact_full_name:
-                siae_slug_full_name = slugify(self.siae.contact_full_name).replace("-", "_")
-            else:
-                siae_slug_full_name = self.siae.slug.replace("-", "_")
-            self.siae_encoded = f"{siae_slug_full_name}_{str(uuid4())[:4]}"
+            self.siae_encoded = generate_interlocutor_encoded(self.siae.contact_full_name or self.siae.slug)
 
     def save(self, *args, **kwargs):
         """
@@ -149,6 +156,22 @@ class Conversation(models.Model):
             return self.USER_KIND_SENDER_TO_BUYER
         elif self.siae_encoded.endswith(conv_uuid):
             return self.USER_KIND_SENDER_TO_SIAE
+
+    def is_expected_sender(self, user_kind: str, email: str) -> bool:
+        """
+        Check that an inbound email comes from the interlocutor expected for this direction:
+        - to the siae (USER_KIND_SENDER_TO_SIAE): from the buyer
+        - to the buyer (USER_KIND_SENDER_TO_BUYER): from the siae
+        """
+        if user_kind == self.USER_KIND_SENDER_TO_SIAE:
+            allowed_emails = [self.sender_email]
+            if self.sender_user:
+                allowed_emails.append(self.sender_user.email)
+        elif user_kind == self.USER_KIND_SENDER_TO_BUYER and self.siae:
+            allowed_emails = [self.siae.contact_email, *self.siae.users.values_list("email", flat=True)]
+        else:
+            return False
+        return email.strip().lower() in {e.strip().lower() for e in allowed_emails if e}
 
     @property
     def sender_email_buyer(self):

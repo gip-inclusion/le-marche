@@ -7,7 +7,9 @@ from django.urls import reverse
 from django.utils.text import slugify
 
 from lemarche.conversations.models import Conversation
+from lemarche.users.models import User
 from tests.conversations.factories import ConversationFactory
+from tests.users.factories import UserFactory
 
 
 class InboundEmailParsingApiTestV0(TestCase):
@@ -21,6 +23,7 @@ class InboundEmailParsingApiTestV0(TestCase):
             cls.email_data = email_data.copy()
         cls.item_email_data = cls.email_data["items"][0]
         cls.item_email_data["To"][0]["Address"] = cls.conv.sender_email_buyer_encoded
+        cls.item_email_data["From"]["Address"] = cls.conv.sender_email_siae
         cls.url = reverse("api:inbound-email-parsing")
 
     def test_encoded_items(self):
@@ -105,6 +108,36 @@ class InboundEmailParsingApiTestV0(TestCase):
             f"{self.conv.sender_first_name} {self.conv.sender_last_name} <{self.conv.sender_email_buyer_encoded}>",
         )
         self.assertEqual(mail.outbox[0].to, [self.conv.sender_email_siae])
+
+    def test_inbound_emails_from_siae_user_accepted(self):
+        siae_user = UserFactory(kind=User.KIND_SIAE)
+        self.conv.siae.users.add(siae_user)
+        self.item_email_data["To"][0]["Address"] = self.conv.sender_email_buyer_encoded
+        self.item_email_data["From"]["Address"] = siae_user.email.upper()
+
+        response = self.client.post(self.url, data=self.email_data, content_type="application/json")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_inbound_emails_from_unexpected_sender_rejected(self):
+        for to_address, from_address in [
+            # third party
+            (self.conv.sender_email_buyer_encoded, "attacker@example.com"),
+            (self.conv.sender_email_siae_encoded, "attacker@example.com"),
+            # wrong direction: an interlocutor writing to its own alias
+            (self.conv.sender_email_buyer_encoded, self.conv.sender_email_buyer),
+            (self.conv.sender_email_siae_encoded, self.conv.sender_email_siae),
+        ]:
+            with self.subTest(to_address=to_address, from_address=from_address):
+                self.item_email_data["To"][0]["Address"] = to_address
+                self.item_email_data["From"]["Address"] = from_address
+
+                response = self.client.post(self.url, data=self.email_data, content_type="application/json")
+                self.assertEqual(response.status_code, 403)
+
+                self.conv.refresh_from_db()
+                self.assertEqual(self.conv.data, [])
+                self.assertEqual(len(mail.outbox), 0)
 
 
 class InboundEmailParsingApiTest(InboundEmailParsingApiTestV0):
