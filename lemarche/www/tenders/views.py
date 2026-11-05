@@ -1224,18 +1224,33 @@ class TenderReminderView(TenderAuthorOrAdminRequiredMixin, SuccessMessageMixin, 
         return initial
 
     def form_valid(self, form):
-        for siae in self.siae_qs:
-            reversed_url = reverse_lazy("tenders:detail", kwargs={"slug": self.tender.slug})
-            tender_url = f"https://{get_domain_url()}{reversed_url}"
+        with transaction.atomic():
+            # lock the tender to re-check the reminder conditions and avoid concurrent reminders
+            self.tender = Tender.objects.select_for_update().get(pk=self.tender.pk)
+            if not self.tender.can_send_reminder:
+                messages.add_message(
+                    self.request,
+                    messages.ERROR,
+                    "Impossible de relancer les fournisseurs pour ce besoin.",
+                )
+                return HttpResponseRedirect(self.get_success_url())
 
-            send_reminder_email_to_siae(
-                siae,
-                message=form.cleaned_data["reminder_message"],
-                tender_url=tender_url,
+            # only remind siaes that have actually received the tender
+            siae_qs = self.siae_qs.filter(
+                id__in=TenderSiae.objects.filter(tender=self.tender, email_send_date__isnull=False).values("siae_id")
             )
-            self.tender.reminder_count += 1
-            self.tender.reminder_last_update = timezone.now()
-            self.tender.save()
+            for siae in siae_qs:
+                reversed_url = reverse_lazy("tenders:detail", kwargs={"slug": self.tender.slug})
+                tender_url = f"https://{get_domain_url()}{reversed_url}"
+
+                send_reminder_email_to_siae(
+                    siae,
+                    message=form.cleaned_data["reminder_message"],
+                    tender_url=tender_url,
+                )
+                self.tender.reminder_count += 1
+                self.tender.reminder_last_update = timezone.now()
+                self.tender.save()
 
         messages.add_message(
             self.request,
