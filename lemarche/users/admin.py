@@ -6,13 +6,14 @@ from django.contrib import admin
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.admin import GenericTabularInline
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import models
 from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import path, reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from django.views.decorators.http import require_POST
 
 from lemarche.conversations.models import TemplateTransactionalSendLog
 from lemarche.notes.models import Note
@@ -369,7 +370,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         my_urls = [
             path(
                 "<int:pk>/onboard_user/",
-                self.admin_site.admin_view(self.onboard_user_view),
+                self.admin_site.admin_view(require_POST(self.onboard_user_view)),
                 name="onboard_user",
             ),
             *urls,  # these patterns last, because they can match a lot of urls
@@ -377,7 +378,9 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         return my_urls
 
     def onboard_user_view(self, request, pk):
-        user = self.model.objects.get(id=pk)
+        user = get_object_or_404(self.model, id=pk)
+        if not self.has_change_permission(request, user):
+            raise PermissionDenied
         user.set_onboarded_and_send_email()
 
         self.message_user(request, "L'onboarding a été finalisé avec succès")
@@ -434,8 +437,10 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         if user.have_followed_onboarding:
             return mark_safe('<img src="/static/admin/img/icon-yes.svg" alt="True">')
         else:
+            # submit the change form (and its CSRF token) to the onboarding view
             return format_html(
-                "<a class='button' href='{}'>Confirmer que l'utilisateur a suivi la procédure d'onboarding</a>",
+                "<button type='submit' class='button' formaction='{}'>"
+                "Confirmer que l'utilisateur a suivi la procédure d'onboarding</button>",
                 reverse("admin:onboard_user", args=[user.pk]),
             )
 
