@@ -1,5 +1,4 @@
 import logging
-import re
 
 from django.conf import settings
 
@@ -37,10 +36,13 @@ GENERIC_EMAIL_DOMAIN_SUFFIX_LIST = [
 
 
 def anonymize_email(email):
-    email_split = email.split("@")
-    email_username = email_split[0]
-    email_username_anonymized = email_username[0] + re.sub("[a-z]", "*", email_username[1:-1]) + email_username[-1]
-    return "@".join([email_username_anonymized, email_split[1]])
+    """
+    Keep only the first character of the local part, followed by a fixed mask,
+    so that neither the content nor the length of the local part is disclosed
+    (whatever the characters it contains: uppercase, digits, punctuation, unicode...)
+    """
+    local_part, _, domain = email.rpartition("@")
+    return f"{local_part[:1]}***@{domain}"
 
 
 # TODO: wrap this method on every send_mail. ex: use email base layout like C1

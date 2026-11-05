@@ -108,6 +108,18 @@ class DashboardSiaeSearchAdoptViewTest(TestCase):
         self.assertEqual(self.siae_with_user.users.count(), 1)  # invitation workflow
         self.assertEqual(self.user_siae_2.siaes.count(), 0)
 
+    def test_siae_with_existing_user_adopt_confirm_anonymizes_email(self):
+        siae = SiaeFactory()
+        siae.users.add(UserFactory(kind=User.KIND_SIAE, email="BBTEST12@example.com"))
+        self.client.force_login(self.user_siae_2)
+
+        url = reverse("dashboard_siaes:siae_search_adopt_confirm", args=[siae.slug])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "B***@example.com")
+        self.assertNotContains(response, "BBTEST12")
+
 
 class DashboardSiaeEditViewTest(TestCase):
     @classmethod
