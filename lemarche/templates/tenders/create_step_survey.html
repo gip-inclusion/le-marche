@@ -11,7 +11,7 @@
     <div id="serveyTender">
         <div class="fr-grid-row">
             <div class="fr-col-12 fr-col-lg-7">
-                {% dsfr_form_field form.scale_marche_useless %}
+                {{ form.scale_marche_useless.as_field_group }}
             </div>
             <div class="fr-col-12 fr-col-lg-5 fr-pl-2w">
                 <div class="fr-callout fr-p-4v">
@@ -25,7 +25,7 @@
         </div>
         <div class="fr-grid-row">
             <div class="fr-col-12 fr-col-lg-7">
-                {% dsfr_form_field form.le_marche_doesnt_exist_how_to_find_siae %}
+                {{ form.le_marche_doesnt_exist_how_to_find_siae.as_field_group }}
             </div>
         </div>
     </div>

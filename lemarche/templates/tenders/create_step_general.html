@@ -8,7 +8,7 @@
     {% csrf_token %}
     <div class="fr-grid-row">
         <div class="fr-col-12 fr-col-lg-7">
-            {% dsfr_form_field form.kind %}
+            {{ form.kind.as_field_group }}
         </div>
         <div class="fr-col-12 fr-col-lg-5 fr-pl-2w">
             <div class="fr-callout fr-p-4v">
@@ -21,7 +21,7 @@
     </div>
     <div class="fr-grid-row">
         <div class="fr-col-12 fr-col-lg-7">
-            {% dsfr_form_field form.title %}
+            {{ form.title.as_field_group }}
         </div>
         <div class="fr-col-12 fr-col-lg-5 fr-pl-2w">
             <div class="fr-callout fr-p-4v">
@@ -34,7 +34,7 @@
         </div>
     </div>
     <div class="fr-grid-row fr-mb-4w">
-        <div class="fr-col-12 fr-col-lg-7">{% dsfr_form_field form.description %}</div>
+        <div class="fr-col-12 fr-col-lg-7">{{ form.description.as_field_group }}</div>
         <div class="fr-col-12 fr-col-lg-5 fr-pl-2w">
             <div class="fr-callout fr-p-4v">
                 <h3 class="fr-callout__title fr-text--sm"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Conseil pour la description</h3>
@@ -61,7 +61,7 @@
                    </div>
                 {% endif %}
             </div>
-            {% dsfr_form_field form.is_country_area %}
+            {{ form.is_country_area.as_field_group }}
         </div>
     </div>
 {% endblock content_form %}

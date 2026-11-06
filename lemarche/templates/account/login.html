@@ -28,10 +28,10 @@
                                     <div class="fr-fieldset__element">
                                         <fieldset class="fr-fieldset" id="credentials" aria-labelledby="credentials-messages">
                                             <div class="fr-fieldset__element">
-                                                {% dsfr_form_field form.login %}
+                                                {{ form.login.as_field_group }}
                                             </div>
                                             <div class="fr-fieldset__element">
-                                                {% dsfr_form_field form.password %}
+                                                {{ form.password.as_field_group }}
                                                 <p>
                                                     <a href="{% url 'auth:password_reset' %}" class="fr-link">Mot de passe oublié ?</a>
                                                 </p>

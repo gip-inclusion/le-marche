@@ -33,7 +33,7 @@
                                         <div class="fr-fieldset__element">
                                             <fieldset class="fr-fieldset">
                                                 <div class="fr-fieldset__element">
-                                                    {% dsfr_form_field form.kind %}
+                                                    {{ form.kind.as_field_group }}
                                                 </div>
                                             </fieldset>
                                         </div>
@@ -46,13 +46,13 @@
                                         <div class="fr-fieldset__element">
                                             <fieldset class="fr-fieldset">
                                                 <div class="fr-fieldset__element">
-                                                    {% dsfr_form_field form.first_name %}
+                                                    {{ form.first_name.as_field_group }}
                                                 </div>
                                                 <div class="fr-fieldset__element">
-                                                    {% dsfr_form_field form.last_name %}
+                                                    {{ form.last_name.as_field_group }}
                                                 </div>
                                                 <div id="phoneFieldsetElement" class="fr-fieldset__element">
-                                                    {% dsfr_form_field form.phone %}
+                                                    {{ form.phone.as_field_group }}
                                                 </div>
                                             </fieldset>
                                         </div>
@@ -65,19 +65,19 @@
                                         <div class="fr-fieldset__element">
                                             <fieldset class="fr-fieldset">
                                                 <div id="buyerKindDetailFieldsetElement" class="fr-fieldset__element fr-hidden">
-                                                    {% dsfr_form_field form.buyer_kind_detail %}
+                                                    {{ form.buyer_kind_detail.as_field_group }}
                                                 </div>
                                                 <div id="partnerKindFieldsetElement" class="fr-fieldset__element fr-hidden">
-                                                    {% dsfr_form_field form.partner_kind %}
+                                                    {{ form.partner_kind.as_field_group }}
                                                 </div>
                                                 <div id="companyNameFieldsetElement" class="fr-fieldset__element fr-hidden">
-                                                    {% dsfr_form_field form.company_name %}
+                                                    {{ form.company_name.as_field_group }}
                                                 </div>
                                                 <div id="positionFieldsetElement" class="fr-fieldset__element fr-hidden">
-                                                    {% dsfr_form_field form.position %}
+                                                    {{ form.position.as_field_group }}
                                                 </div>
                                                 <div id="sectorsFieldsetElement" class="fr-fieldset__element fr-hidden">
-                                                    {% dsfr_form_field form.sectors %}
+                                                    {{ form.sectors.as_field_group }}
                                                 </div>
                                                 <div class="fr-fieldset__element company-name-siae-form-group fr-hidden">
                                                     {% dsfr_alert title="Le nom de votre structure" type="info" content="Une fois votre compte créé, vous pourrez ajouter puis modifier votre structure." %}
@@ -93,13 +93,13 @@
                                         <div class="fr-fieldset__element">
                                             <fieldset class="fr-fieldset">
                                                 <div class="fr-fieldset__element">
-                                                    {% dsfr_form_field form.email %}
+                                                    {{ form.email.as_field_group }}
                                                 </div>
                                                 <div class="fr-fieldset__element">
-                                                    {% dsfr_form_field form.password1 %}
+                                                    {{ form.password1.as_field_group }}
                                                 </div>
                                                 <div class="fr-fieldset__element">
-                                                    {% dsfr_form_field form.password2 %}
+                                                    {{ form.password2.as_field_group }}
                                                 </div>
                                             </fieldset>
                                         </div>

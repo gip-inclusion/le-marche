@@ -20,16 +20,16 @@
 >
     {% csrf_token %}
 
-    {% dsfr_form_field form.sector %}
-    {% dsfr_form_field form.presta_type %}
-    {% dsfr_form_field form.geo_range %}
+    {{ form.sector.as_field_group }}
+    {{ form.presta_type.as_field_group }}
+    {{ form.geo_range.as_field_group }}
 
     <div x-show="selectedGeoRange === 'CUSTOM'">
-      {% dsfr_form_field form.geo_range_custom_distance %}
+      {{ form.geo_range_custom_distance.as_field_group }}
     </div>
 
     <div x-show="selectedGeoRange === 'ZONES'">
-      {% dsfr_form_field form.locations %}
+      {{ form.locations.as_field_group }}
     </div>
 
 </form>
