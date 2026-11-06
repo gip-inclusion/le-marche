@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.utils import timezone
 from wagtail.models import Page as WagtailPage, Site
 
+from content_manager.models import ContentPage
 from lemarche.users.models import User
 from tests.siaes.factories import SiaeFactory
 from tests.users.factories import UserFactory
@@ -217,8 +218,27 @@ class SitemapTests(TestCase):
     def test_sitemap_html_contains_wagtail_page(self):
         """Test that the HTML sitemap contains the wagtail page URL and title"""
         response = self.client.get("/plan-du-site/")
-        wagtail_page_url = self.wagtail_page.get_full_url()
+        wagtail_page_url = self.wagtail_page.get_url()
         wagtail_page_title = self.wagtail_page.title
 
         self.assertContains(response, f'href="{wagtail_page_url}"')
         self.assertContains(response, wagtail_page_title)
+
+    def test_sitemaps_exclude_pages_excluded_from_sitemap(self):
+        root = WagtailPage.get_first_root_node()
+        excluded_page = root.add_child(
+            instance=ContentPage(title="Excluded page", slug="excluded-page", exclude_from_sitemap=True)
+        )
+
+        response = self.client.get(reverse("pages:plan-du-site"))
+        self.assertNotContains(response, excluded_page.title)
+
+        response = self.client.get(reverse("sitemap"))
+        self.assertNotContains(response, excluded_page.slug)
+
+    def test_sitemap_html_does_not_list_draft_pages(self):
+        root = WagtailPage.get_first_root_node()
+        draft_page = root.add_child(instance=WagtailPage(title="Draft page", slug="draft-page", live=False))
+
+        response = self.client.get(reverse("pages:plan-du-site"))
+        self.assertNotContains(response, draft_page.title)

@@ -8,7 +8,6 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import FormView, ListView, TemplateView, View
 from django.views.generic.edit import FormMixin
-from wagtail.models import Site as WagtailSite
 
 from lemarche.siaes.models import Siae, SiaeGroup
 from lemarche.utils.tracker import track
@@ -158,21 +157,3 @@ def trigger_error(request):
     if request.POST:
         raise Exception(f"{request.POST.get('status_code')} error: {request.POST.get('error_message')}")
     print(1 / 0)  # Should raise a ZeroDivisionError.
-
-
-class SitemapView(View):
-    def get(self, request):
-        # Récupérer la page d'accueil
-        site = WagtailSite.find_for_request(request)
-        homepage = site.root_page  # Page d'accueil de Wagtail
-
-        # Récupérer toutes les pages descendantes publiées
-        all_pages = homepage.get_descendants(inclusive=True).live()
-
-        # Construire une liste des URLs et titres
-        urls_with_titles = [
-            {"url": page.get_full_url(request=request), "title": page.title, "depth": page.depth - homepage.depth}
-            for page in all_pages
-        ]
-
-        return render(request, "pages/plan_du_site.html", {"sitemap_urls": urls_with_titles})
