@@ -1,8 +1,6 @@
-from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.urls import reverse
-from forms.models import FormField, FormPage
 from wagtail.images.models import Image
 from wagtail.models import Page
 from wagtail.rich_text import RichText
@@ -11,7 +9,7 @@ from wagtailmenus.models.menuitems import FlatMenuItem, MainMenuItem
 from content_manager.models import ContentPage
 from content_manager.services.accessors import get_or_create_footer_menu, get_or_create_main_menu
 from content_manager.utils import get_default_site
-
+from forms.models import FormField, FormPage
 
 ALL_ALLOWED_SLUGS = ["home", "mentions-legales", "accessibilite", "contact"]
 
@@ -27,26 +25,28 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **kwargs):
+        call_command("import_dsfr_pictograms")
+        call_command("import_illustration_images")
+
         slugs = kwargs.get("slug")
 
         if not slugs:
             # Only run the script on a new site or for specific slugs
             if Page.objects.last().id > 2:
                 self.stdout.write(
-                    self.style.NOTICE(
+                    self.style.WARNING(
                         "The site appears to already have pages, so this script won't run without params."
                     )
                 )
                 self.stdout.write(
-                    self.style.NOTICE("Please run this script on a new site, or with the 'slug' parameter.")
+                    self.style.WARNING("Please run this script on a new site, or with the 'slug' parameter.")
                 )
                 return
+            else:
+                # on a new site, first set the config
+                call_command("set_config")
 
             slugs = ALL_ALLOWED_SLUGS
-
-        pictograms_exist = Image.objects.filter(title__contains="Pictogrammes DSFR").count()
-        if not pictograms_exist:
-            call_command("import_dsfr_pictograms")
 
         for slug in slugs:
             if slug == "home":
@@ -111,9 +111,13 @@ class Command(BaseCommand):
 
         # Create the page
         body = []
-        title = "Votre nouveau site avec Sites faciles"
+        title = "Votre nouveau site avec Sites Conformes"
 
         image = Image.objects.filter(title="Pictogrammes DSFR — Digital — Coding").first()
+        # Mark the image as decorative for validations
+        if image:
+            image.is_decorative = True
+            image.save()
 
         text_raw = """<p>Bienvenue !</p>
 
@@ -122,7 +126,8 @@ class Command(BaseCommand):
         <p>Vous pouvez maintenant vous connecter dans l’administration et personnaliser le site.</p>
         """
 
-        admin_url = f"{settings.WAGTAILADMIN_BASE_URL}{reverse('wagtailadmin_home')}"
+        # Use the reversed admin path directly to avoid duplicating the script_name
+        admin_url = reverse("wagtailadmin_home")
 
         image_and_text_block = {
             "image": image,
@@ -201,14 +206,12 @@ class Command(BaseCommand):
 
         # Create the form page
         title = "Contact"
-        intro = RichText(
-            """
+        intro = RichText("""
             <p>Bonjour, n’hésitez pas à nous contacter via le formulaire ci-dessous.</p>
             <p></p>
             <p>Vous pouvez également nous contacter via &lt;autres méthodes&gt;.</p>
             <p></p>
-            <p>Les champs marqués d’une astérisque (*) sont obligatoires.</p>"""
-        )
+            <p>Les champs marqués d’une astérisque (*) sont obligatoires.</p>""")
 
         thank_you_text = RichText("<p>Merci pour votre message ! Nous reviendrons vers vous rapidement.</p>")
 

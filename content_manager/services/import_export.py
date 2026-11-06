@@ -19,7 +19,6 @@ from content_manager.constants import HEADER_FIELDS
 from content_manager.models import ContentPage
 from content_manager.services.accessors import get_or_create_collection, get_or_create_content_page
 
-
 PAGE_TEMPLATES_ROOT = settings.BASE_DIR / "content_manager/page_templates"
 TEMPLATES_DATA_FILE = PAGE_TEMPLATES_ROOT / "pages_data.json"
 IMAGES_FOLDER = PAGE_TEMPLATES_ROOT / "img"
@@ -114,7 +113,7 @@ class ImportPages:
         image_folder: PosixPath | None = IMAGES_FOLDER,
     ) -> None:
         if pages_data is None:
-            with open(TEMPLATES_DATA_FILE) as json_file:
+            with open(TEMPLATES_DATA_FILE, "r") as json_file:
                 pages_data = json.load(json_file)
 
         self.pages = pages_data["pages"]  # type: ignore
@@ -148,7 +147,7 @@ class ImportPages:
             raw_page = self.pages[page_id]
             source_url = raw_page["meta"]["html_url"]
 
-            page_exists = ContentPage.objects.filter(source_url=source_url).first()
+            page_exists = ContentPage.objects.child_of(self.parent_page).filter(source_url=source_url).first()
             if page_exists:
                 self.update_page(page_id, page_exists)
             else:
@@ -224,7 +223,7 @@ class ImportExportImages:
 
     def get_image_data(self) -> dict:
         if os.path.isfile(self.image_data_file):
-            with open(self.image_data_file) as json_file:
+            with open(self.image_data_file, "r") as json_file:
                 image_data = json.load(json_file)
         else:
             image_data = {}

@@ -1,6 +1,5 @@
 from django.utils.translation import gettext_lazy as _
 
-
 HEADER_FIELDS = [
     "header_image",
     "header_with_title",
@@ -34,6 +33,12 @@ GRID_3_4_6_CHOICES = [
     ("3", "3/12"),
     ("4", "4/12"),
     ("6", "6/12"),
+]
+
+GRID_6_8_12_CHOICES = [
+    ("6", _("small")),
+    ("8", _("medium")),
+    ("12", _("large")),
 ]
 
 GRID_HORIZONTAL_ALIGN_CHOICES = [
@@ -76,6 +81,13 @@ LEVEL_CHOICES = [
     ("warning", _("Warning")),
 ]
 
+EXTRA_LIMITED_RICHTEXTFIELD_FEATURES = [
+    "bold",
+    "italic",
+    "link",
+    "document-link",
+]
+
 LIMITED_RICHTEXTFIELD_FEATURES = [
     "bold",
     "italic",
@@ -84,6 +96,9 @@ LIMITED_RICHTEXTFIELD_FEATURES = [
     "superscript",
     "subscript",
     "strikethrough",
+    "text-left",
+    "text-center",
+    "text-right",
 ]
 
 LIMITED_RICHTEXTFIELD_FEATURES_WITHOUT_LINKS = [
@@ -92,6 +107,17 @@ LIMITED_RICHTEXTFIELD_FEATURES_WITHOUT_LINKS = [
     "superscript",
     "subscript",
     "strikethrough",
+]
+
+LIMITED_RICHTEXTFIELD_FEATURES_WITH_HEADINGS = [
+    "bold",
+    "italic",
+    "link",
+    "document-link",
+    "strikethrough",
+    "h2",
+    "h3",
+    "h4",
 ]
 
 LINK_SIZE_CHOICES = [
@@ -117,3 +143,86 @@ TEXT_SIZE_CHOICES = [
     ("", _("Medium")),
     ("fr-text--lg", _("Large")),
 ]
+
+ALIGN_HORIZONTAL_CHOICES = [
+    ("left", _("Left")),
+    ("right", _("Right")),
+]
+
+ALIGN_HORIZONTAL_CHOICES_EXTENDED = [
+    ("left", _("Left")),
+    ("", _("Center")),
+    ("right", _("Right")),
+]
+
+ALIGN_VERTICAL_CHOICES = [
+    ("top", _("Top")),
+    ("bottom", _("Bottom")),
+]
+
+
+ALIGN_VERTICAL_CHOICES_EXTENDED = [
+    ("top", _("Top")),
+    ("middle", _("Middle")),
+    ("bottom", _("Bottom")),
+]
+
+TEMPLATE_EXAMPLE_BUTTON_LIST = [
+    {
+        "link_type": "external_url",
+        "text": "Nous contacter",
+        "external_url": "https://sites.beta.gouv.fr/contactez-nous/",
+        "button_type": "fr-btn",
+        "icon_side": "--",
+        "anchor": "",
+    },
+    {
+        "link_type": "external_url",
+        "text": "Voir la vidéo",
+        "external_url": "https://tube.numerique.gouv.fr/",
+        "button_type": "fr-btn fr-btn--secondary",
+        "icon_side": "--",
+        "anchor": "",
+    },
+]
+
+TEMPLATE_EXAMPLE_TAG_BADGE_LIST = [
+    (
+        "tags",
+        [
+            (
+                "tag",
+                {
+                    "label": "Site vitrine",
+                    "is_small": False,
+                    "color": "",
+                    "icon_class": {},
+                    "link": {
+                        "link_type": "--",
+                        "page": None,
+                        "external_url": "",
+                        "document": None,
+                        "anchor": "",
+                    },
+                },
+            ),
+            (
+                "tag",
+                {
+                    "label": "Blog",
+                    "is_small": False,
+                    "color": "",
+                    "icon_class": {},
+                    "link": {
+                        "link_type": "--",
+                        "page": None,
+                        "external_url": "",
+                        "document": None,
+                        "anchor": "",
+                    },
+                },
+            ),
+        ],
+    ),
+]
+IMAGE_GRID_SIZE = [("80", _("Small (80px)")), ("140", _("Medium (140px)")), ("200", _("Large (200px)"))]

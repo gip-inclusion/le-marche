@@ -8,7 +8,6 @@ from wagtail.rich_text import RichText
 
 from content_manager.models import MegaMenu
 
-
 register = template.Library()
 
 
@@ -25,6 +24,12 @@ def mega_menu(context: Context, parent_menu_id: int) -> dict:
 @register.simple_tag
 def settings_value(name):
     return getattr(settings, name, "")
+
+
+@register.simple_tag
+def root_url() -> str:
+    """Return the site's base path, taking FORCE_SCRIPT_NAME into account."""
+    return f"{settings.FORCE_SCRIPT_NAME}/"
 
 
 @register.simple_tag(takes_context=True)
@@ -49,7 +54,7 @@ def canonical_url(context):
         if site.port != 80:
             hostname = f"{hostname}:{site.port}"
     else:
-        hostname = request.get_host
+        hostname = request.get_host()
 
     return f"{scheme}://{hostname}{request.path}"
 
@@ -110,7 +115,7 @@ def toggle_url_filter(context, *_, **kwargs):
         elif val and val == current_val:
             url_params.pop(param, None)
 
-    url_string = "&".join([f"{x[0]}={x[1]}" for x in url_params.items()])
+    url_string = "&".join(["{}={}".format(x[0], x[1]) for x in url_params.items()])
 
     if url_string:
         return f"?{url_string}"
