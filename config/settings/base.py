@@ -809,7 +809,7 @@ WAGTAIL_FRONTEND_LOGIN_URL = LOGIN_URL
 
 # used by sites-conformes (content_manager): canonical URL template tag and set_config command
 HOST_PROTO = os.getenv("HOST_PROTO", "https")
-HOST_URL = os.getenv("HOST_URL", "localhost")
+HOST_URL = ALLOWED_HOSTS[0]
 
 HOST_PORT = os.getenv("HOST_PORT", "")
 if HOST_PORT != "":
