@@ -10,7 +10,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     replaces = [
         ("events", "0001_initial"),
         ("events", "0002_eventsindexpage_filter_by_author_and_more"),

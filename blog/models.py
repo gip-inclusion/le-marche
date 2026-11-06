@@ -10,8 +10,8 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 from django.utils import feedgenerator, timezone
 from django.utils.translation import gettext_lazy as _
+from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
-from modelcluster.tags import ClusterTaggableManager
 from rest_framework import serializers
 from taggit.models import TaggedItemBase
 from unidecode import unidecode
@@ -30,6 +30,7 @@ from blog.managers import CategoryManager
 from content_manager.abstract import SitesFacilesBasePage
 from content_manager.constants import LIMITED_RICHTEXTFIELD_FEATURES
 from content_manager.models import Tag
+
 
 User = get_user_model()
 
@@ -159,7 +160,7 @@ class Category(TranslatableMixin, index.Indexed, Orderable):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
-        return super(Category, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     class Meta:
         ordering = ["name"]
@@ -244,7 +245,7 @@ class BlogIndexPage(RoutablePageMixin, SitesFacilesBasePage):
         return posts
 
     def get_context(self, request, *args, **kwargs):
-        context = super(BlogIndexPage, self).get_context(request, *args, **kwargs)
+        context = super().get_context(request, *args, **kwargs)
         posts = self.posts
 
         extra_breadcrumbs = None

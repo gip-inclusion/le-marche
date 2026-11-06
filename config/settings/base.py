@@ -826,6 +826,8 @@ WAGTAIL_FRONTEND_LOGIN_URL = LOGIN_URL
 # used by sites-conformes (content_manager): canonical URL template tag and set_config command
 HOST_PROTO = os.getenv("HOST_PROTO", "https")
 HOST_URL = ALLOWED_HOSTS[0]
+# used by sites-conformes {% root_url %} tag: the site is served at the root (Django default is None, rendered "None/")
+FORCE_SCRIPT_NAME = ""
 
 HOST_PORT = os.getenv("HOST_PORT", "")
 if HOST_PORT != "":

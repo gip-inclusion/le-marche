@@ -5,7 +5,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("blog", "0038_blogindexpage_feed_posts_limit"),
     ]
