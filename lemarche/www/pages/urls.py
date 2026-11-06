@@ -1,11 +1,11 @@
 from django.urls import path
 from django.views.generic import TemplateView
 
+from content_manager.views import SiteMapView
 from lemarche.www.pages.views import (
     CompanyReferenceCalculatorView,
     ContactView,
     SiaeGroupListView,
-    SitemapView,
     SocialImpactBuyersCalculatorView,
     StatsView,
     TrackView,
@@ -53,7 +53,7 @@ urlpatterns = [
     path("sentry-debug/", trigger_error, name="sentry_debug"),
     # Tracking endpoint for the frontend
     path("track/", TrackView.as_view(), name="track_frontend"),
-    path("plan-du-site/", SitemapView.as_view(), name="plan-du-site"),
+    path("plan-du-site/", SiteMapView.as_view(), name="plan-du-site"),
     # Error pages
     path("403/", TemplateView.as_view(template_name="403.html"), name="403"),
     path("404/", TemplateView.as_view(template_name="404.html"), name="404"),

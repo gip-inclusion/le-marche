@@ -322,6 +322,7 @@ ACCOUNT_ADAPTER = "lemarche.users.adapter.LeMarcheAccountAdapter"
 
 # App is in french
 LANGUAGE_CODE = "fr-fr"
+LANGUAGES = [("fr", "Français")]
 
 # France timezone
 TIME_ZONE = "Europe/Paris"
