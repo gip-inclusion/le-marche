@@ -16,6 +16,9 @@ from pathlib import Path
 
 import environ
 from botocore.config import Config
+from redis import exceptions as redis_exceptions
+from redis.backoff import ExponentialBackoff
+from redis.retry import Retry
 
 
 locale.setlocale(locale.LC_TIME, "")
@@ -641,7 +644,20 @@ CONNECTION_MODES_HUEY = {
     "redis": {
         "class_name": "huey.RedisHuey",
         "immediate": False,
-        "connection": {"db": REDIS_DB, "host": REDIS_URL, "port": REDIS_PORT, "password": REDIS_PASSWORD},
+        "connection": {
+            "db": REDIS_DB,
+            "host": REDIS_URL,
+            "port": REDIS_PORT,
+            "password": REDIS_PASSWORD,
+            # Huey builds its own ConnectionPool, which bypasses redis-py client defaults:
+            # without these, connections dropped by the server/proxy while idle are never
+            # detected nor retried ("ConnectionError: Connection closed by server.").
+            "health_check_interval": 30,  # PING before reusing a connection idle for more than 30s
+            "socket_keepalive": True,
+            "socket_connect_timeout": 5,
+            "retry": Retry(ExponentialBackoff(), 2),
+            "retry_on_error": [redis_exceptions.ConnectionError, redis_exceptions.TimeoutError],
+        },
     },
 }
 
