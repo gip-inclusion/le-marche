@@ -42,21 +42,18 @@ def send_slack_message(text: str, service_id: str = settings.SLACK_WEBHOOK_C4_TE
         client (requests.Session, optional): client to send requests. Defaults to None.
 
     Raises:
-        e: requests.HTTPStatusError
+        e: requests.exceptions.HTTPError
     """
     if settings.SLACK_NOTIF_IS_ACTIVE:
-        client = requests.Session(
-            headers={
-                "user-agent": "betagouv-lemarche/0.0.1",
-            }
-        )
+        with requests.Session() as client:
+            client.headers.update({"user-agent": "betagouv-lemarche/0.0.1"})
 
-        try:
-            data = {"text": text}
-            response = client.post(f"{SLACK_BASE_URL}{service_id}", json=data)
-            response.raise_for_status()
-            logger.info("Slack: send message to channel")
-            return True
-        except requests.exceptions.HTTPError as e:
-            logger.error("Error while fetching `%s`: %s", e.request.url, e)
-            raise e
+            try:
+                data = {"text": text}
+                response = client.post(f"{SLACK_BASE_URL}{service_id}", json=data)
+                response.raise_for_status()
+                logger.info("Slack: send message to channel")
+                return True
+            except requests.exceptions.HTTPError as e:
+                logger.error("Error while fetching `%s`: %s", e.request.url, e)
+                raise e
