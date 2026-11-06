@@ -16,8 +16,8 @@ from django.utils.text import slugify
 from django.views import View
 from django.views.generic import DetailView, FormView, UpdateView
 from django_filters.views import FilterView
+from sites_conformes.core.models import ContentPage, Tag
 
-from content_manager.models import ContentPage, Tag
 from lemarche.api.inclusive_potential.constants import PRESTA_MODE_DEFAULT, PRESTA_MODE_TO_SIAE_KINDS, RECOMMENDATIONS
 from lemarche.api.inclusive_potential.utils import get_inclusive_potential_data
 from lemarche.cms.models import ArticleList

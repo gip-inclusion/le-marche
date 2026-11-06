@@ -1,6 +1,6 @@
 import pytest
 
-from blog.models import User
+from lemarche.users.models import User
 from lemarche.utils.db import secure_delete
 from tests.tenders.factories import TenderFactory
 from tests.users.factories import UserFactory

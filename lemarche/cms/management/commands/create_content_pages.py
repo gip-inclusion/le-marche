@@ -1,9 +1,8 @@
 import json
 
 from django.core.management.base import BaseCommand
+from sites_conformes.core.models import ContentPage
 from wagtail.models import Page
-
-from content_manager.models import ContentPage
 
 
 class Command(BaseCommand):
@@ -22,14 +21,12 @@ class Command(BaseCommand):
             with open("lemarche/fixtures/cms_content_pages.json") as f:
                 pages_data = json.load(f)
         except FileNotFoundError:
-            self.stdout.write(
-                self.style.ERROR("Le fichier content_manager/fixtures/cms_content_pages.json n'existe pas.")
-            )
+            self.stdout.write(self.style.ERROR("Le fichier lemarche/fixtures/cms_content_pages.json n'existe pas."))
             return
         except json.JSONDecodeError:
             self.stdout.write(
                 self.style.ERROR(
-                    "Le fichier content_manager/fixtures/cms_content_pages.json n'est pas un fichier JSON valide."
+                    "Le fichier lemarche/fixtures/cms_content_pages.json n'est pas un fichier JSON valide."
                 )
             )
             return
