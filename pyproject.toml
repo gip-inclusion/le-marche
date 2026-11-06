@@ -35,6 +35,7 @@ dependencies = [
     "django-storages",
     "drf-spectacular",
     "huey",
+    "icalendar",
     "nh3",
     "psycopg[binary]",
     "python-stdnum",

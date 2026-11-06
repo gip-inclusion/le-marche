@@ -183,6 +183,7 @@ WAGTAIL_APPS = [
     # app from site_facile
     "blog",
     "content_manager",
+    "events",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + DJANGO_DSFR_APPS + THIRD_PARTY_APPS + LOCAL_APPS + WAGTAIL_APPS
