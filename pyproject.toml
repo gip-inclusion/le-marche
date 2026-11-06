@@ -35,7 +35,6 @@ dependencies = [
     "django-storages",
     "drf-spectacular",
     "huey",
-    "icalendar",
     "nh3",
     "psycopg[binary]",
     "python-stdnum",
@@ -44,6 +43,7 @@ dependencies = [
     "sentry-sdk",
     "shortuuid",
     "openpyxl",
+    "sites-conformes",
     "xlwt",
     "wagtail<8.0",
     "wagtail-localize",
@@ -101,6 +101,8 @@ filterwarnings = [
     "ignore:unclosed file.*:ResourceWarning",
     # django-dsfr 3.4: DsfrBaseForm warns until the next major version marks optional fields instead of required ones
     "ignore:Marking required form fields is not recommended:DeprecationWarning:dsfr.forms",
+    # sites-conformes models still import modelcluster.tags instead of modelcluster.contrib.taggit
+    "ignore:The modelcluster.tags module has been moved to modelcluster.contrib.taggit:DeprecationWarning",
 ]
 addopts = [
     "--reuse-db",

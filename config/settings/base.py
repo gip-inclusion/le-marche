@@ -40,7 +40,7 @@ env = environ.Env(DEBUG=(bool, False))
 # Build paths inside the project like this: ROOT_DIR / 'subdir'.
 ROOT_DIR = environ.Path(__file__) - 3  # (ROOT/config/settings/base.py - 3 = ROOT )
 APPS_DIR = os.path.abspath(os.path.join(ROOT_DIR, "lemarche"))
-# used by sites-conformes (content_manager page templates import/export)
+# used by sites-conformes (page templates import/export commands)
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
@@ -182,10 +182,13 @@ WAGTAIL_APPS = [
     "wagtail_localize.locales",
     "taggit",
     "storages",
-    # app from site_facile
-    "blog",
-    "content_manager",
-    "events",
+    # sites-conformes package (https://github.com/numerique-gouv/sites-conformes):
+    # only the CMS apps, le-marche has its own header, footer, menus and forms
+    "sites_conformes",  # shared templates and static files
+    "sites_conformes.customimages",  # required: the package migrations depend on its image model
+    "sites_conformes.core",
+    "sites_conformes.blog",
+    "sites_conformes.events",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + DJANGO_DSFR_APPS + THIRD_PARTY_APPS + LOCAL_APPS + WAGTAIL_APPS
@@ -819,7 +822,7 @@ WAGTAIL_FRONTEND_LOGIN_URL = LOGIN_URL
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 # WAGTAILADMIN_BASE_URL = f"{os.getenv('HOST_PROTO', 'https')}://{HOST_URL}"
 
-# used by sites-conformes (content_manager): canonical URL template tag and set_config command
+# used by sites-conformes: canonical URL template tag and set_config command
 HOST_PROTO = os.getenv("HOST_PROTO", "https")
 HOST_URL = ALLOWED_HOSTS[0]
 # used by sites-conformes {% root_url %} tag: the site is served at the root (Django default is None, rendered "None/")
@@ -869,6 +872,8 @@ WAGTAILMENUS_FLAT_MENUS_HANDLE_CHOICES = (
 )
 
 WAGTAILIMAGES_EXTENSIONS = ["gif", "jpg", "jpeg", "png", "webp", "svg"]
+# required by sites-conformes: its migrations copy the existing images to this model
+WAGTAILIMAGES_IMAGE_MODEL = "sites_conformes_customimages.CustomImage"
 
 # Specific home and purchasing impact page is setted here to avoid queries on every page
 SIAE_HOME_PAGE = env.str("SIAE_HOME_PAGE", "/accueil-structure/")
