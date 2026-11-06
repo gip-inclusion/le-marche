@@ -45,7 +45,7 @@ dependencies = [
     "shortuuid",
     "openpyxl",
     "xlwt",
-    "wagtail~=8.0",  # Wait for sites-conforme to catch up so that we can use the packaged version
+    "wagtail<8.0",
     "wagtail-localize",
     "wagtail-markdown",
     "wagtail-modeladmin",
