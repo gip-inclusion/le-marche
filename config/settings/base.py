@@ -904,7 +904,8 @@ SHELL_PLUS_POST_IMPORTS = [
     "from lemarche.tenders import constants as tender_constants",
     "from lemarche.utils.apis import api_brevo",
 ]
-FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
+# TemplatesSetting, with the DSFR rendering of {{ field.as_field_group }} in every form
+FORM_RENDERER = "lemarche.utils.forms.FormRenderer"
 
 
 # MTCAPTCHA

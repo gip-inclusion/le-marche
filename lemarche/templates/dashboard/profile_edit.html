@@ -24,9 +24,9 @@
                                             {{ form.non_field_errors }}
                                         </section>
                                     {% endif %}
-                                    {% dsfr_form_field form.first_name %}
-                                    {% dsfr_form_field form.last_name %}
-                                    {% dsfr_form_field form.phone %}
+                                    {{ form.first_name.as_field_group }}
+                                    {{ form.last_name.as_field_group }}
+                                    {{ form.phone.as_field_group }}
                                     {% if user.kind != 'SIAE' %}
                                         <div class="fr-grid-row fr-mb-4w">
                                             <div class="fr-input-group fr-col">
@@ -42,10 +42,10 @@
                                         </div>
                                     {% endif %}
                                     {% if user.kind == 'BUYER' %}
-                                        {% dsfr_form_field form.sectors %}
+                                        {{ form.sectors.as_field_group }}
                                     {% endif %}                                    
                                     <br />
-                                    {% dsfr_form_field form.email %}
+                                    {{ form.email.as_field_group }}
                                     <p class="fr-text">
                                         Vous souhaitez mettre à jour votre adresse e-mail ?<br />
                                         Veuillez nous <a href="{% url 'pages:contact' %}">contacter</a>.
