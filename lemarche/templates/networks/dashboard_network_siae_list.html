@@ -22,7 +22,7 @@
     <div class="fr-grid-row">
         <div class="fr-col-12 fr-col-sm-6">
             <form method="get" action="">
-                {% dsfr_form filter_form %}
+                {% include "dsfr/form_snippet.html" with form=filter_form %}
             </form>
         </div>
     </div>

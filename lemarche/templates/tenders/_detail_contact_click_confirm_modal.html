@@ -38,7 +38,7 @@
                                     <div class="fr-h5">{{ form.initial.question }}</div>
                                     <div class="">
                                         <div class="fr-form-group">
-                                            {% dsfr_form form %}
+                                            {% include "dsfr/form_snippet.html" with form=form %}
                                         </div>
                                     </div>
                                 </div>
