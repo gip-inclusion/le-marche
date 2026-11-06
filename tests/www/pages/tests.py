@@ -218,7 +218,8 @@ class SitemapTests(TestCase):
     def test_sitemap_html_contains_wagtail_page(self):
         """Test that the HTML sitemap contains the wagtail page URL and title"""
         response = self.client.get("/plan-du-site/")
-        wagtail_page_url = self.wagtail_page.get_url()
+        # same as {% pageurl %}: relative to the requested site
+        wagtail_page_url = self.wagtail_page.get_url(request=response.wsgi_request)
         wagtail_page_title = self.wagtail_page.title
 
         self.assertContains(response, f'href="{wagtail_page_url}"')
