@@ -5,18 +5,14 @@ from wagtail.blocks import StructValue
 from wagtail.images.blocks import ImageBlock, ImageChooserBlock
 
 from content_manager.blocks.badges_tags import BadgesListBlock, TagListBlock
-from content_manager.blocks.buttons_links import (
-    ButtonsHorizontalListBlock,
-    IconPickerBlock,
-    LinksVerticalListBlock,
-    LinkWithoutLabelBlock,
-)
 from content_manager.constants import (
     HEADING_CHOICES,
     HORIZONTAL_CARD_IMAGE_RATIOS,
     LIMITED_RICHTEXTFIELD_FEATURES,
     LIMITED_RICHTEXTFIELD_FEATURES_WITHOUT_LINKS,
 )
+
+from .buttons_links import ButtonsHorizontalListBlock, IconPickerBlock, LinksVerticalListBlock, LinkWithoutLabelBlock
 
 
 class CardstructValue(StructValue):

@@ -8,16 +8,17 @@ from wagtail.admin.telepath import register
 from wagtail.blocks import StructValue
 from wagtail.blocks.struct_block import StructBlockAdapter, StructBlockValidationError
 
-from content_manager.blocks.basics import TextContentAllAlignments, TextContentLeftRight, TextContentVerticalAlignments
-from content_manager.blocks.buttons_links import ButtonBlock, ButtonsHorizontalListBlock
-from content_manager.blocks.layout import BackgroundColorChoiceBlock, LayoutBlock
-from content_manager.blocks.medias import ImageBlock, ImageBlockWithDefault
 from content_manager.constants import (
     ALIGN_HORIZONTAL_CHOICES_EXTENDED,
     ALIGN_VERTICAL_CHOICES,
     MEDIA_WIDTH_CHOICES,
     TEMPLATE_EXAMPLE_BUTTON_LIST,
 )
+
+from .basics import TextContentAllAlignments, TextContentLeftRight, TextContentVerticalAlignments
+from .buttons_links import ButtonBlock, ButtonsHorizontalListBlock
+from .layout import BackgroundColorChoiceBlock, LayoutBlock
+from .medias import ImageBlock, ImageBlockWithDefault
 
 
 class HeroImageStructValue(StructValue):

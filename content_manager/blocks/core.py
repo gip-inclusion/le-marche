@@ -2,8 +2,8 @@ from django.utils.translation import gettext_lazy as _
 from wagtail import blocks
 from wagtailmarkdown.blocks import MarkdownBlock
 
-from content_manager.blocks.badges_tags import BadgesListBlock, TagListBlock
-from content_manager.blocks.basics import (
+from .badges_tags import BadgesListBlock, TagListBlock
+from .basics import (
     AccordionsBlock,
     AlertBlock,
     CalloutBlock,
@@ -15,24 +15,19 @@ from content_manager.blocks.basics import (
     StepperBlock,
     TextAndCTA,
 )
-from content_manager.blocks.buttons_links import AnchorBlock, ButtonsListBlock, SingleLinkBlock
-from content_manager.blocks.cards import HorizontalCardBlock, TileBlock
-from content_manager.blocks.heros import (
-    HeroBackgroundImageBlock,
-    HeroImageAndTextBlock,
-    HeroWideImageAndTextBlock,
-    OldHero,
-)
-from content_manager.blocks.layout import (
+from .buttons_links import AnchorBlock, ButtonsListBlock, SingleLinkBlock
+from .cards import HorizontalCardBlock, TileBlock
+from .heros import HeroBackgroundImageBlock, HeroImageAndTextBlock, HeroWideImageAndTextBlock, OldHero
+from .layout import (
     FullWidthBackgroundBlock,
     FullWidthBackgroundWithSidemenuBlock,
     ItemGridBlock,
     MultiColumnsWithTitleBlock,
     TabsBlock,
 )
-from content_manager.blocks.medias import IframeBlock, TranscriptionBlock, VideoBlock
-from content_manager.blocks.related_entries import BlogRecentEntriesBlock, EventsRecentEntriesBlock
-from content_manager.blocks.sections import (
+from .medias import IframeBlock, TranscriptionBlock, VideoBlock
+from .related_entries import BlogRecentEntriesBlock, EventsRecentEntriesBlock
+from .sections import (
     AccordionSection,
     CTASection,
     ImageAndTextGridSection,
@@ -40,8 +35,7 @@ from content_manager.blocks.sections import (
     ResizedTextSection,
     SpotlightSection,
 )
-from content_manager.blocks.tables import AdvancedTypedTableBlock
-
+from .tables import AdvancedTypedTableBlock
 
 ## Streamblocks definitions
 STREAMFIELD_COMMON_BLOCKS = [
