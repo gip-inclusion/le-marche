@@ -488,15 +488,15 @@ wheels = [
 
 [[package]]
 name = "django-dsfr"
-version = "3.4.2"
+version = "3.6.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "django-widget-tweaks" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b3/e5/a79f81ee051917b8f28a6914a9873ee5232f1b437db3b3a1f3e426eed069/django_dsfr-3.4.2.tar.gz", hash = "sha256:d4c997e62e63daec00c6bd84d285fad93d6fa1fdf0f3ba2c98276e4d4c242ade", size = 2747163, upload-time = "2026-04-20T10:17:46.485Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8a/f7/bba0b053e4909ce5c064ad19a0ac9d192ad6b59e8569526ba183394b3438/django_dsfr-3.6.1.tar.gz", hash = "sha256:9d5888b6ab8d25a2ec0cd87ed3b2db3babe7200cc521c76bab8eef43a60b4397", size = 2750449, upload-time = "2026-09-30T13:05:55.561Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f3/bf/68223da9424172c931bead99f97009c861560a549b8b3ad2f8a47cbda00d/django_dsfr-3.4.2-py3-none-any.whl", hash = "sha256:457f7ba48ae1b154c10dae9bc09777aaba262ea9bc42458b5e8aa0d917854941", size = 3494642, upload-time = "2026-04-20T10:17:47.966Z" },
+    { url = "https://files.pythonhosted.org/packages/f5/8f/77593ebcd8eb68e281ecc7f733cf0e3d3e0c56b1d12a6c8b67847710231c/django_dsfr-3.6.1-py3-none-any.whl", hash = "sha256:c59bb7db779d7a605f5be26c9d9f0dfe4a44073f861148df5a22c85bdb250067", size = 3497571, upload-time = "2026-09-30T13:05:53.668Z" },
 ]
 
 [[package]]
@@ -1162,7 +1162,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "boto3", specifier = "==1.35.99" },
+    { name = "boto3" },
     { name = "brevo-python", specifier = "<=1.2.0" },
     { name = "crawlerdetect" },
     { name = "django", specifier = ">=6.0,<6.1" },
@@ -1174,7 +1174,7 @@ requires-dist = [
     { name = "django-compressor" },
     { name = "django-cors-headers" },
     { name = "django-datadog-logger" },
-    { name = "django-dsfr", specifier = "==3.4.2" },
+    { name = "django-dsfr" },
     { name = "django-environ" },
     { name = "django-extensions" },
     { name = "django-filter" },
