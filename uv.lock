@@ -1134,11 +1134,9 @@ dependencies = [
     { name = "sentry-sdk" },
     { name = "shortuuid" },
     { name = "sites-conformes" },
-    { name = "unidecode" },
     { name = "wagtail" },
     { name = "wagtail-localize" },
     { name = "wagtail-markdown" },
-    { name = "wagtail-modeladmin" },
     { name = "wagtailmenus" },
     { name = "xlwt" },
 ]
@@ -1197,11 +1195,9 @@ requires-dist = [
     { name = "sentry-sdk" },
     { name = "shortuuid" },
     { name = "sites-conformes" },
-    { name = "unidecode" },
     { name = "wagtail", specifier = "<8.0" },
     { name = "wagtail-localize" },
     { name = "wagtail-markdown" },
-    { name = "wagtail-modeladmin" },
     { name = "wagtailmenus" },
     { name = "xlwt" },
 ]
@@ -2258,18 +2254,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/7e/2a/cb5233b65ca355d39f16c58c110f1ad4b04a378843d39a8a85d2cb087b7a/wagtail_markdown-0.15.0.tar.gz", hash = "sha256:08d58177a6f015c99d2597f681d6f8c276df5d7f74721ab24996d4582a2426da", size = 127421, upload-time = "2026-09-07T13:54:42.033Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/96/b7/fc84a17ec7fac373dfaf2f3682ceea5ecaae22d2f5ec44784e70c74c9b5d/wagtail_markdown-0.15.0-py3-none-any.whl", hash = "sha256:f8980596b1baf3c5b932caae18fbc591b2f49ee34249cb5896ab172793c5b41f", size = 129058, upload-time = "2026-09-07T13:54:40.435Z" },
-]
-
-[[package]]
-name = "wagtail-modeladmin"
-version = "2.5.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "wagtail" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/78/8b/3b8e9dd3c4293c46074f55869b50d7e593e2ba810df18908c7ef7850c042/wagtail_modeladmin-2.5.0.tar.gz", hash = "sha256:0f86e96d5172437e14f6e5fd986bae9648f499c117dff3bf6b2f9844ea9f440e", size = 116438, upload-time = "2026-09-25T09:12:12.725Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b8/fc/2c7af64d7529c19eb5fa82cb02027cb182fff0ba2605c1eca6d344dccd24/wagtail_modeladmin-2.5.0-py3-none-any.whl", hash = "sha256:909c6238dc95371b97dc23651a5a9d8aeb9c3d1660ed0349b4a3e31c8fb8dc0d", size = 266034, upload-time = "2026-09-25T09:12:10.925Z" },
 ]
 
 [[package]]
