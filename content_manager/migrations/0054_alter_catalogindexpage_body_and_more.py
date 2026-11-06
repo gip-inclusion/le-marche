@@ -5,6 +5,7 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ("content_manager", "0053_cmsdsfrconfig_header_login_button"),
     ]

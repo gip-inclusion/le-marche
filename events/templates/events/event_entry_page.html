@@ -1,6 +1,6 @@
-{% extends "layouts/base.html" %}
+{% extends "base.html" %}
 
-{% load i18n static dsfr_tags wagtailcore_tags wagtailimages_tags wagtailroutablepage_tags %}
+{% load i18n static dsfr_tags wagtailcore_tags wagtailimages_tags wagtailroutablepage_tags wagtail_dsfr_tags %}
 
 {% block title %}
   <title>{{ page.seo_title|default:page.title }} — {{ settings.content_manager.CmsDsfrConfig.site_title }}</title>
@@ -17,7 +17,7 @@
   <meta property="og:title"
         content="{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %}" />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="{{ page.full_url }}" />
+  <meta property="og:url" content="{% canonical_url %}" />
   <meta property="og:description" content="{{ page.search_description }}" />
   <meta property="og:locale" content="{{ LANGUAGE_CODE }}" />
 
@@ -32,14 +32,7 @@
         content="{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %}" />
   <meta name="twitter:description" content="{{ page.search_description }}" />
 
-  {% if page.header_image %}
-    <meta name="twitter:card" content="summary_large_image" />
-    {% image page.header_image fill-1200x627 as header_image %}
-    <meta property="og:image" content="{{ header_image.full_url }}" />
-    <meta name="twitter:image" content="{{ header_image.full_url }}" />
-  {% else %}
-    <meta name="twitter:card" content="summary" />
-  {% endif %}
+  {% include "blocks/socialmedia_preview_image.html" %}
 {% endblock social_media %}
 
 {% block content %}
@@ -51,7 +44,9 @@
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
           {% include "content_manager/blocks/breadcrumbs.html" %}
-          <h1 class="fr-display--sm">{{ page.title }}</h1>
+          {% if page.show_title %}
+            <h1 class="fr-display--sm">{{ page.title }}</h1>
+          {% endif %}
         </div>
       </div>
       <p>
@@ -142,10 +137,9 @@
 
       <div class="fr-card__header">
         <div class="fr-card__img">
-          {% if page.header_image %}
-            {% image page.header_image width-450 as header_image %}
-            <img class="fr-responsive-img" src="{{ header_image.full_url }}" alt="" />
-
+          {% if page.cover %}
+            {% image page.cover width-450 as header_image %}
+            <img class="fr-responsive-img" src="{{ header_image.url}}" alt="" />
           {% else %}
             <img class="fr-responsive-img"
                  src="{% static 'dsfr/dist/artwork/pictograms/digital/calendar.svg' %}"

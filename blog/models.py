@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.core.paginator import Paginator
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import BooleanField, Count, QuerySet
@@ -10,8 +10,8 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 from django.utils import feedgenerator, timezone
 from django.utils.translation import gettext_lazy as _
-from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
+from modelcluster.tags import ClusterTaggableManager
 from rest_framework import serializers
 from taggit.models import TaggedItemBase
 from unidecode import unidecode
@@ -30,7 +30,6 @@ from blog.managers import CategoryManager
 from content_manager.abstract import SitesFacilesBasePage
 from content_manager.constants import LIMITED_RICHTEXTFIELD_FEATURES
 from content_manager.models import Tag
-
 
 User = get_user_model()
 
@@ -121,7 +120,7 @@ class Category(TranslatableMixin, index.Indexed, Orderable):
         blank=True,
         verbose_name=_("Description"),
         help_text=_("Displayed on the top of the category page"),
-    )
+    )  # type: ignore
     colophon = StreamField(
         COLOPHON_BLOCKS,
         blank=True,
@@ -160,7 +159,7 @@ class Category(TranslatableMixin, index.Indexed, Orderable):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
-        return super().save(*args, **kwargs)
+        return super(Category, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ["name"]
@@ -184,7 +183,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class CategoryEntryPage(models.Model):
     category = models.ForeignKey(Category, related_name="+", verbose_name=_("Category"), on_delete=models.CASCADE)
-    page = ParentalKey("BlogEntryPage", related_name="entry_categories")
+    page = ParentalKey("BlogEntryPage", related_name="entry_categories")  # type: ignore
     panels = [FieldPanel("category")]
 
     def __str__(self):
@@ -192,7 +191,7 @@ class CategoryEntryPage(models.Model):
 
 
 class TagEntryPage(TaggedItemBase):
-    content_object = ParentalKey("BlogEntryPage", related_name="entry_tags")
+    content_object = ParentalKey("BlogEntryPage", related_name="entry_tags")  # type: ignore
 
 
 class BlogIndexPage(RoutablePageMixin, SitesFacilesBasePage):
@@ -245,7 +244,7 @@ class BlogIndexPage(RoutablePageMixin, SitesFacilesBasePage):
         return posts
 
     def get_context(self, request, *args, **kwargs):
-        context = super().get_context(request, *args, **kwargs)
+        context = super(BlogIndexPage, self).get_context(request, *args, **kwargs)
         posts = self.posts
 
         extra_breadcrumbs = None
@@ -315,16 +314,11 @@ class BlogIndexPage(RoutablePageMixin, SitesFacilesBasePage):
             extra_title = _("Posts published in %(year)s") % {"year": year}
 
         # Pagination
-        page = request.GET.get("page")
+        page_number = request.GET.get("page")
         page_size = self.posts_per_page
 
         paginator = Paginator(posts, page_size)  # Show <page_size> posts per page
-        try:
-            posts = paginator.page(page)
-        except PageNotAnInteger:
-            posts = paginator.page(1)
-        except EmptyPage:
-            posts = paginator.page(paginator.num_pages)
+        posts = paginator.get_page(page_number)
 
         context["posts"] = posts
         context["current_category"] = category
