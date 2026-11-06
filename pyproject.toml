@@ -48,9 +48,7 @@ dependencies = [
     "wagtail<8.0",
     "wagtail-localize",
     "wagtail-markdown",
-    "wagtail-modeladmin",
     "wagtailmenus",
-    "unidecode",
 ]
 
 [dependency-groups]

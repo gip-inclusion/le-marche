@@ -74,8 +74,6 @@ HUEY |= {
     "store_none": True,
 }  # Huey implementation to use.
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
 # Itoutils
 # ---------------------------------------
 ASSERT_SNAPSHOT_QUERIES_EXTRA_PACKAGES_ALLOWLIST = []
