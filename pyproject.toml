@@ -21,7 +21,7 @@ dependencies = [
     "django-compressor",
     "django-cors-headers",
     "django-datadog-logger",
-    "django-dsfr==3.3.1",
+    "django-dsfr==3.4.2",
     "django-environ",
     "django-extensions",
     "django-filter",
@@ -99,6 +99,8 @@ filterwarnings = [
     "error",
     "ignore:.*Use timezone-aware objects to represent datetimes in UTC.*:DeprecationWarning:(botocore|django_datadog_logger)",
     "ignore:unclosed file.*:ResourceWarning",
+    # django-dsfr 3.4: DsfrBaseForm warns until the next major version marks optional fields instead of required ones
+    "ignore:Marking required form fields is not recommended:DeprecationWarning:dsfr.forms",
 ]
 addopts = [
     "--reuse-db",

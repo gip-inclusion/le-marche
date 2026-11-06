@@ -389,18 +389,6 @@ wheels = [
 ]
 
 [[package]]
-name = "django-crispy-forms"
-version = "2.7"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/bc/f5/b79e3ed7cae871d5d71bf3448d627e1fabab769358bb90808bec056556fe/django_crispy_forms-2.7.tar.gz", hash = "sha256:4c59bed60417375cba26cebb2c67ab350b655934670270b1c89dbcd7e60f1b4c", size = 1097842, upload-time = "2026-07-29T11:12:12.081Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/1f/44/50335d09c4deb70affee0c54feef07ba458df015e32e45490615d9dc5b6b/django_crispy_forms-2.7-py3-none-any.whl", hash = "sha256:42a7ecb05ac3fd050d006dfe7aeceb7f318c30e5b5124ff619e2be252f36f096", size = 31478, upload-time = "2026-07-29T11:12:11.052Z" },
-]
-
-[[package]]
 name = "django-datadog-logger"
 version = "0.9.2"
 source = { registry = "https://pypi.org/simple" }
@@ -429,17 +417,15 @@ wheels = [
 
 [[package]]
 name = "django-dsfr"
-version = "3.3.1"
+version = "3.4.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
-    { name = "django-crispy-forms" },
     { name = "django-widget-tweaks" },
-    { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/00/63/1f1217f6c4ba955cb7ff0469006641e7c5b4b99c1b00f9eb268a0e301738/django_dsfr-3.3.1.tar.gz", hash = "sha256:3fd775ce044827a9fb968fab706f18b953f29e1c94c9e4da2020e915ef5ed9ca", size = 2740059, upload-time = "2026-01-29T13:22:11.199Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b3/e5/a79f81ee051917b8f28a6914a9873ee5232f1b437db3b3a1f3e426eed069/django_dsfr-3.4.2.tar.gz", hash = "sha256:d4c997e62e63daec00c6bd84d285fad93d6fa1fdf0f3ba2c98276e4d4c242ade", size = 2747163, upload-time = "2026-04-20T10:17:46.485Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/30/fc/c4586b247d4e738188db9d677a679ba28335c0abcb6dfdf7a5f4b17086d2/django_dsfr-3.3.1-py3-none-any.whl", hash = "sha256:08a6764532766b9dd9733ab9acd21f7490fd3ea2db8ae968fd97d2cba30d71f9", size = 3487285, upload-time = "2026-01-29T13:22:12.634Z" },
+    { url = "https://files.pythonhosted.org/packages/f3/bf/68223da9424172c931bead99f97009c861560a549b8b3ad2f8a47cbda00d/django_dsfr-3.4.2-py3-none-any.whl", hash = "sha256:457f7ba48ae1b154c10dae9bc09777aaba262ea9bc42458b5e8aa0d917854941", size = 3494642, upload-time = "2026-04-20T10:17:47.966Z" },
 ]
 
 [[package]]
@@ -1104,7 +1090,7 @@ requires-dist = [
     { name = "django-compressor" },
     { name = "django-cors-headers" },
     { name = "django-datadog-logger" },
-    { name = "django-dsfr", specifier = "==3.3.1" },
+    { name = "django-dsfr", specifier = "==3.4.2" },
     { name = "django-environ" },
     { name = "django-extensions" },
     { name = "django-filter" },
