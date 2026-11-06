@@ -1113,7 +1113,7 @@ requires-dist = [
     { name = "sentry-sdk" },
     { name = "shortuuid" },
     { name = "unidecode" },
-    { name = "wagtail" },
+    { name = "wagtail", specifier = "~=8.0" },
     { name = "wagtail-localize" },
     { name = "wagtail-markdown" },
     { name = "wagtail-modeladmin" },
