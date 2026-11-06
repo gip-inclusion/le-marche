@@ -185,7 +185,8 @@ WAGTAIL_APPS = [
     # sites-conformes package (https://github.com/numerique-gouv/sites-conformes):
     # only the CMS apps, le-marche has its own header, footer, menus and forms
     "sites_conformes",  # shared templates and static files
-    "sites_conformes.customimages",  # required: the package migrations depend on its image model
+    # required: the package migrations depend on its image model (app config keeps its migrations id type)
+    "lemarche.cms.sites_conformes_apps.SitesConformesCustomImagesConfig",
     "sites_conformes.core",
     "sites_conformes.blog",
     "sites_conformes.events",
