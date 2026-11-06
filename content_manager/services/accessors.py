@@ -1,4 +1,5 @@
 import sys
+from typing import TYPE_CHECKING
 
 from django.core.management.color import color_style
 from django.utils.translation import gettext_lazy as _
@@ -7,7 +8,12 @@ from wagtail.models import Collection, Page, PageViewRestriction
 from content_manager.constants import HEADER_FIELDS
 from content_manager.models import CatalogIndexPage, ContentPage
 from content_manager.utils import get_default_site
-from menus.models import FooterBottomMenu, MainMenu
+
+
+# le-marche: the upstream "menus" app is not installed (le-marche has its own header and footer):
+# import it only in the functions using it, so that the other management commands keep working.
+if TYPE_CHECKING:
+    from menus.models import FooterBottomMenu, MainMenu
 
 style = color_style()
 
@@ -139,12 +145,13 @@ def get_or_create_content_page(
     return new_page
 
 
-def get_or_create_footer_bottom_menu() -> FooterBottomMenu:
+def get_or_create_footer_bottom_menu() -> "FooterBottomMenu":
     """
     Get the footer menu or create it if it doesn't already exist
 
     In any case, return it.
     """
+    from menus.models import FooterBottomMenu
 
     default_site = get_default_site()
     root_page = default_site.root_page
@@ -155,12 +162,13 @@ def get_or_create_footer_bottom_menu() -> FooterBottomMenu:
     return footer_menu
 
 
-def get_or_create_main_menu() -> MainMenu:
+def get_or_create_main_menu() -> "MainMenu":
     """
     Get the main menu or create it if it doesn't already exist
 
     In any case, return it.
     """
+    from menus.models import MainMenu
 
     default_site = get_default_site()
     root_page = default_site.root_page

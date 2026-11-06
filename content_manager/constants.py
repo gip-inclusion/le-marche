@@ -1,5 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 
+
 HEADER_FIELDS = [
     "header_image",
     "header_with_title",

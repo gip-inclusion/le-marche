@@ -4,15 +4,8 @@ from wagtail import blocks
 from wagtail.images.blocks import ImageChooserBlock
 from wagtailmarkdown.blocks import MarkdownBlock
 
-from content_manager.constants import (
-    GRID_3_4_6_CHOICES,
-    GRID_HORIZONTAL_ALIGN_CHOICES,
-    GRID_VERTICAL_ALIGN_CHOICES,
-    HEADING_CHOICES,
-)
-
-from .badges_tags import BadgesListBlock, TagListBlock
-from .basics import (
+from content_manager.blocks.badges_tags import BadgesListBlock, TagListBlock
+from content_manager.blocks.basics import (
     AccordionsBlock,
     AlertBlock,
     CalloutBlock,
@@ -25,11 +18,17 @@ from .basics import (
     TextAndCTA,
     VerticalContactCardBlock,
 )
-from .buttons_links import AnchorBlock, ButtonsListBlock, SingleLinkBlock
-from .cards import HorizontalCardBlock, TileBlock, VerticalCardBlock
-from .medias import IframeBlock, TranscriptionBlock, VideoBlock
-from .related_entries import BlogRecentEntriesBlock, EventsRecentEntriesBlock
-from .tables import AdvancedTypedTableBlock
+from content_manager.blocks.buttons_links import AnchorBlock, ButtonsListBlock, SingleLinkBlock
+from content_manager.blocks.cards import HorizontalCardBlock, TileBlock, VerticalCardBlock
+from content_manager.blocks.medias import IframeBlock, TranscriptionBlock, VideoBlock
+from content_manager.blocks.related_entries import BlogRecentEntriesBlock, EventsRecentEntriesBlock
+from content_manager.blocks.tables import AdvancedTypedTableBlock
+from content_manager.constants import (
+    GRID_3_4_6_CHOICES,
+    GRID_HORIZONTAL_ALIGN_CHOICES,
+    GRID_VERTICAL_ALIGN_CHOICES,
+    HEADING_CHOICES,
+)
 
 
 class BackgroundColorChoiceBlock(blocks.ChoiceBlock):
@@ -86,7 +85,6 @@ class BackgroundColorBlock(blocks.StructBlock):
 
 
 class LayoutBlock(MarginBlock, BackgroundColorBlock):
-
     class Meta:
         help_text = _("This part allow you to choose the layout of your block (background, margin..) ")
 

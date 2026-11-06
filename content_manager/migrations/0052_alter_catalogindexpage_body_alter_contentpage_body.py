@@ -5,7 +5,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("content_manager", "0051_alter_catalogindexpage_body_alter_contentpage_body"),
     ]

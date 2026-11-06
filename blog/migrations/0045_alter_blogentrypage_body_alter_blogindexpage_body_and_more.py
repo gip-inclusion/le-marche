@@ -5,7 +5,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("blog", "0044_alter_blogentrypage_source_url_and_more"),
     ]

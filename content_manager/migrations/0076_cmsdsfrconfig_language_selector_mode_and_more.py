@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("content_manager", "0075_catalogindexpage_exclude_from_sitemap_and_more"),
         ("wagtailcore", "0096_referenceindex_referenceindex_source_object_and_more"),
