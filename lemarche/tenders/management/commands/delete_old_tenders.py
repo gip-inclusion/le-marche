@@ -42,6 +42,7 @@ class Command(BaseCommand):
                 "conversations.TemplateTransactionalSendLog",  # Reverse Generic relation on Tender
                 "tenders.TenderSiae",  # ManyToManyField on Tender
                 "tenders.TenderQuestion",  # ForeignKey to Tender with on_delete=CASCADE
+                "tenders.QuestionAnswer",  # ForeignKey to Tender with on_delete=CASCADE
                 "notes.Note",  # GenericForeignKey to Tender with on_delete=CASCADE
             ],
         )
