@@ -99,6 +99,7 @@ class Command(BaseCommand):
         inactive_users_qs = self.get_users_with_last_action(expiry_date).filter(
             pending_deletion_notice_date__lte=last_month,
         )
+        inactive_users_qs = inactive_users_qs.exclude(is_staff=True)  # We don't delete staff users here
 
         # remove inactive users
         if dry_run:
@@ -118,6 +119,7 @@ class Command(BaseCommand):
                     "users.User",
                     "users.User_groups",  # ManyToManyField to User
                     "notes.Note",  # GenericForeignKey to User
+                    "account.EmailAddress",
                 ],
             )
 
