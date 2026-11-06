@@ -26,7 +26,7 @@
         <div class="fr-grid-row">
             <div class="fr-col-12 fr-col-lg-10">
                 <form method="get">
-                    {% dsfr_form form %}
+                    {% include "dsfr/form_snippet.html" with form=form %}
                     <button type="submit" class="fr-btn">
                         Lancez la vérification
                     </button>
