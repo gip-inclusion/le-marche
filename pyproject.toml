@@ -9,7 +9,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-    "boto3==1.35.99",  # same as sites-conformes: newer versions send checksums unsupported by CleverCloud S3
+    "boto3",
     "brevo-python<=1.2.0",
     "crawlerdetect",
     "django>=6.0,<6.1",
@@ -21,7 +21,7 @@ dependencies = [
     "django-compressor",
     "django-cors-headers",
     "django-datadog-logger",
-    "django-dsfr==3.4.2",
+    "django-dsfr",
     "django-environ",
     "django-extensions",
     "django-filter",
