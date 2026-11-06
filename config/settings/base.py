@@ -15,7 +15,6 @@ import os
 from pathlib import Path
 
 import environ
-from botocore.config import Config
 from redis import exceptions as redis_exceptions
 from redis.backoff import ExponentialBackoff
 from redis.retry import Retry
@@ -461,13 +460,9 @@ S3_STORAGE_BUCKET_NAME = env.str("S3_STORAGE_BUCKET_NAME", "bucket")
 S3_STORAGE_BUCKET_REGION = env.str("S3_STORAGE_BUCKET_REGION", "fr")
 AWS_DEFAULT_ACL = env.str("AWS_DEFAULT_ACL", "public-read")
 AWS_S3_USE_SSL = env.bool("AWS_S3_USE_SSL", False)
-# CleverCloud S3 implementation does not support recent data integrity features from AWS.
+# boto3 is pinned to 1.35.99 (as sites-conformes): CleverCloud S3 implementation does not support
+# the data integrity checksums sent by default since boto3 1.36.
 # https://github.com/boto/boto3/issues/4392
-# https://github.com/boto/boto3/issues/4398#issuecomment-2619946229
-AWS_S3_CLIENT_CONFIG = Config(
-    request_checksum_calculation="when_required",
-    response_checksum_validation="when_required",
-)
 
 SIAE_LOGO_FOLDER_NAME = "siae_logo"
 SIAE_IMAGE_FOLDER_NAME = "siae_image"

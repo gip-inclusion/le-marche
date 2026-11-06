@@ -16,7 +16,6 @@ API_CONNECTION_DICT = {
     "aws_access_key_id": settings.S3_STORAGE_ACCESS_KEY_ID,
     "aws_secret_access_key": settings.S3_STORAGE_SECRET_ACCESS_KEY,
     "region_name": settings.S3_STORAGE_BUCKET_REGION,
-    "config": settings.AWS_S3_CLIENT_CONFIG,
 }
 
 
