@@ -7,6 +7,11 @@ from wagtail.blocks import StructValue
 from wagtail.blocks.struct_block import StructBlockAdapter
 from wagtail.images import get_image_model
 
+from content_manager.blocks.basics import AccordionsBlock
+from content_manager.blocks.buttons_links import ButtonBlock, LinkBlock
+from content_manager.blocks.cards import VerticalCardBlock
+from content_manager.blocks.layout import LayoutBlock
+from content_manager.blocks.medias import ImageBlockWithDefault
 from content_manager.constants import (
     ALIGN_HORIZONTAL_CHOICES,
     ALIGN_HORIZONTAL_CHOICES_EXTENDED,
@@ -18,11 +23,6 @@ from content_manager.constants import (
     TEMPLATE_EXAMPLE_TAG_BADGE_LIST,
 )
 
-from .basics import AccordionsBlock
-from .buttons_links import ButtonBlock, LinkBlock
-from .cards import VerticalCardBlock
-from .layout import LayoutBlock
-from .medias import ImageBlockWithDefault
 
 Image = get_image_model()
 
@@ -137,7 +137,6 @@ class ImageAndTextItems(blocks.StructBlock):
 
 
 class ImageAndTextListBlock(blocks.ListBlock):
-
     def get_default(self):
         images_titles = [
             "Pictogrammes DSFR — System — Success",

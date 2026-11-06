@@ -7,6 +7,13 @@ from wagtail.images.blocks import ImageBlock, ImageChooserBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
 
 from content_manager.blocks.badges_tags import TagListBlock
+from content_manager.blocks.buttons_links import (
+    ButtonBlock,
+    ButtonsHorizontalListBlock,
+    IconPickerBlock,
+    LinkWithoutLabelBlock,
+    SingleLinkBlock,
+)
 from content_manager.constants import (
     ALIGN_HORIZONTAL_CHOICES,
     ALIGN_HORIZONTAL_CHOICES_EXTENDED,
@@ -18,13 +25,6 @@ from content_manager.constants import (
     TEXT_SIZE_CHOICES,
 )
 
-from .buttons_links import (
-    ButtonBlock,
-    ButtonsHorizontalListBlock,
-    IconPickerBlock,
-    LinkWithoutLabelBlock,
-    SingleLinkBlock,
-)
 
 Image = get_image_model()
 

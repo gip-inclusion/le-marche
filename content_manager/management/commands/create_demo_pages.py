@@ -3,6 +3,7 @@ import os
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from faker import Faker
+from forms.models import FormField, FormPage
 from taggit.models import slugify
 from wagtail.images import get_image_model
 from wagtail.rich_text import RichText
@@ -13,7 +14,7 @@ from blog.models import BlogIndexPage
 from content_manager.models import ContentPage, MegaMenu, MegaMenuCategory
 from content_manager.services.accessors import get_or_create_catalog_index_page, get_or_create_content_page
 from content_manager.utils import get_default_site, import_image
-from forms.models import FormField, FormPage
+
 
 ALL_ALLOWED_SLUGS = ["blog_index", "publications", "menu_page", "form", "common_blocks", "hero_blocks"]
 

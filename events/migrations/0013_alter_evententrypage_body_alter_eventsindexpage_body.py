@@ -5,7 +5,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("events", "0012_alter_evententrypage_body_alter_eventsindexpage_body"),
     ]

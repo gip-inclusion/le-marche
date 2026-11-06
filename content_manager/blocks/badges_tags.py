@@ -2,10 +2,8 @@ from django.utils.translation import gettext_lazy as _, pgettext_lazy
 from dsfr.constants import COLOR_CHOICES_ILLUSTRATION, COLOR_CHOICES_SYSTEM
 from wagtail import blocks
 
-from .buttons_links import (
-    IconPickerBlock,
-    LinkWithoutLabelBlock,
-)
+from content_manager.blocks.buttons_links import IconPickerBlock, LinkWithoutLabelBlock
+
 
 badge_level_choices = (
     ("", [("new", _("New")), ("grey", _("Grey"))]),
