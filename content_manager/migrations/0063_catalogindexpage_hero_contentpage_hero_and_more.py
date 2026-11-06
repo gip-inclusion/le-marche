@@ -5,7 +5,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("content_manager", "0001_squashed_0062_catalogindexpage_preview_image_and_more"),
     ]
