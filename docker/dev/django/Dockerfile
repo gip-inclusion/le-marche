@@ -33,8 +33,6 @@ COPY uv.lock pyproject.toml $APP_DIR
 RUN pip install uv && pip install -I uwsgi
 RUN uv sync
 
-COPY ./blog ./blog
-COPY ./content_manager ./content_manager
 COPY ./lemarche ./lemarche
 COPY ./config ./config
 COPY ./manage.py ./manage.py

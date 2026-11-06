@@ -4,9 +4,9 @@ from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+from sites_conformes.core.models import ContentPage
 from wagtail.models import Page as WagtailPage, Site
 
-from content_manager.models import ContentPage
 from lemarche.users.models import User
 from tests.siaes.factories import SiaeFactory
 from tests.users.factories import UserFactory

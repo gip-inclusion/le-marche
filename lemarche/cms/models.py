@@ -1,9 +1,8 @@
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
+from sites_conformes.core.models import ContentPage, Tag
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.models import Page
-
-from content_manager.models import ContentPage, Tag
 
 
 class ArticleList(RoutablePageMixin, Page):
@@ -57,4 +56,4 @@ class ArticleList(RoutablePageMixin, Page):
             request,
         )
 
-    subpage_types = ["content_manager.ContentPage"]
+    subpage_types = ["sites_conformes_core.ContentPage"]
