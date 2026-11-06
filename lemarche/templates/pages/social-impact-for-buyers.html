@@ -39,7 +39,7 @@
                                 </section>
                             {% endif %}
                             <div class="fr-grid-row">
-                                <div class="fr-col-12">{% dsfr_form_field form.amount %}</div>
+                                <div class="fr-col-12">{{ form.amount.as_field_group }}</div>
                             </div>
                             <div class="fr-grid-row fr-mt-8v">
                                 <div class="fr-col-12">

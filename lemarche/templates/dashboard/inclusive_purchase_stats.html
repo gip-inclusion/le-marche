@@ -53,16 +53,16 @@
                     <div class="fr-collapse" id="accordion-filters">
                         <form method="GET">
                             <div class="fr-grid-row fr-grid-row--gutters">
-                                <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.inclusive_sector_type %}</div>
-                                <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.siae_type %}</div>
+                                <div class="fr-col-12 fr-col-md-6">{{ filter.form.inclusive_sector_type.as_field_group }}</div>
+                                <div class="fr-col-12 fr-col-md-6">{{ filter.form.siae_type.as_field_group }}</div>
                             </div>
                             <div class="fr-grid-row fr-grid-row--gutters">
-                                <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.purchase_category %}</div>
-                                <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.buying_entity %}</div>
+                                <div class="fr-col-12 fr-col-md-6">{{ filter.form.purchase_category.as_field_group }}</div>
+                                <div class="fr-col-12 fr-col-md-6">{{ filter.form.buying_entity.as_field_group }}</div>
                             </div>
                             <div class="fr-grid-row fr-grid-row--gutters">
-                                <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.is_qpv %}</div>
-                                <div class="fr-col-12 fr-col-md-6">{% dsfr_form_field filter.form.is_zrr %}</div>
+                                <div class="fr-col-12 fr-col-md-6">{{ filter.form.is_qpv.as_field_group }}</div>
+                                <div class="fr-col-12 fr-col-md-6">{{ filter.form.is_zrr.as_field_group }}</div>
                             </div>
                             <button class="fr-mt-2v fr-mb-2v fr-btn" type="submit">Appliquer les filtres</button>
                         </form>

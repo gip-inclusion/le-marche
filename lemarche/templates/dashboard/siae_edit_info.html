@@ -14,8 +14,8 @@
         {% endif %}
         <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
             <div class="fr-col-12 fr-col-lg-8">
-                {% dsfr_form_field form.brand %}
-                {% dsfr_form_field form.description %}
+                {{ form.brand.as_field_group }}
+                {{ form.description.as_field_group }}
                 <!-- Logo -->
                 <div class="fr-grid-row fr-grid-row--gutters">
                     <div class="fr-col-12 fr-col-sm-6">
@@ -61,7 +61,7 @@
             {% endif %}
         </div>
         <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-            <div class="fr-col-12 fr-col-lg-8">{% dsfr_form_field form.ca %}</div>
+            <div class="fr-col-12 fr-col-lg-8">{{ form.ca.as_field_group }}</div>
             <div class="fr-col-12 fr-col-lg-4">
                 <div class="fr-callout fr-p-4v">
                     <h3 class="fr-callout__title fr-text--sm">
@@ -75,10 +75,10 @@
             </div>
         </div>
         <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-            <div class="fr-col-12 fr-col-lg-8">{% dsfr_form_field form.year_constitution %}</div>
+            <div class="fr-col-12 fr-col-lg-8">{{ form.year_constitution.as_field_group }}</div>
         </div>
         <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-            <div class="fr-col-12 fr-col-lg-8">{% dsfr_form_field form.employees_insertion_count %}</div>
+            <div class="fr-col-12 fr-col-lg-8">{{ form.employees_insertion_count.as_field_group }}</div>
             <div class="fr-col-12 fr-col-lg-4">
                 <div class="fr-callout fr-p-4v">
                     <h3 class="fr-callout__title fr-text--sm">
@@ -91,7 +91,7 @@
             </div>
         </div>
         <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
-            <div class="fr-col-12 fr-col-lg-8">{% dsfr_form_field form.employees_permanent_count %}</div>
+            <div class="fr-col-12 fr-col-lg-8">{{ form.employees_permanent_count.as_field_group }}</div>
         </div>
         <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
             <div class="fr-col-12 fr-col-lg-8">

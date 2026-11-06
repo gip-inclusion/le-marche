@@ -29,10 +29,10 @@
                                                 {{ current_locations|json_script:"current-locations" }}
                                             </div>
                                         </div>
-                                        <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.kind %}</div>
-                                        <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.territory %}</div>
-                                        <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.employees %}</div>
-                                        <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.ca %}</div>
+                                        <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{{ form.kind.as_field_group }}</div>
+                                        <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{{ form.territory.as_field_group }}</div>
+                                        <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{{ form.employees.as_field_group }}</div>
+                                        <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{{ form.ca.as_field_group }}</div>
                                         <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
                                             <div class="fr-mb-2v fr-hidden fr-unhidden-md">&nbsp;</div>
                                             <button id="text-search-submit"
@@ -189,7 +189,7 @@
                                                       <form method="get"
                                                             id="download-form"
                                                             action="{% url 'tenders:download-siae-list' slug=tender.slug %}">
-                                                        {% dsfr_form_field download_form.format %}
+                                                        {{ download_form.format.as_field_group }}
                                                         <input type="hidden" name="tendersiae_status" value="{{ status|default:"" }}">
 
                                                         {# These clickable tags will act as checkboxes, and their value will be linked #}

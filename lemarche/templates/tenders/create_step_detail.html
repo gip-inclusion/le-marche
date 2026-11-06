@@ -10,9 +10,9 @@
     {% csrf_token %}
     <div class="fr-grid-row fr-mb-4w">
         <div class="fr-col-12 fr-col-lg-7">
-            {% dsfr_form_field form.deadline_date %}
-            {% dsfr_form_field form.start_working_date %}
-            {% dsfr_form_field form.external_link %}
+            {{ form.deadline_date.as_field_group }}
+            {{ form.start_working_date.as_field_group }}
+            {{ form.external_link.as_field_group }}
         </div>
     </div>
     <div class="fr-accordion fr-col-lg-7 fr-mb-4w" x-data="TenderQuestionForm">
@@ -55,7 +55,7 @@
     </div>
     <div class="fr-grid-row fr-mb-4w">
         <div class="fr-col-12 fr-col-lg-7">
-            {% dsfr_form_field form.attachment_one %}
+            {{ form.attachment_one.as_field_group }}
             {% if form.instance.attachment_one or attachment_one %}
                 <div class="fr-grid-row fr-mb-4w">
                     <div class="fr-col-6">
@@ -65,10 +65,10 @@
                             <a href="{{ form.instance.attachment_one.url }}" target="_blank">Document déjà téléversé</a>
                         {% endif %}
                     </div>
-                    <div class="fr-col-6">{% dsfr_form_field form.attachment_one_delete %}</div>
+                    <div class="fr-col-6">{{ form.attachment_one_delete.as_field_group }}</div>
                 </div>
             {% endif %}
-            {% dsfr_form_field form.attachment_two %}
+            {{ form.attachment_two.as_field_group }}
             {% if form.instance.attachment_two or attachment_two %}
                 <div class="fr-grid-row fr-mb-4w">
                     <div class="fr-col-6">
@@ -78,10 +78,10 @@
                             <a href="{{ form.instance.attachment_two.url }}" target="_blank">Document déjà téléversé</a>
                         {% endif %}
                     </div>
-                    <div class="fr-col-6">{% dsfr_form_field form.attachment_two_delete %}</div>
+                    <div class="fr-col-6">{{ form.attachment_two_delete.as_field_group }}</div>
                 </div>
             {% endif %}
-            {% dsfr_form_field form.attachment_three %}
+            {{ form.attachment_three.as_field_group }}
             {% if form.instance.attachment_three or attachment_three %}
                 <div class="fr-grid-row fr-mb-4w">
                     <div class="fr-col-6">
@@ -91,7 +91,7 @@
                             <a href="{{ form.instance.attachment_three.url }}" target="_blank">Document déjà téléversé</a>
                         {% endif %}
                     </div>
-                    <div class="fr-col-6">{% dsfr_form_field form.attachment_three_delete %}</div>
+                    <div class="fr-col-6">{{ form.attachment_three_delete.as_field_group }}</div>
                 </div>
             {% endif %}
         </div>
@@ -99,11 +99,11 @@
     <div class="fr-grid-row">
         <div class="fr-col-12 fr-col-lg-7">
             <span x-data="SocialImpactCalculatorComponent">
-                {% dsfr_form_field form.amount %}
-                {% dsfr_form_field form.why_amount_is_blank %}{% comment %} class="inline-block" show_label=False{% endcomment %}
+                {{ form.amount.as_field_group }}
+                {{ form.why_amount_is_blank.as_field_group }}{% comment %} class="inline-block" show_label=False{% endcomment %}
                 <div x-show="displayMessage()">
                     <p class="fs-sm text-success" x-text="getImpactMessage"></p>
-                    {% dsfr_form_field form.accept_share_amount %}
+                    {{ form.accept_share_amount.as_field_group }}
                 </div>
             </span>
         </div>

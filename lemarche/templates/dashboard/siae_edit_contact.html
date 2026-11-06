@@ -16,12 +16,12 @@
     </div>
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-8">
-            {% dsfr_form_field form.contact_first_name %}
-            {% dsfr_form_field form.contact_last_name %}
-            {% dsfr_form_field form.contact_website %}
-            {% dsfr_form_field form.contact_email %}
-            {% dsfr_form_field form.contact_phone %}
-            {% dsfr_form_field form.contact_social_website %}
+            {{ form.contact_first_name.as_field_group }}
+            {{ form.contact_last_name.as_field_group }}
+            {{ form.contact_website.as_field_group }}
+            {{ form.contact_email.as_field_group }}
+            {{ form.contact_phone.as_field_group }}
+            {{ form.contact_social_website.as_field_group }}
         </div>
         <div class="fr-col-12 fr-col-lg-4">
             {% dsfr_alert type="info" title="Contact commercial" content="Les informations de contact seront mis à disposition des acheteurs afin de leur permettre de vous contacter facilement." %}
