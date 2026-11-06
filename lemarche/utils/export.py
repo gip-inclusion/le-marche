@@ -23,10 +23,32 @@ SIAE_CONTACT_FIELDS = [
     "contact_social_website",
 ]
 
+# Values starting with one of these characters may be interpreted as a formula by spreadsheet software
+# https://owasp.org/www-community/attacks/CSV_Injection
+SPREADSHEET_FORMULA_PREFIXES = ("=", "+", "-", "@", "\t", "\r", "\n")
+
 SIAE_FIELD_LABELS = {
     "brand": "Enseigne",
     "post_code": "Code postal",
 }
+
+
+def neutralize_csv_formula(value):
+    """Prefix with a quote any string that could be interpreted as a formula when the CSV is opened."""
+    if isinstance(value, str) and value.startswith(SPREADSHEET_FORMULA_PREFIXES):
+        return f"'{value}"
+    return value
+
+
+def neutralize_csv_row(row):
+    return [neutralize_csv_formula(value) for value in row]
+
+
+def set_xlsx_cell_value(cell, value):
+    """Set an openpyxl cell value, always storing strings as text (openpyxl turns "=..." strings into formulas)."""
+    cell.value = value
+    if isinstance(value, str):
+        cell.data_type = "s"
 
 
 def get_siae_fields(with_contact_info=False):
@@ -75,12 +97,12 @@ def export_siae_to_csv(csv_writer, siae_queryset, with_contact_info=False):
     field_list = get_siae_fields(with_contact_info)
 
     # header
-    csv_writer.writerow(generate_header(field_list))
+    csv_writer.writerow(neutralize_csv_row(generate_header(field_list)))
 
     # rows
     for siae in siae_queryset:
         siae_row = generate_siae_row(siae, field_list)
-        csv_writer.writerow(siae_row)
+        csv_writer.writerow(neutralize_csv_row(siae_row))
 
     return csv_writer
 

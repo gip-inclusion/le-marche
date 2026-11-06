@@ -47,7 +47,7 @@ from lemarche.utils import constants, settings_context_processors
 from lemarche.utils.constants import DEPARTMENT_TO_REGION
 from lemarche.utils.data import get_choice
 from lemarche.utils.emails import add_to_contact_list
-from lemarche.utils.export import generate_siae_row
+from lemarche.utils.export import generate_siae_row, neutralize_csv_row, set_xlsx_cell_value
 from lemarche.utils.mixins import (
     SesameSiaeMemberRequiredMixin,
     SesameTenderAuthorRequiredMixin,
@@ -964,15 +964,17 @@ class TenderSiaeInterestedDownloadView(TenderAuthorOrAdminRequiredMixin, DetailV
         response["Content-Disposition"] = f'attachment; filename="{filename_with_extension}"'
 
         writer = csv.writer(response)
-        writer.writerow(header_list)
+        writer.writerow(neutralize_csv_row(header_list))
 
         for siae in siae_qs:
             writer.writerow(
-                generate_siae_row(siae, self.selected_fields)
-                + (
-                    [question_answer.answer for question_answer in siae.questions_for_tender]
-                    if self.question_list
-                    else []
+                neutralize_csv_row(
+                    generate_siae_row(siae, self.selected_fields)
+                    + (
+                        [question_answer.answer for question_answer in siae.questions_for_tender]
+                        if self.question_list
+                        else []
+                    )
                 )
             )
 
@@ -992,7 +994,7 @@ class TenderSiaeInterestedDownloadView(TenderAuthorOrAdminRequiredMixin, DetailV
         # header
         for index, header_item in enumerate(header_list, start=1):
             cell = ws.cell(row=1, column=index)
-            cell.value = header_item
+            set_xlsx_cell_value(cell, header_item)
             cell.font = openpyxl.styles.Font(bold=True)
 
         # rows
@@ -1003,7 +1005,7 @@ class TenderSiaeInterestedDownloadView(TenderAuthorOrAdminRequiredMixin, DetailV
             )
             for index, row_item in enumerate(siae_row, start=1):
                 cell = ws.cell(row=row_number, column=index)
-                cell.value = row_item
+                set_xlsx_cell_value(cell, row_item)
                 cell.alignment = openpyxl.styles.Alignment(wrap_text=True)
             row_number += 1
 
