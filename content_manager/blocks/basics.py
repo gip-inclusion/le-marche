@@ -7,13 +7,6 @@ from wagtail.images.blocks import ImageBlock, ImageChooserBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
 
 from content_manager.blocks.badges_tags import TagListBlock
-from content_manager.blocks.buttons_links import (
-    ButtonBlock,
-    ButtonsHorizontalListBlock,
-    IconPickerBlock,
-    LinkWithoutLabelBlock,
-    SingleLinkBlock,
-)
 from content_manager.constants import (
     ALIGN_HORIZONTAL_CHOICES,
     ALIGN_HORIZONTAL_CHOICES_EXTENDED,
@@ -25,6 +18,13 @@ from content_manager.constants import (
     TEXT_SIZE_CHOICES,
 )
 
+from .buttons_links import (
+    ButtonBlock,
+    ButtonsHorizontalListBlock,
+    IconPickerBlock,
+    LinkWithoutLabelBlock,
+    SingleLinkBlock,
+)
 
 Image = get_image_model()
 
@@ -73,7 +73,7 @@ class TextContentVerticalAlignments(TextContentBlock):
     position = blocks.ChoiceBlock(
         choices=ALIGN_VERTICAL_CHOICES,
         label=_("Text content position"),
-        default="center",
+        default="bottom",
         help_text=_(
             "This field allows you to define the placement of text relative to adjacent content in vertical position."
         ),
@@ -251,6 +251,10 @@ class QuoteBlock(blocks.StructBlock):
 class SeparatorBlock(blocks.StructBlock):
     top_margin = blocks.IntegerBlock(label=_("Top margin"), min_value=0, max_value=15, default=3)
     bottom_margin = blocks.IntegerBlock(label=_("Bottom margin"), min_value=0, max_value=15, default=3)
+
+    class Meta:
+        icon = "minus"
+        template = "content_manager/blocks/separator.html"
 
 
 class StepBlock(blocks.StructBlock):

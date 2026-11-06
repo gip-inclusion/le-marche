@@ -7,7 +7,6 @@ from django.core.files.images import ImageFile
 from wagtail.images import get_image_model
 from wagtail.models import Site
 
-
 Image = get_image_model()
 
 

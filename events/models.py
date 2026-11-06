@@ -9,8 +9,8 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import get_language, gettext_lazy as _
 from icalendar import Calendar, Event, vText
-from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
+from modelcluster.tags import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel
 from wagtail.api import APIField
@@ -85,7 +85,7 @@ class EventsIndexPage(RoutablePageMixin, SitesFacilesBasePage):
         return entries
 
     def get_context(self, request, *args, **kwargs):
-        context = super().get_context(request, *args, **kwargs)
+        context = super(EventsIndexPage, self).get_context(request, *args, **kwargs)
         posts = self.posts
         locale = Locale.objects.get(language_code=get_language())
 

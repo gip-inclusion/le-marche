@@ -5,6 +5,7 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ("blog", "0001_squashed_0048_blogentrypage_preview_image_and_more"),
     ]

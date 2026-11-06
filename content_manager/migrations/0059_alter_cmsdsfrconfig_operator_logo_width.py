@@ -4,6 +4,7 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ("content_manager", "0058_cmsdsfrconfig_operator_logo_display_and_more"),
     ]

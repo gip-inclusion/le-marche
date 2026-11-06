@@ -3,7 +3,6 @@ from wagtail.images.blocks import ImageBlock, ImageChooserBlock
 from wagtail.rich_text import RichText
 from wagtail.snippets.blocks import SnippetChooserBlock
 
-
 try:
     from wagtailmarkdown.blocks import MarkdownBlock
 except ImportError:

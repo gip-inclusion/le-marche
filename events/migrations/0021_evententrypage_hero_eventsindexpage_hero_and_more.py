@@ -5,6 +5,7 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ("events", "0001_squashed_0020_evententrypage_preview_image_and_more"),
     ]
