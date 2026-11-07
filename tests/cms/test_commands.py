@@ -3,9 +3,8 @@ from io import StringIO
 
 from django.core.management import call_command
 from django.test import Client, TestCase
+from sites_conformes.core.models import ContentPage
 from wagtail.models import Page, Site
-
-from content_manager.models import ContentPage
 
 
 class CreateContentPagesCommandTest(TestCase):

@@ -58,7 +58,7 @@
                                         {{ current_perimeters|json_script:"current-perimeters" }}
                                     </div>
                                 </div>
-                                <div class="fr-col-12 fr-col-md-6 fr-col-lg-4">{% dsfr_form_field form.sectors %}</div>
+                                <div class="fr-col-12 fr-col-md-6 fr-col-lg-4">{{ form.sectors.as_field_group }}</div>
                                 <div class="fr-col-12 fr-col-md-12 fr-col-lg-4 fr-hidden fr-unhidden-lg">
                                     <div class="fr-mt-8v">
                                         <ul class="fr-btns-group fr-btns-group--inline-lg fr-btns-group--icon-right">
@@ -89,10 +89,10 @@
                                     </div>
                                 </div>
                                 <div x-show="open" class="fr-grid-row fr-grid-row--gutters">
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.kind %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.presta_type %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.territory %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.networks %}</div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{{ form.kind.as_field_group }}</div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{{ form.presta_type.as_field_group }}</div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{{ form.territory.as_field_group }}</div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{{ form.networks.as_field_group }}</div>
                                     <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
                                         <div class="fr-input-group{% if form.locations.field.widget.attrs.disabled %} fr-input-group--disabled{% endif %}">
                                             <label for="id_locations" class="fr-label">{{ form.locations.label }}</label>
@@ -100,13 +100,13 @@
                                             {{ current_locations|json_script:"current-locations" }}
                                         </div>
                                     </div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.has_client_references %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.has_groups %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.ca %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.legal_form %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.employees %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.labels %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.super_badge %}</div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{{ form.has_client_references.as_field_group }}</div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{{ form.has_groups.as_field_group }}</div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{{ form.ca.as_field_group }}</div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{{ form.legal_form.as_field_group }}</div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{{ form.employees.as_field_group }}</div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{{ form.labels.as_field_group }}</div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{{ form.super_badge.as_field_group }}</div>
                                 </div>
                             </div>
                             <div class="fr-grid-row fr-hidden-lg">
@@ -136,7 +136,7 @@
                             <div class="fr-grid-row fr-grid-row--gutters">
                                 <div class="fr-col-12 fr-col-lg-8">
                                     <div class="fr-grid-row">
-                                        <div class="fr-col-12">{% dsfr_form_field form.q %}</div>
+                                        <div class="fr-col-12">{{ form.q.as_field_group }}</div>
                                     </div>
                                 </div>
                                 <div class="fr-col-12 fr-col-lg-4">

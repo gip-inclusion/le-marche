@@ -17,7 +17,7 @@
                     {% csrf_token %}
                     <div class="fr-grid-row fr-grid-row--gutters">
                         <div class="fr-col-12 fr-col-lg-8">                            
-                            {% dsfr_form_field form.survey_transactioned_answer %}
+                            {{ form.survey_transactioned_answer.as_field_group }}
                         </div>
                         <div class="fr-col-12 fr-col-lg-4">
                             <div class="fr-callout fr-p-4v">
@@ -31,7 +31,7 @@
                     {% if tender.survey_transactioned_answer == None or tender.survey_transactioned_answer == True %}
                         <div class="fr-grid-row fr-grid-row--gutters">
                             <div class="fr-col-12 fr-col-lg-8">
-                                {% dsfr_form_field form.survey_transactioned_amount %}
+                                {{ form.survey_transactioned_amount.as_field_group }}
                             </div>
                             <div class="fr-col-12 fr-col-lg-4">
                                 <div class="fr-callout fr-p-4v">
@@ -45,7 +45,7 @@
                     {% endif %}
                     <div class="fr-grid-row fr-grid-row--gutters">
                         <div class="fr-col-12 fr-col-lg-8">
-                            {% dsfr_form_field form.survey_transactioned_feedback %}
+                            {{ form.survey_transactioned_feedback.as_field_group }}
                         </div>
                     </div>
                     <div class="fr-grid-row fr-grid-row--gutters">

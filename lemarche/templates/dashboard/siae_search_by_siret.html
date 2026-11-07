@@ -24,7 +24,7 @@
                 {% endif %}
                 <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
                     <div class="fr-col-12 fr-col-md-6">
-                        {% dsfr_form_field form.siret %}
+                        {{ form.siret.as_field_group }}
                     </div>
                     <div class="fr-col-12 fr-col-md-4 fr-pt-md-11v">
                         {% dsfr_button label="Rechercher" extra_classes="fr-btn--icon-right fr-icon-search-line" %}

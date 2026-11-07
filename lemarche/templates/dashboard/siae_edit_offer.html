@@ -28,7 +28,7 @@
                       {{ hidden }}
                     {% endfor %}
                     {% for field in form_formset.visible_fields %}
-                      {% include "dsfr/form_field_snippets/field_snippet.html" %}
+                      {{ field.as_field_group }}
                     {% endfor %}
                   </div>
                 {% endfor %}
@@ -95,7 +95,7 @@
                                 {% else %}
                                     <div class="fr-grid-row fr-mb-4v fr-pb-2v">
                                         <div class="fr-col-12">
-                                            {% include "dsfr/form_field_snippets/field_snippet.html" %}
+                                            {{ field.as_field_group }}
                                         </div>
                                     </div>
                                 {% endif %}
@@ -123,7 +123,7 @@
                         {% else %}
                             <div class="fr-grid-row fr-mb-4v fr-pb-2v">
                                 <div class="fr-col-12">
-                                    {% include "dsfr/form_field_snippets/field_snippet.html" %}
+                                    {{ field.as_field_group }}
                                 </div>
                             </div>
                         {% endif %}
@@ -190,7 +190,7 @@
                             {% else %}
                                 <div class="fr-grid-row fr-mb-4v fr-pb-2v">
                                     <div class="fr-col-12">
-                                        {% include "dsfr/form_field_snippets/field_snippet.html" %}
+                                        {{ field.as_field_group }}
                                     </div>
                                 </div>
                             {% endif %}
@@ -218,7 +218,7 @@
                         {% else %}
                             <div class="fr-grid-row fr-mb-4v fr-pb-2v">
                                 <div class="fr-col-12">
-                                    {% include "dsfr/form_field_snippets/field_snippet.html" %}
+                                    {{ field.as_field_group }}
                                 </div>
                             </div>
                         {% endif %}

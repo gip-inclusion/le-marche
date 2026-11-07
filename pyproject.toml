@@ -9,7 +9,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-    "boto3==1.35.99",  # same as sites-conformes: newer versions send checksums unsupported by CleverCloud S3
+    "boto3",
     "brevo-python<=1.2.0",
     "crawlerdetect",
     "django>=6.0,<6.1",
@@ -21,7 +21,7 @@ dependencies = [
     "django-compressor",
     "django-cors-headers",
     "django-datadog-logger",
-    "django-dsfr==3.4.2",
+    "django-dsfr",
     "django-environ",
     "django-extensions",
     "django-filter",
@@ -35,7 +35,6 @@ dependencies = [
     "django-storages",
     "drf-spectacular",
     "huey",
-    "icalendar",
     "nh3",
     "psycopg[binary]",
     "python-stdnum",
@@ -44,13 +43,12 @@ dependencies = [
     "sentry-sdk",
     "shortuuid",
     "openpyxl",
+    "sites-conformes",
     "xlwt",
     "wagtail<8.0",
     "wagtail-localize",
     "wagtail-markdown",
-    "wagtail-modeladmin",
     "wagtailmenus",
-    "unidecode",
 ]
 
 [dependency-groups]
@@ -101,6 +99,8 @@ filterwarnings = [
     "ignore:unclosed file.*:ResourceWarning",
     # django-dsfr 3.4: DsfrBaseForm warns until the next major version marks optional fields instead of required ones
     "ignore:Marking required form fields is not recommended:DeprecationWarning:dsfr.forms",
+    # sites-conformes models still import modelcluster.tags instead of modelcluster.contrib.taggit
+    "ignore:The modelcluster.tags module has been moved to modelcluster.contrib.taggit:DeprecationWarning",
 ]
 addopts = [
     "--reuse-db",
