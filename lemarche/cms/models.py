@@ -13,7 +13,7 @@ class ArticleList(RoutablePageMixin, Page):
         context["search_type"] = getattr(self, "search_type", "")
         context["search_term"] = getattr(self, "search_term", "")
         context["categories"] = (
-            Tag.objects.filter(contentpage__in=ContentPage.objects.descendant_of(self).live())
+            Tag.objects.filter(contentpage__in=ContentPage.objects.descendant_of(self).live().public())
             .annotate(usecount=Count("contentpage"))
             .filter(usecount__gte=1)
             .order_by("name")
@@ -22,7 +22,14 @@ class ArticleList(RoutablePageMixin, Page):
         return context
 
     def get_posts(self):
-        return ContentPage.objects.descendant_of(self).live().prefetch_related("tags").order_by("-last_published_at")
+        # Only the public articles: not the ones protected by a password, login or group restriction
+        return (
+            ContentPage.objects.descendant_of(self)
+            .live()
+            .public()
+            .prefetch_related("tags")
+            .order_by("-last_published_at")
+        )
 
     @route(r"^$")
     def post_list(self, request, *args, **kwargs):

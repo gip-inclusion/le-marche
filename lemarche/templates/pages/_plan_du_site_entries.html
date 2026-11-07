@@ -1,0 +1,11 @@
+{% load wagtailcore_tags %}
+{% for node in nodes %}
+  <li>
+    <a href="{% pageurl node.page %}">{{ node.page.title }}</a>
+    {% if node.children %}
+      <ul>
+        {% include "pages/_plan_du_site_entries.html" with nodes=node.children %}
+      </ul>
+    {% endif %}
+  </li>
+{% endfor %}

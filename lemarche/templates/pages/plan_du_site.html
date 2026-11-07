@@ -1,0 +1,37 @@
+{% extends "sites_conformes_core/base.html" %}
+{% comment %}
+  sites-conformes sitemap page (sites_conformes_core/sitemap_page.html), with the pages listed from
+  the sitemap_tree of lemarche.www.pages.views.SitemapView (live and public pages only)
+{% endcomment %}
+{% load dsfr_tags wagtail_dsfr_tags %}
+
+{% block title %}
+  <title>{{ title }} — {{ settings.sites_conformes_core.CmsDsfrConfig.site_title }}</title>
+{% endblock title %}
+
+{% block description %}
+  <meta name="description" content="{{ home_page.search_description }}" />
+{% endblock description %}
+
+{% block content %}
+  <div class="fr-container fr-mt-6w">
+    {% dsfr_breadcrumb breadcrumb %}
+    <h1>{{ title }}</h1>
+    {% include "sites_conformes_core/blocks/messages.html" %}
+  </div>
+
+  <div class="fr-container fr-mt-6w">
+    <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+      <ul>
+        <li>
+          <a href="{% root_url %}">{{ home_page.title }}</a>
+          {% if sitemap_tree %}
+            <ul>
+              {% include "pages/_plan_du_site_entries.html" with nodes=sitemap_tree %}
+            </ul>
+          {% endif %}
+        </li>
+      </ul>
+    </div>
+  </div>
+{% endblock content %}

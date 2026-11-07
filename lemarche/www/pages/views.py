@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import FormView, ListView, TemplateView, View
 from django.views.generic.edit import FormMixin
+from sites_conformes.core.views import SiteMapView
 
 from lemarche.siaes.models import Siae, SiaeGroup
 from lemarche.utils.tracker import track
@@ -157,3 +158,41 @@ def trigger_error(request):
     if request.POST:
         raise Exception(f"{request.POST.get('status_code')} error: {request.POST.get('error_message')}")
     print(1 / 0)  # Should raise a ZeroDivisionError.
+
+
+class SitemapView(SiteMapView):
+    """
+    sites-conformes readable sitemap, built from a queryset of the live and public pages: unlike the
+    sites-conformes template, it never lists the pages protected by a password, login or group restriction
+    (sites-conformes shows them to any logged-in user, whatever the restriction).
+    """
+
+    template_name = "pages/plan_du_site.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["sitemap_tree"] = self.get_sitemap_tree(context["home_page"])
+        return context
+
+    @staticmethod
+    def get_sitemap_tree(home_page):
+        """
+        Returns the nested list of {"page", "children"} of the live and public descendants of the home page.
+        Like the sites-conformes sitemap, the pages excluded from the sitemap and the subpages of the pages
+        that are not listed (drafts, excluded or restricted pages) are left out.
+        """
+        tree = []
+        listed_nodes = {}
+        for page in home_page.get_descendants().live().public().specific().order_by("path"):
+            if getattr(page, "exclude_from_sitemap", False):
+                continue
+            node = {"page": page, "children": []}
+            if page.depth == home_page.depth + 1:
+                tree.append(node)
+            else:
+                parent_node = listed_nodes.get(page.path[: -page.steplen])
+                if parent_node is None:
+                    continue
+                parent_node["children"].append(node)
+            listed_nodes[page.path] = node
+        return tree
