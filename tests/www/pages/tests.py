@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from sites_conformes.core.models import ContentPage
-from wagtail.models import Page as WagtailPage, Site
+from wagtail.models import Page as WagtailPage, PageViewRestriction, Site
 
 from lemarche.users.models import User
 from tests.siaes.factories import SiaeFactory
@@ -243,3 +243,38 @@ class SitemapTests(TestCase):
 
         response = self.client.get(reverse("pages:plan-du-site"))
         self.assertNotContains(response, draft_page.title)
+
+    def test_sitemap_html_excludes_restricted_pages(self):
+        """Test that the HTML sitemap does not list pages protected by a view restriction (direct or inherited)"""
+        restricted_page = self.wagtail_page.add_child(instance=WagtailPage(title="Restricted section"))
+        inherited_page = restricted_page.add_child(instance=WagtailPage(title="Inherited restriction page"))
+        PageViewRestriction.objects.create(
+            page=restricted_page, restriction_type=PageViewRestriction.PASSWORD, password="secret"
+        )
+        self.client.force_login(UserFactory())
+
+        response = self.client.get(reverse("pages:plan-du-site"))
+        self.assertContains(response, self.wagtail_page.title)
+        self.assertNotContains(response, restricted_page.title)
+        self.assertNotContains(response, inherited_page.title)
+
+    def test_sitemap_html_lists_public_subpages(self):
+        child_page = self.wagtail_page.add_child(instance=WagtailPage(title="Public child page"))
+        grandchild_page = child_page.add_child(instance=WagtailPage(title="Public grandchild page"))
+
+        response = self.client.get(reverse("pages:plan-du-site"))
+        self.assertContains(response, child_page.title)
+        self.assertContains(response, grandchild_page.title)
+
+    def test_sitemap_html_does_not_list_the_subpages_of_unlisted_pages(self):
+        draft_page = self.wagtail_page.add_child(instance=WagtailPage(title="Draft section", live=False))
+        draft_child_page = draft_page.add_child(instance=WagtailPage(title="Child of a draft"))
+        excluded_page = self.wagtail_page.add_child(
+            instance=ContentPage(title="Excluded section", exclude_from_sitemap=True)
+        )
+        excluded_child_page = excluded_page.add_child(instance=WagtailPage(title="Child of an excluded page"))
+
+        response = self.client.get(reverse("pages:plan-du-site"))
+        self.assertNotContains(response, draft_child_page.title)
+        self.assertNotContains(response, excluded_page.title)
+        self.assertNotContains(response, excluded_child_page.title)
