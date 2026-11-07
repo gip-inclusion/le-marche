@@ -1,7 +1,8 @@
-{ "deploy": {
-    "module": "lemarche.config.wsgi:application",
-    "managetasks":
-        [
+{
+    "deploy": {
+        "module": "lemarche.config.wsgi:application",
+        "managetasks": [
+            "migrate_from_sites_faciles --no-input",
             "migrate --no-input",
             "collectstatic --no-input",
             "compress --force"
