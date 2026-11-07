@@ -2,6 +2,7 @@ import datetime
 from io import StringIO
 from unittest.mock import patch
 
+from allauth.account.models import EmailAddress
 from dateutil.relativedelta import relativedelta
 from django.core.management import call_command
 from django.test import TestCase, override_settings
@@ -9,10 +10,15 @@ from django.utils import timezone
 from freezegun import freeze_time
 
 from lemarche.conversations.models import TemplateTransactional, TemplateTransactionalSendLog
-from lemarche.users.constants import KIND_ADMIN, PARTNER_KIND_FACILITATOR
+from lemarche.siaes.models import SiaeUser
+from lemarche.users.constants import KIND_ADMIN, KIND_BUYER, PARTNER_KIND_FACILITATOR
 from lemarche.users.models import User
 from tests.companies.factories import CompanyFactory
-from tests.conversations.factories import TemplateTransactionalFactory
+from tests.conversations.factories import ConversationFactory, TemplateTransactionalFactory
+from tests.favorites.factories import FavoriteListFactory
+from tests.notes.factories import NoteFactory
+from tests.sectors.factories import SectorFactory
+from tests.siaes.factories import SiaeFactory, SiaeUserRequestFactory
 from tests.tenders.factories import TenderFactory
 from tests.users.factories import UserFactory
 
@@ -113,6 +119,80 @@ def test_delete_old_users(db):
     )
     # check no new mail was sent
     assert TemplateTransactionalSendLog.objects.count() == 1
+
+
+@freeze_time("2024-01-15")
+def test_delete_spam_users(db):
+    now = timezone.now()
+    old = now - relativedelta(days=7)
+    recent = now - relativedelta(days=6)
+
+    # SIAE account with no activity, unverified email, created 7+ days ago -> spam
+    spam_no_email = UserFactory(created_at=old)
+    spam_unverified = UserFactory(created_at=old - relativedelta(months=3))
+    EmailAddress.objects.create(user=spam_unverified, email=spam_unverified.email, verified=False)
+    # related objects allowed to be deleted along with the user
+    NoteFactory(content_object=spam_unverified)
+    TemplateTransactionalSendLog.objects.create(recipient_content_object=spam_unverified)
+
+    kept_users = {}
+    kept_users["recent"] = UserFactory(created_at=recent)
+    kept_users["buyer"] = UserFactory(created_at=old, kind=KIND_BUYER)
+    kept_users["verified_email"] = UserFactory(created_at=old)
+    EmailAddress.objects.create(
+        user=kept_users["verified_email"], email=kept_users["verified_email"].email, verified=True
+    )
+    kept_users["with_siae"] = UserFactory(created_at=old, siaes=[SiaeFactory()])
+    kept_users["request_initiator"] = UserFactory(created_at=old)
+    SiaeUserRequestFactory(initiator=kept_users["request_initiator"])
+    kept_users["request_assignee"] = UserFactory(created_at=old)
+    SiaeUserRequestFactory(assignee=kept_users["request_assignee"])
+    # the factory makes the assignee a member of the siae: remove it to only test the request filter
+    SiaeUser.objects.filter(user=kept_users["request_assignee"]).delete()
+    kept_users["tender_author"] = UserFactory(created_at=old)
+    TenderFactory(author=kept_users["tender_author"])
+    kept_users["conversation_sender"] = UserFactory(created_at=old)
+    ConversationFactory(sender_user=kept_users["conversation_sender"])
+    kept_users["favorite_list"] = UserFactory(created_at=old)
+    FavoriteListFactory(user=kept_users["favorite_list"])
+    kept_users["with_sector"] = UserFactory(created_at=old)
+    kept_users["with_sector"].sectors.add(SectorFactory())
+
+    std_out = StringIO()
+    call_command("delete_spam_users", wet_run=True, stdout=std_out)
+
+    found_line, deleted_line = std_out.getvalue().splitlines()
+    assert found_line == "Found 2 SIAE spam accounts"
+    # deletion order of related models is a Django implementation detail: compare the dict, not the string
+    assert deleted_line == (
+        "Deleted 2 users ({'account.EmailAddress': 1, 'conversations.TemplateTransactionalSendLog': 1, "
+        "'notes.Note': 1, 'users.User': 2})"
+    )
+    assert not User.objects.filter(id__in=[spam_no_email.id, spam_unverified.id]).exists()
+    for reason, user in kept_users.items():
+        assert User.objects.filter(id=user.id).exists(), f"{reason} user should not have been deleted"
+
+
+@freeze_time("2024-01-15")
+def test_delete_spam_users_dry_run(db):
+    UserFactory(created_at=timezone.now() - relativedelta(days=30))
+
+    std_out = StringIO()
+    call_command("delete_spam_users", stdout=std_out)
+
+    assert "Found 1 SIAE spam accounts" in std_out.getvalue()
+    assert User.objects.count() == 1
+
+
+@freeze_time("2024-01-15")
+def test_delete_spam_users_nothing_to_delete(db):
+    UserFactory(created_at=timezone.now())
+
+    std_out = StringIO()
+    call_command("delete_spam_users", wet_run=True, stdout=std_out)
+
+    assert std_out.getvalue() == "Found 0 SIAE spam accounts\n"
+    assert User.objects.count() == 1
 
 
 class UserBuyerImportTestCase(TestCase):
