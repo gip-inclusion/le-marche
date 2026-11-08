@@ -1,8 +1,8 @@
 [
     "0 * * * * $ROOT/clevercloud/run_management_command.sh sync_siaes_decp_details --wet-run --limit 500",
     "*/10 * * * * $ROOT/clevercloud/utils_antivirus_scan.sh",
+    "3 * * * * $ROOT/clevercloud/tenders_update_count_fields.sh",
 
-    "0 1 * * * $ROOT/clevercloud/tenders_update_count_fields.sh",
     "15 1 * * * $ROOT/clevercloud/run_management_command.sh clean_old_history --days 180 --auto",
     "30 2 * * * $ROOT/clevercloud/run_management_command.sh sync_siaes_decp --wet-run",
     "0 3 * * * $ROOT/clevercloud/run_management_command.sh clearsessions",
