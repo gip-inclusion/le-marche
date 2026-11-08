@@ -1,7 +1,9 @@
+import re
 from unittest.mock import patch
 
 from allauth.account.models import EmailAddress, EmailConfirmationHMAC
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.core import mail
 from django.test import TestCase
 from django.urls import reverse
 from freezegun import freeze_time
@@ -30,6 +32,13 @@ def scroll_to_and_click_element(driver, element, click=True):
             element.click()
         except:  # noqa # selenium.common.exceptions.ElementClickInterceptedException
             driver.execute_script("arguments[0].click();", element)
+
+
+def create_user_with_verified_email(**kwargs):
+    """Email verification is mandatory to log in: create the user with a verified address."""
+    user = UserFactory(**kwargs)
+    EmailAddress.objects.create(user=user, email=user.email, verified=True, primary=True)
+    return user
 
 
 def element_select_option(driver, element, option=""):
@@ -144,17 +153,35 @@ class SignupFormTest(StaticLiveServerTestCase):
     def _assert_signup_success(self, redirect_url: str, user_kind=None) -> list:
         """Assert the success signup and returns the success messages
 
+        Email verification is mandatory: the user is created but not logged in, and is asked to confirm
+        the address. Following the confirmation link (in the same browser) logs the user in.
+
         Args:
-            redirect_url (str): redirect url after signup
+            redirect_url (str): redirect url after signup, once the address is confirmed
 
         Returns:
             list: list of success messages
         """
-        # should create User
+        # should create User, without logging in
         self.assertEqual(User.objects.count(), 1)
-        # user should be automatically logged in
+        user = User.objects.get()
+        self.assertEqual(
+            self.driver.current_url, f"{self.live_server_url}{reverse('account_email_verification_sent')}"
+        )
         header = self.driver.find_element(By.CSS_SELECTOR, "header#header")
-        self.assertTrue("Connexion" not in header.text)
+        self.assertTrue("Mon espace" not in header.text)
+
+        # confirm the address with the link sent by email
+        confirmation_emails = [email for email in mail.outbox if user.email in email.to]
+        self.assertEqual(len(confirmation_emails), 1)
+        confirmation_url = re.search(r"https?://\S+/confirm-email/\S+/", confirmation_emails[0].body).group(0)
+        self.driver.get(confirmation_url)
+        confirm_button = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
+        scroll_to_and_click_element(self.driver, confirm_button)
+
+        # user should now be logged in
+        header = self.driver.find_element(By.CSS_SELECTOR, "header#header")
+        self.assertTrue("Mon espace" in header.text)
 
         menu_button = self.driver.find_element(By.ID, "my-account")
         menu_button.click()
@@ -175,21 +202,6 @@ class SignupFormTest(StaticLiveServerTestCase):
             ]
             return message_list
 
-    @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient")
-    def test_siae_submits_signup_form_success(self, mock_brevo_contacts_client):
-        mock_client_instance = mock_brevo_contacts_client.return_value
-        self._complete_form(user_profile=self.SIAE, with_submit=True)
-
-        # should redirect SIAE to dashboard
-        messages = self._assert_signup_success(redirect_url=reverse("dashboard:home"), user_kind=User.KIND_SIAE)
-        self.assertIn(
-            "Vous pouvez maintenant ajouter votre structure en cliquant sur Ajouter une structure.", messages
-        )
-        self.assertIn("Connexion avec siae@example.com réussie.", messages)
-
-        # assert Brevo contact creation
-        mock_client_instance.create_contact.assert_called_once()
-
     def test_siae_submits_signup_form_error(self):
         user_profile = self.SIAE
         del user_profile["last_name"]
@@ -200,16 +212,20 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('account_signup')}")
 
     def test_siae_submits_signup_form_email_already_exists(self):
+        """Same response as for a new address (no user enumeration): an email is sent to the existing account"""
         UserFactory(email=self.SIAE["email"], kind=User.KIND_SIAE)
 
         user_profile = self.SIAE
         self._complete_form(user_profile=user_profile, with_submit=True)
 
-        # should not submit form (email field already used)
-        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('account_signup')}")
-
-        alerts = self.driver.find_element(By.CSS_SELECTOR, "form")
-        self.assertTrue("Cette adresse e-mail est déjà utilisée." in alerts.text)
+        self.assertEqual(
+            self.driver.current_url, f"{self.live_server_url}{reverse('account_email_verification_sent')}"
+        )
+        self.assertNotIn("déjà utilisée", self.driver.page_source)
+        # no new account
+        self.assertEqual(User.objects.count(), 1)
+        emails = [email for email in mail.outbox if self.SIAE["email"] in email.to]
+        self.assertEqual([email.subject for email in emails], ["Votre compte sur le Marché de l'inclusion"])
 
     @freeze_time("2025-03-05")
     @patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient")
@@ -341,6 +357,82 @@ class SignupFormTestcase(TestCase):
         self.assertTrue(form.is_valid())
 
 
+class SignupEnumerationTest(TestCase):
+    """The signup response must not reveal whether an address already has an account (V16)"""
+
+    def setUp(self):
+        brevo_patcher = patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient")
+        brevo_patcher.start()
+        self.addCleanup(brevo_patcher.stop)
+        password = "c*[gkp`0="
+        self.form_data = {
+            "kind": User.KIND_INDIVIDUAL,
+            "accept_rgpd": True,
+            "first_name": "Prenom",
+            "last_name": "Nom",
+            "password1": password,
+            "password2": password,
+        }
+
+    def signup(self, email):
+        return self.client.post(reverse("account_signup"), data=self.form_data | {"email": email})
+
+    @staticmethod
+    def emails_to(address):
+        """Emails sent to the address (the team is also notified of new accounts)"""
+        return [email for email in mail.outbox if address in email.to]
+
+    def test_same_response_for_new_and_existing_address(self):
+        UserFactory(email="existing@example.com")
+
+        response_new = self.signup("new@example.com")
+        self.client.logout()
+        response_existing = self.signup("existing@example.com")
+
+        self.assertEqual(response_new.status_code, 302)
+        self.assertEqual(response_existing.status_code, 302)
+        self.assertEqual(response_new.url, reverse("account_email_verification_sent"))
+        self.assertEqual(response_existing.url, response_new.url)
+
+    def test_new_address_creates_an_unverified_account_without_logging_in(self):
+        self.signup("new@example.com")
+
+        user = User.objects.get(email="new@example.com")
+        self.assertFalse(EmailAddress.objects.filter(user=user, verified=True).exists())
+        self.assertNotIn("_auth_user_id", self.client.session)
+        self.assertEqual(len(self.emails_to("new@example.com")), 1)
+
+    def test_existing_address_sends_an_email_without_creating_an_account(self):
+        existing_user = UserFactory(email="existing@example.com")
+
+        self.signup("existing@example.com")
+
+        self.assertEqual(list(User.objects.all()), [existing_user])
+        self.assertNotIn("_auth_user_id", self.client.session)
+        emails = self.emails_to("existing@example.com")
+        self.assertEqual(len(emails), 1)
+        self.assertEqual(emails[0].subject, "Votre compte sur le Marché de l'inclusion")
+        self.assertIn(reverse("auth:password_reset"), emails[0].body)
+
+    def test_existing_address_is_case_insensitive(self):
+        existing_user = UserFactory(email="existing@example.com")
+
+        response = self.signup("Existing@Example.com")
+
+        self.assertEqual(response.url, reverse("account_email_verification_sent"))
+        self.assertEqual(list(User.objects.all()), [existing_user])
+
+    def test_unverified_user_must_confirm_the_address_to_log_in(self):
+        user = UserFactory(email="unverified@example.com")
+
+        response = self.client.post(reverse("account_login"), data={"login": user.email, "password": DEFAULT_PASSWORD})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("account_email_verification_sent"))
+        self.assertNotIn("_auth_user_id", self.client.session)
+        self.assertEqual(len(self.emails_to(user.email)), 1)
+
+
 class LoginViewEnumerationTest(TestCase):
     def test_failed_login_response_does_not_depend_on_account_state(self):
         """
@@ -393,7 +485,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         cls.driver.implicitly_wait(1)
 
     def test_siae_user_can_sign_in_and_is_redirected_to_dashboard(self):
-        user_siae = UserFactory(email="siae5@example.com", kind=User.KIND_SIAE)
+        user_siae = create_user_with_verified_email(email="siae5@example.com", kind=User.KIND_SIAE)
         driver = self.driver
         driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
@@ -406,7 +498,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('dashboard:home')}")
 
     def test_non_siae_user_can_sign_in_and_is_redirected_to_home(self):
-        user_buyer = UserFactory(email="buyer5@example.com", kind=User.KIND_BUYER)
+        user_buyer = create_user_with_verified_email(email="buyer5@example.com", kind=User.KIND_BUYER)
         driver = self.driver
         driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
@@ -419,7 +511,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('siae:search_results')}")
 
     def test_user_can_sign_in_with_email_containing_capital_letters(self):
-        UserFactory(email="siae5@example.com", kind=User.KIND_SIAE)
+        create_user_with_verified_email(email="siae5@example.com", kind=User.KIND_SIAE)
         driver = self.driver
         driver.get(f"{self.live_server_url}{reverse('account_login')}")
 
@@ -429,7 +521,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
 
     def test_user_wrong_credentials_should_see_error_message(self):
-        user_siae = UserFactory(email="siae5@example.com", kind=User.KIND_SIAE)
+        user_siae = create_user_with_verified_email(email="siae5@example.com", kind=User.KIND_SIAE)
         driver = self.driver
         driver.get(f"{self.live_server_url}{reverse('account_login')}")
 

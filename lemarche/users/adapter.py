@@ -1,5 +1,5 @@
 from allauth.account.adapter import DefaultAccountAdapter
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 
 from lemarche.users.models import User
 from lemarche.utils.apis import api_brevo
@@ -31,6 +31,8 @@ class LeMarcheAccountAdapter(DefaultAccountAdapter):
     def get_signup_redirect_url(self, request):
         success_url = super().get_signup_redirect_url(request)
 
+        # allauth computes the signup redirect when the login completes, i.e. with mandatory email verification
+        # in the email confirmation request (the signup form data is no longer available): the user is logged in.
         if self.request.user.kind == User.KIND_BUYER:
             success_url = reverse_lazy("siae:search_results") + "?show_invite_colleagues_modal=true"
         next_url = self.request.GET.get("next", None)
@@ -39,10 +41,22 @@ class LeMarcheAccountAdapter(DefaultAccountAdapter):
             safe_url = get_safe_url(self.request, param_name="next")
             if safe_url:
                 return safe_url
-        elif self.request.POST.get("kind") == User.KIND_SIAE:
+        elif self.request.user.kind == User.KIND_SIAE:
             return reverse_lazy("dashboard:home")
 
         return success_url
+
+    def send_account_already_exists_mail(self, email):
+        """
+        Sent instead of creating an account when signing up with an address that already has one
+        (enumeration prevention): link to le-marche's password reset page rather than allauth's.
+        """
+        context = {
+            "email": email,
+            "password_reset_url": self.request.build_absolute_uri(reverse("auth:password_reset")),
+            "login_url": self.request.build_absolute_uri(reverse("account_login")),
+        }
+        self.send_mail("account/email/account_already_exists", email, context)
 
     def save_user(self, request, user, form, commit=True):
         """

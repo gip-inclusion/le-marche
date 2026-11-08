@@ -104,22 +104,10 @@ class CustomSignupForm(SignupForm, DsfrBaseForm):
         # password validation rules
         self.fields["password1"].help_text = CnilCompositionPasswordValidator().get_help_text()
 
-    def clean_email(self):
-        """
-        Allauth doest seem to handle basic integrity constraints. It's supposed to allow duplicate emails
-        as the validated emails are checked later with integrity constraints.
-        ACCOUNT_PREVENT_ENUMERATION = False had no effect in our case.
-        """
-        email = self.cleaned_data["email"]
-
-        if User.objects.filter(email=email).exists():
-            raise ValidationError("Cette adresse e-mail est déjà utilisée.")
-
-        return email.lower()
-
     def clean(self):
         cleaned_data = super().clean()
-        # email is not in cleaned data when detected as duplicated
+        # an address that already has an account is not an error (no user enumeration, see clean_email
+        # of allauth's SignupForm): allauth emails the address instead of creating the account
         if self.cleaned_data["kind"] == User.KIND_BUYER and cleaned_data.get("email"):
             try:
                 professional_email_validator(cleaned_data["email"])
