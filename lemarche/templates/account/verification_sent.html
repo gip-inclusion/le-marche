@@ -1,0 +1,32 @@
+{% extends "layouts/base.html" %}
+{% load dsfr_tags process_dict %}
+
+{% block page_title %}Vérifiez votre adresse e-mail{{ block.super }}{% endblock page_title %}
+
+{% block breadcrumb %}
+    {% process_dict root_dir=HOME_PAGE_PATH current="Vérification de l'adresse e-mail" as breadcrumb_data %}
+    {% dsfr_breadcrumb breadcrumb_data %}
+{% endblock breadcrumb %}
+
+{% block content %}
+    {% comment %}
+        Shown after every signup (new address or address that already has an account, see V16) and when an
+        unverified user logs in: the wording must not reveal whether an account exists.
+    {% endcomment %}
+    <div class="fr-container fr-container--fluid fr-mb-md-14v">
+        <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <h1>Vérifiez votre adresse e-mail</h1>
+                <p>
+                    Nous vous avons envoyé un e-mail. Suivez le lien qu'il contient pour confirmer votre adresse
+                    et accéder à votre compte.
+                </p>
+                <p>
+                    Si vous ne le voyez pas dans votre boîte de réception, pensez à vérifier vos courriers indésirables.
+                    Vous ne l'avez pas reçu au bout de quelques minutes ?
+                    <a href="{% url 'pages:contact' %}">Contactez-nous</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -313,7 +313,11 @@ SESAME_TOKEN_NAME = "token"
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_EMAIL_VERIFICATION = "optional"
+# Mandatory verification, with enumeration prevention: a signup with an address that already has an account
+# doesn't create an account nor show an error, allauth emails the address and shows the same "verification sent"
+# page as for a new account (pentest V16). Unverified users must confirm their address before logging in.
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_PREVENT_ENUMERATION = True
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_EMAIL_SUBJECT_PREFIX = ""

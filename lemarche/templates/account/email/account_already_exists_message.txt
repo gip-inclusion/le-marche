@@ -1,0 +1,14 @@
+Bonjour,
+
+Vous recevez cet e-mail car vous, ou une autre personne, avez tenté de créer un compte sur le Marché de l'inclusion avec l'adresse {{ email }}.
+
+Un compte utilisant cette adresse existe déjà. Vous pouvez vous connecter :
+{{ login_url }}
+
+Si vous avez oublié votre mot de passe, vous pouvez le réinitialiser :
+{{ password_reset_url }}
+
+Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet e-mail.
+
+Cordialement,
+L'équipe du Marché de l'inclusion
