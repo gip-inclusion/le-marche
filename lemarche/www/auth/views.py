@@ -1,8 +1,8 @@
 from allauth.account.views import ConfirmEmailView, LoginView, SignupView
+from django.contrib import messages
 from django.contrib.auth import views as auth_views
-from django.contrib.messages.views import SuccessMessageMixin
-from django.urls import reverse_lazy
-from django.utils.safestring import mark_safe
+from django.urls import reverse, reverse_lazy
+from django.utils.html import format_html
 
 from lemarche.users.models import User
 from lemarche.www.auth.forms import CustomLoginForm, CustomSignupForm, PasswordResetForm
@@ -25,26 +25,32 @@ class CustomLoginView(LoginView):
         return context
 
 
-class CustomSignupView(SuccessMessageMixin, SignupView):
+class CustomSignupView(SignupView):
     template_name = "account/signup.html"
     form_class = CustomSignupForm
 
-    def get_success_message(self, cleaned_data):
-        """Show detailed welcome message to SIAE."""
-        success_message = super().get_success_message(cleaned_data)
-
-        if cleaned_data["kind"] == User.KIND_BUYER:
-            return None  # Do not add message for BUYER that need meeting
-        elif cleaned_data["kind"] == User.KIND_SIAE:
-            success_message += mark_safe(
-                "<br />Vous pouvez maintenant ajouter votre structure en cliquant sur "
-                f'<a href="{reverse_lazy("dashboard_siaes:siae_search_by_siret")}">Ajouter une structure</a>.'
-            )
-
-        return success_message
-
 
 class CustomConfirmEmailView(ConfirmEmailView):
+    def post(self, *args, **kwargs):
+        """
+        Once the address is confirmed (the new user is then logged in, email verification being mandatory),
+        invite SIAE users who don't have a structure yet to add one.
+        """
+        response = super().post(*args, **kwargs)
+        email_address = self.object.email_address
+        email_address.refresh_from_db()
+        user = email_address.user
+        if email_address.verified and user.kind == User.KIND_SIAE and not user.has_siae:
+            messages.success(
+                self.request,
+                format_html(
+                    "Vous pouvez maintenant ajouter votre structure en cliquant sur "
+                    '<a href="{}">Ajouter une structure</a>.',
+                    reverse("dashboard_siaes:siae_search_by_siret"),
+                ),
+            )
+        return response
+
     def logout_other_user(self, confirmation):
         """
         allauth logs out the current user when the confirmation link belongs to another account,

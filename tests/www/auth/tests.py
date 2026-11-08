@@ -2,6 +2,7 @@ import re
 from unittest.mock import patch
 
 from allauth.account.models import EmailAddress, EmailConfirmationHMAC
+from django.contrib.messages import get_messages
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core import mail
 from django.test import TestCase
@@ -15,6 +16,7 @@ from selenium.webdriver.support.select import Select
 from lemarche.cms.snippets import Paragraph
 from lemarche.users.models import User
 from lemarche.www.auth.forms import CustomSignupForm
+from tests.siaes.factories import SiaeFactory
 from tests.users.factories import DEFAULT_PASSWORD, UserFactory
 
 
@@ -467,6 +469,31 @@ class ConfirmEmailViewTest(TestCase):
         self.assertEqual(int(self.client.session["_auth_user_id"]), user.id)
         email_address.refresh_from_db()
         self.assertFalse(email_address.verified)
+
+    def confirm(self, user):
+        email_address = EmailAddress.objects.create(user=user, email=user.email, primary=True)
+        key = EmailConfirmationHMAC(email_address).key
+        response = self.client.post(reverse("account_confirm_email", args=[key]))
+        email_address.refresh_from_db()
+        self.assertTrue(email_address.verified)
+        return [str(message) for message in get_messages(response.wsgi_request)]
+
+    def test_siae_user_without_structure_is_invited_to_add_one_once_confirmed(self):
+        messages = self.confirm(UserFactory(kind=User.KIND_SIAE))
+
+        self.assertIn(
+            "Vous pouvez maintenant ajouter votre structure en cliquant sur "
+            f'<a href="{reverse("dashboard_siaes:siae_search_by_siret")}">Ajouter une structure</a>.',
+            messages,
+        )
+
+    def test_no_invitation_to_add_a_structure_for_other_users(self):
+        siae_user_with_structure = UserFactory(kind=User.KIND_SIAE)
+        SiaeFactory(users=[siae_user_with_structure])
+        for user in [siae_user_with_structure, UserFactory(kind=User.KIND_BUYER)]:
+            with self.subTest(kind=user.kind):
+                messages = self.confirm(user)
+                self.assertFalse([message for message in messages if "Ajouter une structure" in message])
 
 
 class LoginFormTest(StaticLiveServerTestCase):
