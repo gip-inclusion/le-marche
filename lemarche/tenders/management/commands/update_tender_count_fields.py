@@ -48,20 +48,6 @@ class Command(BaseCommand):
         progress = 0
         for index, tender in enumerate(tender_queryset):
             # M2M
-
-            # raise warning log if a field is not up to date (signal failed ?)
-            for field in Tender.FIELDS_STATS_COUNT:
-                annotated_field = f"{field}_annotated"
-                if getattr(tender, field) != getattr(tender, annotated_field):
-                    logger.warning(
-                        "Tender %s has a mismatch between %s and %s: %s != %s",
-                        tender.id,
-                        field,
-                        annotated_field,
-                        getattr(tender, field),
-                        getattr(tender, annotated_field),
-                    )
-
             tender.siae_count = tender.siae_count_annotated
             tender.siae_email_send_count = tender.siae_email_send_count_annotated
             tender.siae_email_link_click_count = tender.siae_email_link_click_count_annotated
