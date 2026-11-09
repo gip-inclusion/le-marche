@@ -179,11 +179,11 @@ class Command(BaseCommand):
                 # set coords from latitude & longitude
                 if "latitude" in c1_siae_cleaned and "longitude" in c1_siae_cleaned:
                     if c1_siae_cleaned["latitude"] and c1_siae_cleaned["longitude"]:
-                        coords = {
-                            "type": "Point",
-                            "coordinates": [float(c1_siae["longitude"]), float(c1_siae_cleaned["latitude"])],
-                        }
-                        c1_siae_cleaned["coords"] = GEOSGeometry(f"{coords}")  # Feed `GEOSGeometry` with GeoJSON.
+                        # Feed `GEOSGeometry` with GeoJSON.
+                        coords = '{{"type": "Point", "coordinates": [{:f}, {:f}]}}'.format(
+                            c1_siae["longitude"], c1_siae_cleaned["latitude"]
+                        )
+                        c1_siae_cleaned["coords"] = GEOSGeometry(coords)
                     del c1_siae_cleaned["latitude"]
                     del c1_siae_cleaned["longitude"]
 
