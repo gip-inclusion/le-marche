@@ -2,6 +2,7 @@ from allauth.account.forms import LoginForm, SignupForm
 from django import forms
 from django.contrib.auth.forms import PasswordResetForm
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError, transaction
 from dsfr.forms import DsfrBaseForm
 
 from lemarche.sectors.models import Sector
@@ -118,6 +119,21 @@ class CustomSignupForm(SignupForm, DsfrBaseForm):
             if not self.cleaned_data.get("phone"):
                 self.add_error("phone", "Ce champ est obligatoire.")
         return cleaned_data
+
+    def try_save(self, request):
+        """
+        The existing account check of clean_email can be outrun by a concurrent signup with the same address
+        (e.g. a double submission of the form): the second insertion then violates the email uniqueness.
+        Treat it like an address that already has an account instead of crashing.
+        """
+        try:
+            with transaction.atomic():
+                return super().try_save(request)
+        except IntegrityError:
+            if not User.objects.filter(email__iexact=self.cleaned_data["email"]).exists():
+                raise
+            self.account_already_exists = True
+            return super().try_save(request)
 
 
 class CustomLoginForm(LoginForm, DsfrBaseForm):
