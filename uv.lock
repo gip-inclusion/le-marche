@@ -66,30 +66,30 @@ wheels = [
 
 [[package]]
 name = "boto3"
-version = "1.35.99"
+version = "1.43.125"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "botocore" },
     { name = "jmespath" },
     { name = "s3transfer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f7/99/3e8b48f15580672eda20f33439fc1622bd611f6238b6d05407320e1fb98c/boto3-1.35.99.tar.gz", hash = "sha256:e0abd794a7a591d90558e92e29a9f8837d25ece8e3c120e530526fe27eba5fca", size = 111028, upload-time = "2025-01-14T20:20:28.636Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f2/c2/9285c749ca49c213ad90aa239884d0c5cbbdc58f02c4c44bcc4a3bf59023/boto3-1.43.125.tar.gz", hash = "sha256:5a635a0fbbd51f319e465b809cf043668705defbb9dddaf26ae66747f70b2a49", size = 112651, upload-time = "2026-11-05T20:24:13.843Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/65/77/8bbca82f70b062181cf0ae53fd43f1ac6556f3078884bfef9da2269c06a3/boto3-1.35.99-py3-none-any.whl", hash = "sha256:83e560faaec38a956dfb3d62e05e1703ee50432b45b788c09e25107c5058bd71", size = 139178, upload-time = "2025-01-14T20:20:25.48Z" },
+    { url = "https://files.pythonhosted.org/packages/b5/12/1e295c564a8319e6e27353c4c849ec31b0e3857b2614c36c7cc050ca1b9c/boto3-1.43.125-py3-none-any.whl", hash = "sha256:101fe3ee99664e671efb9af65c8e98ec0bceddf6de922ea89685da4adc8c6907", size = 140043, upload-time = "2026-11-05T20:24:12.048Z" },
 ]
 
 [[package]]
 name = "botocore"
-version = "1.35.99"
+version = "1.43.127"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jmespath" },
     { name = "python-dateutil" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/7c/9c/1df6deceee17c88f7170bad8325aa91452529d683486273928eecfd946d8/botocore-1.35.99.tar.gz", hash = "sha256:1eab44e969c39c5f3d9a3104a0836c24715579a455f12b3979a31d7cde51b3c3", size = 13490969, upload-time = "2025-01-14T20:20:11.419Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8f/45/b4e606b0f66c11c6bd44e91381aa562c6b4dacf478b97b461a429036a89a/botocore-1.43.127.tar.gz", hash = "sha256:93bae360fb3a6f1b8e36593faa8bbbfa05b19866f7a37e9606a98f13394156f8", size = 16559749, upload-time = "2026-11-09T20:52:12.475Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fc/dd/d87e2a145fad9e08d0ec6edcf9d71f838ccc7acdd919acc4c0d4a93515f8/botocore-1.35.99-py3-none-any.whl", hash = "sha256:b22d27b6b617fc2d7342090d6129000af2efd20174215948c0d7ae2da0fab445", size = 13293216, upload-time = "2025-01-14T20:20:06.427Z" },
+    { url = "https://files.pythonhosted.org/packages/4b/db/bee0401fd3f8cf1e2404044a4e3156dc7e064c2b1fc7162df2d795941cd8/botocore-1.43.127-py3-none-any.whl", hash = "sha256:aa0e3188679a2164a2098a14ea9b59520520cb573aaee9999d852480691e134a", size = 16257630, upload-time = "2026-11-09T20:52:09.488Z" },
 ]
 
 [[package]]
@@ -595,18 +595,6 @@ wheels = [
 ]
 
 [[package]]
-name = "django-otp"
-version = "1.7.5"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/d0/e9/db4349d7a866e6d5153b31fa740b17f5893723715edf7d1673615d9f462c/django_otp-1.7.5.tar.gz", hash = "sha256:7f554d21dcd035550c3b8e3f154b1f422fee71fdc75c8a3bf96e42a2ea6dafcc", size = 79637, upload-time = "2026-10-16T14:48:48.98Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a3/bc/bda771669006e7e112bed31a330636ff0b3c3407b053c10c492368c35f6f/django_otp-1.7.5-py3-none-any.whl", hash = "sha256:475d4111e07d61616996f098d08d29884da6397273a11f53c1b8e8c75d27e1dc", size = 73805, upload-time = "2026-10-16T14:48:47.793Z" },
-]
-
-[[package]]
 name = "django-permissionedforms"
 version = "0.1"
 source = { registry = "https://pypi.org/simple" }
@@ -669,11 +657,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ff/d6/2e50e378fff0408d558f36c4acffc090f9a641fd6e084af9e54d45307efa/django_storages-1.14.6.tar.gz", hash = "sha256:7a25ce8f4214f69ac9c7ce87e2603887f7ae99326c316bc8d2d75375e09341c9", size = 87587, upload-time = "2025-04-02T02:34:55.103Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1f/21/3cedee63417bc5553eed0c204be478071c9ab208e5e259e97287590194f1/django_storages-1.14.6-py3-none-any.whl", hash = "sha256:11b7b6200e1cb5ffcd9962bd3673a39c7d6a6109e8096f0e03d46fab3d3aabd9", size = 33095, upload-time = "2025-04-02T02:34:53.291Z" },
-]
-
-[package.optional-dependencies]
-s3 = [
-    { name = "boto3" },
 ]
 
 [[package]]
@@ -1715,18 +1698,6 @@ wheels = [
 ]
 
 [[package]]
-name = "qrcode"
-version = "8.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/8f/b2/7fc2931bfae0af02d5f53b174e9cf701adbb35f39d69c2af63d4a39f81a9/qrcode-8.2.tar.gz", hash = "sha256:35c3f2a4172b33136ab9f6b3ef1c00260dd2f66f858f24d88418a015f446506c", size = 43317, upload-time = "2025-05-01T15:44:24.726Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/dd/b8/d2d6d731733f51684bbf76bf34dab3b70a9148e8f2cef2bb544fccec681a/qrcode-8.2-py3-none-any.whl", hash = "sha256:16e64e0716c14960108e85d853062c9e8bba5ca8252c0b4d0231b9df4060ff4f", size = 45986, upload-time = "2025-05-01T15:44:22.781Z" },
-]
-
-[[package]]
 name = "rcssmin"
 version = "1.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1883,14 +1854,14 @@ wheels = [
 
 [[package]]
 name = "s3transfer"
-version = "0.10.4"
+version = "0.19.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "botocore" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c0/0a/1cdbabf9edd0ea7747efdf6c9ab4e7061b085aa7f9bfc36bb1601563b069/s3transfer-0.10.4.tar.gz", hash = "sha256:29edc09801743c21eb5ecbc617a152df41d3c287f67b615f73e5f750583666a7", size = 145287, upload-time = "2024-11-20T21:06:05.981Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/49/c5/0a5ce655109cb96b8dfad36908a4e108d15f5dc2eff8fbc3146c4312e704/s3transfer-0.19.3.tar.gz", hash = "sha256:8326acc3d056d7f7b8a37110c7d2aea41f67e83f6ae79cd3b5fbcca34c726406", size = 166087, upload-time = "2026-10-19T19:19:49.751Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/66/05/7957af15543b8c9799209506df4660cba7afc4cf94bfb60513827e96bed6/s3transfer-0.10.4-py3-none-any.whl", hash = "sha256:244a76a24355363a68164241438de1b72f8781664920260c48465896b712a41e", size = 83175, upload-time = "2024-11-20T21:06:03.961Z" },
+    { url = "https://files.pythonhosted.org/packages/e2/a4/88f9e10498759121060b8050a1554753dfc04df39bbbcc7aad9ecc8d9440/s3transfer-0.19.3-py3-none-any.whl", hash = "sha256:24eb7535804306355e31c952a90022bf5b2f9d760f9a11062c7493a217c08553", size = 90252, upload-time = "2026-10-19T19:19:48.309Z" },
 ]
 
 [[package]]
@@ -1923,11 +1894,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/b2/88/cabf98d017d7b940720e514e5f8ee02e3e6f7495caf93c30735a38387ec4/sentry_sdk-2.73.0-py3-none-any.whl", hash = "sha256:0bcfa6928ea5adbb89591858b514d27adac27c7a3cccc31b20ed10e0b09eda9e", size = 549011, upload-time = "2026-10-22T09:08:47.88Z" },
 ]
 
-[package.optional-dependencies]
-django = [
-    { name = "django" },
-]
-
 [[package]]
 name = "shortuuid"
 version = "1.0.13"
@@ -1939,43 +1905,33 @@ wheels = [
 
 [[package]]
 name = "sites-conformes"
-version = "4.3.1"
+version = "3.1.1rc1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "beautifulsoup4" },
-    { name = "boto3" },
     { name = "dj-database-url" },
     { name = "dj-static" },
     { name = "django" },
     { name = "django-dsfr" },
-    { name = "django-modelcluster" },
-    { name = "django-otp" },
-    { name = "django-storages", extra = ["s3"] },
     { name = "django-taggit" },
-    { name = "djangorestframework" },
     { name = "faker" },
     { name = "gunicorn" },
     { name = "icalendar" },
     { name = "mozilla-django-oidc" },
-    { name = "packaging" },
     { name = "psycopg2-binary" },
     { name = "python-dotenv" },
-    { name = "requests" },
+    { name = "pyyaml" },
     { name = "rust-just" },
-    { name = "sentry-sdk", extra = ["django"] },
     { name = "unidecode" },
     { name = "wagtail" },
-    { name = "wagtail-2fa" },
-    { name = "wagtail-honeypot" },
     { name = "wagtail-localize" },
     { name = "wagtail-markdown" },
+    { name = "wagtail-modeladmin" },
     { name = "wagtailmenus" },
-    { name = "wand" },
-    { name = "whitenoise" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/87/0a/6e6fbb329e2ca61611fa2b7c3b17cdd154c071be0eab80688d35d8e0052d/sites_conformes-4.3.1.tar.gz", hash = "sha256:9c932619a5e08bda363d40a6da9b96e43f3a66776ba636a2932c84aeffa370dc", size = 7673506, upload-time = "2026-10-21T14:16:07.332Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/0a/36/77185d73e29d3546f821b0b479589741fc18cc08c5a02d0c3ba1fdecb143/sites_conformes-3.1.1rc1.tar.gz", hash = "sha256:3c8256936d2ed11e985615369b0b9c141014016569ff3ee504956e5a4d924c6e", size = 7191439, upload-time = "2026-05-13T12:47:24.586Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b6/e7/dbe81e268a2f86050fe8d36b83fe2e9e201a80d47bfbce1663c976cf4d45/sites_conformes-4.3.1-py3-none-any.whl", hash = "sha256:33ab04a9772aaf69028900c69a092228ecd8d0c88d62dd9dd76080f90cedd8c0", size = 8161095, upload-time = "2026-10-21T14:16:04.989Z" },
+    { url = "https://files.pythonhosted.org/packages/36/0f/501c843fb0fe863417fbe489cfec80e91baa8613f33703e829bdf36bba02/sites_conformes-3.1.1rc1-py3-none-any.whl", hash = "sha256:c21357890507c7ada3e7d1b50609543718611593509b0f96c528e717f8518cff", size = 7608464, upload-time = "2026-05-13T12:47:22.041Z" },
 ]
 
 [[package]]
@@ -2200,34 +2156,6 @@ wheels = [
 ]
 
 [[package]]
-name = "wagtail-2fa"
-version = "1.8.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-    { name = "django-otp" },
-    { name = "qrcode" },
-    { name = "six" },
-    { name = "wagtail" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/12/9a/b7166a0f7cee7121f61d5c002203bc46a7e2a472bf563adf9a60ee32614c/wagtail_2fa-1.8.0.tar.gz", hash = "sha256:cd38f66a4d0ea6d63f3fa3d963ab24095f12f55c12340eab92df06a2339ce3a6", size = 25272, upload-time = "2026-03-02T15:38:11.114Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c1/bb/6f14801cacee011c696b4f12de5ff28e11556ae996ab46d06dbc3f72d915/wagtail_2fa-1.8.0-py3-none-any.whl", hash = "sha256:cfd3d2678c53f16f3af4b0f7587c1fd0508488cbf70bc0176151bcf2369a093f", size = 41064, upload-time = "2026-03-02T15:38:10.039Z" },
-]
-
-[[package]]
-name = "wagtail-honeypot"
-version = "1.3.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "wagtail" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/23/c7/d2a6130617ca2f1b0279ef80b93e034cc1b426b0d7b52ac1a3d76996bf5a/wagtail_honeypot-1.3.1.tar.gz", hash = "sha256:e09cbb99ef6e18b98a3c36b06d9c2b7bd357477af4470404146af55d567528ff", size = 14055, upload-time = "2026-07-16T11:45:41.405Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/3b/17/70dc2a8f118046a9d12f67ea8061de2fe78e4a9d9bfdb9f42345d9cc42a4/wagtail_honeypot-1.3.1-py3-none-any.whl", hash = "sha256:793f7bf91cdc8cf9b2516c4e6a274f939bfa94ef977fe031cabeef6c5e47cd91", size = 8670, upload-time = "2026-07-16T11:45:40.324Z" },
-]
-
-[[package]]
 name = "wagtail-localize"
 version = "1.14.5"
 source = { registry = "https://pypi.org/simple" }
@@ -2257,6 +2185,18 @@ wheels = [
 ]
 
 [[package]]
+name = "wagtail-modeladmin"
+version = "2.5.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "wagtail" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/78/8b/3b8e9dd3c4293c46074f55869b50d7e593e2ba810df18908c7ef7850c042/wagtail_modeladmin-2.5.0.tar.gz", hash = "sha256:0f86e96d5172437e14f6e5fd986bae9648f499c117dff3bf6b2f9844ea9f440e", size = 116438, upload-time = "2026-09-25T09:12:12.725Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b8/fc/2c7af64d7529c19eb5fa82cb02027cb182fff0ba2605c1eca6d344dccd24/wagtail_modeladmin-2.5.0-py3-none-any.whl", hash = "sha256:909c6238dc95371b97dc23651a5a9d8aeb9c3d1660ed0349b4a3e31c8fb8dc0d", size = 266034, upload-time = "2026-09-25T09:12:10.925Z" },
+]
+
+[[package]]
 name = "wagtailmenus"
 version = "4.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2267,15 +2207,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f8/4b/81347c2e991d50ff40bd3396f8a30b8bfcc7d42fb2d6dc88812b673e0721/wagtailmenus-4.2.0.tar.gz", hash = "sha256:29e22c48dc05801ff5bcb8e951aa4c49445232f0f8ecc81c8a7076c8032d8bf4", size = 121097, upload-time = "2026-10-21T15:39:57.342Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ad/a5/9d82f356c139497787a6c4433cf26c3f7815ab273cba09852cefd4af283c/wagtailmenus-4.2.0-py3-none-any.whl", hash = "sha256:016e3a4563209ca1cee35b3ab57f7a9cddd7660b188485f8c86b092e968f2dba", size = 203007, upload-time = "2026-10-21T15:39:55.66Z" },
-]
-
-[[package]]
-name = "wand"
-version = "0.7.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/85/27/98de4383d028df318b9dd56e7ac2a8437684db18c2da7204c084f37e8f95/wand-0.7.2.tar.gz", hash = "sha256:0387fd08848d00cadd1d885fcb19a17dd4250df2029e5338b6b668b7fed64b5b", size = 11889993, upload-time = "2026-06-25T13:48:31.512Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/fb/11/764bee6e793c01d6ce7b99f4872f9fd5ef89904b172cb9d8a0a1dae02f21/wand-0.7.2-py3-none-any.whl", hash = "sha256:7db97c5e51862fdd5e58866dbf34e2dcae295245511147367690a3e17f459984", size = 145045, upload-time = "2026-06-25T13:48:38.348Z" },
 ]
 
 [[package]]
@@ -2305,15 +2236,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/d8/cb/a5abcc2891249f393827c650c6296660ce40374ac22d99ab9aea41f9d2a2/websocket_client-1.9.2.tar.gz", hash = "sha256:0fcb57545848be86992e128218fd96dd87a6769ffdb1a968dff79632b85604d0", size = 84110, upload-time = "2026-08-31T14:08:40.964Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d5/d2/cc4dc1271e464942db7ee278baae2daa99ee77cb2af744025c04da585a3e/websocket_client-1.9.2-py3-none-any.whl", hash = "sha256:e1a673830a9c7bfa47b1cd3d5e4178f4c9651d80a4eab02c9c23a1c3ec6250ce", size = 95786, upload-time = "2026-08-31T14:08:39.899Z" },
-]
-
-[[package]]
-name = "whitenoise"
-version = "6.12.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/cb/2a/55b3f3a4ec326cd077c1c3defeee656b9298372a69229134d930151acd01/whitenoise-6.12.0.tar.gz", hash = "sha256:f723ebb76a112e98816ff80fcea0a6c9b8ecde835f8ddda25df7a30a3c2db6ad", size = 26841, upload-time = "2026-02-27T00:05:42.028Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/db/eb/d5583a11486211f3ebd4b385545ae787f32363d453c19fffd81106c9c138/whitenoise-6.12.0-py3-none-any.whl", hash = "sha256:fc5e8c572e33ebf24795b47b6a7da8da3c00cff2349f5b04c02f28d0cc5a3cc2", size = 20302, upload-time = "2026-02-27T00:05:40.086Z" },
 ]
 
 [[package]]
