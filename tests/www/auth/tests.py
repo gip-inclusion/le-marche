@@ -424,6 +424,24 @@ class SignupEnumerationTest(TestCase):
         self.assertEqual(response.url, reverse("account_email_verification_sent"))
         self.assertEqual(list(User.objects.all()), [existing_user])
 
+    def test_concurrent_signup_with_the_same_address_does_not_crash(self):
+        # the account is created by a concurrent request (e.g. double submission) after the existence check
+        existing_user = UserFactory(email="existing@example.com")
+
+        with patch(
+            "allauth.account.internal.flows.manage_email.email_already_exists",
+            side_effect=lambda email: (email, False),
+        ):
+            response = self.signup("existing@example.com")
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("account_email_verification_sent"))
+        self.assertEqual(list(User.objects.all()), [existing_user])
+        self.assertNotIn("_auth_user_id", self.client.session)
+        emails = self.emails_to("existing@example.com")
+        self.assertEqual(len(emails), 1)
+        self.assertEqual(emails[0].subject, "Votre compte sur le Marché de l'inclusion")
+
     def test_unverified_user_must_confirm_the_address_to_log_in(self):
         user = UserFactory(email="unverified@example.com")
 
