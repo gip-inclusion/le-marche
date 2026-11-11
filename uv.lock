@@ -1194,7 +1194,7 @@ requires-dist = [
     { name = "requests" },
     { name = "sentry-sdk" },
     { name = "shortuuid" },
-    { name = "sites-conformes" },
+    { name = "sites-conformes", specifier = ">=4.3.1" },
     { name = "wagtail", specifier = "<8.0" },
     { name = "wagtail-localize" },
     { name = "wagtail-markdown" },

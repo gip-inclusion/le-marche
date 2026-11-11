@@ -43,7 +43,7 @@ dependencies = [
     "sentry-sdk",
     "shortuuid",
     "openpyxl",
-    "sites-conformes",
+    "sites-conformes>=4.3.1",
     "xlwt",
     "wagtail<8.0",
     "wagtail-localize",
