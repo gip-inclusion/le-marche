@@ -83,36 +83,6 @@ def read_csv():
     return esat_list
 
 
-def extract_domaine_set(esat_list):
-    domaine_set = set()
-    for esat in esat_list:
-        for domaine in esat["Domaines list"]:
-            if domaine:
-                domaine_set.add(domaine)
-
-    print(len(domaine_set))
-    for domaine in sorted(domaine_set):
-        print(domaine)
-
-
-def extract_duplicates(esat_list):
-    esat_siret_list = list()
-    for esat in esat_list:
-        rename_dict_key(esat, "Raison Sociale", "name")
-        rename_dict_key(esat, "Siret", "siret")
-        if "siret" in esat:
-            esat["siret"] = esat["siret"].replace(" ", "")
-        esat_siret_index = next(
-            (index for (index, s) in enumerate(esat_siret_list) if s["siret"] == esat["siret"]), None
-        )
-        if esat_siret_index is None:
-            esat_siret_list.append({"name": esat["name"], "siret": esat["siret"]})
-        else:
-            print("===========")
-            print("Current", esat["name"], esat["siret"])
-            print("Duplicate", esat_siret_list[esat_siret_index]["name"], esat_siret_list[esat_siret_index]["siret"])
-
-
 class Command(BaseCommand):
     """
     Usage: ./manage.py import_esat_gesat
@@ -123,9 +93,6 @@ class Command(BaseCommand):
         Siae.objects.filter(kind=siae_constants.KIND_ESAT).delete()
         reset_app_sql_sequences("siaes")
         esat_list = read_csv()
-
-        # extract_domaine_set(esat_list)
-        # extract_duplicates(esat_list)
 
         print("Importing GESAT...")
         progress = 0
