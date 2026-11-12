@@ -246,46 +246,9 @@ class SiaeQuerySet(models.QuerySet):
         """Only return siaes who have at least 1 User."""
         return self.filter(users__isnull=False).distinct()
 
-    def has_network(self):
-        """Only return siaes who have at least 1 Network."""
-        return self.filter(networks__isnull=False).distinct()
-
     def has_offer(self):
         """Only return siaes who have at least 1 SiaeOffer."""
         return self.filter(offers__isnull=False).distinct()
-
-    def has_label(self):
-        """Only return siaes who have at least 1 SiaeLabelOld."""
-        return self.filter(labels_old__isnull=False).distinct()
-
-    def has_client_reference(self):
-        """Only return siaes who have at least 1 SiaeClientReference."""
-        return self.filter(client_references__isnull=False).distinct()
-
-    def in_region(self, **kwargs):
-        if "region_name" in kwargs:
-            return self.filter(region=kwargs["region_name"])
-        if "region_code" in kwargs:
-            code_clean = kwargs["region_code"].strip("R")  # "R" ? see Perimeter model & import_region.py
-            region_name = siae_constants.REGIONS.get(code_clean)
-            return self.filter(region=region_name)
-
-    def in_department(self, **kwargs):
-        if "depatment_name" in kwargs:
-            department_code = siae_constants.get_department_code_from_name(kwargs["depatment_name"])
-            return self.filter(department=department_code)
-        if "department_code" in kwargs:
-            return self.filter(department=kwargs["department_code"])
-
-    def in_range_of_point(self, **kwargs):
-        if "city_coords" in kwargs:
-            # Doesn't work..
-            # return self.filter(Q(geo_range=GEO_RANGE_CUSTOM) & Q(coords__dwithin=(kwargs["city_coords"], D(km=F("geo_range_custom_distance")))))  # noqa
-            # Distance returns a number in meters. But geo_range_custom_distance is stored in km. So we divide by 1000  # noqa
-            return self.filter(
-                Q(geo_range=siae_constants.GEO_RANGE_CUSTOM)
-                & Q(geo_range_custom_distance__lte=Distance("coords", kwargs["city_coords"]) / 1000)
-            )
 
     def address_in_perimeter_list(self, perimeters: models.QuerySet):
         """
@@ -1659,14 +1622,6 @@ class SiaeActivityQuerySet(models.QuerySet):
             .filter(siae=siae, sector__group_id=sector_group_id)
             .distinct()
         )
-        return qs
-
-    def get_related_locations(self):
-        """
-        Return a queryset of perimeters associated with SiaeActivities
-        present in the current queryset.
-        """
-        qs = Perimeter.objects.filter(siae_activities__in=self).prefetch_related("siaeactivity").distinct()
         return qs
 
 
