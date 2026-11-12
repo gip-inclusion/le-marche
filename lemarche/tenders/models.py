@@ -66,14 +66,6 @@ class TenderInstruction(models.Model):
         ]
 
 
-def get_perimeter_filter(siae):
-    return (
-        Q(perimeters__post_codes__contains=[siae.post_code])
-        | Q(perimeters__insee_code=siae.department)
-        | Q(perimeters__name=siae.region)
-    )
-
-
 class TenderQuerySet(models.QuerySet):
     def prefetch_many_to_many(self):
         return self.prefetch_related("sectors")  # "perimeters", "siaes", "questions"
@@ -106,14 +98,6 @@ class TenderQuerySet(models.QuerySet):
                 & Q(last_sent_at__lt=yesterday)
                 & Q(send_to_commercial_partners_only=False)
             )
-        )
-
-    def is_incremental(self):
-        return self.filter(
-            scale_marche_useless__in=[
-                tender_constants.SURVEY_SCALE_QUESTION_0,
-                tender_constants.SURVEY_SCALE_QUESTION_1,
-            ]
         )
 
     def is_not_outdated(self, limit_date=datetime.today()):
@@ -1005,14 +989,6 @@ class Tender(models.Model):
     @cached_property
     def siaes_count(self):
         return self.tendersiae_set.count()
-
-    @property
-    def siae_detail_display_date_count(self):
-        return self.tendersiae_set.filter(detail_display_date__isnull=False).count()
-
-    @property
-    def siae_email_send_date_count(self):
-        return self.tendersiae_set.filter(email_send_date__isnull=False).count()
 
     @property
     def siae_email_link_click_date_or_detail_display_date_count(self):
