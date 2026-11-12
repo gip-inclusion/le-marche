@@ -8,7 +8,6 @@ from django.contrib.auth.models import Group
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import models
-from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import path, reverse
 from django.utils.html import format_html
@@ -215,7 +214,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     search_fields = ["id", "email", "first_name", "last_name"]
     search_help_text = "Cherche sur les champs : ID, E-mail, Prénom, Nom"
     ordering = ["-created_at"]
-    actions = ["anonymize_users"]
 
     autocomplete_fields = ["company", "partner_network"]
     readonly_fields = (
@@ -445,14 +443,3 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             )
 
     onboard_user_button.short_description = "L'utilisateur a suivi la procédure d'onboarding"
-
-    @admin.action(description="Anonymiser les utilisateurs sélectionnés")
-    def anonymize_users(self, request, queryset):
-        """Wipe personal data of all selected users and unlink from SiaeUser
-        The logged user is excluded to avoid any mistakes"""
-        # https://docs.djangoproject.com/en/5.1/ref/contrib/admin/actions/#actions-that-provide-intermediate-pages
-
-        selected = queryset.values_list("pk", flat=True)
-        return HttpResponseRedirect(
-            f"{reverse('admin:anonymize_users')}?{'&'.join(f'user_id={str(pk)}' for pk in selected)}"
-        )
