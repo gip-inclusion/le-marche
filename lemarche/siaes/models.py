@@ -1785,11 +1785,6 @@ class SiaeImage(models.Model):
     #         return self.name
 
 
-class SiaePublicMarketQuerySet(models.QuerySet):
-    def for_siae(self, siae):
-        return self.filter(siae=siae)
-
-
 class SiaePublicMarket(models.Model):
     """Marchés publics remportés par une SIAE (source DECP, max 3 par structure)."""
 
@@ -1821,7 +1816,7 @@ class SiaePublicMarket(models.Model):
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
-    objects = models.Manager.from_queryset(SiaePublicMarketQuerySet)()
+    objects = models.Manager()
 
     class Meta:
         verbose_name = "Marché public remporté"
