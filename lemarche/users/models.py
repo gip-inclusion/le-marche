@@ -4,7 +4,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinLengthValidator
 from django.db import models
 from django.db.models import Count, F
-from django.db.models.functions import Greatest, Lower
+from django.db.models.functions import Lower
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils import timezone
@@ -54,13 +54,6 @@ class UserQueryset(models.QuerySet):
 
     def with_tender_stats(self):
         return self.prefetch_related("tenders").annotate(tender_count_annotated=Count("tenders", distinct=True))
-
-    def with_latest_activities(self):
-        return self.annotate(
-            latest_activity_at=Greatest(
-                "updated_at", "last_login", "dashboard_last_seen_date", "tender_list_last_seen_date"
-            )
-        )
 
 
 class UserManager(BaseUserManager):
@@ -344,12 +337,6 @@ class User(AbstractUser):
         return f"{self.first_name} {self.last_name}"
 
     @property
-    def short_name(self):
-        if self.first_name and self.last_name:
-            return f"{self.first_name.upper()[:1]}. {self.last_name.upper()}"
-        return ""
-
-    @property
     def email_anonymized(self):
         return anonymize_email(self.email)
 
@@ -376,20 +363,6 @@ class User(AbstractUser):
     @property
     def is_buyer(self):
         return self.kind == self.KIND_BUYER
-
-    @property
-    def is_buyer_pro(self):
-        return (
-            self.is_buyer
-            and self.buyer_kind_detail
-            and (
-                self.buyer_kind_detail
-                not in [
-                    user_constants.BUYER_KIND_DETAIL_PRIVATE_TPE,
-                    user_constants.BUYER_KIND_DETAIL_PUBLIC_ASSOCIATION,
-                ]
-            )
-        )
 
     @property
     def is_admin(self) -> bool:
