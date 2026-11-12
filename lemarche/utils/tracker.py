@@ -173,25 +173,3 @@ class TrackerMiddleware:
     def extract_meta_from_request_get(self, request: HttpRequest, context_data: dict, extra_data: dict = {}):
         user_info: dict = self.extract_user_info(request, context_data)
         return user_info | request.GET | extra_data
-
-    def extract_meta_from_request_post(
-        self, request: HttpRequest, context_data: dict, extract_data=False, remove_items: tuple = ()
-    ) -> dict:
-        """Extract data from POST request
-
-        Args:
-            request (HttpRequest): Current request
-            context_data (context_data): Current context_data
-            extract_data (bool, optional): If True, extract the data from request. Defaults to False.
-            remove_items (tuple, optional): Tuple of keys to remove from the data POST. Defaults to ().
-
-        Returns:
-            dict: extracted data from the request
-        """
-        user_info: dict = self.extract_user_info(request, context_data)
-        if extract_data:
-            data_post = dict(request.POST)
-            for key in remove_items + ("csrfmiddlewaretoken",):
-                data_post.pop(key)
-            return user_info | data_post
-        return user_info
