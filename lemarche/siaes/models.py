@@ -1218,16 +1218,6 @@ class Siae(models.Model):
             sectors_name_list.append("…")
         return ", ".join(sectors_name_list)
 
-    def sector_groups_full_list_string(self):
-        return self.sector_groups_list_string(display_max=None)
-
-    @cached_property
-    def stat_view_count_last_3_months(self):
-        try:
-            return Tracker.objects.siae_views_last_3_months(self.slug).count()
-        except:  # noqa
-            return "-"
-
     @cached_property
     def stat_buyer_view_count_last_3_months(self):
         try:
@@ -1241,10 +1231,6 @@ class Siae(models.Model):
             return Tracker.objects.siae_partner_views_last_3_months(self.slug).count()
         except:  # noqa
             return "-"
-
-    def siae_user_requests_pending_count(self):
-        # TODO: optimize + filter on assignee
-        return self.siaeuserrequest_set.pending().count()
 
     def get_absolute_url(self):
         return reverse("siae:detail", kwargs={"slug": self.slug})
