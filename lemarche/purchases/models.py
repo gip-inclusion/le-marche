@@ -379,9 +379,6 @@ class SlugMappingCacheQuerySet(models.QuerySet):
     def pending(self):
         return self.filter(source=purchases_constants.SLUG_MAPPING_SOURCE_USER_PROPOSED)
 
-    def for_kind(self, kind: str):
-        return self.filter(kind=kind)
-
 
 class SlugMappingCache(models.Model):
     """
