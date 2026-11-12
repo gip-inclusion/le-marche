@@ -536,15 +536,6 @@ class Tender(models.Model):
         help_text="Retournera uniquement les structures qui ont comme périmètre d'intervention 'France entière'",
         default=False,
     )
-    with_ai_matching = models.BooleanField(
-        verbose_name="Activer le ciblage alternatif IA",
-        help_text=(
-            "Effectue une recherche sémantique avec la description du besoin pour ajouter des structures au ciblage "
-            "traditionnel. La distance en kilomètres autour du lieu d'intervention (de type ville) est prise en "
-            "compte."
-        ),
-        default=False,
-    )
 
     siae_kind = ChoiceArrayField(
         verbose_name="Type de structure",
