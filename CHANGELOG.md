@@ -6,6 +6,14 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [1.0.1](https://github.com/gip-inclusion/le-marche/compare/v1.0.0...v1.0.1) (2026-11-13)
+
+
+### Bug Fixes
+
+* Let tarteaucitron handle Matomo Tag Manager ([3f38254](https://github.com/gip-inclusion/le-marche/commit/3f3825439dc8d224e7945bfd3ca82d4ab8913470))
+* **users:** remove broken anonymize_users admin action ([5d478bf](https://github.com/gip-inclusion/le-marche/commit/5d478bf353cb3f06a8db0b31b3a652120e70f254))
+
 ## 1.0.0 (2026-11-12)
 
 
