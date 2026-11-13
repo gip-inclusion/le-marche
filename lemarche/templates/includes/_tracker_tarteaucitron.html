@@ -49,6 +49,12 @@ tarteaucitron.init({
     tarteaucitron.user.matomoId = {{ MATOMO_SITE_ID }};
     tarteaucitron.user.matomoHost = "{{ MATOMO_HOST }}";
     (tarteaucitron.job = tarteaucitron.job || []).push('matomo');
+
+    {% if MATOMO_TAG_MANAGER_CONTAINER_ID %}
+        // Matomo Tag Manager
+        tarteaucitron.user.matomotmUrl = "{{ MATOMO_HOST }}js/container_{{ MATOMO_TAG_MANAGER_CONTAINER_ID }}.js";
+        (tarteaucitron.job = tarteaucitron.job || []).push('matomotm');
+    {% endif %}
 {% endif %}
 </script>
 {% if MATOMO_HOST and matomo_custom_url %}
@@ -62,13 +68,4 @@ tarteaucitron.init({
             _paq.push(['setCustomDimension', 2, '{{ user.kind_detail_display }}']);  // User Type Display
         {% endif %}
     </script>
-    {% if MATOMO_TAG_MANAGER_CONTAINER_ID %}
-        <script>
-            // Matomo Tag Manager
-            var _mtm = window._mtm = window._mtm || [];
-            _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-            g.async=true; g.src='{{ MATOMO_HOST }}js/container_{{ MATOMO_TAG_MANAGER_CONTAINER_ID }}.js'; s.parentNode.insertBefore(g,s);
-        </script>
-    {% endif %}
 {% endif %}
