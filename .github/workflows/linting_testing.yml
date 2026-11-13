@@ -7,7 +7,6 @@ permissions:
 
 jobs:
   linting_check:
-
     runs-on: ubuntu-latest
     env:
       DJANGO_SETTINGS_MODULE: config.settings.test
@@ -54,8 +53,8 @@ jobs:
       - name: 💂 Install uv
         uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
-           enable-cache: true
-           prune-cache: true
+          enable-cache: true
+          prune-cache: true
       - name: 💂 Set up Python
         run: uv python install
       - name: 💂 Install the project
@@ -73,7 +72,6 @@ jobs:
         run: make quality
       - name: ✨ Verify DB initialization (migrations, fixtures, ...)
         run: python manage.py migrate && make load_fixtures
-
 
       #----------------------------------------------
       # Check migrations
