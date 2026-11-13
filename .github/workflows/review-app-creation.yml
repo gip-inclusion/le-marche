@@ -16,6 +16,7 @@ env:
   CLEVER_TOOLS_DOWNLOAD_URL: https://clever-tools.clever-cloud.com/releases/latest/clever-tools-latest_linux.tar.gz
   CLEVER_TAR_FILE: clever-tools-latest_linux.tar.gz
   CLEVER_CLI: clever-tools-latest_linux/clever
+  # credentials linked to tech.communaute account, member of the CLEVER_REVIEW_APPS_ORG
   CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
   CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
   CLEVER_ORG_ID: ${{ secrets.CLEVER_REVIEW_APPS_ORG }}
@@ -72,10 +73,10 @@ jobs:
       - name: 🤝 Link addons & add environment variables
         run: |
           $CLEVER_CLI env set DEPLOY_URL $DEPLOY_URL
-          $CLEVER_CLI service link-addon c4-s3
-          $CLEVER_CLI service link-addon c4-review-config
+          $CLEVER_CLI service link-addon s3
+          $CLEVER_CLI service link-addon config-le-marche
           # CC_PYTHON_VERSION=3 is set by default when creating the app
-          # but we want to use the one from c4-review-config
+          # but we want to use the one from config-le-marche
           $CLEVER_CLI env rm CC_PYTHON_VERSION
 
       - name: 💂 Install Python
