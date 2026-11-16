@@ -61,7 +61,6 @@ class SignupFormTest(StaticLiveServerTestCase):
         cls.driver.implicitly_wait(1)
 
     def setUp(self):
-        EXAMPLE_PASSWORD = "c*[gkp`0="
         # Static server tests cases erases data from migrations
         Paragraph.objects.get_or_create(
             slug="rdv-signup",
@@ -78,8 +77,8 @@ class SignupFormTest(StaticLiveServerTestCase):
             "last_name": "Nom",
             "phone": "+33123456789",  # not required
             "email": "siae@example.com",
-            "password1": EXAMPLE_PASSWORD,
-            "password2": EXAMPLE_PASSWORD,
+            "password1": DEFAULT_PASSWORD,
+            "password2": DEFAULT_PASSWORD,
         }
 
         self.BUYER = {
@@ -90,8 +89,8 @@ class SignupFormTest(StaticLiveServerTestCase):
             "company_name": "Ma boite",
             "position": "Role important",
             "email": "buyer@example.com",
-            "password1": EXAMPLE_PASSWORD,
-            "password2": EXAMPLE_PASSWORD,
+            "password1": DEFAULT_PASSWORD,
+            "password2": DEFAULT_PASSWORD,
         }
 
         self.PARTNER = {
@@ -101,8 +100,8 @@ class SignupFormTest(StaticLiveServerTestCase):
             "phone": "01 23 45 67 89",  # not required
             "company_name": "Ma boite",
             "email": "partner@example.com",
-            "password1": EXAMPLE_PASSWORD,
-            "password2": EXAMPLE_PASSWORD,
+            "password1": DEFAULT_PASSWORD,
+            "password2": DEFAULT_PASSWORD,
         }
 
         self.PARTNER_2 = {
@@ -112,8 +111,8 @@ class SignupFormTest(StaticLiveServerTestCase):
             "phone": "+33123456789",  # not required
             "company_name": "Ma boite",
             "email": "partner2@example.com",
-            "password1": EXAMPLE_PASSWORD,
-            "password2": EXAMPLE_PASSWORD,
+            "password1": DEFAULT_PASSWORD,
+            "password2": DEFAULT_PASSWORD,
         }
 
         self.INDIVIDUAL = {
@@ -121,8 +120,8 @@ class SignupFormTest(StaticLiveServerTestCase):
             "first_name": "Prenom",
             "last_name": "Nom",
             "email": "individual@example.com",
-            "password1": EXAMPLE_PASSWORD,
-            "password2": EXAMPLE_PASSWORD,
+            "password1": DEFAULT_PASSWORD,
+            "password2": DEFAULT_PASSWORD,
         }
 
     def _complete_form(self, user_profile: dict, signup_url=reverse("account_signup"), with_submit=True):
@@ -322,7 +321,6 @@ class SignupFormTestcase(TestCase):
     """Without integration testing"""
 
     def setUp(self):
-        EXAMPLE_PASSWORD = "c*[gkp`0="
         self.form_data = {
             "accept_rgpd": True,
             "first_name": "Prenom",
@@ -330,8 +328,8 @@ class SignupFormTestcase(TestCase):
             "phone": "0123456789",
             "company_name": "Ma boite",
             "position": "Role important",
-            "password1": EXAMPLE_PASSWORD,
-            "password2": EXAMPLE_PASSWORD,
+            "password1": DEFAULT_PASSWORD,
+            "password2": DEFAULT_PASSWORD,
         }
 
     def test_personal_email_buyer(self):
@@ -366,7 +364,7 @@ class SignupEnumerationTest(TestCase):
         brevo_patcher = patch("lemarche.utils.apis.api_brevo.BrevoContactsApiClient")
         brevo_patcher.start()
         self.addCleanup(brevo_patcher.stop)
-        password = "c*[gkp`0="
+        password = DEFAULT_PASSWORD
         self.form_data = {
             "kind": User.KIND_INDIVIDUAL,
             "accept_rgpd": True,
