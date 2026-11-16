@@ -1,54 +1,60 @@
-<dialog class="fr-modal" id="favorite_item_add_modal"  role="dialog" aria-modal="true" aria-labelledby="favorite_item_add_modal_title">
-    <div class="fr-container fr-container--fluid fr-container-md">
-        <div class="fr-grid-row fr-grid-row--center">
-            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                <div class="fr-modal__body">
-                    <div class="fr-modal__header">
-                        <button class="fr-btn--close fr-btn" aria-controls="favorite_item_add_modal">Fermer</button>
-                    </div>
-                    <div class="fr-modal__content">
-                        <h3 id="favorite_item_add_modal_title" class="fr-modal__title">
-                            {{ FAVORITE_LIST_TITLE }}
-                        </h3>
-                        <!-- New list -->
-                        <form method="post" data-action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
-                            {% csrf_token %}
-                            <div class="fr-input-group">
-                                <label class="fr-label" for="id_new_favorite_list">Créer une {% if user.favorite_list_count %}nouvelle {% endif %}liste</label>
-                                <input type="text" name="new_favorite_list" id="id_new_favorite_list" class="fr-input" placeholder="Entretien des locaux, achat de masque…" required>
-                            </div>
-                            <button class="fr-btn {% if user.favorite_list_count %}fr-btn--secondary{% endif %}" type="submit" name="action" value="create">Créer</button>
-                        </form>
-
-                        <!-- Existing list(s) -->
-                        {% if user.favorite_list_count %}
-                            <form method="post" data-action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
+{% comment %}
+One modal per siae.
+Context: siae, and optionally favorite_lists (to share a single queryset between several modals on the same page).
+{% endcomment %}
+{% with modal_id="favorite_item_add_modal-"|add:siae.slug favorite_lists=favorite_lists|default:user.favorite_lists.with_siae_stats %}
+    <dialog class="fr-modal" id="{{ modal_id }}" role="dialog" aria-modal="true" aria-labelledby="{{ modal_id }}-title">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                            <button class="fr-btn--close fr-btn" aria-controls="{{ modal_id }}">Fermer</button>
+                        </div>
+                        <div class="fr-modal__content">
+                            <h3 id="{{ modal_id }}-title" class="fr-modal__title">
+                                {{ FAVORITE_LIST_TITLE }}
+                            </h3>
+                            <!-- New list -->
+                            <form method="post" action="{% url 'siae:favorite_lists' siae.slug %}">
                                 {% csrf_token %}
-                                <p class="fr-hr-or">ou</p>
-
                                 <div class="fr-input-group">
-                                    <fieldset class="fr-fieldset" id="favorite_exist_list_radio" aria-labelledby="favorite_exist_list_radio_legend">
-                                        <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="favorite_exist_list_radio_legend">
-                                            Choisir une liste existante
-                                        </legend>
-                                        {% for favorite_list in user.favorite_lists.all %}
-                                            <div class="fr-fieldset__element">
-                                                <div class="fr-radio-group fr-radio-rich">
-                                                    <input value="{{ favorite_list.id }}" type="radio" id="favorite_exist_list_radio-{{ favorite_list.id }}" name="favorite_list" required>
-                                                    <label class="fr-label" for="favorite_exist_list_radio-{{ favorite_list.id }}">
-                                                        {{ favorite_list.name }} <span class="fr-badge">{{ favorite_list.siaes.count }}</span>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        {% endfor %}
-                                    </fieldset>
+                                    <label class="fr-label" for="{{ modal_id }}-new_favorite_list">Créer une {% if user.favorite_list_count %}nouvelle {% endif %}liste</label>
+                                    <input type="text" name="new_favorite_list" id="{{ modal_id }}-new_favorite_list" class="fr-input" placeholder="Entretien des locaux, achat de masque…" required>
                                 </div>
-                                <button class="fr-btn" type="submit" name="action" value="add">Enregistrer</button>
+                                <button class="fr-btn {% if user.favorite_list_count %}fr-btn--secondary{% endif %}" type="submit" name="action" value="create">Créer</button>
                             </form>
-                        {% endif %}
+
+                            <!-- Existing list(s) -->
+                            {% if user.favorite_list_count %}
+                                <form method="post" action="{% url 'siae:favorite_lists' siae.slug %}">
+                                    {% csrf_token %}
+                                    <p class="fr-hr-or">ou</p>
+
+                                    <div class="fr-input-group">
+                                        <fieldset class="fr-fieldset" id="{{ modal_id }}-favorite_exist_list_radio" aria-labelledby="{{ modal_id }}-favorite_exist_list_radio_legend">
+                                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="{{ modal_id }}-favorite_exist_list_radio_legend">
+                                                Choisir une liste existante
+                                            </legend>
+                                            {% for favorite_list in favorite_lists %}
+                                                <div class="fr-fieldset__element">
+                                                    <div class="fr-radio-group fr-radio-rich">
+                                                        <input value="{{ favorite_list.id }}" type="radio" id="{{ modal_id }}-favorite_exist_list_radio-{{ favorite_list.id }}" name="favorite_list" required>
+                                                        <label class="fr-label" for="{{ modal_id }}-favorite_exist_list_radio-{{ favorite_list.id }}">
+                                                            {{ favorite_list.name }} <span class="fr-badge">{{ favorite_list.siae_count_annotated }}</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </fieldset>
+                                    </div>
+                                    <button class="fr-btn" type="submit" name="action" value="add">Enregistrer</button>
+                                </form>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</dialog>
+    </dialog>
+{% endwith %}

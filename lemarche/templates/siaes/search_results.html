@@ -176,13 +176,6 @@
                 </div>
                 <div class="fr-grid-row fr-grid-row--gutters">
                     {% if siaes %}
-                        <!-- buttons needed for modal to be triggered -->
-                        <button data-fr-opened="false"
-                                aria-controls="favorite_item_add_modal"
-                                class="fr-hidden"></button>
-                        <button data-fr-opened="false"
-                                aria-controls="favorite_item_remove_modal"
-                                class="fr-hidden"></button>
                         {% for siae in siaes %}
                             <div class="fr-col-12">{% include "siaes/_card_search_result.html" with siae=siae %}</div>
                             <!-- insert to nudge tender creation -->
@@ -227,8 +220,17 @@
 {% block modals %}
     {% include "auth/_login_or_signup_modal.html" %}
     {% include "auth/_login_or_signup_download_modal.html" %}
-    {% include "favorites/_favorite_item_add_modal.html" %}
-    {% include "favorites/_favorite_item_remove_modal.html" %}
+    {% if user.is_authenticated %}
+        {% with favorite_lists=user.favorite_lists.with_siae_stats %}
+            {% for siae in siaes %}
+                {% if siae.in_user_favorite_list_count_annotated %}
+                    {% include "favorites/_favorite_item_remove_modal.html" with siae=siae %}
+                {% else %}
+                    {% include "favorites/_favorite_item_add_modal.html" with siae=siae favorite_lists=favorite_lists %}
+                {% endif %}
+            {% endfor %}
+        {% endwith %}
+    {% endif %}
 {% endblock modals %}
 {% block extra_js %}
     <script type="text/javascript"
@@ -336,7 +338,4 @@ document.addEventListener("DOMContentLoaded", function() {
     </script>
     <script type="text/javascript"
             src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
-    {% if user.is_authenticated %}
-        <script type="text/javascript" src="{% static 'js/favorite_item.js' %}"></script>
-    {% endif %}
 {% endblock extra_js %}

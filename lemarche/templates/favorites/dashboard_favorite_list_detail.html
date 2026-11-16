@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load static dsfr_tags %}
+{% load dsfr_tags %}
 
 {% block page_title %}{{ favorite_list.name }} - {{ FAVORITE_LIST_TITLE }}{{ block.super }}{% endblock page_title %}
 
@@ -36,8 +36,6 @@
                 {% if favorite_list.siaes.count == 0 %}
                     {% dsfr_alert type="info" content="Vous n'avez pas encore ajouté de structures à cette liste !" %}
                 {% else %}
-                    <!-- button needed for modal to be triggered -->
-                    <button data-fr-opened="false" aria-controls="favorite_item_remove_modal" class="fr-hidden"></button>
                     {% for siae in favorite_list.siaes.all %}
                         <div class="fr-grid-row fr-grid-row--gutters">
                             <div class="fr-col-12">
@@ -87,11 +85,9 @@
 {% endblock content %}
 
 {% block modals %}
-    {% include "favorites/_favorite_item_remove_modal.html" with favorite_list=favorite_list %}
+    {% for siae in favorite_list.siaes.all %}
+        {% include "favorites/_favorite_item_remove_modal.html" with siae=siae favorite_list=favorite_list %}
+    {% endfor %}
     {% include "favorites/_favorite_list_edit_modal.html" with favorite_list=favorite_list %}
     {% include "favorites/_favorite_list_delete_modal.html" with favorite_list=favorite_list %}
 {% endblock modals %}
-
-{% block extra_js %}
-<script type="text/javascript" src="{% static 'js/favorite_item.js' %}"></script>
-{% endblock extra_js %}
