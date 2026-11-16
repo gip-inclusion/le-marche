@@ -473,6 +473,47 @@ class LoginViewEnumerationTest(TestCase):
                 self.assertNotContains(response, "pas encore défini de mot de passe")
 
 
+class WagtailAdminLoginTest(TestCase):
+    def test_anonymous_user_is_redirected_to_allauth_login(self):
+        response = self.client.get("/cms/pages/")
+        self.assertRedirects(response, "/cms/login/?next=/cms/pages/", fetch_redirect_response=False)
+
+        response = self.client.get("/cms/login/?next=/cms/pages/")
+        self.assertRedirects(
+            response, f"{reverse('account_login')}?next=%2Fcms%2Fpages%2F", fetch_redirect_response=False
+        )
+
+    def test_external_next_url_is_not_forwarded(self):
+        for next_url in ["https://evil.example.com/", "//evil.example.com/", "javascript:alert(1)"]:
+            with self.subTest(next_url=next_url):
+                response = self.client.get("/cms/login/", {"next": next_url, "other": "param"})
+                self.assertRedirects(response, reverse("account_login"), fetch_redirect_response=False)
+
+    def test_wagtail_password_reset_is_disabled(self):
+        response = self.client.get(reverse("wagtailadmin_password_reset"))
+        self.assertEqual(response.status_code, 404)
+
+    def test_admin_user_is_redirected_to_wagtail_admin_home(self):
+        admin_user = UserFactory(is_superuser=True, is_staff=True)
+        self.client.force_login(admin_user)
+
+        response = self.client.get("/cms/login/")
+        self.assertRedirects(response, reverse("wagtailadmin_home"), fetch_redirect_response=False)
+        self.assertEqual(self.client.get(reverse("wagtailadmin_home")).status_code, 200)
+
+    def test_user_without_admin_access_does_not_loop(self):
+        user = UserFactory()
+        self.client.force_login(user)
+
+        response = self.client.get("/cms/")
+        self.assertRedirects(response, "/cms/login/?next=/cms/", fetch_redirect_response=False)
+        self.assertEqual(len(get_messages(response.wsgi_request)), 1)  # "no access" message from Wagtail
+
+        # not sent back to the login page (allauth would redirect to `next`, i.e. /cms/, again)
+        response = self.client.get("/cms/login/?next=/cms/")
+        self.assertRedirects(response, "/", fetch_redirect_response=False)
+
+
 class ConfirmEmailViewTest(TestCase):
     def test_get_confirmation_link_of_another_account_does_not_logout_user(self):
         user = UserFactory()

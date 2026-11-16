@@ -1,8 +1,13 @@
+from urllib.parse import urlencode
+
 from allauth.account.views import ConfirmEmailView, LoginView, SignupView
+from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import views as auth_views
+from django.contrib.auth import REDIRECT_FIELD_NAME, views as auth_views
+from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.html import format_html
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from lemarche.users.models import User
 from lemarche.www.auth.forms import CustomLoginForm, CustomSignupForm, PasswordResetForm
@@ -23,6 +28,28 @@ class CustomLoginView(LoginView):
         if next_url:
             context["next_param"] = f"?next={next_url}"
         return context
+
+
+def wagtail_admin_login(request):
+    """
+    Replace the Wagtail admin login form by the django-allauth one.
+    - anonymous user: go to the allauth login page, keeping the `next` param
+    - user with access to the Wagtail admin: go to the admin home
+    - user without access: go to the homepage (Wagtail has already added an error message).
+      Redirecting to the login page would loop: allauth sends authenticated users back to `next`.
+    """
+    if request.user.is_authenticated:
+        if request.user.has_perm("wagtailadmin.access_admin"):
+            return redirect("wagtailadmin_home")
+        return redirect(settings.LOGIN_REDIRECT_URL)
+    login_url = reverse("account_login")
+    # only forward a `next` param pointing to this site
+    next_url = request.GET.get(REDIRECT_FIELD_NAME)
+    if next_url and url_has_allowed_host_and_scheme(
+        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        login_url = f"{login_url}?{urlencode({REDIRECT_FIELD_NAME: next_url})}"
+    return redirect(login_url)
 
 
 class CustomSignupView(SignupView):
