@@ -7,6 +7,7 @@ from wagtail.contrib.sitemaps.views import sitemap
 from wagtail.documents import urls as wagtaildocs_urls
 
 from lemarche.utils.admin.admin_site import admin_site
+from lemarche.www.auth.views import wagtail_admin_login
 
 
 urlpatterns = [
@@ -24,6 +25,8 @@ urlpatterns = [
     # sitemap
     path("sitemap.xml", sitemap, name="sitemap"),  # appears above the default Wagtail page serving route
     # admin blog
+    # use the django-allauth login form instead of the Wagtail one (must appear above the Wagtail admin urls)
+    path("cms/login/", wagtail_admin_login),
     path("cms/", include(wagtailadmin_urls)),
     # url docuemnts of glog
     path("documents/", include(wagtaildocs_urls)),

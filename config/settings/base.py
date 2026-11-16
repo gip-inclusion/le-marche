@@ -826,6 +826,10 @@ WAGTAILADMIN_BASE_URL = DEPLOY_URL or "http://localhost/"
 
 WAGTAIL_FRONTEND_LOGIN_URL = LOGIN_URL
 
+# The Wagtail admin login is handled by django-allauth (see the "cms/login/" url):
+# use the allauth password reset too
+WAGTAIL_PASSWORD_RESET_ENABLED = False
+
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 # WAGTAILADMIN_BASE_URL = f"{os.getenv('HOST_PROTO', 'https')}://{HOST_URL}"
