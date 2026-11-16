@@ -62,8 +62,13 @@
     {% include "siaes/_contact_details_not_buyer_modal.html" with siae=siae %}
     {% include "siaes/_contact_details_buyer_modal.html" with siae=siae %}
     {% include "conversations/_form_contact_modal.html" %}
-    {% include "favorites/_favorite_item_add_modal.html" with siae=siae %}
-    {% include "favorites/_favorite_item_remove_modal.html" with siae=siae %}
+    {% if user.is_authenticated %}
+        {% if siae.in_user_favorite_list_count_annotated %}
+            {% include "favorites/_favorite_item_remove_modal.html" with siae=siae %}
+        {% else %}
+            {% include "favorites/_favorite_item_add_modal.html" with siae=siae %}
+        {% endif %}
+    {% endif %}
 {% endblock modals %}
 {% block extra_js %}
     <script type="text/javascript">
@@ -125,9 +130,6 @@
             };
         </script>
         <script type="text/javascript" src="{% static 'js/mtcaptcha.js' %}"></script>
-    {% endif %}
-    {% if user.is_authenticated %}
-        <script type="text/javascript" src="{% static 'js/favorite_item.js' %}"></script>
     {% endif %}
     {% if user.is_authenticated and user.is_buyer %}
         <script type="text/javascript">

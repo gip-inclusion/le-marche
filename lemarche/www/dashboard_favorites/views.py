@@ -125,6 +125,12 @@ class DashboardFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, D
         siae = Siae.objects.get(slug=self.kwargs.get("siae_slug"))
         return get_object_or_404(FavoriteItem, favorite_list__user=self.request.user, siae=siae)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["siae"] = self.object.siae
+        context["favorite_list"] = self.object.favorite_list
+        return context
+
     def get_success_url(self):
         """Redirect to the previous page."""
         request_referer = self.request.META.get("HTTP_REFERER", "")
