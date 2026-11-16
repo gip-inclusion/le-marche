@@ -27,13 +27,19 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-    if: github.event.action == 'labeled' && github.event.label.name == 'recette-jetable'
+    # Only for PRs opened from a branch of this repository: the PR code is deployed
+    # with the Clever Cloud secrets, so it must come from a trusted contributor (never a fork).
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository
+      && github.event.action == 'labeled'
+      && github.event.label.name == 'recette-jetable'
 
     steps:
       - name: 📥 Checkout to the PR branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.head_ref }}
+          persist-credentials: false
 
       - name: 📥 Fetch git branches
         run: git fetch --prune --unshallow
@@ -106,13 +112,18 @@ jobs:
     runs-on: ubuntu-latest
     permissions: {}
     # A push event targets a new deployment.
-    if: github.event.action == 'synchronize' && contains( github.event.pull_request.labels.*.name, 'recette-jetable')
+    # Only for PRs opened from a branch of this repository (see the `create` job).
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository
+      && github.event.action == 'synchronize'
+      && contains(github.event.pull_request.labels.*.name, 'recette-jetable')
 
     steps:
       - name: 📥 Checkout to the PR branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.head_ref }}
+          persist-credentials: false
 
       - name: 📥 Fetch git branches
         run: git fetch --prune --unshallow
