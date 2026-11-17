@@ -512,6 +512,52 @@ class WagtailAdminLoginTest(TestCase):
         self.assertRedirects(response, "/", fetch_redirect_response=False)
 
 
+class DjangoAdminLoginTest(TestCase):
+    def test_anonymous_user_is_redirected_to_allauth_login(self):
+        response = self.client.get("/admin/users/user/")
+        self.assertRedirects(response, "/admin/login/?next=/admin/users/user/", fetch_redirect_response=False)
+
+        response = self.client.get("/admin/login/?next=/admin/users/user/")
+        self.assertRedirects(
+            response, f"{reverse('account_login')}?next=%2Fadmin%2Fusers%2Fuser%2F", fetch_redirect_response=False
+        )
+
+    def test_login_form_post_is_not_accepted(self):
+        admin_user = UserFactory(is_superuser=True, is_staff=True)
+        response = self.client.post(
+            "/admin/login/", {"username": admin_user.email, "password": DEFAULT_PASSWORD, "next": "/admin/"}
+        )
+        self.assertRedirects(response, reverse("account_login"), fetch_redirect_response=False)
+        self.assertNotIn("_auth_user_id", self.client.session)
+
+    def test_external_next_url_is_not_forwarded(self):
+        for next_url in ["https://evil.example.com/", "//evil.example.com/", "javascript:alert(1)"]:
+            with self.subTest(next_url=next_url):
+                response = self.client.get("/admin/login/", {"next": next_url, "other": "param"})
+                self.assertRedirects(response, reverse("account_login"), fetch_redirect_response=False)
+
+    def test_admin_user_is_redirected_to_admin_index(self):
+        admin_user = UserFactory(is_superuser=True, is_staff=True)
+        self.client.force_login(admin_user)
+
+        response = self.client.get("/admin/login/")
+        self.assertRedirects(response, reverse("admin:index"), fetch_redirect_response=False)
+
+    def test_user_without_admin_access_does_not_loop(self):
+        user = UserFactory()
+        self.client.force_login(user)
+
+        response = self.client.get("/admin/")
+        self.assertRedirects(response, "/admin/login/?next=/admin/", fetch_redirect_response=False)
+
+        # not sent back to the login page (allauth would redirect to `next`, i.e. /admin/, again)
+        response = self.client.get("/admin/login/?next=/admin/")
+        self.assertRedirects(response, "/", fetch_redirect_response=False)
+        self.assertEqual(
+            [str(m) for m in get_messages(response.wsgi_request)], ["Vous n'avez pas accès à l'administration."]
+        )
+
+
 class ConfirmEmailViewTest(TestCase):
     def test_get_confirmation_link_of_another_account_does_not_logout_user(self):
         user = UserFactory()

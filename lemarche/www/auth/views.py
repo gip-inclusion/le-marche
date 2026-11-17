@@ -30,6 +30,20 @@ class CustomLoginView(LoginView):
         return context
 
 
+def redirect_to_allauth_login(request):
+    """
+    Redirect to the django-allauth login page, forwarding the `next` param only if it points to this site.
+    """
+    login_url = reverse("account_login")
+    # only forward a `next` param pointing to this site
+    next_url = request.GET.get(REDIRECT_FIELD_NAME)
+    if next_url and url_has_allowed_host_and_scheme(
+        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        login_url = f"{login_url}?{urlencode({REDIRECT_FIELD_NAME: next_url})}"
+    return redirect(login_url)
+
+
 def wagtail_admin_login(request):
     """
     Replace the Wagtail admin login form by the django-allauth one.
@@ -42,14 +56,7 @@ def wagtail_admin_login(request):
         if request.user.has_perm("wagtailadmin.access_admin"):
             return redirect("wagtailadmin_home")
         return redirect(settings.LOGIN_REDIRECT_URL)
-    login_url = reverse("account_login")
-    # only forward a `next` param pointing to this site
-    next_url = request.GET.get(REDIRECT_FIELD_NAME)
-    if next_url and url_has_allowed_host_and_scheme(
-        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
-    ):
-        login_url = f"{login_url}?{urlencode({REDIRECT_FIELD_NAME: next_url})}"
-    return redirect(login_url)
+    return redirect_to_allauth_login(request)
 
 
 class CustomSignupView(SignupView):
