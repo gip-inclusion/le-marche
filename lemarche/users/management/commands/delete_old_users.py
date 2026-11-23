@@ -120,6 +120,7 @@ class Command(BaseCommand):
                     "users.User_groups",  # ManyToManyField to User
                     "notes.Note",  # GenericForeignKey to User
                     "account.EmailAddress",
+                    "users.User_sectors",  # ForeignKey to User
                 ],
             )
 
