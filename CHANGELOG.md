@@ -6,6 +6,23 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [1.1.0](https://github.com/gip-inclusion/le-marche/compare/v1.0.0...v1.1.0) (2026-11-26)
+
+
+### Features
+
+* Use the django-allauth login form for the Django admin ([8d17aae](https://github.com/gip-inclusion/le-marche/commit/8d17aae5394f3cb942f085b7d5cffb1d9204e973))
+* Use the django-allauth login form for the Wagtail admin ([32de591](https://github.com/gip-inclusion/le-marche/commit/32de591f951461d6bc29681de29ed3b33028dfbf))
+
+
+### Bug Fixes
+
+* Add users.User_sectors to allowed models to delete in delete_old_users ([49b1fca](https://github.com/gip-inclusion/le-marche/commit/49b1fcad3fabee4d692468ffbadf3720a7b0de5a))
+* Handle security alert ([25c6c0c](https://github.com/gip-inclusion/le-marche/commit/25c6c0cccc6ff2f52194f31c9e7cd543e0fad9a5))
+* Let tarteaucitron handle Matomo Tag Manager ([3f38254](https://github.com/gip-inclusion/le-marche/commit/3f3825439dc8d224e7945bfd3ca82d4ab8913470))
+* Restrict review app workflow to same-repository branches ([b62b5ad](https://github.com/gip-inclusion/le-marche/commit/b62b5ad433108403889e1355ab4712751e392303))
+* **users:** remove broken anonymize_users admin action ([5d478bf](https://github.com/gip-inclusion/le-marche/commit/5d478bf353cb3f06a8db0b31b3a652120e70f254))
+
 ## 1.0.0 (2026-11-12)
 
 
