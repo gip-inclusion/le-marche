@@ -232,11 +232,11 @@ wheels = [
 
 [[package]]
 name = "crawlerdetect"
-version = "0.4.2"
+version = "0.4.3"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/fd/7f/fd2d1a8f2bab45c235a87ebeff748acca186947c53e4da9b5b237de576b2/crawlerdetect-0.4.2.tar.gz", hash = "sha256:2ecbc825ec9bbfe94d1878078fbc3d336ed4b247a00dd56691479554ca3cb2ef", size = 2525256, upload-time = "2026-07-30T06:38:05.353Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ef/a0/c873ddbab279fc4707f7129361a9b07b08846272e3e267764f9017b29818/crawlerdetect-0.4.3.tar.gz", hash = "sha256:6541ca84eb9037a7bb53d574bfe13d8b551bd25c1b4c9a606320a1bcccec548c", size = 2612003, upload-time = "2026-11-20T23:13:36.704Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/80/39/bfc1990a96e68391721d8d76a56f6d8a90f803a4c06c402b73e2a240c6f7/crawlerdetect-0.4.2-py3-none-any.whl", hash = "sha256:62e6dd62afde41d8c934604f0c99c097d456d24e0de3b81f51eca7b1bf94d6a3", size = 17215, upload-time = "2026-07-30T06:38:00.772Z" },
+    { url = "https://files.pythonhosted.org/packages/74/81/b31ef8f1f4447e25873da82d0df3bfb8cb544073f3c0cfbd298db6edd28a/crawlerdetect-0.4.3-py3-none-any.whl", hash = "sha256:fc3969615b2900a3811e6e0b49fd95e1eae0280fdfcd13b569ccd4af131c9eb2", size = 17455, upload-time = "2026-11-20T23:13:29.676Z" },
 ]
 
 [[package]]
